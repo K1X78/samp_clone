@@ -1,6 +1,6 @@
 echo Executing Server Config...
 lanmode 0
-rcon_password CHANGE_ME
+rcon_password REPLACE_WITH_RANDOM_VALUE
 maxplayers 50
 port 7802
 gamemode0 bare 1

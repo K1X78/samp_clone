@@ -16,8 +16,7 @@ diagnostic stubs, and game assets are excluded.
 
 Project files live under `src/`, tests under `tests/`, dependencies under
 `third_party/`, and developer tools under `tools/`. Reference pseudocode and
-assembly guidance are under `docs/asm/pseudocode/`; the local game install is
-under `GTA Sa samp_clone/`.
+assembly guidance are under `docs/asm/pseudocode/`.
 
 `Official entries remaining` is the address inventory total minus unique mapped
 entries. `Unmapped local source bodies` counts C++ functions in `src` without a
@@ -28,14 +27,13 @@ source groups (legacy client files, `game`, `net`, and `d3dhook`) have no
 unmapped bodies. Inline and helper bodies without a standalone native entry
 are reported separately.
 
-## Install
+## Runtime requirements
 
-The repository does not include the GTA installation. Provide your own local
-GTA SA and SA-MP 0.3.DL files under `GTA Sa samp_clone/`; the entire directory
-is ignored by Git. Place `samp.dll.official` and `samp-server.exe.official`
-there to enable reference-based tests and the binary reader. Built DLL/EXE
-outputs, PDBs and `server.cfg` are local too. Start from
-`docs/server.cfg.example` when creating a local server configuration.
+The repository contains the reimplementation and its tests, not the GTA SA or
+SA-MP installation. Provide a compatible local installation to run the client.
+Original 0.3.DL reference binaries are optional and enable the binary reader
+and reference-based tests. Game files, reference binaries, generated outputs,
+and local server configuration are excluded from Git.
 
 ## Build
 
@@ -53,10 +51,11 @@ ctest --preset win32-vs2026
 Use the `win32-vs2022` preset with Visual Studio 2022. Both presets keep
 generated files under `build/`.
 
-On Windows, the build deploys the rebuilt client DLL and server executable to
-`GTA Sa samp_clone/` when that installation directory exists. These generated
-outputs are ignored by Git. Set `SAMP_CLONE_DIR` to use a different deployment
-directory. The client source dependencies and integration details are in
+The presets do not deploy into a game installation. They write the client DLL
+to `build/msvc/p0-win32/src/client/RelWithDebInfo/samp.dll` and the server to
+`build/msvc/p0-win32/src/server/RelWithDebInfo/samp-server.exe`. Copy the
+outputs into your local installation, or set `SAMP_CLONE_DIR` when configuring
+to deploy there. Client dependencies and integration details are in
 [client source integration](docs/CLIENT_SOURCE_MERGE.md).
 
 ## Tests
@@ -67,15 +66,19 @@ compare behavior with the official client or server are included when the
 corresponding local `.official` reference binary is present; these binaries
 are ignored by Git.
 
-## Launch
+## Server configuration
 
-Before first launch, copy `docs/server.cfg.example` to
-`GTA Sa samp_clone/server.cfg` and replace `CHANGE_ME` with a private RCON
-password. Then run `GTA Sa samp_clone/Play Clone.cmd` from Windows Explorer. It configures the
-included launcher, starts the local server hidden when no UDP listener uses port
-7802, then opens `samp.exe`. In the launcher, connect to `127.0.0.1:7802`. If a
-UDP listener already uses that port, the script leaves it running and does not
-start another server.
+`server.cfg` is a local settings file read by `samp-server.exe`. It controls
+settings such as the port, gamemode and server name; it is not included in this
+repository. Copy `docs/server.cfg.example` into the server's working directory
+to create one. The example's `REPLACE_WITH_RANDOM_VALUE` is a placeholder, not
+a project credential. RCON means Remote Console and controls remote server
+administration. This server refuses its built-in default RCON password, so
+replace the placeholder with a private, non-default value and keep the
+completed config local.
+
+To run locally, start the built `samp-server.exe` from its configured working
+directory, then connect using your installed SA-MP launcher at `127.0.0.1:7802`.
 
 ## Coverage audit
 
