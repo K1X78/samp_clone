@@ -1,0 +1,157 @@
+id,catalog_name,client_handler,source,network_client_special,server_handler,source_pointer,official_callbacks,official_registration,pointer_matches_registration,ownership_relation,status,next
+11,SetPlayerName,rpc_set_player_name,src/client/core/server_rpc_player.cpp,,,0x1001da90,0x1001da90,0x1001df49,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+12,SetPlayerPosition,rpc_set_player_position,src/client/core/server_rpc_player.cpp,,,0x10018e50,0x10018e50,0x1001df5a,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+13,SetPlayerPositionFindZ,rpc_set_player_position_find_z,src/client/core/server_rpc_player.cpp,,,0x10018f70,0x10018f70,0x1001df6b,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+14,SetPlayerHealth,rpc_set_player_health,src/client/core/server_rpc_player.cpp,,,0x10019080,0x10019080,0x1001df7c,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+15,TogglePlayerControllable,rpc_toggle_player_controllable,src/client/core/server_rpc_player.cpp,,,0x10019dc0,0x10019dc0,0x1001e048,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+16,PlayerPlaySound,rpc_player_play_sound,src/client/core/server_rpc_player.cpp,,,0x10019e60,0x10019e60,0x1001e059,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+17,SetWorldBounds,rpc_set_world_bounds,src/client/core/server_rpc_player.cpp,,,0x10019f40,0x10019f40,0x1001e06a,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+18,GivePlayerMoney,rpc_give_player_money,src/client/core/server_rpc_player.cpp,,,0x1001a030,0x1001a030,0x1001e07b,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+19,SetPlayerFacingAngle,rpc_set_player_facing_angle,src/client/core/server_rpc_player.cpp,,,0x1001a0d0,0x1001a0d0,0x1001e08c,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+20,ResetPlayerMoney,rpc_reset_player_money,src/client/core/server_rpc_player.cpp,,,0x10017ba0,0x10017ba0,0x1001e09d,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+21,ResetPlayerWeapons,rpc_reset_player_weapons,src/client/core/server_rpc_player.cpp,,,0x10017bb0,0x10017bb0,0x1001e0ae,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+22,GivePlayerWeapon,rpc_give_player_weapon,src/client/core/server_rpc_player.cpp,,,0x1001a170,0x1001a170,0x1001e0bf,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+24,SetVehicleParams,rpc_set_vehicle_component_states,src/client/core/server_rpc_vehicle.cpp,,,0x100111c0,0x100111c0,0x10012504,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+25,PlayerConnect,,,,handle_player_connect,,,,False,unresolved,partial,"verify behavior, native/server coverage and GTA application"
+26,EnterVehicle,rpc_player_enter_vehicle,src/client/core/server_rpc_world.cpp,,handle_vehicle_enter,0x100114a0,0x100114a0,0x10012515,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+27,,rpc_begin_object_edit,src/client/core/server_rpc_packet.cpp,,,0x1000e740,0x1000e740,0x100125bf,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+28,,rpc_cancel_object_edit,src/client/core/server_rpc_packet.cpp,,,0x1000e800,0x1000e800,0x100125d0,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+29,SA_MP_ConnResp_ServerNoResponse,rpc_set_clock,src/client/core/server_rpc_packet.cpp,,,0x1000f2f0,0x1000f2f0,0x1001246b,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+30,,rpc_toggle_clock,src/client/core/server_rpc_packet.cpp,,,0x1000f3d0,0x1000f3d0,0x1001247c,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+31,SA_MP_ConnResp_ServerFull,,,,,,,,False,unresolved,unresolved,verify direction and official registration
+32,SA_MP_ConnResp_Info,rpc_player_stream_in,src/client/core/server_rpc_packet.cpp,,,0x100109d0,0x100109d0,0x1001249e,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+33,SA_MP_ConnResp_PlayerId,,,,,,0x10017960,0x1001e114,False,unresolved,absent,recover official callback behavior
+34,SA_MP_ConnResp_Rules,rpc_set_player_skill,src/client/core/server_rpc_packet.cpp,,,0x1000f4b0,0x1000f4b0,0x10012317,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+35,SA_MP_ConnResp_EncryptInitFailed,,,,,,0x100188b0,0x1001e125,False,unresolved,absent,recover official callback behavior
+36,SA_MP_ConnResp_Banned,rpc_show_text_label,src/client/core/server_rpc_packet.cpp,,,0x1000f5e0,0x1000f5e0,0x10012328,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+37,SA_MP_ConnResp_BadPassword,rpc_clear_client_flag,src/client/core/server_rpc_packet.cpp,,,0x1000e430,0x1000e430,0x1001237d,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+38,SetRaceCheckpoint,rpc_set_race_checkpoint,src/client/core/server_rpc_world.cpp,,,0x10010150,0x10010150,0x1001238e,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+39,DisableRaceCheckpoint,rpc_disable_race_checkpoint,src/client/core/server_rpc_world.cpp,,,0x1000e440,0x1000e440,0x1001239f,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+40,PlayerClose,rpc_reset_player_state,src/client/core/server_rpc_packet.cpp,,,0x1000a230,0x1000e4e0,0x100123d2,True,verified MOV ECX / tail JMP adapter to source owner,partial,"verify behavior, native/server coverage and GTA application"
+41,PlayAudioStreamForPlayer,rpc_play_audio_stream,src/client/core/server_rpc_world.cpp,,,0x1001ce80,0x1001ce80,0x1001e158,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+42,StopAudioStreamForPlayer,rpc_stop_audio_stream,src/client/core/server_rpc_world.cpp,,,0x10017c00,0x10017c00,0x1001e169,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+43,RemoveBuildingForPlayer,rpc_remove_building,src/client/core/server_rpc_world.cpp,,,0x1001cff0,0x1001cff0,0x1001e17a,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+44,CreateObject,rpc_create_map_object,src/client/core/server_rpc_world.cpp,,,0x1001ae70,0x1001ae70,0x1001dc7f,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+45,SetObjectPosition,rpc_set_object_position,src/client/core/server_rpc_vehicle.cpp,,,0x1001b540,0x1001b540,0x1001dc90,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+46,SetObjectRotation,rpc_set_object_rotation,src/client/core/server_rpc_vehicle.cpp,,,0x1001b650,0x1001b650,0x1001dca1,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+47,DestroyObject,rpc_destroy_object,src/client/core/server_rpc_vehicle.cpp,,,0x1001b750,0x1001b750,0x1001dcb2,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+48,SetPlayerVirtualWorld,rpc_set_player_virtual_world,src/client/core/server_rpc_player.cpp,,,0x1001d780,0x1001d780,0x1001e235,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+49,Unknown_049,,,,,,,,False,unresolved,unresolved,verify direction and official registration
+50,PlayerRequestCommandMessage,,,,handle_player_command,,,,False,unresolved,partial,"verify behavior, native/server coverage and GTA application"
+51,Unknown_051,,,,,,,,False,unresolved,unresolved,verify direction and official registration
+52,PlayerSpawn,,,,handle_player_in_game,,,,False,unresolved,partial,"verify behavior, native/server coverage and GTA application"
+53,OnPlayerDeath,,,,handle_player_death,,,,False,unresolved,partial,"verify behavior, native/server coverage and GTA application"
+54,NPCConnect,,,,,,,,False,unresolved,unresolved,verify direction and official registration
+55,SendDeathMessage,rpc_send_death_message,src/client/core/server_rpc_world.cpp,,,0x1001d830,0x1001d830,0x1001e103,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+56,SetPlayerMapIcon,rpc_set_map_icon,src/client/core/server_rpc_world.cpp,,,0x1001a2c0,0x1001a2c0,0x1001dc08,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+57,RemoveVehicleComponent,rpc_remove_vehicle_component,src/client/core/server_rpc_vehicle.cpp,,,0x1001c0f0,0x1001c0f0,0x1001dd5c,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+58,PlayerHideTextLabel,rpc_hide_player_text_label,src/client/core/server_rpc_world.cpp,,,0x1000f790,0x1000f790,0x10012339,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+59,SetPlayerChatBubble,rpc_set_player_chat_bubble,src/client/core/server_rpc_world.cpp,,,0x1000f850,0x1000f850,0x1001234a,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+60,SendGameTimeUpdate,rpc_set_world_time,src/client/core/server_rpc_player.cpp,,,0x1000fe00,0x1000fe00,0x1001248d,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+61,ShowDialog,rpc_show_dialog,src/client/core/server_rpc_packet.cpp,,,0x1000f9c0,0x1000f9c0,0x1001235b,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+62,OnPlayerDialogResponse,,,,,,,,False,unresolved,unresolved,verify direction and official registration
+63,PlayerDestroyPickup,rpc_destroy_pickup,src/client/core/server_rpc_world.cpp,,,0x1000f010,0x1000f010,0x10012427,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+64,Unknown_064,,,,,,0x1001a230,0x1001e0d0,False,unresolved,absent,recover official callback behavior
+65,LinkVehicleToInterior,rpc_link_vehicle_interior,src/client/core/server_rpc_vehicle.cpp,,,0x10019a60,0x10019a60,0x1001e0e1,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+66,SetPlayerArmour,rpc_set_player_armour,src/client/core/server_rpc_player.cpp,,,0x1001a690,0x1001a690,0x1001e0f2,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+67,SetPlayerArmedWeapon,rpc_set_player_armed_weapon,src/client/core/server_rpc_player.cpp,,,0x10018950,0x10018950,0x1001e136,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+68,SetSpawnInfo,,,handle_spawn_info,,,0x10017a60,0x1001df16,False,unresolved,partial,"verify behavior, native/server coverage and GTA application"
+69,SetPlayerTeam,rpc_set_player_team,src/client/core/server_rpc_player.cpp,,,0x10019240,0x10019240,0x1001df27,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+70,PutPlayerInVehicle,rpc_put_player_in_vehicle,src/client/core/server_rpc_world.cpp,,,0x10019130,0x10019130,0x1001df8d,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+71,RemovePlayerFromVehicle,rpc_remove_player_from_vehicle,src/client/core/server_rpc_world.cpp,,,0x10017b00,0x10017b00,0x1001df9e,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+72,SetPlayerColor,rpc_set_player_colour,src/client/core/server_rpc_player.cpp,,,0x10019330,0x10019330,0x1001dfaf,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+73,SendGameText,rpc_show_game_text,src/client/core/server_rpc_world.cpp,,,0x10019420,0x10019420,0x1001dfc0,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+74,ForcePlayerClassSelection,rpc_force_class_selection,src/client/core/server_rpc_player.cpp,,,0x10017be0,0x10017be0,0x1001dd6d,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+75,AttachObjectToPlayer,,,,,,0x1001c1d0,0x1001dd7e,False,unresolved,absent,recover official callback behavior
+76,PlayerInitMenu,,,,,,0x1001c390,0x1001dd8f,False,unresolved,absent,recover official callback behavior
+77,PlayerShowMenu,rpc_show_menu,src/client/core/server_rpc_camera.cpp,,,0x1001c650,0x1001c650,0x1001dda0,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+78,PlayerHideMenu,rpc_hide_menu,src/client/core/server_rpc_camera.cpp,,,0x1001c700,0x1001c700,0x1001ddb1,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+79,CreateExplosion,rpc_create_explosion,src/client/core/server_rpc_world.cpp,,,0x1001b840,0x1001b840,0x1001dcc3,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+80,ShowPlayerNameTagForPlayer,rpc_show_player_name_tag,src/client/core/server_rpc_world.cpp,,,0x1001b950,0x1001b950,0x1001dcd4,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+81,AttachCameraToObject,rpc_attach_camera_to_object,src/client/core/server_rpc_camera.cpp,,,0x10019b20,0x10019b20,0x1001e18b,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+82,InterpolateCamera,rpc_interpolate_camera,src/client/core/server_rpc_camera.cpp,,,0x10019c20,0x10019c20,0x1001e19c,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+83,OnPlayerSelectTextDraw,,,,,,0x1001d110,0x1001e1ad,False,unresolved,absent,recover official callback behavior
+84,SetPlayerObjectMaterial,,,,,,0x1001b1d0,0x1001e1be,False,unresolved,absent,recover official callback behavior
+85,StopFlashGangZone,rpc_stop_flash_gang_zone,src/client/core/server_rpc_world.cpp,,,0x1001cdd0,0x1001cdd0,0x1001de39,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+86,ApplyPlayerAnimation,rpc_apply_animation,src/client/core/server_rpc_player.cpp,,,0x1001a480,0x1001a480,0x1001de4a,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+87,ClearPlayerTasks,rpc_clear_animations,src/client/core/server_rpc_player.cpp,,,0x10018090,0x10018090,0x1001de5b,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+88,SetPlayerSpecialAction,rpc_set_player_special_action,src/client/core/server_rpc_player.cpp,,,0x100181a0,0x100181a0,0x1001de6c,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+89,SetPlayerFightingStyle,rpc_set_player_fighting_style,src/client/core/server_rpc_player.cpp,,,0x10018250,0x10018250,0x1001de8e,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+90,SetPlayerVelocity,rpc_set_player_velocity,src/client/core/server_rpc_player.cpp,,,0x10018350,0x10018350,0x1001de9f,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+91,SetVehicleVelocity,rpc_set_vehicle_velocity,src/client/core/server_rpc_vehicle.cpp,,,0x10018450,0x10018450,0x1001deb0,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+92,Unknown_092,rpc_set_gravity,src/client/core/server_rpc_world.cpp,,,0x10018750,0x10018750,0x1001dee3,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+93,SendClientMessage,,,client message inline,,,0x1000ee60,0x100123f4,False,unresolved,partial,"verify behavior, native/server coverage and GTA application"
+94,SetPlayerWorldTime,rpc_set_clock_hour,src/client/core/server_rpc_packet.cpp,,,0x1000edc0,0x1000edc0,0x10012405,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+95,PlayerCreatePickup,rpc_create_pickup,src/client/core/server_rpc_world.cpp,,,0x1000ef50,0x1000ef50,0x10012416,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+96,,rpc_scm_event,src/client/core/server_rpc_packet.cpp,,,0x1000f150,0x1000f150,0x10012449,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+98,Unknown_098,rpc_set_vehicle_tire_status,src/client/core/server_rpc_vehicle.cpp,,,0x10018670,0x10018670,0x1001ded2,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+99,MoveObject,rpc_move_object,src/client/core/server_rpc_vehicle.cpp,,,0x1001ba30,0x1001ba30,0x1001dce5,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+101,PlayerRequestChatMessage,,,chat inline,handle_player_chat,,0x100121c0,0x1001256a,False,unresolved,partial,"verify behavior, native/server coverage and GTA application"
+102,Unknown_102,rpc_set_client_check_blob,src/client/core/server_rpc_packet.cpp,,,0x1000e450,0x1000e450,0x100123c1,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+103,,rpc_client_check,src/client/core/server_rpc_packet.cpp,,,0x10011930,0x10011930,0x100125f2,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+104,EnableStuntBonusForPlayer,rpc_enable_stunt_bonus,src/client/core/server_rpc_world.cpp,,,0x10017860,0x10017860,0x1001de7d,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+105,PlayerTextDrawSetString,rpc_text_draw_set_string,src/client/core/server_rpc_camera.cpp,,,0x1001ca30,0x1001ca30,0x1001ddf5,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+106,SetVehicleDamageStatus,rpc_set_vehicle_damage_status,src/client/core/server_rpc_vehicle.cpp,,,0x10011090,0x10011090,0x100124f3,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+107,SetCheckpoint,rpc_set_checkpoint,src/client/core/server_rpc_world.cpp,,,0x10010040,0x10010040,0x1001236c,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+108,ShowGangZone,rpc_show_gang_zone,src/client/core/server_rpc_world.cpp,,,0x1001cb40,0x1001cb40,0x1001de06,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+111,ToggleWidescreen,rpc_toggle_widescreen,src/client/core/server_rpc_player.cpp,,,0x100185c0,0x100185c0,0x1001dec1,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+112,PlayCrimeReport,rpc_play_crime_report,src/client/core/server_rpc_world.cpp,,,0x10018b40,0x10018b40,0x1001df05,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+113,SetPlayerAttachedObject,,,,,,0x10018a00,0x1001e147,False,unresolved,absent,recover official callback behavior
+115,OnPlayerGiveTakeDamage,,,,,,,,False,unresolved,unresolved,verify direction and official registration
+116,,rpc_edit_attached_object,src/client/core/server_rpc_packet.cpp,,,0x100116b0,0x100116b0,0x1001259d,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+117,,rpc_edit_object,src/client/core/server_rpc_packet.cpp,,,0x10011770,0x10011770,0x100125ae,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+118,OnPlayerInteriorChange,,,,handle_player_interior,,,,False,unresolved,partial,"verify behavior, native/server coverage and GTA application"
+120,HideGangZone,rpc_hide_gang_zone,src/client/core/server_rpc_world.cpp,,,0x1001cc60,0x1001cc60,0x1001de17,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+121,FlashGangZone,rpc_flash_gang_zone,src/client/core/server_rpc_world.cpp,,,0x1001cd10,0x1001cd10,0x1001de28,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+122,StopObject,rpc_stop_object,src/client/core/server_rpc_vehicle.cpp,,,0x1001bbe0,0x1001bbe0,0x1001dcf6,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+123,SetVehiclePlate,,,,,,0x1001bd60,0x1001dd07,False,unresolved,absent,recover official callback behavior
+124,TogglePlayerSpectating,,,,,,0x1001be80,0x1001dd18,False,unresolved,absent,recover official callback behavior
+125,Unknown_125,,,,,,0x10017bd0,0x1001dd29,False,unresolved,absent,recover official callback behavior
+126,PlayerSpectatePlayer,,,,,,0x1001bf30,0x1001dd3a,False,unresolved,absent,recover official callback behavior
+127,PlayerSpectateVehicle,,,,,,0x1001c010,0x1001dd4b,False,unresolved,absent,recover official callback behavior
+128,PlayerRequestClass,,,handle_class_response,handle_player_request_class,,0x1000fea0,0x1001257b,False,unresolved,partial,"verify behavior, native/server coverage and GTA application"
+129,,,,spawn response inline,handle_player_request_spawn,,0x1000ff70,0x1001258c,False,unresolved,partial,"verify behavior, native/server coverage and GTA application"
+130,Unknown_130,,,connection rejection inline,,,0x10010410,0x100123e3,False,unresolved,partial,"verify behavior, native/server coverage and GTA application"
+133,SetPlayerWantedLevel,,,,,,0x1001c7b0,0x1001ddc2,False,unresolved,absent,recover official callback behavior
+134,PlayerShowTextDraw,,,,,,0x1001c850,0x1001ddd3,False,unresolved,absent,recover official callback behavior
+135,PlayerHideTextDraw,rpc_text_draw_destroy,src/client/core/server_rpc_camera.cpp,,,0x1001c980,0x1001c980,0x1001dde4,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+137,PlayerJoin,rpc_player_join,src/client/core/server_rpc_world.cpp,,,0x1000fbb0,0x1000fbb0,0x10012537,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+138,PlayerQuit,rpc_player_quit,src/client/core/server_rpc_world.cpp,,,0x1000fd40,0x1000fd40,0x10012548,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+139,PlayerInit,,,handle_player_init,,,0x10010530,0x10012559,False,unresolved,partial,"verify behavior, native/server coverage and GTA application"
+144,RemovePlayerMapIcon,,,,,,0x1001a3e0,0x1001dc19,False,unresolved,absent,recover official callback behavior
+145,SetPlayerAmmo,,,,,,0x1001a740,0x1001dc2a,False,unresolved,absent,recover official callback behavior
+146,SetPlayerGravity,,,,,,0x1001a800,0x1001dc3b,False,unresolved,absent,recover official callback behavior
+147,SetVehicleHealth,rpc_set_vehicle_health,src/client/core/server_rpc_vehicle.cpp,,,0x1001a8a0,0x1001a8a0,0x1001dc4c,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+148,AttachTrailer,,,,,,0x1001a980,0x1001dc5d,False,unresolved,absent,recover official callback behavior
+149,DetachTrailer,,,,,,0x1001aac0,0x1001dc6e,False,unresolved,absent,recover official callback behavior
+150,Unknown_150,,,,,,0x10018800,0x1001def4,False,unresolved,absent,recover official callback behavior
+151,,rpc_remove_pickup_model,src/client/core/server_rpc_packet.cpp,,,0x1000f0b0,0x1000f0b0,0x10012438,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+152,,rpc_set_weather,src/client/core/server_rpc_player.cpp,,,0x1000f240,0x1000f240,0x1001245a,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+153,SetPlayerSkin,,,,,,0x10018c80,0x1001df38,False,unresolved,absent,recover official callback behavior
+154,ExitVehicle,rpc_player_close,src/client/core/server_rpc_packet.cpp,,handle_vehicle_exit,0x100115c0,0x100115c0,0x10012526,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+155,,,,handle_score_pings,,,0x100102b0,0x100123b0,False,unresolved,partial,"verify behavior, native/server coverage and GTA application"
+156,SetPlayerInterior,rpc_set_player_interior,src/client/core/server_rpc_player.cpp,,,0x10019530,0x10019530,0x1001dfd1,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+157,SetPlayerCameraPosition,rpc_set_camera_position,src/client/core/server_rpc_camera.cpp,,,0x100195d0,0x100195d0,0x1001dfe2,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+158,SetPlayerCameraLookAt,rpc_set_camera_look_at,src/client/core/server_rpc_camera.cpp,,,0x100196a0,0x100196a0,0x1001dff3,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+159,SetVehiclePosition,rpc_set_vehicle_position,src/client/core/server_rpc_vehicle.cpp,,,0x100197a0,0x100197a0,0x1001e004,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+160,SetVehicleZAngle,,,,,,0x100198b0,0x1001e015,False,unresolved,absent,recover official callback behavior
+161,Unknown_161,,,,,,0x10019990,0x1001e026,False,unresolved,absent,recover official callback behavior
+162,SetPlayerCameraBehindPlayer,,,,,,0x10017b90,0x1001e037,False,unresolved,absent,recover official callback behavior
+163,PlayerStreamOut,rpc_player_stream_out,src/client/core/server_rpc_world.cpp,,,0x10010ce0,0x10010ce0,0x100124c0,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+164,StreamInVehicle,rpc_spawn_vehicle,src/client/core/server_rpc_packet.cpp,,,0x1000e500,0x1000e500,0x100124d1,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+165,StreamOutVehicle,rpc_stream_out_vehicle,src/client/core/server_rpc_packet.cpp,,,0x10010dc0,0x10010dc0,0x100124e2,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+166,PlayerDeath,rpc_set_player_dead,src/client/core/server_rpc_packet.cpp,,,0x10010c20,0x10010c20,0x100124af,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+167,DisableRemoteVehicleCollisions,,,,,,0x100178f0,0x1001dbf7,False,unresolved,absent,recover official callback behavior
+169,Unknown_169,,,,,,0x1001bca0,0x1001e1cf,False,unresolved,absent,recover official callback behavior
+170,,rpc_set_camera_targeting,src/client/core/server_rpc_packet.cpp,,,0x1000e8b0,0x1000e8b0,0x100125e1,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+171,,rpc_show_actor,src/client/core/server_rpc_packet.cpp,,,0x1000e940,0x1000e940,0x10012603,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+172,,rpc_hide_actor,src/client/core/server_rpc_packet.cpp,,,0x10011cd0,0x10011cd0,0x10012614,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+173,ApplyActorAnimationForPlayer,,,,,,0x1001d210,0x1001e1e0,False,unresolved,absent,recover official callback behavior
+174,ClearActorAnimationsForPlayer,,,,,,0x1001d3f0,0x1001e1f1,False,unresolved,absent,recover official callback behavior
+175,SetActorFacingAngleForPlayer,,,,,,0x1001d4b0,0x1001e202,False,unresolved,absent,recover official callback behavior
+176,SetActorPosForPlayer,,,,,,0x1001d590,0x1001e213,False,unresolved,absent,recover official callback behavior
+178,SetActorHealthForPlayer,,,,,,0x1001d6a0,0x1001e224,False,unresolved,absent,recover official callback behavior
+179,,rpc_request_model,src/client/core/server_rpc_packet.cpp,,,0x10011d80,0x10011d80,0x10012625,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+180,,rpc_remove_model,src/client/core/server_rpc_packet.cpp,,,0x1000ea40,0x1000ea40,0x10012636,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+183,,rpc_model_url,src/client/core/server_rpc_packet.cpp,,,0x10011f80,0x10011f80,0x10012647,True,direct,partial,"verify behavior, native/server coverage and GTA application"
+185,,rpc_request_all_models,src/client/core/server_rpc_packet.cpp,,,0x1000ead0,0x1000ead0,0x10012658,True,direct,partial,"verify behavior, native/server coverage and GTA application"

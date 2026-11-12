@@ -1,0 +1,40 @@
+{
+  "recorded_at_utc": "2026-11-04T12:04:52.914421+00:00",
+  "scope": "P2 custom-model pipeline and essential automatic spawn/driver-seat demonstration",
+  "scenario": "artwork ready -> model20001 -> SpawnPlayer -> stream vehicle411 -> driver seat",
+  "game_pid": 8652,
+  "server_pid": 19956,
+  "debugger_attached_to_game": false,
+  "debugger_attached_to_server": false,
+  "live_state": {
+    "game_pid": 8652,
+    "phase": 9,
+    "ped": "0x17124a38",
+    "model": 20001,
+    "health": 100.0,
+    "ped_state": 50,
+    "in_vehicle": true,
+    "vehicle": "0x1865f020",
+    "vehicle_model": 411,
+    "vehicle_health": 837.944580078125
+  },
+  "regressions": "15/15 CTest targets passed; model_pool_patch_test validates88 patch operations and preserves40914e opcode; visual AMX fixture command/spawn/vehicle assertions passed",
+  "fix": "Reference operand table entry40914e is an instruction start in the supplied GTA. Relocate its disp32 at409151 after verifying8b34c5 and old address. Restore four missing array-end operands.",
+  "test_commands_source": "tests/fixtures/visual_fixture.py",
+  "production_test_command_scan": "No /p2, visual_fixture, VisualTester or7811 matches under src",
+  "artifacts": {
+    "client": {
+      "path": "C:\\Users\\PC GAMER\\samp\\samp_clone\\build-msvc\\visual-review\\20261104-110315\\game\\samp.dll",
+      "sha256": "f6936d8e346ef6b18b69924b0bbfc24fd33774421d86920dfedbae2f041289a8"
+    },
+    "server": {
+      "path": "C:\\Users\\PC GAMER\\samp\\samp_clone\\build-msvc\\visual-review\\20261104-110315\\server\\samp-server.exe",
+      "sha256": "c045231b4e584aa48b250694b9183d54402ebe6531d69e610a25cb866b7589af"
+    },
+    "mode": {
+      "path": "C:\\Users\\PC GAMER\\samp\\samp_clone\\build-msvc\\visual-review\\20261104-110315\\server\\gamemodes\\visual.amx",
+      "sha256": "b8e71de66a605743b1fce01296511a511b7825507ea8b668cd65ffc9be5d98ae"
+    }
+  },
+  "remaining": "User visual confirmation and extended stability, world/time changes, repeated object/collision/cache/server-switch gates remain open. Mouse Spawn-click issue is outside current P2-only scope; demo bypasses selection through the real forced-spawn native."
+}

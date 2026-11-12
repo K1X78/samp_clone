@@ -1,0 +1,19 @@
+/*
+ * Generated Ghidra pseudocode, NOT verified source.
+ * Binary: samp.dll.official
+ * Entry: 0x10043b10
+ * Name: FUN_10043b10
+ * Status: ok
+ * Full provenance, body ranges, references: ../index.json
+ * Diagnostic: 
+ */
+
+
+undefined1 __fastcall FUN_10043b10(int param_1)
+
+{
+  return *(undefined1 *)(param_1 + 0x2cb);
+}
+
+
+/* END FUNCTION 0x10043b10 */

@@ -1,0 +1,18 @@
+# The evidence is byte exact: no line ending conversion, ever.
+* -text
+*.cpp -text
+*.hpp -text
+*.h -text
+*.py -text
+*.json -text
+*.md -text
+*.md whitespace=cr-at-eol
+*.txt -text
+*.bat -text
+*.ps1 -text
+*.cmd text eol=crlf
+# Preserve the imported CRLF source while allowing end-of-line carriage returns.
+src/client/game/entity.cpp whitespace=cr-at-eol
+src/client/playertags.cpp whitespace=cr-at-eol
+
+"GTA Sa samp_clone/Play Clone.cmd" -filter -diff -merge text eol=crlf

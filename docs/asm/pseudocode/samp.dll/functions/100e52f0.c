@@ -1,0 +1,23 @@
+/*
+ * Generated Ghidra pseudocode, NOT verified source.
+ * Binary: samp.dll.official
+ * Entry: 0x100e52f0
+ * Name: FUN_100e52f0
+ * Status: ok
+ * Full provenance, body ranges, references: ../index.json
+ * Diagnostic: 
+ */
+
+
+void FUN_100e52f0(undefined4 *param_1)
+
+{
+  if (param_1 != (undefined4 *)0x0) {
+    (*(code *)PTR__free_101554bc)(*param_1);
+  }
+  (*(code *)PTR__free_101554bc)(param_1);
+  return;
+}
+
+
+/* END FUNCTION 0x100e52f0 */

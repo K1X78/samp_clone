@@ -1,0 +1,22 @@
+/*
+ * Generated Ghidra pseudocode, NOT verified source.
+ * Binary: samp-server.exe.official
+ * Entry: 0x00414e70
+ * Name: FUN_00414e70
+ * Status: ok
+ * Full provenance, body ranges, references: ../index.json
+ * Diagnostic: 
+ */
+
+
+void __fastcall FUN_00414e70(undefined4 param_1,undefined1 param_2)
+
+{
+  undefined4 in_EAX;
+  
+  FUN_00414dd0(param_2,param_1,in_EAX,0);
+  return;
+}
+
+
+/* END FUNCTION 0x00414e70 */

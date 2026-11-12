@@ -1,0 +1,27 @@
+/*
+ * Generated Ghidra pseudocode, NOT verified source.
+ * Binary: samp.dll.official
+ * Entry: 0x100feecb
+ * Name: __callnewh
+ * Status: ok
+ * Full provenance, body ranges, references: ../index.json
+ * Diagnostic: 
+ */
+
+
+int __cdecl __callnewh(size_t _Size)
+
+{
+  int iVar1;
+  
+  if (DAT_102ace50 != (code *)0x0) {
+    iVar1 = (*DAT_102ace50)(_Size);
+    if (iVar1 != 0) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+
+/* END FUNCTION 0x100feecb */

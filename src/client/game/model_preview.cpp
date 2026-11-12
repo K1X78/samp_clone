@@ -1,0 +1,385 @@
+#include "game/model_preview.h"
+#include "d3dhook/IDirect3DDevice9Hook.h"
+#include "game/game.h"
+#include "game/hooks.h"
+#include "game/object.h"
+#include "game/playerped.h"
+#include "game/textdraw.h"
+#include "game/util.h"
+#include "game/vehicle.h"
+#include "main.h"
+#include <string.h>
+// 0x002aca38
+CModelPreview* g_modelPreview;
+// 0x0006c700
+// Official: FUN_1006c700 @ 0x1006c700 (samp.dll)
+CModelPreview::CModelPreview()
+{
+    camera = 0;
+    frame = 0;
+    texture = 0;
+    unknown18 = 0;
+    light = 0;
+    Reset();
+}
+// 0x0006b880
+// Official: FUN_1006b880 @ 0x1006b880 (samp.dll)
+bool CModelPreview::Reset()
+{
+    light = GameRwCreateLight(2);
+    if (light)
+    {
+        const float rgba[4] = {1, 1, 1, 1};
+        GameRwSetLightColor(light, rgba);
+        colorRaster = GameRwCreateRaster(256, 256, 0, 0x505);
+        depthRaster = GameRwCreateRaster(256, 256, 0, 1);
+        camera = GameRwCreateCamera();
+        frame = GameRwCreateFrame();
+        const CVector position = {0, 0, 50};
+        GameRwTranslateFrame(frame, &position, 1);
+        GameRwRotateFrame(frame, 0, 90.0f);
+        if (camera && frame && colorRaster && depthRaster)
+        {
+            GameRwSetCameraRasters(camera, colorRaster, depthRaster);
+            GameRwSetObjectFrame(camera, frame);
+            GameRwSetClipDistances(camera, 300.0f, 0.01f);
+            const float window[2] = {0.5f, 0.5f};
+            GameRwSetViewWindow(camera, window);
+            GameRwSetProjection(camera, 1);
+            GameRwWorldAddCamera(camera);
+            texture = GameRwCreateTexture(colorRaster);
+            return true;
+        }
+    }
+    return false;
+}
+
+// 0x0011c654
+const float g_previewPedDistanceScale = -2.25f;
+// 0x0011c658
+const float g_previewBoatDistance = -5.5f;
+// 0x0011c65c
+const float g_previewBoatRadiusScale = 2.5f;
+// 0x0011c660
+const float g_previewVehicleDistance = -1.0f;
+// 0x0011c664
+const float g_previewHeight = 50.0f;
+// 0x0011c668
+const float g_previewObjectDistance = -0.1f;
+// 0x0011c66c
+const float g_previewObjectRadiusScale = 2.25f;
+
+// 0x0006b9d0
+// Official: FUN_1006b9d0 @ 0x1006b9d0 (samp.dll)
+void CModelPreview::RenderTestScene(int model)
+{
+    if (!g_pGame->IsStarted() || !camera)
+        return;
+    DWORD background = 0xff330033;
+    GameRwSetVisibilityCamera(camera);
+    GameRwClearCamera(camera, &background, 3);
+    GameRwBeginCameraUpdate(camera);
+    GameRwWorldAddLight(light);
+    ClientSetRenderState(6, 1);
+    ClientSetRenderState(8, 1);
+    ClientSetRenderState(7, 2);
+    CVector position = {0, 0, 70.0f};
+    CObject* object = new CObject(model, position, CVector(), 200.0f, 0, 0, 0);
+    object->Add();
+    position.z = 40.0f;
+    object->Teleport(position);
+    // GetMatrix deliberately leaves the four padding/flag words untouched.
+    CMatrix matrix;
+    object->GetMatrix(&matrix);
+    GameRotateRwMatrixOnAxis(&matrix, 0, 50.0f);
+    GameRotateRwMatrixOnAxis(&matrix, 2, -40.0f);
+    object->ApplyMatrix(matrix);
+    object->SetModelIndex(model);
+    object->Native009f960();
+    delete object;
+    GameRwEndCameraUpdate(camera);
+    GameRwWorldRemoveLight(light);
+}
+
+// 0x0006bb80
+// Official: FUN_1006bb80 @ 0x1006bb80 (samp.dll)
+void* CModelPreview::RenderPed(int model, DWORD background, const CVector* rotation, float zoom)
+{
+    void* raster = GameRwCreateRaster(256, 256, 0, 0x505);
+    void* result = GameRwCreateTexture(raster);
+    CPed* ped = new CPed(208, 0, CVector(), 0.0f);
+    if (!raster || !result || !ped)
+        return 0;
+    // Native special height is DWORD 0x42489999 (the lower neighbour of 50.15f).
+    CVector position = {0, zoom * g_previewPedDistanceScale, model == 162 ? 50.149997711181640625f : 50.05f};
+    ped->Teleport(position);
+    ped->SetModelIndex(model);
+    ped->SetCollisionProcessed(FALSE);
+    ped->SetCollisionFlag(FALSE);
+    CMatrix matrix;
+    memset(&matrix, 0, sizeof(matrix));
+    ped->GetMatrix(&matrix);
+    if (rotation->x != 0.0f)
+        GameRotateRwMatrixOnAxis(&matrix, 0, rotation->x);
+    if (rotation->y != 0.0f)
+        GameRotateRwMatrixOnAxis(&matrix, 1, rotation->y);
+    if (rotation->z != 0.0f)
+        GameRotateRwMatrixOnAxis(&matrix, 2, rotation->z);
+    ped->ApplyMatrix(matrix);
+    GameRwSetCameraRasters(camera, raster, depthRaster);
+    GameRwSetVisibilityCamera(camera);
+    GameRwClearCamera(camera, &background, 3);
+    GameRwBeginCameraUpdate(camera);
+    GameRwWorldAddLight(light);
+    ClientSetRenderState(6, 1);
+    ClientSetRenderState(8, 1);
+    ClientSetRenderState(7, 2);
+    ClientSetRenderState(14, 0);
+    ped->Add();
+    ped->UpdateClumpAnimations(100.0f, 1);
+    ped->Native009f960();
+    GameRwEndCameraUpdate(camera);
+    GameRwWorldRemoveLight(light);
+    ped->Remove();
+    delete ped;
+    if (!GameGetModelReferenceCount(model))
+        g_pGame->ReleaseModel(model, 0);
+    return result;
+}
+
+// 0x0006be00
+// Official: FUN_1006be00 @ 0x1006be00 (samp.dll)
+void* CModelPreview::RenderVehicle(int model, DWORD background, const CVector* rotation, float zoom, int primary, int secondary)
+{
+    void* raster = GameRwCreateRaster(256, 256, 0, 0x505);
+    void* result = GameRwCreateTexture(raster);
+    if (model == 570)
+        model = 538;
+    else if (model == 569)
+        model = 537;
+    CVehicle* vehicle = new CVehicle(model, 0, 0, 50.0f, 0, 0, FALSE);
+    if (!raster || !result || !vehicle)
+        return 0;
+    vehicle->SetCollisionProcessed(FALSE);
+    vehicle->SetCollisionFlag(FALSE);
+    float distance;
+    // clang-format off
+    // Preserve native extended ST0 through the two operations, then spill before GetSubtype.
+    __asm {
+        push model
+        call GameGetModelCollisionRadius
+        add esp,4
+        fadd st(0),st(0)
+        fsubr dword ptr [g_previewVehicleDistance]
+        fmul dword ptr [zoom]
+        fstp dword ptr [distance]
+    }
+    // clang-format on
+    if (vehicle->GetSubtype() == 4)
+    {
+        // clang-format off
+        __asm {
+            push model
+            call GameGetModelCollisionRadius
+            add esp,4
+            fmul dword ptr [g_previewBoatRadiusScale]
+            fsubr dword ptr [g_previewBoatDistance]
+            fstp dword ptr [distance]
+        }
+        // clang-format on
+    }
+    CVector position = {0, distance, 50.0f};
+    vehicle->Teleport(position);
+    if (primary != -1 && secondary != -1)
+        vehicle->SetColor((BYTE)primary, (BYTE)secondary);
+    CMatrix matrix;
+    memset(&matrix, 0, sizeof(matrix));
+    vehicle->GetMatrix(&matrix);
+    if (rotation->x != 0.0f)
+        GameRotateRwMatrixOnAxis(&matrix, 0, rotation->x);
+    if (rotation->y != 0.0f)
+        GameRotateRwMatrixOnAxis(&matrix, 1, rotation->y);
+    if (rotation->z != 0.0f)
+        GameRotateRwMatrixOnAxis(&matrix, 2, rotation->z);
+    vehicle->ApplyMatrix(matrix);
+    GameRwSetCameraRasters(camera, raster, depthRaster);
+    GameRwSetVisibilityCamera(camera);
+    GameRwClearCamera(camera, &background, 3);
+    GameRwBeginCameraUpdate(camera);
+    GameRwWorldAddLight(light);
+    ClientSetRenderState(6, 1);
+    ClientSetRenderState(8, 1);
+    ClientSetRenderState(7, 2);
+    ClientSetRenderState(14, 0);
+    vehicle->Add();
+    g_hookDisableFog = 1;
+    vehicle->Native009f960();
+    g_hookDisableFog = 0;
+    GameRwEndCameraUpdate(camera);
+    GameRwWorldRemoveLight(light);
+    delete vehicle;
+    return result;
+}
+
+// 0x0006c0b0
+// Official: FUN_1006c0b0 @ 0x1006c0b0 (samp.dll)
+void* CModelPreview::RenderObjectEntity(int model, DWORD background, const CVector* rotation, float zoom)
+{
+    void* raster = GameRwCreateRaster(256, 256, 0, 0x505);
+    void* result = GameRwCreateTexture(raster);
+    if (!raster || !result)
+        return 0;
+    if (model == 1373 || model == 3118 || model == 3552 || model == 3553)
+        model = 18631;
+    CVector initialPosition = {0, 0, 50.0f};
+    CObject* object = new CObject(model, initialPosition, CVector(), 0, 0, 0, 0);
+    if (!object || !object->m_pGameEntity)
+        return result;
+    float distance;
+    // clang-format off
+    __asm {
+        push model
+        call GameGetModelCollisionRadius
+        add esp,4
+        fmul dword ptr [g_previewObjectRadiusScale]
+        fsubr dword ptr [g_previewObjectDistance]
+        fmul dword ptr [zoom]
+        fstp dword ptr [distance]
+    }
+    // clang-format on
+    CMatrix matrix;
+    memset(&matrix, 0, sizeof(matrix));
+    object->GetMatrix(&matrix);
+    if (model == 18631)
+        GameRotateRwMatrixOnAxis(&matrix, 2, 180.0f);
+    else
+    {
+        if (rotation->x != 0.0f)
+            GameRotateRwMatrixOnAxis(&matrix, 0, rotation->x);
+        if (rotation->y != 0.0f)
+            GameRotateRwMatrixOnAxis(&matrix, 1, rotation->y);
+        if (rotation->z != 0.0f)
+            GameRotateRwMatrixOnAxis(&matrix, 2, rotation->z);
+    }
+    object->ApplyMatrix(matrix);
+    CVector centre;
+    object->GetBoundCentre(&centre);
+    float height;
+    // clang-format off
+    __asm {
+        fld dword ptr [centre.z]
+        fsub dword ptr [g_previewHeight]
+        fsubr dword ptr [g_previewHeight]
+        fstp dword ptr [height]
+    }
+    // clang-format on
+    CVector position = {-centre.x, distance, height};
+    object->Teleport(position);
+    BOOL changed = FALSE;
+    if (!object->GetRwObject())
+        changed = object->SetModelIndex(model);
+    GameRwSetCameraRasters(camera, raster, depthRaster);
+    GameRwSetVisibilityCamera(camera);
+    GameRwClearCamera(camera, &background, 3);
+    GameRwBeginCameraUpdate(camera);
+    GameRwWorldAddLight(light);
+    ClientSetRenderState(6, 1);
+    ClientSetRenderState(8, 1);
+    ClientSetRenderState(7, 2);
+    ClientSetRenderState(14, 0);
+    if (object->GetRwObject())
+        object->Native009f960();
+    GameGetModelInfo(model);
+    GameRwEndCameraUpdate(camera);
+    GameRwWorldRemoveLight(light);
+    delete object;
+    if (changed && !GameGetModelReferenceCount(model))
+        g_pGame->ReleaseModel(model, 0);
+    return result;
+}
+
+// 0x0006c3f0
+// Official: FUN_1006c3f0 @ 0x1006c3f0 (samp.dll)
+void* CModelPreview::RenderObject(int model, DWORD background, const CVector* rotation, float zoom)
+{
+    void* raster = GameRwCreateRaster(256, 256, 0, 0x505);
+    void* result = GameRwCreateTexture(raster);
+    if (!raster || !result)
+        return 0;
+    if (model == 1373 || model == 3118 || model == 3552 || model == 3553)
+        model = 18631;
+    bool requested = false;
+    if (!g_pGame->IsModelAvailable(model))
+    {
+        requested = true;
+        g_pGame->RequestModel(model, 2);
+        g_pGame->LoadRequestedModels();
+        while (!g_pGame->IsModelAvailable(model))
+            Sleep(1);
+    }
+    void* object = (void*)GameQueryModelVirtual2c(model);
+    if (!object)
+        return result;
+    float distance;
+    // clang-format off
+    __asm {
+        push model
+        call GameGetModelCollisionRadius
+        add esp,4
+        fmul dword ptr [g_previewObjectRadiusScale]
+        fsubr dword ptr [g_previewObjectDistance]
+        fmul dword ptr [zoom]
+        fstp dword ptr [distance]
+    }
+    // clang-format on
+    CVector centre = {0, 0, 0};
+    GameGetModelCollisionCentre(model, &centre);
+    void* objectFrame = *(void**)((BYTE*)object + 4);
+    if (objectFrame)
+    {
+        CVector position = {-centre.x, distance, g_previewHeight - centre.z};
+        GameRwTranslateFrame(objectFrame, &position, 1);
+        if (model == 18631)
+            GameRwRotateFrame(objectFrame, 2, 180.0f);
+        else
+        {
+            if (rotation->x != 0.0f)
+                GameRwRotateFrame(objectFrame, 0, rotation->x);
+            if (rotation->y != 0.0f)
+                GameRwRotateFrame(objectFrame, 1, rotation->y);
+            if (rotation->z != 0.0f)
+                GameRwRotateFrame(objectFrame, 2, rotation->z);
+        }
+    }
+    GameRwSetCameraRasters(camera, raster, depthRaster);
+    GameRwSetVisibilityCamera(camera);
+    GameRwClearCamera(camera, &background, 3);
+    GameRwBeginCameraUpdate(camera);
+    GameRwWorldAddLight(light);
+    ClientSetRenderState(6, 1);
+    ClientSetRenderState(8, 1);
+    ClientSetRenderState(7, 2);
+    ClientSetRenderState(30, 0);
+    ClientSetRenderState(20, 0);
+    ClientSetRenderState(14, 0);
+    GameRwRenderObject(object);
+    GameReadBackendDword(GameGetModelInfo(model));
+    GameRwEndCameraUpdate(camera);
+    GameRwWorldRemoveLight(light);
+    GameRwDestroyObject(object);
+    if (requested)
+        g_pGame->ReleaseModel(model, 0);
+    return result;
+}
+
+// 0x0006c6b0
+// Official: FUN_1006c6b0 @ 0x1006c6b0 (samp.dll)
+void CModelPreview::Draw()
+{
+    if (texture)
+    {
+        DWORD color = 0xffffffff;
+        TextDrawRect rect = {0, 512, 512, 0};
+        GameDrawTextDrawTexture(texture, &rect, &color);
+    }
+}

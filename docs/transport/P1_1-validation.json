@@ -1,0 +1,99 @@
+{
+  "date": "2026-11-03",
+  "base_commit": "e902f980b70c4a2434507e314116688fafb0191a",
+  "working_tree_dirty": true,
+  "status": "P1.1 implementation and deterministic offline gate complete; actual runtime/interoperability unrun",
+  "full_validation": "../p1/validation/build.json",
+  "source_input_sha256": "e4980a0e8241df13fd44a5d4fb6ad4736f3262c8079384efaa82ed92415c86b8",
+  "ctest": {
+    "passed": 9,
+    "failed": 0,
+    "targets": [
+      "server_rpc_test",
+      "transport_test",
+      "connection_test",
+      "core_natives_test",
+      "player_lifecycle_test",
+      "multiplayer_test",
+      "client_connection_test",
+      "game_runtime_test",
+      "official_transport_test"
+    ]
+  },
+  "counter_regression_tests": 7,
+  "mapped": 513,
+  "unmapped": 0,
+  "artifacts": {
+    "client": {
+      "path": "build/archive/build-msvc/p0-win32/src/client/RelWithDebInfo/samp.dll",
+      "machine": "0x014c",
+      "bytes": 1707520,
+      "sha256": "b7ea7787f4a8b49edc64bf8b0bff98250df5fa26c9b391fd1b994dc6ccc2bd56"
+    },
+    "server": {
+      "path": "build/archive/build-msvc/p0-win32/src/server/RelWithDebInfo/samp-server.exe",
+      "machine": "0x014c",
+      "bytes": 1570816,
+      "sha256": "1750752b09871066df335dd30d47a532c7b874cdb503494f9f32f35d401a159d"
+    },
+    "rpc_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/server_rpc_test.exe",
+      "machine": "0x014c",
+      "bytes": 791040,
+      "sha256": "a5f6bc7aedc19a9751fc4e335302d72e55eeeb46ff37cfb58e4d38edf569cb23"
+    },
+    "transport_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/transport_test.exe",
+      "machine": "0x014c",
+      "bytes": 1110528,
+      "sha256": "1e8094a675007b40fa65f68d0433f5e9c240de0592690a0fa7f86fdfbd8136ef"
+    },
+    "connection_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/connection_test.exe",
+      "machine": "0x014c",
+      "bytes": 1455104,
+      "sha256": "cf647285adf93b9222e9cb9009f4216cd7f0659fda6e4709a10dc06662d9141c"
+    },
+    "core_natives_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/core_natives_test.exe",
+      "machine": "0x014c",
+      "bytes": 1475584,
+      "sha256": "d08d2032b5ce0ba11ea08c44284feaa84b17b38495c0d67e88725f710f044b99"
+    },
+    "player_lifecycle_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/player_lifecycle_test.exe",
+      "machine": "0x014c",
+      "bytes": 1974272,
+      "sha256": "27a3ebb11643318a2e60224d33dd582f7de85faa3870104a604e75927ff805f6"
+    },
+    "multiplayer_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/multiplayer_test.exe",
+      "machine": "0x014c",
+      "bytes": 1953280,
+      "sha256": "e8ceb3e7dde49127f0b83f5dd249568854b6e8b52c8fb2fb301ac4304d95d415"
+    },
+    "client_connection_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/client_connection_test.exe",
+      "machine": "0x014c",
+      "bytes": 992256,
+      "sha256": "e22e614628708a7e87c81d644ac34ec86f9e2447d4046604d93e38da87b38d45"
+    },
+    "game_runtime_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/game_runtime_test.exe",
+      "machine": "0x014c",
+      "bytes": 167936,
+      "sha256": "72c1c0598956476ba09280491b0b397b936a65a5b177537ba1678e1b2261d9ae"
+    },
+    "official_transport_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/official_transport_test.exe",
+      "machine": "0x014c",
+      "bytes": 422912,
+      "sha256": "44a5e0153ec212d435bd78917f23e68f2f642fcc6acc718d0c19f4fc8de7bf84"
+    }
+  },
+  "limitations": [
+    "No GTA, injected clone or live game server run",
+    "Original DLL only loaded without DllMain for isolated arithmetic helpers",
+    "Host allocation bounds are implementation policy, not original limits"
+  ]
+}

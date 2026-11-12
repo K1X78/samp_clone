@@ -1,0 +1,46 @@
+# Local builds and generated compiler output.
+/build/
+CMakeFiles/
+CMakeCache.txt
+*.obj
+*.o
+*.pdb
+*.ilk
+*.exp
+*.lib
+!third_party/bass/bass.lib
+!third_party/detours/detours.lib
+*.idb
+*.i64
+
+# Local game installations and original proprietary reference binaries.
+/GTA Sa/
+/GTA Sa samp_clone/
+/reference/
+
+# Local interpreter/editor state.
+__pycache__/
+*.py[cod]
+.vs/
+.vscode/
+*.user
+Thumbs.db
+desktop.ini
+.env
+.env.*
+!.env.example
+
+# Scratch files and backups.
+*.bak
+*.backup
+*.tmp
+
+# Retired bulk assembly listings; use pseudocode and binary-backed --asm output.
+/docs/asm/*.s
+
+# Local comparison inventory is excluded along with the installation.
+/docs/asm/pseudocode/out_of_region_source_address_inventory.json
+
+# Local comparison checkout and obsolete unused RakNet 4.x archive.
+/third_party/RakNet-master.zip
+/third_party/RakNet-master/

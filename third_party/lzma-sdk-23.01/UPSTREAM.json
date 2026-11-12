@@ -1,0 +1,26 @@
+{
+  "source": "https://github.com/ip7z/7zip",
+  "tag": "23.01",
+  "commit": "5b39dc76f1bc82f941d5c800ab9f34407a06b53a",
+  "scope": "public-domain ANSI C LZMA codec; wire-compatible dependency, not an assertion of the original embedded SDK version",
+  "sha256": {
+    "LzmaLib.c": "a0b3c4dc02e1f4aefd634bd537886aa73b55e504a571a845a929779464c2d1e1",
+    "LzmaLib.h": "a9fc5163b66696aa1100083f9526303f0aaeed936c1c47e7b172bb6a5d115673",
+    "LzmaEnc.c": "4b3d8e3fccbcca40ceeab4f774579b3f9ae617d685f4c571e76195b492b413a8",
+    "LzmaEnc.h": "f390a1d9bf5a4bb0222f3aba6c62e4a1fb36a9811594266800a4ccd196eb294b",
+    "LzmaDec.c": "b9ca2b8707400347c75d6fef288d1354a3b4cf93e8da42f26207b8bd4c4d5e59",
+    "LzmaDec.h": "3aaf07b4ae4173a2d103179455dc7089b5ddbc7fc3db3c0e40964a7499c69266",
+    "Alloc.c": "0f29b5be2ca97e12b2245148ef57b7ba02f15d7d02221329bb965cce0ce4f42d",
+    "Alloc.h": "063b978cb240b4266912725f4f813b98598aac9207008d6b4620c4603f2d0c31",
+    "LzFind.c": "e68596608b2cf05311d91ab2efa66f5fbca4f9f886fced95fffb28ef0621eb3e",
+    "LzFind.h": "24bbb297fb57e5bb05fb59612b584783dc08d0c0673f8880c5007354233909cb",
+    "LzHash.h": "42d146d2130dfe49d0b21d15cc6f0fe9d79ac0ebb629985fe3aedde7b2bee80e",
+    "CpuArch.c": "87c872f534b8e2eec6718298b09818061bc125b66705777cf20e280ada596e48",
+    "CpuArch.h": "0d8a45978c9049db4afede83c540018b329ef8f3c155d1e15e44648145f2f5ee",
+    "7zTypes.h": "db9b1e1090c044abbfaa5497ee6df67459a987125c61bed9260d52e95e3accd0",
+    "Precomp.h": "cd3ba29b18398df757bc1c2f1a637d4b7ede7b2ceca5ab106ce82b5744e1d984",
+    "Compiler.h": "d83ab52f10bdeb73cadece65190a4c7d97f54786c1979ca097bec912cb3b2198",
+    "7zWindows.h": "8e7d4ed4f6599ca599514d5c1710668a61865f0c11c44b47994aede33f4cac16",
+    "LzFindOpt.c": "c8ac04141e38d825e74984e924842e76fc903d74472dd8354470f23ecbfd853a"
+  }
+}

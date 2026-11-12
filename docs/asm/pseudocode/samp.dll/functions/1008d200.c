@@ -1,0 +1,208 @@
+/*
+ * Generated Ghidra pseudocode, NOT verified source.
+ * Binary: samp.dll.official
+ * Entry: 0x1008d200
+ * Name: FUN_1008d200
+ * Status: ok
+ * Full provenance, body ranges, references: ../index.json
+ * Diagnostic: 
+ */
+
+
+void __fastcall FUN_1008d200(int param_1)
+
+{
+  tagRECT local_7c;
+  undefined1 local_6c [28];
+  undefined4 local_50;
+  undefined4 local_4c;
+  undefined4 local_44;
+  undefined4 local_40;
+  undefined4 local_3c;
+  undefined4 local_28;
+  undefined4 local_24;
+  undefined4 local_18;
+  undefined4 local_14;
+  
+  FUN_10089890(0,"sampgui.png");
+  FUN_1008d1c0();
+  FUN_10086060(1,0xffffffff,5);
+  SetRect(&local_7c,0x11,0x10d,0xf1,0x11f);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  *(undefined4 *)(param_1 + 0x192) = 0xc80a0a0a;
+  *(undefined4 *)(param_1 + 0x1ba) = 0xffd2d2d2;
+  FUN_10086060(1,0xffd2d2d2,4);
+  FUN_10085f40(0,0x41200000,0x3f333333);
+  FUN_10085f40(0,0x41200000,0x3f333333);
+  FUN_10086060(1,0xffffffff,5);
+  FUN_10086060(1,0xffbebebe,0x44);
+  local_24 = 0xc8c8c8c8;
+  FUN_10089cb0(1,0,local_6c);
+  SetRect(&local_7c,0,0,0x88,0x36);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10086060(0,0xffffffff,5);
+  local_50 = 0xc8ffffff;
+  local_3c = 0xff95b0d0;
+  local_40 = 0xffb92228;
+  local_18 = 0xffffffff;
+  local_28 = 0xffc8c8c8;
+  FUN_10089cb0(0,0,local_6c);
+  SetRect(&local_7c,0,0,0x88,0x36);
+  FUN_10086010(0,&local_7c,0xffffff);
+  local_40 = 0xffb92228;
+  local_3c = 0x3c505050;
+  local_44 = 0xc8ffffff;
+  FUN_10089cb0(0,1,local_6c);
+  SetRect(&local_7c,0,0x36,0x1b,0x51);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10086060(0,0xffffffff,4);
+  local_24 = 0xc8c8c8c8;
+  local_50 = 0x96ffffff;
+  local_44 = 0xc8ffffff;
+  local_3c = 0xffffffff;
+  FUN_10089cb0(2,0,local_6c);
+  SetRect(&local_7c,0x1b,0x36,0x36,0x51);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(2,1,local_6c);
+  SetRect(&local_7c,0x36,0x36,0x51,0x51);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10086060(0,0xffffffff,4);
+  local_24 = 0xc8c8c8c8;
+  local_50 = 0x96ffffff;
+  local_44 = 0xc8ffffff;
+  local_3c = 0xffffffff;
+  FUN_10089cb0(3,0,local_6c);
+  SetRect(&local_7c,0x51,0x36,0x6c,0x51);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(3,1,local_6c);
+  SetRect(&local_7c,7,0x51,0xf7,0x7b);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10086060(0,0xffffffff,5);
+  local_50 = 0xc8ffffff;
+  local_40 = 0xffb92228;
+  local_44 = 0xffb92228;
+  local_4c = 0x46c8c8c8;
+  local_18 = 0xffffffff;
+  local_14 = 0xff000000;
+  local_24 = 0xc8c8c8c8;
+  FUN_10089cb0(4,0,local_6c);
+  SetRect(&local_7c,0x110,0,0x145,0x31);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  local_50 = 0xc8ffffff;
+  local_3c = 0xff969696;
+  local_44 = 0xff969696;
+  local_4c = 0x46ffffff;
+  FUN_10089cb0(4,1,local_6c);
+  SetRect(&local_7c,7,0x7b,0xf1,0x109);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10086060(0,0xffffffff,0);
+  FUN_10085e90(0xffb92228,0xc8808080,0);
+  FUN_10089cb0(4,2,local_6c);
+  SetRect(&local_7c,7,0x10a,0xf1,0x121);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10086060(0,0xffffffff,0);
+  FUN_10085e90(0xffc8c8c8,0xc8808080,0);
+  FUN_10089cb0(4,3,local_6c);
+  SetRect(&local_7c,1,0x122,0x118,0x14b);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  local_50 = 0x96ffffff;
+  local_44 = 0xc8ffffff;
+  local_4c = 0x46ffffff;
+  FUN_10089cb0(5,0,local_6c);
+  SetRect(&local_7c,0x36,0x36,0x51,0x51);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10085e90(0xffb92228,0xff95b0d0,0);
+  local_40 = 0xfff0f0f0;
+  local_3c = 0xffb92228;
+  local_44 = 0xffdcdcdc;
+  FUN_10089cb0(5,1,local_6c);
+  SetRect(&local_7c,0xf3,0x90,0x109,0x9b);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10085e90(0xffffffff,0xffffffff,0);
+  FUN_10089cb0(9,0,local_6c);
+  SetRect(&local_7c,0xf3,0x7c,0x109,0x90);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10085e90(0xffffffff,0xffffffff,0);
+  FUN_10089cb0(9,1,local_6c);
+  SetRect(&local_7c,0xf3,0x9b,0x109,0xb0);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10085e90(0xffffffff,0xffffffff,0);
+  FUN_10089cb0(9,2,local_6c);
+  SetRect(&local_7c,0x10a,0x7b,0x11e,0xa7);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10085e90(0xffb92228,0xff95b0d0,0);
+  FUN_10089cb0(9,3,local_6c);
+  FUN_10086060(0,0xff000000,4);
+  SetRect(&local_7c,0xe,0x5a,0xf1,0x71);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(6,0,local_6c);
+  SetRect(&local_7c,8,0x52,0xe,0x5a);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(6,1,local_6c);
+  SetRect(&local_7c,0xe,0x52,0xf1,0x5a);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(6,2,local_6c);
+  SetRect(&local_7c,0xf1,0x52,0xf6,0x5a);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(6,3,local_6c);
+  SetRect(&local_7c,8,0x5a,0xe,0x71);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(6,4,local_6c);
+  SetRect(&local_7c,0xf1,0x5a,0xf6,0x71);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(6,5,local_6c);
+  SetRect(&local_7c,8,0x71,0xe,0x79);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(6,6,local_6c);
+  SetRect(&local_7c,0xe,0x71,0xf1,0x79);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(6,7,local_6c);
+  SetRect(&local_7c,0xf1,0x71,0xf6,0x79);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(6,8,local_6c);
+  FUN_10086060(0,0xff000000,4);
+  SetRect(&local_7c,0xe,0x5a,0xf1,0x71);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(7,0,local_6c);
+  SetRect(&local_7c,8,0x52,0xe,0x5a);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(7,1,local_6c);
+  SetRect(&local_7c,0xe,0x52,0xf1,0x5a);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(7,2,local_6c);
+  SetRect(&local_7c,0xf1,0x52,0xf6,0x5a);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(7,3,local_6c);
+  SetRect(&local_7c,8,0x5a,0xe,0x71);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(7,4,local_6c);
+  SetRect(&local_7c,0xf1,0x5a,0xf6,0x71);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(7,5,local_6c);
+  SetRect(&local_7c,8,0x71,0xe,0x79);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(7,6,local_6c);
+  SetRect(&local_7c,0xe,0x71,0xf1,0x79);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(7,7,local_6c);
+  SetRect(&local_7c,0xf1,0x71,0xf6,0x79);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10089cb0(7,8,local_6c);
+  SetRect(&local_7c,0,0,0x88,0x36);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10086060(0,0xffffffff,5);
+  FUN_10089cb0(7,9,local_6c);
+  SetRect(&local_7c,0xd,0x7c,0xf1,0x109);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10086060(1,0xffffffff,0x40);
+  FUN_10089cb0(8,0,local_6c);
+  SetRect(&local_7c,0x11,0x10d,0xf1,0x11f);
+  FUN_10086010(0,&local_7c,0xffffffff);
+  FUN_10086060(1,0xffffffff,0x40);
+  FUN_10085e90(0xffb92228,0xc8808080,0);
+  FUN_10089cb0(8,1,local_6c);
+  return;
+}
+
+
+/* END FUNCTION 0x1008d200 */

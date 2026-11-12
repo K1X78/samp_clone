@@ -1,0 +1,35 @@
+/*
+ * Generated Ghidra pseudocode, NOT verified source.
+ * Binary: samp-server.exe.official
+ * Entry: 0x00488ff0
+ * Name: FUN_00488ff0
+ * Status: ok
+ * Full provenance, body ranges, references: ../index.json
+ * Diagnostic: 
+ */
+
+
+undefined4 __thiscall FUN_00488ff0(void *this,byte *param_1,undefined4 param_2,int param_3)
+
+{
+  int iVar1;
+  
+  iVar1 = FUN_00488e80(this,param_1);
+  if ((iVar1 < 0) && (iVar1 = FUN_00488f20(this,(char *)param_1), iVar1 < 0)) {
+    return 0;
+  }
+  if (param_3 == 0) {
+    if (*(int *)((int)this + iVar1 * 0x3d + 0x29) != 0) {
+      return 0;
+    }
+  }
+  else {
+    *(undefined4 *)((int)this + iVar1 * 0x3d + 0x29) = 1;
+  }
+  *(undefined4 *)((int)this + iVar1 * 0x3d + 0x2d) = 1;
+  *(undefined4 *)((int)this + iVar1 * 0x3d + 0x31) = param_2;
+  return 1;
+}
+
+
+/* END FUNCTION 0x00488ff0 */

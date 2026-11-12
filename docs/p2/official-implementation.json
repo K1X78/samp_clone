@@ -1,0 +1,111 @@
+{
+  "date": "2026-11-04",
+  "configuration": "Win32 RelWithDebInfo",
+  "mapped_functions": 647,
+  "official_function_entries": 9482,
+  "ctest_passed": 20,
+  "ctest_failed": 0,
+  "counter_regressions_passed": 7,
+  "parser_diagnostics_reviewed": 70,
+  "applications_launched": true,
+  "diagnostic_mode_selected": false,
+  "normal_gamemode": "bare",
+  "available_original_gamemodes": [
+    "bare"
+  ],
+  "artifacts": [
+    {
+      "file": "GTA Sa samp_clone/samp.dll",
+      "sha256": "1601d044085384d4fdebf8cd02066e6e30d5f61321e24fff20d7b08a98b81c5b",
+      "bytes": 2188288,
+      "machine": "0x014c",
+      "source_build": "build/archive/build-msvc/p0-win32/src/client/RelWithDebInfo/samp.dll"
+    },
+    {
+      "file": "GTA Sa samp_clone/samp-server.exe",
+      "sha256": "09de7f8106af8566a3da1cfa385ca1a51e71e6e126e416b6e98ddfa9a973f2dc",
+      "bytes": 1834496,
+      "machine": "0x014c",
+      "source_build": "build/archive/build-msvc/p0-win32/src/server/RelWithDebInfo/samp-server.exe"
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "python",
+        "tools/official_function_count.py",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python",
+        "tools/test_official_function_count.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python",
+        "tools/audit_baseline.py",
+        "--output",
+        "build/archive/build-msvc/official-session-audit/source-audit"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0
+    }
+  ],
+  "p2_implementation_packages_complete": [
+    "P2.1",
+    "P2.2",
+    "P2.3",
+    "P2.4",
+    "P2.5",
+    "P2.6",
+    "P2.7",
+    "P2.8"
+  ],
+  "p2_runtime_gates_open": [
+    "custom_model_rendering_animation_collision",
+    "timed_visibility_worlds_object_lifecycle",
+    "occupied_vehicle_removal_recreation",
+    "artwork_reconnect_server_switch_cleanup",
+    "remaining_official_clone_pairings"
+  ],
+  "scope": "P2.1-P2.8 implementation and terminal integration complete; Bare baseline user-confirmed; broader runtime acceptance tracked separately.",
+  "manual_followup": {
+    "user_requested_launch": true,
+    "mouse_click_regression": "Standalone regression passes; physical mouse Spawn confirmed by user.",
+    "live_inspection": "CDB non-invasive running process; no breakpoint/suspension",
+    "cursor": "Hardware-only cursor was invisible in user review; restored mouse.png software rendering, preserving capture-change click fix.",
+    "game_pid": 5552,
+    "server_pid": 8384,
+    "user_preference": "Minimal packaged Bare Script only; LVDM/reference and diagnostic modes outside normal game installation."
+  },
+  "normal_filterscripts": [],
+  "normal_artwork_enabled": false,
+  "bare_baseline_acceptance": {
+    "date": "2026-11-04",
+    "evidence": "User confirmation: \"everything from what you said work, ive confirmed that\" referring to the four immediately preceding baseline checks.",
+    "pairing": "clone client / clone server",
+    "gamemode": "bare",
+    "client_sha256": "1601d044085384d4fdebf8cd02066e6e30d5f61321e24fff20d7b08a98b81c5b",
+    "server_sha256": "09de7f8106af8566a3da1cfa385ca1a51e71e6e126e416b6e98ddfa9a973f2dc",
+    "checks": {
+      "visible_cursor": "user-confirmed pass",
+      "mouse_spawn": "user-confirmed pass",
+      "selection_ui_disappears_and_movement_works": "user-confirmed pass",
+      "reconnect_repeats_baseline_flow": "user-confirmed pass"
+    },
+    "scope": "Minimal Bare baseline only; does not close vehicle/custom-model or cross-implementation acceptance."
+  },
+  "status_clarification": "Records implementation already delivered in this session. P2.6 visual/compatibility requirements remain separate acceptance gates and are not claimed passed."
+}

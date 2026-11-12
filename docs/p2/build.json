@@ -1,0 +1,245 @@
+{
+  "verified_at_utc": "2026-11-03T20:34:36.009775+00:00",
+  "git_head": "b330300a1dc6c7fa2aa19bff9f41652456b667d2",
+  "working_tree_dirty": true,
+  "source_input_sha256": "ab2a0b724dead45dd3d29242bfca0b54f7034edf161237da6edb8e0c19555bc0",
+  "source_input_files": 489,
+  "preset": "win32-vs2026",
+  "configuration": "RelWithDebInfo",
+  "cmake_version": "cmake version 4.3.1-msvc1",
+  "compiler": {
+    "CMAKE_CXX_COMPILER": "C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x86/cl.exe",
+    "CMAKE_CXX_COMPILER_ID": "MSVC",
+    "CMAKE_CXX_COMPILER_VERSION": "19.51.36256.0",
+    "CMAKE_CXX_COMPILER_ARCHITECTURE_ID": "X86",
+    "CMAKE_CXX_SIZEOF_DATA_PTR": "4"
+  },
+  "tests": [
+    "server_rpc_test",
+    "transport_test",
+    "connection_test",
+    "core_natives_test",
+    "player_lifecycle_test",
+    "multiplayer_test",
+    "client_connection_test",
+    "game_runtime_test",
+    "official_transport_test",
+    "pawn_natives_test",
+    "pawn_strings_test",
+    "pawn_vm_test",
+    "client_commands_test",
+    "model_pipeline_test"
+  ],
+  "artifacts": {
+    "client": {
+      "path": "build/archive/build-msvc/p0-win32/src/client/RelWithDebInfo/samp.dll",
+      "machine": "0x014c",
+      "bytes": 1981440,
+      "sha256": "eac4261bb77bf19d752ebb9c9cbab40875095773ccecad96c6a6d8261444634b"
+    },
+    "server": {
+      "path": "build/archive/build-msvc/p0-win32/src/server/RelWithDebInfo/samp-server.exe",
+      "machine": "0x014c",
+      "bytes": 1716224,
+      "sha256": "7d14c06dbcb4da385ff0e3af6ee8fa06c4390328447b70d58d0c442d50ff4482"
+    },
+    "rpc_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/server_rpc_test.exe",
+      "machine": "0x014c",
+      "bytes": 1039872,
+      "sha256": "e252f874aa08952c0a9c380f4e4f29e499542642988bd7482f414c91a693f9f7"
+    },
+    "transport_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/transport_test.exe",
+      "machine": "0x014c",
+      "bytes": 1358336,
+      "sha256": "721e2cce4319a86bfabcd4759343a326b945c50472050151635f33aa0a103512"
+    },
+    "connection_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/connection_test.exe",
+      "machine": "0x014c",
+      "bytes": 1633792,
+      "sha256": "59ec6009eb1db72e8fd563156eb1ab2b6f8072aaf55dd36799038336e55906d8"
+    },
+    "core_natives_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/core_natives_test.exe",
+      "machine": "0x014c",
+      "bytes": 1725952,
+      "sha256": "0144bead9f2ef826c2b44457acfb9060fcc6b620f6d963ffe45e865923ae8cce"
+    },
+    "player_lifecycle_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/player_lifecycle_test.exe",
+      "machine": "0x014c",
+      "bytes": 2256896,
+      "sha256": "0e4d5d1659d5fdcc98a8111c86fa47323845a5259b7c8fa27890b10f4aac0b7b"
+    },
+    "multiplayer_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/multiplayer_test.exe",
+      "machine": "0x014c",
+      "bytes": 2237952,
+      "sha256": "54889aaa6ac83017c42d5e8116f08f00e974cb24fbfd6af455f163852f231703"
+    },
+    "client_connection_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/client_connection_test.exe",
+      "machine": "0x014c",
+      "bytes": 1225728,
+      "sha256": "da862b193da6c86e9e0bf348c6250718e0189888e3afc1ffc5d4a7fee8274b00"
+    },
+    "game_runtime_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/game_runtime_test.exe",
+      "machine": "0x014c",
+      "bytes": 834560,
+      "sha256": "476b03a23c11dfcf5f52c88f438dfb3c6a66f08ffbaad99ea5d22e1c6810630e"
+    },
+    "official_transport_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/official_transport_test.exe",
+      "machine": "0x014c",
+      "bytes": 422912,
+      "sha256": "44a5e0153ec212d435bd78917f23e68f2f642fcc6acc718d0c19f4fc8de7bf84"
+    },
+    "pawn_natives_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/pawn_natives_test.exe",
+      "machine": "0x014c",
+      "bytes": 1609728,
+      "sha256": "f0c2856c43fa065036d861258372a729be39578ee6ddcdce2057a9d3af0893e7"
+    },
+    "pawn_strings_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/pawn_strings_test.exe",
+      "machine": "0x014c",
+      "bytes": 1620992,
+      "sha256": "01e741a39904ef9c491daf7cddfe3a8e94a413cb19b29138ba844e577ec81ccc"
+    },
+    "pawn_vm_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/pawn_vm_test.exe",
+      "machine": "0x014c",
+      "bytes": 178176,
+      "sha256": "ffade93a25e28ee58d21596345cc256cd8534dfa59cecf3a44f885a13a3392a5"
+    },
+    "client_commands_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/client_commands_test.exe",
+      "machine": "0x014c",
+      "bytes": 332800,
+      "sha256": "1ce210f25cc98eaef993017efb0c5142e84e1765215a8fd8803856d1428ac405"
+    },
+    "model_pipeline_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/model_pipeline_test.exe",
+      "machine": "0x014c",
+      "bytes": 2352128,
+      "sha256": "eeb3f1ef014753a68d8439898e8d444554fa3a77e483d413b2918fb19c47bfd3"
+    }
+  },
+  "steps": [
+    {
+      "step": "configure",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+        "--preset",
+        "win32-vs2026"
+      ],
+      "timeout_seconds": 180,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/configure.log"
+    },
+    {
+      "step": "build",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+        "--build",
+        "--preset",
+        "win32-vs2026"
+      ],
+      "timeout_seconds": 900,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/build.log"
+    },
+    {
+      "step": "test-discovery",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\ctest.exe",
+        "--preset",
+        "win32-vs2026",
+        "--show-only=json-v1"
+      ],
+      "timeout_seconds": 30,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/test-discovery.log"
+    },
+    {
+      "step": "ctest",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\ctest.exe",
+        "--preset",
+        "win32-vs2026"
+      ],
+      "timeout_seconds": 120,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/ctest.log"
+    },
+    {
+      "step": "counter-tests",
+      "command": [
+        "C:\\Python312\\python.exe",
+        "tools/test_official_function_count.py"
+      ],
+      "timeout_seconds": 60,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/counter-tests.log"
+    },
+    {
+      "step": "function-check",
+      "command": [
+        "C:\\Python312\\python.exe",
+        "tools/official_function_count.py",
+        "--check"
+      ],
+      "timeout_seconds": 60,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/function-check.log"
+    },
+    {
+      "step": "inventory",
+      "command": [
+        "C:\\Python312\\python.exe",
+        "tools/audit_baseline.py",
+        "--output",
+        "C:\\Users\\PC GAMER\\samp\\samp_clone\\docs\\p2"
+      ],
+      "timeout_seconds": 60,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/inventory.log"
+    },
+    {
+      "step": "git-head",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "timeout_seconds": 20,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/git-head.log"
+    },
+    {
+      "step": "git-status",
+      "command": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "timeout_seconds": 20,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/git-status.log"
+    },
+    {
+      "step": "cmake-version",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+        "--version"
+      ],
+      "timeout_seconds": 20,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/cmake-version.log"
+    }
+  ],
+  "limitations": "offline tests only; no game/server run; existing compiler warnings retained"
+}

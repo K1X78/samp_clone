@@ -1,0 +1,11 @@
+{
+  "url": "https://curl.se/download/curl-7.57.0.tar.gz",
+  "sha256": "7ce35f207562674e71dbada6891b37e3f043c1e7a82915cb9c2a17ad3a9d659b",
+  "restored_files": 81,
+  "scope": "Missing lib/, include/ and CMake support files only; existing files preserved",
+  "existing_differences": [
+    "include/curl/curlver.h retains the local 7.57.0-DEV version header"
+  ],
+  "build_manifest": "lib/Makefile.inc",
+  "build_configuration": "../ports/curl/CMakeLists.txt: Windows SSPI, Schannel, zlib"
+}

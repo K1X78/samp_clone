@@ -1,0 +1,140 @@
+{
+  "verified_at_utc": "2026-11-02T22:11:50.011137+00:00",
+  "git_head": "fb5c55495665e631a795aaf91cf1e7092398b200",
+  "source_input_sha256": "d8b339a4dd442b27489f218b3337be180031ee4eb7e9a71946726ae684d82bed",
+  "source_input_files": 418,
+  "preset": "win32-vs2026",
+  "configuration": "RelWithDebInfo",
+  "cmake_version": "cmake version 4.3.1-msvc1",
+  "compiler": {
+    "CMAKE_CXX_COMPILER": "C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x86/cl.exe",
+    "CMAKE_CXX_COMPILER_ID": "MSVC",
+    "CMAKE_CXX_COMPILER_VERSION": "19.51.36256.0",
+    "CMAKE_CXX_COMPILER_ARCHITECTURE_ID": "X86",
+    "CMAKE_CXX_SIZEOF_DATA_PTR": "4"
+  },
+  "tests": [
+    "server_rpc_test"
+  ],
+  "artifacts": {
+    "client": {
+      "path": "build/archive/build-msvc/p0-win32/src/client/RelWithDebInfo/samp.dll",
+      "machine": "0x014c",
+      "bytes": 1538560,
+      "sha256": "43b5544d820122b99178fd8bf125cfe56914545edd05373527073bbb5d73df6d"
+    },
+    "server": {
+      "path": "build/archive/build-msvc/p0-win32/src/server/RelWithDebInfo/samp-server.exe",
+      "machine": "0x014c",
+      "bytes": 1377280,
+      "sha256": "f93ee67d7aa2eaa8e615925c24bec4b6c057dec4f76068b0c0ea628229e1e239"
+    },
+    "rpc_test": {
+      "path": "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/server_rpc_test.exe",
+      "machine": "0x014c",
+      "bytes": 791040,
+      "sha256": "c74b77e627756081b003cb52ca561ec4160e15093d0363b923f7177f7e3cce86"
+    }
+  },
+  "steps": [
+    {
+      "step": "configure",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+        "--preset",
+        "win32-vs2026"
+      ],
+      "timeout_seconds": 180,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/configure.log"
+    },
+    {
+      "step": "build",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+        "--build",
+        "--preset",
+        "win32-vs2026"
+      ],
+      "timeout_seconds": 900,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/build.log"
+    },
+    {
+      "step": "test-discovery",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\ctest.exe",
+        "--preset",
+        "win32-vs2026",
+        "--show-only=json-v1"
+      ],
+      "timeout_seconds": 30,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/test-discovery.log"
+    },
+    {
+      "step": "ctest",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\ctest.exe",
+        "--preset",
+        "win32-vs2026"
+      ],
+      "timeout_seconds": 120,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/ctest.log"
+    },
+    {
+      "step": "counter-tests",
+      "command": [
+        "C:\\Python312\\python.exe",
+        "tools/test_official_function_count.py"
+      ],
+      "timeout_seconds": 60,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/counter-tests.log"
+    },
+    {
+      "step": "function-check",
+      "command": [
+        "C:\\Python312\\python.exe",
+        "tools/official_function_count.py",
+        "--check"
+      ],
+      "timeout_seconds": 60,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/function-check.log"
+    },
+    {
+      "step": "inventory",
+      "command": [
+        "C:\\Python312\\python.exe",
+        "tools/audit_baseline.py"
+      ],
+      "timeout_seconds": 60,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/inventory.log"
+    },
+    {
+      "step": "git-head",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "timeout_seconds": 20,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/git-head.log"
+    },
+    {
+      "step": "cmake-version",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+        "--version"
+      ],
+      "timeout_seconds": 20,
+      "exit_code": 0,
+      "log": "build/archive/build-msvc/p0-win32/cmake-version.log"
+    }
+  ],
+  "limitations": "offline tests only; no game/server run; existing compiler warnings retained"
+}

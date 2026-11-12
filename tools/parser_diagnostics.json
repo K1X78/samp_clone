@@ -1,0 +1,1334 @@
+[
+  {
+    "diagnostic": {
+      "source": "src/client/ArchiveFS.cpp",
+      "line": 24,
+      "text": ")"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "8509630b48c18150ef31406ce81d07b7e7090cbb10c93efe4d60964a341361af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/ArchiveFS.cpp",
+      "line": 24,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "8509630b48c18150ef31406ce81d07b7e7090cbb10c93efe4d60964a341361af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/ArchiveFS.h",
+      "line": 154,
+      "text": "#ifndef ARCTOOL\n    : public"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "ef21efd3b69fdafbbd07d5971b8b0124779060516cb16549eafe2ebe4203f9b7"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/ArchiveFS.h",
+      "line": 156,
+      "text": "#endif"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "ef21efd3b69fdafbbd07d5971b8b0124779060516cb16549eafe2ebe4203f9b7"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/ArchiveFS.h",
+      "line": 175,
+      "text": "CArchiveFS(DWORD dwNumEntries, DWORD dwFDSize)"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "ef21efd3b69fdafbbd07d5971b8b0124779060516cb16549eafe2ebe4203f9b7"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/ArchiveFS.h",
+      "line": 177,
+      "text": "virtual ~CArchiveFS(void)"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "ef21efd3b69fdafbbd07d5971b8b0124779060516cb16549eafe2ebe4203f9b7"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 112,
+      "text": "LPCSTR"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 112,
+      "text": "LPCSTR"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 112,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 112,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 114,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 115,
+      "text": "hProv"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 115,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 117,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 118,
+      "text": "hProv"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 118,
+      "text": "Algid"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 118,
+      "text": "hKey"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 118,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 120,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 121,
+      "text": "hHash"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 123,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 124,
+      "text": "hHash"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 124,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 124,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 126,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 127,
+      "text": "hKey"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 129,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 130,
+      "text": "hProv"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 130,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 130,
+      "text": "hPubKey"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 130,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 132,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 133,
+      "text": "hHash"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 133,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 133,
+      "text": "hPubKey"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 133,
+      "text": "LPCSTR"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 133,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/CryptoFns.h",
+      "line": 133,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5254d85b3d2c089995aff38e2ef84bd7019a632652f85a17d1cbb1b4873370f8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 142,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 201,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 201,
+      "text": "POINT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 225,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 225,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 232,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 283,
+      "text": "D3DRECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 289,
+      "text": "D3DMATRIX"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 307,
+      "text": "D3DMATRIX"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 313,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 325,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 337,
+      "text": "D3DLIGHT9"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 361,
+      "text": "float"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 403,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 486,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 510,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 559,
+      "text": "void"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 565,
+      "text": "void"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 566,
+      "text": "void"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 580,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 610,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 628,
+      "text": "float"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 640,
+      "text": "int"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 652,
+      "text": "BOOL"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 700,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 718,
+      "text": "float"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 730,
+      "text": "int"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 742,
+      "text": "BOOL"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 754,
+      "text": "float"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 754,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 760,
+      "text": "float"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 760,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 851,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 851,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "line": 851,
+      "text": "RGNDATA"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "9471d6dc61a38284d2a455b1b897ade07c16a35ac11701fdc3e75ee6079692af"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 46,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 46,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 46,
+      "text": "RGNDATA"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 54,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 75,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 75,
+      "text": "POINT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 83,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 83,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 85,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 101,
+      "text": "D3DRECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 103,
+      "text": "D3DMATRIX"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 107,
+      "text": "D3DMATRIX"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 109,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 113,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 117,
+      "text": "D3DLIGHT9"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 125,
+      "text": "float"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 139,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 157,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 165,
+      "text": "RECT"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 181,
+      "text": "void"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 183,
+      "text": "void"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 184,
+      "text": "void"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 189,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 199,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 205,
+      "text": "float"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 209,
+      "text": "int"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 213,
+      "text": "BOOL"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 229,
+      "text": "DWORD"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 235,
+      "text": "float"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 239,
+      "text": "int"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 243,
+      "text": "BOOL"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 247,
+      "text": "float"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 247,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 249,
+      "text": "float"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.h",
+      "line": 249,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ab9595445d53cc00e35cde5a4287d48ebe1dbb9d2113bae1fa9b80e19773669"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/fontrender.cpp",
+      "line": 66,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "2e90c5d4809e8eed41c67df51ab41e0f127d04890a8f4a9dffc785d7a6cb8426"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/fontrender.cpp",
+      "line": 67,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "2e90c5d4809e8eed41c67df51ab41e0f127d04890a8f4a9dffc785d7a6cb8426"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/fontrender.cpp",
+      "line": 68,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "2e90c5d4809e8eed41c67df51ab41e0f127d04890a8f4a9dffc785d7a6cb8426"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/fontrender.cpp",
+      "line": 69,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "2e90c5d4809e8eed41c67df51ab41e0f127d04890a8f4a9dffc785d7a6cb8426"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/fontrender.cpp",
+      "line": 70,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "2e90c5d4809e8eed41c67df51ab41e0f127d04890a8f4a9dffc785d7a6cb8426"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/fontrender.cpp",
+      "line": 71,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "2e90c5d4809e8eed41c67df51ab41e0f127d04890a8f4a9dffc785d7a6cb8426"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/animation.cpp",
+      "line": 7,
+      "text": "#include"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5b90c71125e7a620e56dd6adf8f21bd1ab91763d593d061dece7738fc84c46fc"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/hooks.cpp",
+      "line": 523,
+      "text": "__asm ret"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "0d0c972c1726b89a5c52d0412812e62daa444ac63412458d75ed3a24672b2ff1"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/object.cpp",
+      "line": 67,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "7d8f0020782916b46fbd6655b7aee8bdaaf3da890e1eee332e575b2c0f3ea0c0"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/object.cpp",
+      "line": 67,
+      "text": "surface."
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "7d8f0020782916b46fbd6655b7aee8bdaaf3da890e1eee332e575b2c0f3ea0c0"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/object.cpp",
+      "line": 68,
+      "text": "surface."
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "7d8f0020782916b46fbd6655b7aee8bdaaf3da890e1eee332e575b2c0f3ea0c0"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/object.cpp",
+      "line": 68,
+      "text": ")"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "7d8f0020782916b46fbd6655b7aee8bdaaf3da890e1eee332e575b2c0f3ea0c0"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/object.cpp",
+      "line": 71,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "7d8f0020782916b46fbd6655b7aee8bdaaf3da890e1eee332e575b2c0f3ea0c0"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/object.cpp",
+      "line": 72,
+      "text": "materialList."
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "7d8f0020782916b46fbd6655b7aee8bdaaf3da890e1eee332e575b2c0f3ea0c0"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/object.cpp",
+      "line": 72,
+      "text": ")"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "7d8f0020782916b46fbd6655b7aee8bdaaf3da890e1eee332e575b2c0f3ea0c0"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/scripting.cpp",
+      "line": 10,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "054bd11d53ca72419ab9c0fb082ee2eddc937414774cf1de73476f1943d5a8c8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/scripting.cpp",
+      "line": 89,
+      "text": ", double"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "054bd11d53ca72419ab9c0fb082ee2eddc937414774cf1de73476f1943d5a8c8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/scripting.cpp",
+      "line": 103,
+      "text": "*"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "054bd11d53ca72419ab9c0fb082ee2eddc937414774cf1de73476f1943d5a8c8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/scripting.cpp",
+      "line": 114,
+      "text": "char*"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "054bd11d53ca72419ab9c0fb082ee2eddc937414774cf1de73476f1943d5a8c8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/scripting.cpp",
+      "line": 133,
+      "text": "__asm"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "054bd11d53ca72419ab9c0fb082ee2eddc937414774cf1de73476f1943d5a8c8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/scripting.cpp",
+      "line": 144,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "054bd11d53ca72419ab9c0fb082ee2eddc937414774cf1de73476f1943d5a8c8"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/game/util.cpp",
+      "line": 1932,
+      "text": "#include"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "6a521190b806913d3c2b660bd22425ed2b65ee18b0e120440f429f80100ca2e2"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/httpclient.h",
+      "line": 43,
+      "text": "\\"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5fa733fee38d11040084120ff5c51f5d6d806c5683059d7cba2d0c7526a76f5f"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/httpclient.h",
+      "line": 43,
+      "text": "\\"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5fa733fee38d11040084120ff5c51f5d6d806c5683059d7cba2d0c7526a76f5f"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/httpclient.h",
+      "line": 43,
+      "text": "\\nUser"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5fa733fee38d11040084120ff5c51f5d6d806c5683059d7cba2d0c7526a76f5f"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/httpclient.h",
+      "line": 43,
+      "text": "\\"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5fa733fee38d11040084120ff5c51f5d6d806c5683059d7cba2d0c7526a76f5f"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/httpclient.h",
+      "line": 43,
+      "text": ":"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5fa733fee38d11040084120ff5c51f5d6d806c5683059d7cba2d0c7526a76f5f"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/httpclient.h",
+      "line": 43,
+      "text": "\\r\\"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5fa733fee38d11040084120ff5c51f5d6d806c5683059d7cba2d0c7526a76f5f"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/httpclient.h",
+      "line": 43,
+      "text": "\\"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5fa733fee38d11040084120ff5c51f5d6d806c5683059d7cba2d0c7526a76f5f"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/httpclient.h",
+      "line": 43,
+      "text": "\\"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5fa733fee38d11040084120ff5c51f5d6d806c5683059d7cba2d0c7526a76f5f"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/httpclient.h",
+      "line": 43,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5fa733fee38d11040084120ff5c51f5d6d806c5683059d7cba2d0c7526a76f5f"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/httpclient.h",
+      "line": 43,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5fa733fee38d11040084120ff5c51f5d6d806c5683059d7cba2d0c7526a76f5f"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/httpclient.h",
+      "line": 56,
+      "text": "}"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "5fa733fee38d11040084120ff5c51f5d6d806c5683059d7cba2d0c7526a76f5f"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/include/samp/client/game_actor_lookup.hpp",
+      "line": 9,
+      "text": ""
+    },
+    "disposition": "GCC thiscall attribute inside a conditional type alias; this header declares a function pointer type, with no function body.",
+    "source_sha256": "f355cd0830484072154bad69fd8a4dfa7a7022d0f9c6bb29a6498e250b63aa77"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/net/netgame.cpp",
+      "line": 1076,
+      "text": "operator delete(pools)"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ef7c67127d62932ed789b9da0b9f9db1e2f16c7379d0105e1629f4108862760"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/net/netgame.cpp",
+      "line": 1082,
+      "text": "operator delete(savedSettings)"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "1ef7c67127d62932ed789b9da0b9f9db1e2f16c7379d0105e1629f4108862760"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/playertags.cpp",
+      "line": 490,
+      "text": "(4"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "335750cbfd65c051142dbf49b5ecaf675f842e98c374e396b5317140551a9d79"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/playertags.cpp",
+      "line": 490,
+      "text": ")"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "335750cbfd65c051142dbf49b5ecaf675f842e98c374e396b5317140551a9d79"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/runutil.cpp",
+      "line": 401,
+      "text": "__asm pop"
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "f41d3078114e260a525ff8017443ae3309483014426b63e33ccea3ef81f9c16a"
+  },
+  {
+    "diagnostic": {
+      "source": "src/client/runutil.cpp",
+      "line": 403,
+      "text": ""
+    },
+    "disposition": "Reviewed parser recovery in the imported VS .NET 2003 source. The diagnostic is on an MSVC or Win32 construct accepted by the production compiler; no function pointer was added or changed for this review.",
+    "source_sha256": "f41d3078114e260a525ff8017443ae3309483014426b63e33ccea3ef81f9c16a"
+  }
+]

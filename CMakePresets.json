@@ -1,0 +1,42 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "win32-baseline",
+      "hidden": true,
+      "architecture": "Win32",
+      "binaryDir": "${sourceDir}/build/msvc/${presetName}",
+      "cacheVariables": {
+        "SAMP_CLONE_DIR": "${sourceDir}/build/msvc/baseline-no-deploy"
+      }
+    },
+    {
+      "name": "win32-vs2022",
+      "inherits": "win32-baseline",
+      "generator": "Visual Studio 17 2022"
+    },
+    {
+      "name": "win32-vs2026",
+      "inherits": "win32-baseline",
+      "binaryDir": "${sourceDir}/build/msvc/p0-win32",
+      "generator": "Visual Studio 18 2026"
+    }
+  ],
+  "buildPresets": [
+    { "name": "win32-vs2022", "configurePreset": "win32-vs2022", "configuration": "RelWithDebInfo", "jobs": 4 },
+    { "name": "win32-vs2026", "configurePreset": "win32-vs2026", "configuration": "RelWithDebInfo", "jobs": 4 }
+  ],
+  "testPresets": [
+    {
+      "name": "win32-vs2022", "configurePreset": "win32-vs2022", "configuration": "RelWithDebInfo",
+      "output": { "outputOnFailure": true },
+      "execution": { "timeout": 30, "noTestsAction": "error" }
+    },
+    {
+      "name": "win32-vs2026", "configurePreset": "win32-vs2026", "configuration": "RelWithDebInfo",
+      "output": { "outputOnFailure": true },
+      "execution": { "timeout": 30, "noTestsAction": "error" }
+    }
+  ]
+}

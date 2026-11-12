@@ -1,0 +1,41 @@
+{
+  "reference_identity": {
+    "samp.dll": {
+      "bytes": 1466368,
+      "sha256": "bccdb297464bd382625635be25585df07a8fa6668bc0015650708e3eb4ffcd4b",
+      "machine": "0x014c"
+    },
+    "samp-server.exe": {
+      "bytes": 978944,
+      "sha256": "96e3a6a41c8e84adfd633a5292ca2a8c3fd474ded022d85e79796f86caab6a4a",
+      "machine": "0x014c"
+    }
+  },
+  "source_functions": 621,
+  "reviewed_parser_diagnostics": 69,
+  "parser_review_errors": [],
+  "native_entries": 497,
+  "native_distinct_names": 496,
+  "native_entry_status": {
+    "partial": 152,
+    "absent": 319,
+    "placeholder": 26
+  },
+  "literal_native_registrations": 126,
+  "resolved_native_registrations": 178,
+  "native_registrations_outside_catalog": [],
+  "rpc_catalog_entries": 138,
+  "client_dispatch_routes": 106,
+  "rpc_inventory_rows": 156,
+  "rpc_status": {
+    "partial": 119,
+    "unresolved": 6,
+    "absent": 31
+  },
+  "official_client_registration_pairs": 145,
+  "dispatch_pointer_mismatches": [],
+  "dispatch_routes_without_fixture": [],
+  "packet_catalog_entries": 13,
+  "provenance_rows": 75,
+  "scope": "static inventory; partial means source present, not behavioral parity; unresolved stays explicit"
+}

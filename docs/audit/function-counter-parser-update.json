@@ -1,0 +1,502 @@
+{
+  "reason": "MSVC assembly is now lexically masked for the C++ parser, preserving bytes/newlines and original source inventory locations. Retired entries are old reviewed diagnostics that no longer exist; no new diagnostic was approved.",
+  "retired_review_count": 55,
+  "remaining_review_count": 15,
+  "retired_reviews": [
+    {
+      "diagnostic": {
+        "source": "src/client/core/object_pool.cpp",
+        "line": 99,
+        "text": "__asm"
+      },
+      "disposition": "MSVC x86 inline assembler inside update_objects; enclosing body is inventoried. Assembly statements do not define C++ functions.",
+      "source_sha256": "d0f156d36a9c53561e647caa07aa31ead9cbe4c0a8db1651cc08a7fb6e8b7ecd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/client/core/object_pool.cpp",
+        "line": 100,
+        "text": "fild milliseconds\n        fmul scale\n        fstp seconds"
+      },
+      "disposition": "MSVC x86 inline assembler inside update_objects; enclosing body is inventoried. Assembly statements do not define C++ functions.",
+      "source_sha256": "d0f156d36a9c53561e647caa07aa31ead9cbe4c0a8db1651cc08a7fb6e8b7ecd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 119,
+        "text": "__asm"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around radians; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 121,
+        "text": "cmp mode"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around radians; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 121,
+        "text": "1\n        je use_degrees\n        cmp"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around radians; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 123,
+        "text": "2\n        jne converted\n        fmul gradians\n        jmp converted\n    use_degrees:\n        fmul degrees"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around radians; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 129,
+        "text": ":\n    }\n#else\n    if"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around radians; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 132,
+        "text": ""
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around radians; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 147,
+        "text": "__asm"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around sine; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 148,
+        "text": "mode\n        push value\n        call radians\n        add"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around sine; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 151,
+        "text": "8\n        fsin\n        fstp"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around sine; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 153,
+        "text": ""
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around sine; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 167,
+        "text": "__asm"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around cosine; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 168,
+        "text": "mode\n        push value\n        call radians\n        add"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around cosine; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 171,
+        "text": "8\n        fcos\n        fstp"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around cosine; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 173,
+        "text": ""
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around cosine; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 187,
+        "text": "__asm"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around tangent; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 188,
+        "text": "mode\n        push value\n        call radians\n        add"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around tangent; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 191,
+        "text": "8\n        fptan\n        fstp"
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around tangent; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 193,
+        "text": ""
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around tangent; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 194,
+        "text": ""
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around tangent; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 211,
+        "text": ""
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around absolute and the namespace close after tangent; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/float_natives.cpp",
+        "line": 213,
+        "text": ""
+      },
+      "disposition": "MSVC x86 inline assembler and conditional-compilation recovery around absolute and the namespace close after tangent; reviewed complete float native source, including labels and trailing scopes. All 17 production bodies, including absolute after the asm blocks, are separately inventoried; no extra C++ body here.",
+      "source_sha256": "e71a7aa4590fc0fae41c6d6a2f6cb05a1a20670c8a6c7ab03e7d5bc1241aba97"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/pawn_vm.cpp",
+        "line": 1070,
+        "text": "__asm"
+      },
+      "disposition": "MSVC x86 inline register-to-status assignment at the end of PawnVm::execute. Reviewed dispatch_status/error synchronization and the enclosing return; execute remains inventoried. No extra function body is defined by the asm operands.",
+      "source_sha256": "eb7bf31b3f7415c9f8126e1b04f5ebd2390fe91ac345e64d74e5601437747f15"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/pawn_vm.cpp",
+        "line": 1072,
+        "text": "mov error"
+      },
+      "disposition": "MSVC x86 inline register-to-status assignment at the end of PawnVm::execute. Reviewed dispatch_status/error synchronization and the enclosing return; execute remains inventoried. No extra function body is defined by the asm operands.",
+      "source_sha256": "eb7bf31b3f7415c9f8126e1b04f5ebd2390fe91ac345e64d74e5601437747f15"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/pawn_vm.cpp",
+        "line": 1072,
+        "text": ""
+      },
+      "disposition": "MSVC x86 inline register-to-status assignment at the end of PawnVm::execute. Reviewed dispatch_status/error synchronization and the enclosing return; execute remains inventoried. No extra function body is defined by the asm operands.",
+      "source_sha256": "eb7bf31b3f7415c9f8126e1b04f5ebd2390fe91ac345e64d74e5601437747f15"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 197,
+        "text": "__asm"
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 199,
+        "text": "movzx ecx"
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 199,
+        "text": "ptr"
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 199,
+        "text": ""
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 201,
+        "text": "cmp remaining"
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 201,
+        "text": "1\n            jle read_done\n            movzx"
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 203,
+        "text": "ptr"
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 203,
+        "text": ""
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 205,
+        "text": "cmp remaining"
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 205,
+        "text": "2\n            jle read_done\n            movzx"
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 207,
+        "text": "ptr"
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 207,
+        "text": ""
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 208,
+        "text": "ecx\n        read_done:\n        }\n#else"
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 222,
+        "text": ""
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_cells.cpp",
+        "line": 225,
+        "text": ""
+      },
+      "disposition": "MSVC x86 inline byte reads/labels in string_cells::uu_encode, plus parser recovery at its trailing function/namespace scopes. Reviewed the complete file and confirmed all seven production bodies are inventoried. These tokens define no additional C++ function.",
+      "source_sha256": "1d4b971c47864d41ceadae3f50799e08995a9c035582cd198a1149ec313805cd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_natives.cpp",
+        "line": 402,
+        "text": "__asm"
+      },
+      "disposition": "MSVC x86 scan_output byte loop in string_natives::uu_encode. Reviewed the complete enclosing native through its return and closing scope; the C++ native is inventoried at 0x00406ea0. Assembly statements/labels are not C++ bodies.",
+      "source_sha256": "b3f66b3b2c4f73e0bda4b7d3e59c8fc2127076d094cb2258400dc214fde5d2a0"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_natives.cpp",
+        "line": 404,
+        "text": "scan_output:\n        mov al"
+      },
+      "disposition": "MSVC x86 scan_output byte loop in string_natives::uu_encode. Reviewed the complete enclosing native through its return and closing scope; the C++ native is inventoried at 0x00406ea0. Assembly statements/labels are not C++ bodies.",
+      "source_sha256": "b3f66b3b2c4f73e0bda4b7d3e59c8fc2127076d094cb2258400dc214fde5d2a0"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_natives.cpp",
+        "line": 405,
+        "text": "ptr"
+      },
+      "disposition": "MSVC x86 scan_output byte loop in string_natives::uu_encode. Reviewed the complete enclosing native through its return and closing scope; the C++ native is inventoried at 0x00406ea0. Assembly statements/labels are not C++ bodies.",
+      "source_sha256": "b3f66b3b2c4f73e0bda4b7d3e59c8fc2127076d094cb2258400dc214fde5d2a0"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_natives.cpp",
+        "line": 405,
+        "text": ""
+      },
+      "disposition": "MSVC x86 scan_output byte loop in string_natives::uu_encode. Reviewed the complete enclosing native through its return and closing scope; the C++ native is inventoried at 0x00406ea0. Assembly statements/labels are not C++ bodies.",
+      "source_sha256": "b3f66b3b2c4f73e0bda4b7d3e59c8fc2127076d094cb2258400dc214fde5d2a0"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_natives.cpp",
+        "line": 407,
+        "text": "test al"
+      },
+      "disposition": "MSVC x86 scan_output byte loop in string_natives::uu_encode. Reviewed the complete enclosing native through its return and closing scope; the C++ native is inventoried at 0x00406ea0. Assembly statements/labels are not C++ bodies.",
+      "source_sha256": "b3f66b3b2c4f73e0bda4b7d3e59c8fc2127076d094cb2258400dc214fde5d2a0"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_natives.cpp",
+        "line": 407,
+        "text": "al\n        jne scan_output\n        mov word"
+      },
+      "disposition": "MSVC x86 scan_output byte loop in string_natives::uu_encode. Reviewed the complete enclosing native through its return and closing scope; the C++ native is inventoried at 0x00406ea0. Assembly statements/labels are not C++ bodies.",
+      "source_sha256": "b3f66b3b2c4f73e0bda4b7d3e59c8fc2127076d094cb2258400dc214fde5d2a0"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_natives.cpp",
+        "line": 409,
+        "text": "0"
+      },
+      "disposition": "MSVC x86 scan_output byte loop in string_natives::uu_encode. Reviewed the complete enclosing native through its return and closing scope; the C++ native is inventoried at 0x00406ea0. Assembly statements/labels are not C++ bodies.",
+      "source_sha256": "b3f66b3b2c4f73e0bda4b7d3e59c8fc2127076d094cb2258400dc214fde5d2a0"
+    },
+    {
+      "diagnostic": {
+        "source": "src/pawn/string_natives.cpp",
+        "line": 409,
+        "text": ""
+      },
+      "disposition": "MSVC x86 scan_output byte loop in string_natives::uu_encode. Reviewed the complete enclosing native through its return and closing scope; the C++ native is inventoried at 0x00406ea0. Assembly statements/labels are not C++ bodies.",
+      "source_sha256": "b3f66b3b2c4f73e0bda4b7d3e59c8fc2127076d094cb2258400dc214fde5d2a0"
+    },
+    {
+      "diagnostic": {
+        "source": "src/client/core/custom_model_table.cpp",
+        "line": 17,
+        "text": "__asm"
+      },
+      "disposition": "Reviewed the complete x86 naked custom_remove_model_hook at0x100a5bf0: signed EBP test, positive displaced prologue/jump4087f0, negative POP EBP/EBX/RET. MSVC compiles this ASM and the counter separately inventories all four enclosing/new table functions; these tokens and labels define no additional C++ bodies.",
+      "source_sha256": "47e75be7359a2a47567a1a0e57a7da5ad0f6c41908b298fba4536fed4771a3dd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/client/core/custom_model_table.cpp",
+        "line": 18,
+        "text": "0\n        jl negative_model\n        push esi\n        push edi\n        lea"
+      },
+      "disposition": "Reviewed the complete x86 naked custom_remove_model_hook at0x100a5bf0: signed EBP test, positive displaced prologue/jump4087f0, negative POP EBP/EBX/RET. MSVC compiles this ASM and the counter separately inventories all four enclosing/new table functions; these tokens and labels define no additional C++ bodies.",
+      "source_sha256": "47e75be7359a2a47567a1a0e57a7da5ad0f6c41908b298fba4536fed4771a3dd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/client/core/custom_model_table.cpp",
+        "line": 22,
+        "text": "+ebp*4"
+      },
+      "disposition": "Reviewed the complete x86 naked custom_remove_model_hook at0x100a5bf0: signed EBP test, positive displaced prologue/jump4087f0, negative POP EBP/EBX/RET. MSVC compiles this ASM and the counter separately inventories all four enclosing/new table functions; these tokens and labels define no additional C++ bodies.",
+      "source_sha256": "47e75be7359a2a47567a1a0e57a7da5ad0f6c41908b298fba4536fed4771a3dd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/client/core/custom_model_table.cpp",
+        "line": 22,
+        "text": ""
+      },
+      "disposition": "Reviewed the complete x86 naked custom_remove_model_hook at0x100a5bf0: signed EBP test, positive displaced prologue/jump4087f0, negative POP EBP/EBX/RET. MSVC compiles this ASM and the counter separately inventories all four enclosing/new table functions; these tokens and labels define no additional C++ bodies.",
+      "source_sha256": "47e75be7359a2a47567a1a0e57a7da5ad0f6c41908b298fba4536fed4771a3dd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/client/core/custom_model_table.cpp",
+        "line": 23,
+        "text": "004087f0h\n        jmp eax\n    negative_model:\n        pop ebp\n        pop ebx"
+      },
+      "disposition": "Reviewed the complete x86 naked custom_remove_model_hook at0x100a5bf0: signed EBP test, positive displaced prologue/jump4087f0, negative POP EBP/EBX/RET. MSVC compiles this ASM and the counter separately inventories all four enclosing/new table functions; these tokens and labels define no additional C++ bodies.",
+      "source_sha256": "47e75be7359a2a47567a1a0e57a7da5ad0f6c41908b298fba4536fed4771a3dd"
+    },
+    {
+      "diagnostic": {
+        "source": "src/client/core/custom_model_table.cpp",
+        "line": 28,
+        "text": ""
+      },
+      "disposition": "Reviewed the complete x86 naked custom_remove_model_hook at0x100a5bf0: signed EBP test, positive displaced prologue/jump4087f0, negative POP EBP/EBX/RET. MSVC compiles this ASM and the counter separately inventories all four enclosing/new table functions; these tokens and labels define no additional C++ bodies.",
+      "source_sha256": "47e75be7359a2a47567a1a0e57a7da5ad0f6c41908b298fba4536fed4771a3dd"
+    }
+  ]
+}

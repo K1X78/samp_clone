@@ -1,0 +1,77 @@
+source,line,reference,available,disposition
+src/client/include/samp/client/actor_slots.hpp,4,docs/re/team-s01.md,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/client/include/samp/client/network_client.hpp,3,version mention: // Historical navigation references (0.3.7; not proof of 0.3.DL parity),False,context only; never accepted as 0.3.DL behavior evidence
+src/client/include/samp/client/network_client.hpp,4,docs/re/spec/raknet-handshake.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/client/include/samp/client/network_client.hpp,5,docs/re/spec/connection-handshake.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/client/include/samp/client/network_client.hpp,6,docs/re/spec/raknet-usage.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/client/include/samp/client/network_client.hpp,7,docs/re/spec/protocol-answers.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/client/include/samp/client/player_connect.hpp,38,version mention: //   4057 (0xFD9)  SA-MP 0.3.7,False,context only; never accepted as 0.3.DL behavior evidence
+src/client/include/samp/client/world_state.hpp,10,docs/re/protocol/rpc-server-to-client.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/client/include/samp/client/world_state.hpp,11,docs/re/protocol/game-packets.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/client/render/colour_font.cpp,5,docs/re/verification,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/client/render/font_draw.cpp,9,docs/re/verification/font-draw-dl.md,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/client/render/font_draw.cpp,104,docs/re/verification/font-resources-rea.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/client/render/font_settings.cpp,5,docs/re/verification/font-settings-dl.md,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/client/render/glyph_colour.cpp,6,docs/re/verification/glyph-colour-dl.md,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/pawn/db_natives.cpp,4,reference/server-win32/pawno/include/a_sampdb.inc,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/pawn/db_natives.cpp,6,docs/re/pipeline/queue-samp-server-exe.tsv,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/pawn/include/pawn/amx_loader.hpp,4,docs/re/spec/amx-format.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/pawn/include/pawn/amx_loader.hpp,7,docs/re/spec/server-natives.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/pawn/include/pawn/amx_loader.hpp,8,docs/re/adversary-3-server-natives.md,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/pawn/include/pawn/natives.hpp,1,version mention: // The natives the shipped SA-MP 0.3.7 server exposes to the scripts.,False,context only; never accepted as 0.3.DL behavior evidence
+src/pawn/include/pawn/natives.hpp,4,docs/re/spec/server-natives.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/pawn/include/pawn/natives.hpp,7,docs/re/spec/game-packets.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/pawn/include/pawn/natives.hpp,8,reference/server-win32/pawno/include/,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/pawn/include/pawn/natives.hpp,33,reference/server-win32/pawno/include/a_samp.inc,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/pawn/include/pawn/natives_table.hpp,3,docs/re/verification/pawn-native-inventory-dl.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/pawn/include/pawn/pawn_vm.hpp,4,docs/re/verification/pawn-framework-rea.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/pawn/include/pawn/pawn_vm.hpp,7,reference/server-win32/pawno/pawncc.exe,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/amx.hpp,4,docs/re/verification/pawn-framework-rea.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/own_sync.hpp,9,docs/re/recovered/samp-dll-dl.jsonl,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/packet_ids.hpp,2,tools/gen_id_tables.py,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/packet_ids.hpp,5,docs/re/lane-a-rpc-table.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/raknet.hpp,1,"version mention: // The SA-MP 0.3.7 RakNet transport, layer by layer.",False,context only; never accepted as 0.3.DL behavior evidence
+src/protocol/include/samp/proto/raknet.hpp,4,reference/openmp/RakNet/Include/raknet/PacketEnumerations.h,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/raknet.hpp,5,reference/openmp/RakNet/Include/raknet/PacketPriority.h,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/raknet.hpp,6,reference/openmp/RakNet/Source/ReliabilityLayer.cpp,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/raknet.hpp,7,reference/openmp/RakNet/Include/raknet/DS_RangeList.h,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/raknet.hpp,8,reference/openmp/RakNet/Source/RakPeer.cpp,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/raknet.hpp,9,reference/openmp/RakNet/SAMPRakNet.cpp,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/raknet.hpp,10,reference/openmp/RakNet/Source/SocketLayer.cpp,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/raknet.hpp,11,version mention: //   samp.dll                                                     the 0.3.7 client,False,context only; never accepted as 0.3.DL behavior evidence
+src/protocol/include/samp/proto/remote_sync.hpp,10,reference/openmp/openmp/Shared/NetCode/core.hpp,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/rpc_ids.hpp,2,tools/gen_id_tables.py,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/rpc_ids.hpp,5,docs/re/lane-a-rpc-table.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/rpc_ids.hpp,20,version mention: // 'unverified' and must not be treated as 0.3.7 semantics.,False,context only; never accepted as 0.3.DL behavior evidence
+src/protocol/include/samp/proto/sync_packets.hpp,10,reference/openmp/openmp/Shared/NetCode/core.hpp,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/wire.hpp,1,version mention: // The SA-MP 0.3.7 user-message layer: what a RakNet user message contains.,False,context only; never accepted as 0.3.DL behavior evidence
+src/protocol/include/samp/proto/wire.hpp,4,reference/openmp/RakNet/Source/RakPeer.cpp,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/wire.hpp,5,reference/openmp/RakNet/Include/raknet/PacketEnumerations.h,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/wire.hpp,6,reference/openmp/openmp/Server/Components/LegacyNetwork/legacy_network_impl.hpp,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/wire.hpp,7,docs/re/ref-samp-encoders.md,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/wire.hpp,33,reference/openmp/RakNet/Include/,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/protocol/include/samp/proto/wire.hpp,52,"version mention: // The ordering channels the 0.3.7 client actually uses, read out of samp.dll",False,context only; never accepted as 0.3.DL behavior evidence
+src/server/include/samp/server/config.hpp,4,docs/re/spec/config-defaults.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/config.hpp,7,docs/re/spec/config-defaults.varlist.txt,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/config.hpp,9,docs/re/spec/console-commands.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/console.hpp,4,docs/re/spec/console-commands.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/console.hpp,8,docs/re/lane-r17-console-commands.md,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/game_layer.hpp,5,docs/re/spec/connection-handshake.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/game_layer.hpp,6,docs/re/spec/game-packets.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/game_layer.hpp,7,docs/re/spec/rpc-client-to-server.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/game_layer.hpp,8,docs/re/spec/protocol-answers.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/game_layer.hpp,21,"version mention: // 0.3.7 build).  The RPC 130 codes are 1 = Incorrect Version, 2 =",False,context only; never accepted as 0.3.DL behavior evidence
+src/server/include/samp/server/game_layer.hpp,115,"version mention: // The 0.3.7 build used 0xfd9, which is why the 0.3.7 references say 4057.",False,context only; never accepted as 0.3.DL behavior evidence
+src/server/include/samp/server/query_server.hpp,4,docs/re/lane-j2-query-ground-truth.md,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/query_server.hpp,6,docs/re/lane-j2-live-capture.md,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/raknet_server.hpp,4,reference/openmp/RakNet/SAMPRakNet.cpp,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/raknet_server.hpp,5,reference/openmp/RakNet/Source/RakPeer.cpp,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/raknet_server.hpp,6,reference/openmp/RakNet/Source/ReliabilityLayer.cpp,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/raknet_server.hpp,7,reference/openmp/RakNet/Include/raknet/DS_RangeList.h,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/raknet_server.hpp,8,docs/re/spec/raknet-handshake.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/raknet_server.hpp,9,docs/re/spec/raknet-usage.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/raknet_server.hpp,10,docs/re/spec/connection-handshake.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/include/samp/server/raknet_server.hpp,11,docs/re/spec/protocol-answers.json,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/main.cpp,6,harness/runs/20261019T165249Z/server.stdout.log,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/main.cpp,7,harness/runs/20261019T170300Z/server/server_log.txt,False,historical claim unresolved; use current official binary/assembly and source-functions.csv
+src/server/main.cpp,19,docs/re/lane-j2-query-ground-truth.md,False,historical claim unresolved; use current official binary/assembly and source-functions.csv

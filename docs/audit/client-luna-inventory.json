@@ -1,0 +1,2009 @@
+{
+  "schema_version": 1,
+  "scope": "87 client C++ files in docs/client-source-merge.json, excluding 11 third_party/dxut files",
+  "authority": "samp.dll.official (0.3.DL only)",
+  "updated_utc": "2026-11-10",
+  "files": [
+    {
+      "source": "src/client/anticheat.cpp",
+      "reference": "source/anticheat.cpp",
+      "manifest_sha256": "94799b2cb131c2b9e4efd647dfd42aeb1bcc75d96ac8818c8ab8f2c4a842ded8",
+      "current_sha256": "94799b2cb131c2b9e4efd647dfd42aeb1bcc75d96ac8818c8ab8f2c4a842ded8",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/ArchiveFS.cpp",
+      "reference": "source/archive/ArchiveFS.cpp",
+      "manifest_sha256": "5b2b6ff1eff8592ddb6400d1eafd6cb4489665820bd69f71b6ee776c0c9ced85",
+      "current_sha256": "5b2b6ff1eff8592ddb6400d1eafd6cb4489665820bd69f71b6ee776c0c9ced85",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/CryptoContext.cpp",
+      "reference": "source/archive/CryptoContext.cpp",
+      "manifest_sha256": "b650f4a4f745d62e153a3aff09be960c45e51b0f162bfbe357168f9df79cbcb2",
+      "current_sha256": "79c6da072afaf8d0df7b4152f5821de2189ee9281538f7e05525c6276db3fd82",
+      "audit_status": "complete",
+      "report": "docs/audit/client-integration.md",
+      "body_records": [],
+      "auditor": "parent"
+    },
+    {
+      "source": "src/client/CryptoFns.cpp",
+      "reference": "source/archive/CryptoFns.cpp",
+      "manifest_sha256": "c4b12cf97f64349618d85d19d8be8d5956a78327a5c21e543244c0b0f9449019",
+      "current_sha256": "c4b12cf97f64349618d85d19d8be8d5956a78327a5c21e543244c0b0f9449019",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/Hasher.cpp",
+      "reference": "source/archive/Hasher.cpp",
+      "manifest_sha256": "24e607b3491e4bb7077055ac1b7f859e45ee0f8057b170434da7fc82bc3c151c",
+      "current_sha256": "ac593ecbda11356295c440494eef103b0f5023a04607686fc2ce44af2ea541d9",
+      "audit_status": "complete",
+      "report": "docs/audit/client-integration.md",
+      "body_records": [],
+      "auditor": "parent"
+    },
+    {
+      "source": "src/client/KeyPair.cpp",
+      "reference": "source/archive/KeyPair.cpp",
+      "manifest_sha256": "7a2400b8bfc738482e270c24fef6e854178e9ed8d94a63756e2da70105e6e06e",
+      "current_sha256": "c1c5b94355035b06bd6de9e1bb4602be5d672ec84dd85a8c76f7d9925e34876a",
+      "audit_status": "complete",
+      "report": "docs/audit/client-integration.md",
+      "body_records": [],
+      "auditor": "parent"
+    },
+    {
+      "source": "src/client/Signer.cpp",
+      "reference": "source/archive/Signer.cpp",
+      "manifest_sha256": "f6aaa9d548b1e06d8dfeddbe1aa2610fd8963c3cb2828b2bd74d77018f4f0c69",
+      "current_sha256": "5fa92d2ae9cc433b10d946e11add5aa4ff21a8a5b6992ae03d0d9a02ef5e4df8",
+      "audit_status": "complete",
+      "report": "docs/audit/client-integration.md",
+      "body_records": [],
+      "auditor": "parent"
+    },
+    {
+      "source": "src/client/TinyEncrypt.cpp",
+      "reference": "source/archive/TinyEncrypt.cpp",
+      "manifest_sha256": "9509b0a186c08d76c7f6a9bf1dabd2a3af574e3e1fc66a423d518bdb3cff9093",
+      "current_sha256": "536cb2dbb9bccef12a2b2f96f12ef28ab4fe6503542e1c304d860eaac21e81c2",
+      "audit_status": "complete",
+      "report": "docs/audit/client-integration.md",
+      "body_records": [],
+      "auditor": "parent"
+    },
+    {
+      "source": "src/client/audiostream.cpp",
+      "reference": "source/audiostream.cpp",
+      "manifest_sha256": "6edc9d20be8e58d2899c0e6555065226a83b4146b583343e5937d5f979333577",
+      "current_sha256": "6edc9d20be8e58d2899c0e6555065226a83b4146b583343e5937d5f979333577",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/chatbubble.cpp",
+      "reference": "source/chatbubble.cpp",
+      "manifest_sha256": "4a9ca45e7472e31e1cd3fabf5623ca40bdd4e0a76b3de4197b466f3a04edf094",
+      "current_sha256": "4a9ca45e7472e31e1cd3fabf5623ca40bdd4e0a76b3de4197b466f3a04edf094",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/chatwindow.cpp",
+      "reference": "source/chatwindow.cpp",
+      "manifest_sha256": "f5ddeb9f957977f32672395d06b115319fe396b1376422fcd905e9f0d56a2821",
+      "current_sha256": "f5ddeb9f957977f32672395d06b115319fe396b1376422fcd905e9f0d56a2821",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/cmdprocs.cpp",
+      "reference": "source/cmdprocs.cpp",
+      "manifest_sha256": "f8052d01dbb4f8ec228f247cb2c15368f992cde1faffe7b23ef52cadc31c578b",
+      "current_sha256": "f8052d01dbb4f8ec228f247cb2c15368f992cde1faffe7b23ef52cadc31c578b",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/cmdwindow.cpp",
+      "reference": "source/cmdwindow.cpp",
+      "manifest_sha256": "ca236745f13ca2d8ea784b929963aae6e73eff6642720afb610d29a0a5840a3c",
+      "current_sha256": "ca236745f13ca2d8ea784b929963aae6e73eff6642720afb610d29a0a5840a3c",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/config.cpp",
+      "reference": "source/config.cpp",
+      "manifest_sha256": "5d08131d032519c112d9c28467320c49988c14967c8fd99f5d3378c9d78cd87a",
+      "current_sha256": "5d08131d032519c112d9c28467320c49988c14967c8fd99f5d3378c9d78cd87a",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/d3dhook/ID3DXFontHook.cpp",
+      "reference": "source/d3dhook/ID3DXFontHook.cpp",
+      "manifest_sha256": "c1575fdf292af8098ee1543e2a92a95dff6be47d743890928e54060bc3f847f1",
+      "current_sha256": "c1575fdf292af8098ee1543e2a92a95dff6be47d743890928e54060bc3f847f1",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "reference": "source/d3dhook/IDirect3DDevice9Hook.cpp",
+      "manifest_sha256": "dccc5c703110042e4000423db4776711ea1141d15dba3bcfdcdae89856347f41",
+      "current_sha256": "dccc5c703110042e4000423db4776711ea1141d15dba3bcfdcdae89856347f41",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/deathwindow.cpp",
+      "reference": "source/deathwindow.cpp",
+      "manifest_sha256": "c59a64fd72092039c035d3f12d08712fb1a0faaf91c031acc03e7869953bb4f0",
+      "current_sha256": "c59a64fd72092039c035d3f12d08712fb1a0faaf91c031acc03e7869953bb4f0",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/dialog.cpp",
+      "reference": "source/dialog.cpp",
+      "manifest_sha256": "4a4677218e807e393cad87869a5a45925c0488d63ddb1f496d981934d0bb57fb",
+      "current_sha256": "4a4677218e807e393cad87869a5a45925c0488d63ddb1f496d981934d0bb57fb",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/dllmain.cpp",
+      "reference": "source/dllmain.cpp",
+      "manifest_sha256": "c08210140360e0a2877ff5c8550c3596255357818d8eb79d9ab2d9cbbdc93585",
+      "current_sha256": "c08210140360e0a2877ff5c8550c3596255357818d8eb79d9ab2d9cbbdc93585",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/downloadwindow.cpp",
+      "reference": "source/downloadwindow.cpp",
+      "manifest_sha256": "2242138afedf293aec36c63f4df4aece4d1cb69c2e6d48db2d6c3548b0d77cae",
+      "current_sha256": "2242138afedf293aec36c63f4df4aece4d1cb69c2e6d48db2d6c3548b0d77cae",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/events.cpp",
+      "reference": "source/events.cpp",
+      "manifest_sha256": "da1e4606d182f53eebe8e57f31a642612b714517460e0b1a6ba4018c8ba7fe2b",
+      "current_sha256": "da1e4606d182f53eebe8e57f31a642612b714517460e0b1a6ba4018c8ba7fe2b",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/exceptions.cpp",
+      "reference": "source/exceptions.cpp",
+      "manifest_sha256": "71bcf7ee9d07ce927f2c3bbf6cdedc9e9265cac24d6d8f652acdab8da33f17a0",
+      "current_sha256": "71bcf7ee9d07ce927f2c3bbf6cdedc9e9265cac24d6d8f652acdab8da33f17a0",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/filechecks.cpp",
+      "reference": "source/filechecks.cpp",
+      "manifest_sha256": "c769f7a7ebf35d1df4388fdb0fde5014ec37e038f8994799e38e6ef4a429f5d3",
+      "current_sha256": "c769f7a7ebf35d1df4388fdb0fde5014ec37e038f8994799e38e6ef4a429f5d3",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/filehooks.cpp",
+      "reference": "source/filehooks.cpp",
+      "manifest_sha256": "eac7ae5821ccd9a84f16ee60f76793c85e5584239921e71046c55e0a8bc61bfc",
+      "current_sha256": "eac7ae5821ccd9a84f16ee60f76793c85e5584239921e71046c55e0a8bc61bfc",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/filesystem.cpp",
+      "reference": "source/filesystem.cpp",
+      "manifest_sha256": "78fd841a0c0b77340a6c028bed9599ec25e1cf13c2b358a12738da6cd51f28a9",
+      "current_sha256": "78fd841a0c0b77340a6c028bed9599ec25e1cf13c2b358a12738da6cd51f28a9",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/fontrender.cpp",
+      "reference": "source/fontrender.cpp",
+      "manifest_sha256": "7a3ab998406d17c20be3c00dabb5358f19e29746171e9e2706037bb280aeb049",
+      "current_sha256": "7a3ab998406d17c20be3c00dabb5358f19e29746171e9e2706037bb280aeb049",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/actor.cpp",
+      "reference": "source/game/actor.cpp",
+      "manifest_sha256": "631085156f46853d5abb6e4c9e76f8aba02dabcc15a37e8fc283303f65f33b60",
+      "current_sha256": "631085156f46853d5abb6e4c9e76f8aba02dabcc15a37e8fc283303f65f33b60",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/aimstuff.cpp",
+      "reference": "source/game/aimstuff.cpp",
+      "manifest_sha256": "253d0e68c5f767d45fb4594d8b61023fabdd974c69a98ab029fc00b601dd69ad",
+      "current_sha256": "b7948724dec31cf286e5e862f9226efbf018d0692de0d643efeca1f84cf5886e",
+      "audit_status": "complete",
+      "report": "docs/audit/client-integration.md",
+      "body_records": [],
+      "auditor": "parent"
+    },
+    {
+      "source": "src/client/game/animation.cpp",
+      "reference": "source/game/animation.cpp",
+      "manifest_sha256": "bd1ecbceb0c0d8ed102f6cf5faaa35117890886af115f913902f15c612d6d1f0",
+      "current_sha256": "5b90c71125e7a620e56dd6adf8f21bd1ab91763d593d061dece7738fc84c46fc",
+      "audit_status": "complete",
+      "report": "docs/audit/client-integration.md",
+      "body_records": [],
+      "auditor": "parent"
+    },
+    {
+      "source": "src/client/game/audio.cpp",
+      "reference": "source/game/audio.cpp",
+      "manifest_sha256": "3f8c7d3df7c0da65ccc3a6ba3a0b963e3a2bfad91099feb54a552cb71195c4d5",
+      "current_sha256": "bbe32e2ccf63358a6c22088c58102f2d5da7e215dd681794b7673cb78d643c75",
+      "audit_status": "complete",
+      "report": "docs/audit/client-integration.md",
+      "body_records": [],
+      "auditor": "parent"
+    },
+    {
+      "source": "src/client/game/building_removal.cpp",
+      "reference": "source/game/building_removal.cpp",
+      "manifest_sha256": "873cd7bc31a738f822442b083e7ecf0eaf6746f667f39b4df89f26607748a646",
+      "current_sha256": "873cd7bc31a738f822442b083e7ecf0eaf6746f667f39b4df89f26607748a646",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/camera.cpp",
+      "reference": "source/game/camera.cpp",
+      "manifest_sha256": "089f734d70d8c65be726cbf0d65996e31431874560fc9b58ca63ae50207126f5",
+      "current_sha256": "089f734d70d8c65be726cbf0d65996e31431874560fc9b58ca63ae50207126f5",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/custommodels.cpp",
+      "reference": "source/game/custommodels.cpp",
+      "manifest_sha256": "5b35f29358c83089f048801cced636f135092516fa7a77344ace3299fa860367",
+      "current_sha256": "5b35f29358c83089f048801cced636f135092516fa7a77344ace3299fa860367",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/debug.cpp",
+      "reference": "source/game/debug.cpp",
+      "manifest_sha256": "82aaca2fba5c46433232482fb31338e4e5839345e67586f36cd82d3e72a68d3b",
+      "current_sha256": "82aaca2fba5c46433232482fb31338e4e5839345e67586f36cd82d3e72a68d3b",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/debugscript.cpp",
+      "reference": "source/game/debugscript.cpp",
+      "manifest_sha256": "b55f71079050d23076daeb3b569e41cfa2aca348fae0cb49385638f04fb5dcc6",
+      "current_sha256": "b55f71079050d23076daeb3b569e41cfa2aca348fae0cb49385638f04fb5dcc6",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/entity.cpp",
+      "reference": "source/game/entity.cpp",
+      "manifest_sha256": "7cd64714958ac3722007cac1ae896ab3de340ebf08c86f0abd1ff61069be8e23",
+      "current_sha256": "7cd64714958ac3722007cac1ae896ab3de340ebf08c86f0abd1ff61069be8e23",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/font.cpp",
+      "reference": "source/game/font.cpp",
+      "manifest_sha256": "4723321fd3f942918932c374051737c34713ccd06c28a813ac86d4bad5b317ce",
+      "current_sha256": "4723321fd3f942918932c374051737c34713ccd06c28a813ac86d4bad5b317ce",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/game.cpp",
+      "reference": "source/game/game.cpp",
+      "manifest_sha256": "943d4a90fd086e7ae18f81980890eec771d190ad5d33bf28ac54fb4be5fa7ee0",
+      "current_sha256": "943d4a90fd086e7ae18f81980890eec771d190ad5d33bf28ac54fb4be5fa7ee0",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/hooks.cpp",
+      "reference": "source/game/hooks.cpp",
+      "manifest_sha256": "f78c30b40342224188adcfca3e7924d09dc2650e2c9c42b50ca9526d0da4352d",
+      "current_sha256": "f78c30b40342224188adcfca3e7924d09dc2650e2c9c42b50ca9526d0da4352d",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/keystuff.cpp",
+      "reference": "source/game/keystuff.cpp",
+      "manifest_sha256": "9e7e5643aac1646972902fa4bfc5b70937df7fd1f3328fd09a70759ca3836707",
+      "current_sha256": "34d4914352b0188da2114019744b34667518a1e5358daf187f45274e0cbbf639",
+      "audit_status": "complete",
+      "report": "docs/audit/client-integration.md",
+      "body_records": [],
+      "auditor": "parent"
+    },
+    {
+      "source": "src/client/game/model_preview.cpp",
+      "reference": "source/game/model_preview.cpp",
+      "manifest_sha256": "7c3fcef35a76152aaabab1068fa14e6ccbd4cb1df8bee247fd9a379584fc645f",
+      "current_sha256": "7c3fcef35a76152aaabab1068fa14e6ccbd4cb1df8bee247fd9a379584fc645f",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/modelfile.cpp",
+      "reference": "source/game/modelfile.cpp",
+      "manifest_sha256": "df3394c862657c62db34e6ef77e94e1194c4d38cdbb27c87311171f73f4aa5a8",
+      "current_sha256": "df3394c862657c62db34e6ef77e94e1194c4d38cdbb27c87311171f73f4aa5a8",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/object.cpp",
+      "reference": "source/game/object.cpp",
+      "manifest_sha256": "8c35ac2dd898e425b01814d446bdfa8d2ce90dafe0c36f2e33130309ce5e8118",
+      "current_sha256": "8c35ac2dd898e425b01814d446bdfa8d2ce90dafe0c36f2e33130309ce5e8118",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/patches.cpp",
+      "reference": "source/game/patches.cpp",
+      "manifest_sha256": "3b81e77a9a0276c961dc7ea2566ae903adb13beb0ec721e573dd9e21d6977aeb",
+      "current_sha256": "3b81e77a9a0276c961dc7ea2566ae903adb13beb0ec721e573dd9e21d6977aeb",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/playerped.cpp",
+      "reference": "source/game/playerped.cpp",
+      "manifest_sha256": "34a757ff1f4815e48439e7978a33dfd498a1355ffde52d5d1a7413cdbff150af",
+      "current_sha256": "34a757ff1f4815e48439e7978a33dfd498a1355ffde52d5d1a7413cdbff150af",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/quaternion.cpp",
+      "reference": "source/game/quaternion.cpp",
+      "manifest_sha256": "337703e2cb506622491a6699438f23ce8d3e5868071ca8444fd5d9ae507b1a36",
+      "current_sha256": "337703e2cb506622491a6699438f23ce8d3e5868071ca8444fd5d9ae507b1a36",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/scripting.cpp",
+      "reference": "source/game/scripting.cpp",
+      "manifest_sha256": "7df41d889b922987d9e12edb4fb236624b75e56efda8454e8728eb74fb55e34c",
+      "current_sha256": "054bd11d53ca72419ab9c0fb082ee2eddc937414774cf1de73476f1943d5a8c8",
+      "audit_status": "complete",
+      "report": "docs/audit/client-integration.md",
+      "body_records": [],
+      "auditor": "parent"
+    },
+    {
+      "source": "src/client/game/skinnedmesh.cpp",
+      "reference": "source/game/skinnedmesh.cpp",
+      "manifest_sha256": "54ef13a8bdd2e4e5375b77912b874cafb8fb00da69b89a108e9abc838a8695ac",
+      "current_sha256": "54ef13a8bdd2e4e5375b77912b874cafb8fb00da69b89a108e9abc838a8695ac",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/task.cpp",
+      "reference": "source/game/task.cpp",
+      "manifest_sha256": "5ae13e9dd2974cd1a4fe55115d854a3e1c38242e9df3d358c932e4099f8cc3e4",
+      "current_sha256": "656d05cc3d0e5ff7379f5c2792ed137ee97ced3b42e5e5bf6bc3c58a6638bb29",
+      "audit_status": "complete",
+      "report": "docs/audit/client-integration.md",
+      "body_records": [],
+      "auditor": "parent"
+    },
+    {
+      "source": "src/client/game/textdraw.cpp",
+      "reference": "source/game/textdraw.cpp",
+      "manifest_sha256": "058b65b4a127b0c2fcbdd5a5438c2f0cccd05d8c7e787fb09565c5017dec780a",
+      "current_sha256": "058b65b4a127b0c2fcbdd5a5438c2f0cccd05d8c7e787fb09565c5017dec780a",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/util.cpp",
+      "reference": "source/game/util.cpp",
+      "manifest_sha256": "b03fde283ddb9aafee6db7d85ba380d118c21912b504ee1b237a171abce4e535",
+      "current_sha256": "b03fde283ddb9aafee6db7d85ba380d118c21912b504ee1b237a171abce4e535",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/game/vehicle.cpp",
+      "reference": "source/game/vehicle.cpp",
+      "manifest_sha256": "fa0349dd49dcc55f2b44dac7b4e47e6cd809704b1e69ed28c2d9c607186caaf0",
+      "current_sha256": "fa0349dd49dcc55f2b44dac7b4e47e6cd809704b1e69ed28c2d9c607186caaf0",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/gui.cpp",
+      "reference": "source/gui.cpp",
+      "manifest_sha256": "ee911d81a42438b53e15f4c716b04666fa2126121273ae7a221e16f0a5d75bd9",
+      "current_sha256": "ee911d81a42438b53e15f4c716b04666fa2126121273ae7a221e16f0a5d75bd9",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/helpdialog.cpp",
+      "reference": "source/helpdialog.cpp",
+      "manifest_sha256": "85f40093ad03535c8643c87c230671ca1ba0776ca8d183ff8499112d3bd645e8",
+      "current_sha256": "85f40093ad03535c8643c87c230671ca1ba0776ca8d183ff8499112d3bd645e8",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/httpclient.cpp",
+      "reference": "source/httpclient.cpp",
+      "manifest_sha256": "62a5dc65651ba2f660d0316f4527821eb480419f9f7757a5ba316e1d0d60e289",
+      "current_sha256": "62a5dc65651ba2f660d0316f4527821eb480419f9f7757a5ba316e1d0d60e289",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/label.cpp",
+      "reference": "source/label.cpp",
+      "manifest_sha256": "85dbf60652e0eec9be561e363f49235a9f431afec5a6eb81f80f9c0870263157",
+      "current_sha256": "85dbf60652e0eec9be561e363f49235a9f431afec5a6eb81f80f9c0870263157",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/licenseplate.cpp",
+      "reference": "source/licenseplate.cpp",
+      "manifest_sha256": "09b25db34a1a6b841e437bebe1436edca04e72580dc272adca86e48024bc85ac",
+      "current_sha256": "09b25db34a1a6b841e437bebe1436edca04e72580dc272adca86e48024bc85ac",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/main.cpp",
+      "reference": "source/main.cpp",
+      "manifest_sha256": "11d50cc3b96dabe6bd4d811bd2f9f903a66c82b7ccd1e8a43f3a18ab27e75872",
+      "current_sha256": "11d50cc3b96dabe6bd4d811bd2f9f903a66c82b7ccd1e8a43f3a18ab27e75872",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/md5.cpp",
+      "reference": "source/md5.cpp",
+      "manifest_sha256": "7705c2912bc06cb407c9fb25ce46497668ae10bbb358a962626c004fcd1e7fce",
+      "current_sha256": "7705c2912bc06cb407c9fb25ce46497668ae10bbb358a962626c004fcd1e7fce",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/menu.cpp",
+      "reference": "source/menu.cpp",
+      "manifest_sha256": "94838c8456df14d4bc00f46fc72c9217fbe0d87f6a9ea0af315b8257f1b9b2a0",
+      "current_sha256": "94838c8456df14d4bc00f46fc72c9217fbe0d87f6a9ea0af315b8257f1b9b2a0",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/net/actorpool.cpp",
+      "reference": "source/net/actorpool.cpp",
+      "manifest_sha256": "8a3b59836f4fc9782402d6d832412d91dbfc5d86f86125b8f1b27973c19c19fe",
+      "current_sha256": "8a3b59836f4fc9782402d6d832412d91dbfc5d86f86125b8f1b27973c19c19fe",
+      "audit_status": "complete",
+      "report": "docs\\audit\\client-luna-actorpool.md",
+      "body_records": [
+        {
+          "line": 7,
+          "declarator": "CActor* CActorPool::Get(WORD)",
+          "behavior": "UNRESOLVED",
+          "candidate_va": "0x10001610",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 12,
+          "declarator": "BOOL CActorPool::DoesExist(WORD)",
+          "behavior": "MATCH",
+          "official_va": "0x10001640",
+          "owner": "FUN_10001640",
+          "mapping_state": "prior same-start claim core/actor_slots.cpp:65"
+        },
+        {
+          "line": 19,
+          "declarator": "void CActorPool::UpdateLargestId()",
+          "behavior": "MATCH",
+          "official_va": "0x10001660",
+          "owner": "FUN_10001660",
+          "mapping_state": "prior same-start claim core/actor_slots.cpp:17"
+        },
+        {
+          "line": 28,
+          "declarator": "CActorPool::CActorPool()",
+          "behavior": "MATCH",
+          "official_va": "0x100016c0",
+          "owner": "FUN_100016c0",
+          "mapping_state": "prior same-start claim core/actor_slots.cpp:11; prior body has extra effects"
+        },
+        {
+          "line": 39,
+          "declarator": "BOOL CActorPool::Delete(WORD)",
+          "behavior": "MATCH",
+          "official_va": "0x100016f0",
+          "owner": "FUN_100016f0",
+          "mapping_state": "prior same-start claim core/actor_slots.cpp:30; prior behavior diverges"
+        },
+        {
+          "line": 52,
+          "declarator": "CActorPool::~CActorPool()",
+          "behavior": "MATCH",
+          "official_va": "0x100018e0",
+          "owner": "FUN_100018e0",
+          "mapping_state": "prior same-start claim core/actor_slots.cpp:58; delegated body differs"
+        },
+        {
+          "line": 58,
+          "declarator": "WORD CActorPool::Find(void*)",
+          "behavior": "MATCH",
+          "official_va": "0x100018b0",
+          "owner": "FUN_100018b0",
+          "mapping_state": "prior same-start claim core/actor_slots.cpp:47; prior lookup key differs"
+        },
+        {
+          "line": 76,
+          "declarator": "BOOL CActorPool::Create(const ActorCreateInfo*)",
+          "behavior": "MATCH",
+          "official_va": "0x10001900",
+          "owner": "FUN_10001900",
+          "mapping_state": "prior same-start claim win/actor_runtime.cpp:8; different runtime body"
+        },
+        {
+          "line": 111,
+          "declarator": "WORD CActorPool::FindInRay(float,const CVector*,const CVector*,float)",
+          "behavior": "MATCH",
+          "official_va": "0x10001770",
+          "owner": "FUN_10001770",
+          "mapping_state": "new"
+        }
+      ]
+    },
+    {
+      "source": "src/client/net/gangzonepool.cpp",
+      "reference": "source/net/gangzonepool.cpp",
+      "manifest_sha256": "ab87c93995d95a8f2441e1cfb484670562233dcecad14769eee186ddc43bb36f",
+      "current_sha256": "ab87c93995d95a8f2441e1cfb484670562233dcecad14769eee186ddc43bb36f",
+      "audit_status": "audited",
+      "report": "docs/audit/client-luna-pilot.md",
+      "body_records": []
+    },
+    {
+      "source": "src/client/net/labelpool.cpp",
+      "reference": "source/net/labelpool.cpp",
+      "manifest_sha256": "be2bbf21c73ec3dbc2d6dbcbf8c97be6dce33cb453c23525937c6287321b9a20",
+      "current_sha256": "be2bbf21c73ec3dbc2d6dbcbf8c97be6dce33cb453c23525937c6287321b9a20",
+      "audit_status": "complete",
+      "report": "docs\\audit\\client-luna-labelpool.md",
+      "body_records": [
+        {
+          "line": 18,
+          "declarator": "DWORD CLabelPool::IsActive(WORD id)",
+          "behavior": "UNRESOLVED",
+          "candidate_va": "0x1000e3c0",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 23,
+          "declarator": "CLabelPool::CLabelPool()",
+          "behavior": "MATCH",
+          "official_va": "0x10001190",
+          "owner": "FUN_10001190",
+          "mapping_state": "same-start claim in src/client/core/world_text.cpp:11; prior body diverges"
+        },
+        {
+          "line": 32,
+          "declarator": "CLabelPool::~CLabelPool()",
+          "behavior": "MATCH",
+          "official_va": "0x100015e0",
+          "owner": "FUN_100015e0",
+          "mapping_state": "same-start claim in src/client/core/world_text.cpp:75; separate target"
+        },
+        {
+          "line": 39,
+          "declarator": "void CLabelPool::Create(WORD,const char*,DWORD,CVector,float,BYTE,WORD,WORD)",
+          "behavior": "MATCH",
+          "official_va": "0x100011d0",
+          "owner": "FUN_100011d0",
+          "mapping_state": "same-start claim in src/client/core/world_text.cpp:22; prior body diverges"
+        },
+        {
+          "line": 70,
+          "declarator": "BOOL CLabelPool::Delete(WORD)",
+          "behavior": "MATCH",
+          "official_va": "0x100012e0",
+          "owner": "FUN_100012e0",
+          "mapping_state": "same-start claim in src/client/core/world_text.cpp:61; separate target"
+        },
+        {
+          "line": 81,
+          "declarator": "void CLabelPool::Draw()",
+          "behavior": "MATCH",
+          "official_va": "0x10001350",
+          "owner": "FUN_10001350",
+          "mapping_state": "same-start claim in src/client/core/world_text.cpp:85; separate target"
+        }
+      ]
+    },
+    {
+      "source": "src/client/net/localplayer.cpp",
+      "reference": "source/net/localplayer.cpp",
+      "manifest_sha256": "2cbb18c86d08816e0d147a0022ce82b50a41c6cf950005325becac5e61dba554",
+      "current_sha256": "2cbb18c86d08816e0d147a0022ce82b50a41c6cf950005325becac5e61dba554",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/net/menupool.cpp",
+      "reference": "source/net/menupool.cpp",
+      "manifest_sha256": "45b178e1d043f1b7b1517a0649fc59adc02f7c8b041d4dec7ee8f38ff89e95ac",
+      "current_sha256": "45b178e1d043f1b7b1517a0649fc59adc02f7c8b041d4dec7ee8f38ff89e95ac",
+      "audit_status": "complete",
+      "report": "docs\\audit\\client-luna-menupool.md",
+      "body_records": [
+        {
+          "line": 16,
+          "declarator": "CMenuPool::CMenuPool()",
+          "behavior": "MATCH",
+          "official_va": "0x10007b40",
+          "owner": "FUN_10007b40",
+          "mapping_state": "new"
+        },
+        {
+          "line": 26,
+          "declarator": "CMenu* CMenuPool::Create(BYTE,const char*,float,float,BYTE,float,float,const void*)",
+          "behavior": "MATCH",
+          "official_va": "0x10007b90",
+          "owner": "FUN_10007b90",
+          "mapping_state": "new"
+        },
+        {
+          "line": 44,
+          "declarator": "BOOL CMenuPool::Delete(BYTE)",
+          "behavior": "MATCH",
+          "official_va": "0x10007c60",
+          "owner": "FUN_10007c60",
+          "mapping_state": "new"
+        },
+        {
+          "line": 54,
+          "declarator": "void CMenuPool::Show(BYTE)",
+          "behavior": "MATCH",
+          "official_va": "0x10007cb0",
+          "owner": "FUN_10007cb0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 65,
+          "declarator": "void CMenuPool::Hide(BYTE)",
+          "behavior": "MATCH",
+          "official_va": "0x10007d10",
+          "owner": "FUN_10007d10",
+          "mapping_state": "new"
+        },
+        {
+          "line": 73,
+          "declarator": "CMenuPool::~CMenuPool()",
+          "behavior": "MATCH",
+          "official_va": "0x10007eb0",
+          "owner": "FUN_10007eb0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 9,
+          "declarator": "DWORD CMenuPool::GetActiveState(BYTE)",
+          "behavior": "UNRESOLVED",
+          "candidate_va": "0x100177b0",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 86,
+          "declarator": "char* CMenuPool::GetTextPointer(const char*)",
+          "behavior": "MATCH",
+          "official_va": "0x10007d50",
+          "owner": "FUN_10007d50",
+          "mapping_state": "new",
+          "runtime_reachability": "GameHook_000a3d90 at src/client/game/hooks.cpp:2655-2694; hook installed at line315"
+        },
+        {
+          "line": 116,
+          "declarator": "void CMenuPool::Process()",
+          "behavior": "MATCH",
+          "official_va": "0x10007ef0",
+          "owner": "FUN_10007ef0",
+          "mapping_state": "new"
+        }
+      ]
+    },
+    {
+      "source": "src/client/net/netgame.cpp",
+      "reference": "source/net/netgame.cpp",
+      "manifest_sha256": "eb5a5d9144c948897186741717abec86687e86a9423611fd89373a14b5242f21",
+      "current_sha256": "eb5a5d9144c948897186741717abec86687e86a9423611fd89373a14b5242f21",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/net/netrpc.cpp",
+      "reference": "source/net/netrpc.cpp",
+      "manifest_sha256": "cc254c8d935a7f1a20018b82f06fc80fb2e80c81a39304e0640394fa54b3a0b4",
+      "current_sha256": "cc254c8d935a7f1a20018b82f06fc80fb2e80c81a39304e0640394fa54b3a0b4",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/net/objectpool.cpp",
+      "reference": "source/net/objectpool.cpp",
+      "manifest_sha256": "67745fc9a4e4c041fef238714427203fcbe9475fcd07f3ddcfaea2b13d4f78a5",
+      "current_sha256": "67745fc9a4e4c041fef238714427203fcbe9475fcd07f3ddcfaea2b13d4f78a5",
+      "audit_status": "complete",
+      "report": "docs\\audit\\client-luna-objectpool.md",
+      "body_records": [
+        {
+          "line": 6,
+          "declarator": "CObjectPool::CObjectPool()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10012700",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:17"
+        },
+        {
+          "line": 16,
+          "declarator": "void CObjectPool::UpdateLargestId()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x100126a0",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:8"
+        },
+        {
+          "line": 25,
+          "declarator": "int CObjectPool::GetCount()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10012730",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:26"
+        },
+        {
+          "line": 34,
+          "declarator": "BOOL CObjectPool::Delete(WORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10012750",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:35"
+        },
+        {
+          "line": 51,
+          "declarator": "CObjectPool::~CObjectPool()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10013060",
+          "mapping_state": "new"
+        },
+        {
+          "line": 57,
+          "declarator": "CObject* CObjectPool::Find(void*)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x100128d0",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:67"
+        },
+        {
+          "line": 66,
+          "declarator": "WORD CObjectPool::GetId(void*)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10012910",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:79"
+        },
+        {
+          "line": 75,
+          "declarator": "CEntity* CObjectPool::Get(WORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10002e10",
+          "mapping_state": "new"
+        },
+        {
+          "line": 88,
+          "declarator": "void CObjectPool::Process()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10012950",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:89"
+        },
+        {
+          "line": 115,
+          "declarator": "void CObjectPool::ConstructMaterials()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10012a10",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:120"
+        },
+        {
+          "line": 133,
+          "declarator": "void CObjectPool::ShutdownMaterials()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10012a50",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:128"
+        },
+        {
+          "line": 153,
+          "declarator": "BOOL CObjectPool::Create(WORD,int,CVector,CVector,float)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x100127d0",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:48"
+        },
+        {
+          "line": 176,
+          "declarator": "void CObjectPool::Draw()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10012a90",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:136"
+        },
+        {
+          "line": 187,
+          "declarator": "void CObjectPool::DrawLast()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10012ad0",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:144"
+        },
+        {
+          "line": 221,
+          "declarator": "bool CObjectPool::TestCollisionShapes(const GameEntityCollisionShape*,const GameEntityCollisionShape*)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10012ce0",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:169"
+        },
+        {
+          "line": 257,
+          "declarator": "WORD CObjectPool::FindInRay(float,const CVector*,const CVector*)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10012d70",
+          "mapping_state": "new"
+        },
+        {
+          "line": 348,
+          "declarator": "int CObjectPool::GetLargestId()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x10012670",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 353,
+          "declarator": "DWORD CObjectPool::IsActive(WORD)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x10012680",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 358,
+          "declarator": "void CObjectPool::UpdateAttachedObjectRotations()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x100129d0",
+          "mapping_state": "prior same-start claim src/client/core/object_pool.cpp:113"
+        },
+        {
+          "line": 326,
+          "declarator": "void DrawObjectPoolCollisionDebug()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x10012f50",
+          "reason": "no exact start; no source caller"
+        }
+      ]
+    },
+    {
+      "source": "src/client/net/pickuppool.cpp",
+      "reference": "source/net/pickuppool.cpp",
+      "manifest_sha256": "836216cc14401273c37d64ef85fd82f5936ad3fd08332eeb2a52abb65ccfa507",
+      "current_sha256": "836216cc14401273c37d64ef85fd82f5936ad3fd08332eeb2a52abb65ccfa507",
+      "audit_status": "complete",
+      "report": "docs\\audit\\client-luna-pickuppool.md",
+      "body_records": [
+        {
+          "line": 13,
+          "declarator": "CPickupPool::CPickupPool()",
+          "behavior": "MATCH",
+          "official_va": "0x10008190",
+          "owner": "FUN_10008190",
+          "mapping_state": "new"
+        },
+        {
+          "line": 32,
+          "declarator": "void CPickupPool::Create(const Pickup*,int)",
+          "behavior": "MATCH",
+          "official_va": "0x10013170",
+          "owner": "FUN_10013170",
+          "mapping_state": "prior same-start claim src/client/core/pickup_pool.cpp:7"
+        },
+        {
+          "line": 47,
+          "declarator": "void CPickupPool::Delete(int)",
+          "behavior": "MATCH",
+          "official_va": "0x10013220",
+          "owner": "FUN_10013220",
+          "mapping_state": "prior same-start claim src/client/core/pickup_pool.cpp:24"
+        },
+        {
+          "line": 58,
+          "declarator": "void CPickupPool::DeleteWeapon(WORD)",
+          "behavior": "MATCH",
+          "official_va": "0x10013280",
+          "owner": "FUN_10013280",
+          "mapping_state": "prior same-start claim src/client/core/pickup_pool.cpp:34"
+        },
+        {
+          "line": 72,
+          "declarator": "int CPickupPool::GetIndex(int)",
+          "behavior": "MATCH",
+          "official_va": "0x100132e0",
+          "owner": "FUN_100132e0",
+          "mapping_state": "prior same-start claim src/client/core/pickup_pool.cpp:47"
+        },
+        {
+          "line": 80,
+          "declarator": "CPickupPool::~CPickupPool()",
+          "behavior": "MATCH",
+          "official_va": "0x10013310",
+          "owner": "FUN_10013310",
+          "mapping_state": "prior same-start claim src/client/core/pickup_pool.cpp:55"
+        },
+        {
+          "line": 97,
+          "declarator": "void CPickupPool::SendNotification(int)",
+          "behavior": "MATCH",
+          "official_va": "0x10013340",
+          "owner": "FUN_10013340",
+          "mapping_state": "prior same-start claim src/client/core/pickup_pool.cpp:62"
+        },
+        {
+          "line": 108,
+          "declarator": "void CPickupPool::Process()",
+          "behavior": "MATCH",
+          "official_va": "0x10013420",
+          "owner": "FUN_10013420",
+          "mapping_state": "prior same-start claim src/client/core/pickup_pool.cpp:73"
+        },
+        {
+          "line": 137,
+          "declarator": "void CPickupPool::CreateWeapon(int,float,float,float,int,WORD)",
+          "behavior": "UNRESOLVED",
+          "candidate_va": "0x10013080",
+          "reason": "no exact start; no body range; no source caller"
+        }
+      ]
+    },
+    {
+      "source": "src/client/net/playerinfo.cpp",
+      "reference": "source/net/playerinfo.cpp",
+      "manifest_sha256": "0ea0550bdfe9e3f65cf6accfd0902879652826bba2b46de6085a9f5bff836c9d",
+      "current_sha256": "0ea0550bdfe9e3f65cf6accfd0902879652826bba2b46de6085a9f5bff836c9d",
+      "audit_status": "complete",
+      "report": "docs\\audit\\client-luna-playerinfo.md",
+      "body_records": [
+        {
+          "line": 4,
+          "declarator": "int CPlayerInfo::GetScore()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1006e270",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 9,
+          "declarator": "DWORD CPlayerInfo::GetPing()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1006e280",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 14,
+          "declarator": "DWORD CPlayerInfo::GetNameLength()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1006e300",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 19,
+          "declarator": "const char* CPlayerInfo::GetName()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x100170c0",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 24,
+          "declarator": "void CPlayerInfo::SetName(const char*)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1001da20",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 31,
+          "declarator": "CPlayerInfo::CPlayerInfo(const char*,DWORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10014060",
+          "mapping_state": "new"
+        },
+        {
+          "line": 40,
+          "declarator": "CPlayerInfo::~CPlayerInfo()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10013e10",
+          "mapping_state": "new"
+        },
+        {
+          "line": 50,
+          "declarator": "DWORD CPlayerInfo::GetNpcFlag()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1000e2d0",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 55,
+          "declarator": "void CPlayerInfo::SetScore(int)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1000e2e0",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 60,
+          "declarator": "void CPlayerInfo::SetPing(DWORD)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1000e2f0",
+          "reason": "no exact index entry"
+        }
+      ]
+    },
+    {
+      "source": "src/client/net/playerpool.cpp",
+      "reference": "source/net/playerpool.cpp",
+      "manifest_sha256": "cb20b8e938a0e3106a3177bdac19b914109e6e421a02aeed536b3108ce9e97bc",
+      "current_sha256": "cb20b8e938a0e3106a3177bdac19b914109e6e421a02aeed536b3108ce9e97bc",
+      "audit_status": "complete",
+      "report": "docs\\audit\\client-luna-playerpool.md",
+      "body_records": [
+        {
+          "line": 7,
+          "declarator": "CPlayerInfo* CPlayerPool::GetPlayerInfo(WORD)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x100010d0",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 14,
+          "declarator": "const char* CPlayerPool::GetLocalPlayerName()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1000a1d0",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 19,
+          "declarator": "void CPlayerPool::SetLocalPlayerName(const char*)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1000b5e0",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 24,
+          "declarator": "void CPlayerPool::SetAt(WORD,CPlayerInfo*)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x10013630",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 30,
+          "declarator": "void CPlayerPool::SetName(WORD,const char*)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1001da50",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 48,
+          "declarator": "BOOL CPlayerPool::Process()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x100136c0",
+          "reason": "exact owner, but source/official exception cleanup not fully resolved"
+        },
+        {
+          "line": 76,
+          "declarator": "WORD CPlayerPool::FindInRay(float,const CVector*,const CVector*,DWORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10013c50",
+          "mapping_state": "new"
+        },
+        {
+          "line": 137,
+          "declarator": "void CPlayerPool::Deactivate()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x100139f0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 150,
+          "declarator": "CPlayerPool::CPlayerPool()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10013e80",
+          "mapping_state": "new"
+        },
+        {
+          "line": 164,
+          "declarator": "BOOL CPlayerPool::Create(WORD,const char*,DWORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10014100",
+          "mapping_state": "new"
+        },
+        {
+          "line": 185,
+          "declarator": "BOOL CPlayerPool::Delete(WORD,BYTE)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10013f40",
+          "mapping_state": "new"
+        },
+        {
+          "line": 199,
+          "declarator": "CPlayerPool::~CPlayerPool()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10013fd0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 208,
+          "declarator": "void CPlayerPool::UpdateLargestId()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10013650",
+          "mapping_state": "new"
+        },
+        {
+          "line": 217,
+          "declarator": "void CPlayerPool::ForceCollision()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10013b50",
+          "mapping_state": "new"
+        },
+        {
+          "line": 234,
+          "declarator": "void CPlayerPool::RestoreCollision()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10013bd0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 248,
+          "declarator": "CLocalPlayer* CPlayerPool::GetLocalPlayer()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10001a80",
+          "mapping_state": "new"
+        },
+        {
+          "line": 253,
+          "declarator": "int CPlayerPool::GetCount(BOOL)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x100138c0",
+          "mapping_state": "prior same-start claim src/client/render/scoreboard_list.cpp:10"
+        },
+        {
+          "line": 265,
+          "declarator": "int CPlayerPool::GetScore(WORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1006e290",
+          "mapping_state": "prior same-start claim src/client/render/scoreboard_list.cpp:18"
+        },
+        {
+          "line": 273,
+          "declarator": "DWORD CPlayerPool::GetPing(WORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1006e2b0",
+          "mapping_state": "prior same-start claim src/client/render/scoreboard_list.cpp:22"
+        },
+        {
+          "line": 281,
+          "declarator": "int CPlayerPool::GetLocalScore()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1006e2e0",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 286,
+          "declarator": "DWORD CPlayerPool::GetLocalPing()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1006e2f0",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 291,
+          "declarator": "CRemotePlayer* CPlayerPool::GetPlayer(WORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x100010f0",
+          "mapping_state": "new; official owner contract reused from labelpool report"
+        },
+        {
+          "line": 302,
+          "declarator": "DWORD CPlayerPool::IsConnected(WORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x100010b0",
+          "mapping_state": "new; official owner contract reused from labelpool report"
+        },
+        {
+          "line": 309,
+          "declarator": "DWORD CPlayerPool::GetPlayerInfoFlag(WORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1000e300",
+          "mapping_state": "new"
+        },
+        {
+          "line": 320,
+          "declarator": "WORD CPlayerPool::Find(void*)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x100137c0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 343,
+          "declarator": "void CPlayerPool::Native013840()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10013840",
+          "mapping_state": "new"
+        },
+        {
+          "line": 370,
+          "declarator": "CObject* CPlayerPool::FindAccessory(void*)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10013a40",
+          "mapping_state": "new"
+        },
+        {
+          "line": 407,
+          "declarator": "const char* CPlayerPool::GetName(WORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x100170d0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 421,
+          "declarator": "int CPlayerPool::GetLargestId()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x10002dd0",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 426,
+          "declarator": "WORD CPlayerPool::GetLocalId()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x10002de0",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 432,
+          "declarator": "void CPlayerPool::SetLocalId(WORD)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1000e330",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 438,
+          "declarator": "void CPlayerPool::SetScore(WORD,int)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1000e340",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 452,
+          "declarator": "void CPlayerPool::SetPing(WORD,DWORD)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1000e380",
+          "reason": "no exact index entry"
+        },
+        {
+          "line": 472,
+          "declarator": "DWORD GetCachedActivePlayerCount()",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x10003ff0",
+          "reason": "no exact index entry"
+        }
+      ]
+    },
+    {
+      "source": "src/client/net/remoteplayer.cpp",
+      "reference": "source/net/remoteplayer.cpp",
+      "manifest_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d",
+      "current_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d",
+      "audit_status": "in_progress",
+      "report": "docs\\audit\\client-luna-remoteplayer-progress.md",
+      "body_records": [
+        {
+          "line": 615,
+          "declarator": "void CRemotePlayer::ProcessHead()",
+          "behavior": "MATCH",
+          "official_va": "0x10014240",
+          "owner": "FUN_10014240",
+          "mapping_state": "new"
+        },
+        {
+          "line": 682,
+          "declarator": "void CRemotePlayer::SetMarkerState(BOOL)",
+          "behavior": "MATCH",
+          "official_va": "0x10014390",
+          "owner": "FUN_10014390",
+          "mapping_state": "new"
+        },
+        {
+          "line": 696,
+          "declarator": "void CRemotePlayer::SetMarkerPosition(short,short,short)",
+          "behavior": "MATCH",
+          "official_va": "0x100143d0",
+          "owner": "FUN_100143d0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 714,
+          "declarator": "BOOL CRemotePlayer::HasSurfingTarget()",
+          "behavior": "MATCH",
+          "official_va": "0x10014470",
+          "owner": "FUN_10014470",
+          "mapping_state": "new"
+        },
+        {
+          "line": 726,
+          "declarator": "void CRemotePlayer::ProcessSpecialAction()",
+          "behavior": "MATCH",
+          "official_va": "0x10014780",
+          "owner": "FUN_10014780",
+          "mapping_state": "new"
+        },
+        {
+          "line": 801,
+          "declarator": "void CRemotePlayer::UpdateOnfootSpeedAndPosition()",
+          "behavior": "MATCH",
+          "official_va": "0x100149f0",
+          "owner": "FUN_100149f0",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 873,
+          "declarator": "void CRemotePlayer::UpdateOnfootXYSpeedAndPosition()",
+          "behavior": "MATCH",
+          "official_va": "0x10014c00",
+          "owner": "FUN_10014c00",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d",
+          "reachability": "unproven; no current clone caller; uncounted"
+        },
+        {
+          "line": 962,
+          "declarator": "void CRemotePlayer::UpdateIncarSpeedAndPosition()",
+          "behavior": "MATCH",
+          "official_va": "0x10014ec0",
+          "owner": "FUN_10014ec0",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1050,
+          "declarator": "void CRemotePlayer::UpdateOnfootRotation()",
+          "behavior": "MATCH",
+          "official_va": "0x10014d80",
+          "owner": "FUN_10014d80",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1093,
+          "declarator": "void CRemotePlayer::UpdateIncarRotation()",
+          "behavior": "MATCH",
+          "official_va": "0x100151c0",
+          "owner": "FUN_100151c0",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1139,
+          "declarator": "void CRemotePlayer::SetOnfootTarget(const CVector*,const CVector*)",
+          "behavior": "MATCH",
+          "official_va": "0x10014e50",
+          "owner": "FUN_10014e50",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1148,
+          "declarator": "void CRemotePlayer::SetIncarTarget(const CMatrix*,const CVector*,const CVector*)",
+          "behavior": "MATCH",
+          "official_va": "0x10015330",
+          "owner": "FUN_10015330",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1162,
+          "declarator": "BOOL CRemotePlayer::Spawn(BYTE,int,int,const CVector*,float,DWORD,BYTE)",
+          "behavior": "MATCH",
+          "official_va": "0x10016c50",
+          "owner": "FUN_10016c50",
+          "mapping_state": "conflicting_existing_claim",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d",
+          "existing_claim": "src/client/win/game_runtime.cpp:417 (different stream-in adapter; not equivalent)",
+          "callee_evidence": [
+            "0x100b39d0",
+            "0x1000ce30",
+            "0x1000c1c0",
+            "0x100afb50"
+          ]
+        },
+        {
+          "line": 1205,
+          "declarator": "void CRemotePlayer::OnEnterVehicle()",
+          "behavior": "MATCH",
+          "official_va": "0x10014660",
+          "owner": "FUN_10014660",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1346,
+          "declarator": "void CRemotePlayer::OnExitVehicle()",
+          "behavior": "MATCH",
+          "official_va": "0x10014730",
+          "owner": "FUN_10014730",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1236,
+          "declarator": "void CRemotePlayer::UpdateOnfoot(const void*,DWORD)",
+          "behavior": "MATCH",
+          "official_va": "0x10016da0",
+          "owner": "FUN_10016da0",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1260,
+          "declarator": "void CRemotePlayer::UpdateIncar(const void*,DWORD)",
+          "behavior": "MATCH",
+          "official_va": "0x10016e70",
+          "owner": "FUN_10016e70",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1290,
+          "declarator": "void CRemotePlayer::UpdatePassenger(const void*)",
+          "behavior": "MATCH",
+          "official_va": "0x10016f60",
+          "owner": "FUN_10016f60",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1311,
+          "declarator": "void CRemotePlayer::UpdateAim(const void*)",
+          "behavior": "MATCH",
+          "official_va": "0x100154a0",
+          "owner": "FUN_100154a0",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1366,
+          "declarator": "void CRemotePlayer::Chat(char*)",
+          "behavior": "MATCH",
+          "official_va": "0x10017120",
+          "owner": "FUN_10017120",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1384,
+          "declarator": "CRemotePlayer::CRemotePlayer()",
+          "behavior": "MATCH",
+          "official_va": "0x10016250",
+          "owner": "FUN_10016250",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1406,
+          "declarator": "CRemotePlayer::~CRemotePlayer()",
+          "behavior": "MATCH",
+          "official_va": "0x100162c0",
+          "owner": "FUN_100162c0",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1423,
+          "declarator": "void CRemotePlayer::ResetData()",
+          "behavior": "MATCH",
+          "official_va": "0x10015c60",
+          "owner": "FUN_10015c60",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1453,
+          "declarator": "void CRemotePlayer::Remove()",
+          "behavior": "MATCH",
+          "official_va": "0x10017040",
+          "owner": "FUN_10017040",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1465,
+          "declarator": "void CRemotePlayer::Kill()",
+          "behavior": "MATCH",
+          "official_va": "0x10017080",
+          "owner": "FUN_10017080",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1482,
+          "declarator": "void CRemotePlayer::SetColor(DWORD)",
+          "behavior": "MATCH",
+          "official_va": "0x10015e00",
+          "owner": "FUN_10015e00",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1536,
+          "declarator": "float CRemotePlayer::GetDistanceToLocalPlayer()",
+          "behavior": "MATCH",
+          "official_va": "0x10015dd0",
+          "owner": "FUN_10015dd0",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1559,
+          "declarator": "void CRemotePlayer::EnterVehicle(WORD,BOOL)",
+          "behavior": "MATCH",
+          "official_va": "0x10015e50",
+          "owner": "FUN_10015e50",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1574,
+          "declarator": "void CRemotePlayer::ExitVehicle()",
+          "behavior": "MATCH",
+          "official_va": "0x10015ee0",
+          "owner": "FUN_10015ee0",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1583,
+          "declarator": "void CRemotePlayer::ChangeState(BYTE,BYTE)",
+          "behavior": "MATCH",
+          "official_va": "0x10015f10",
+          "owner": "FUN_10015f10",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1601,
+          "declarator": "void CRemotePlayer::ApplySurfingMatrix()",
+          "behavior": "MATCH",
+          "official_va": "0x100144d0",
+          "owner": "FUN_100144d0",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d",
+          "reachability": "unproven; no current clone caller; uncounted"
+        },
+        {
+          "line": 1126,
+          "declarator": "void CRemotePlayer::UpdateTrain(const CMatrix*,const CVector*,float)",
+          "behavior": "MISMATCH",
+          "official_va": "0x100153a0",
+          "owner": "FUN_100153a0",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d",
+          "mismatch": "FloatOffset threshold comparison narrows before x87 compare; implement exact native x87 delta compare for XY axes"
+        },
+        {
+          "line": 1664,
+          "declarator": "DWORD CRemotePlayer::GetColorAsARGB()",
+          "behavior": "MATCH",
+          "official_va": "0x10015e30",
+          "owner": "FUN_10015e30",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 1674,
+          "declarator": "int CRemotePlayer::GetStatus()",
+          "behavior": "MATCH",
+          "official_va": "0x10015fd0",
+          "owner": "FUN_10015fd0",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        },
+        {
+          "line": 273,
+          "declarator": "void CRemotePlayer::UpdateBullet(const void*)",
+          "behavior": "MATCH",
+          "official_va": "0x10016010",
+          "owner": "FUN_10016010",
+          "mapping_state": "new",
+          "audit_snapshot_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+        }
+      ]
+    },
+    {
+      "source": "src/client/net/scriptrpc.cpp",
+      "reference": "source/net/scriptrpc.cpp",
+      "manifest_sha256": "8ee24da1ab3e25f43a226b919d0e3e5ea745bcc54849efe9ee9a1a7b0ecb19ae",
+      "current_sha256": "8ee24da1ab3e25f43a226b919d0e3e5ea745bcc54849efe9ee9a1a7b0ecb19ae",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/net/textdrawpool.cpp",
+      "reference": "source/net/textdrawpool.cpp",
+      "manifest_sha256": "24e096aafc7ae0b3e9eaf0cb7d5ea70bc30cdfb803ab90492315f5189c5dd3d6",
+      "current_sha256": "24e096aafc7ae0b3e9eaf0cb7d5ea70bc30cdfb803ab90492315f5189c5dd3d6",
+      "audit_status": "audited",
+      "report": "docs/audit/client-luna-pilot.md",
+      "body_records": []
+    },
+    {
+      "source": "src/client/net/vehiclepool.cpp",
+      "reference": "source/net/vehiclepool.cpp",
+      "manifest_sha256": "c404164475f4dd684250cdd97d7e11deda12c20ee2ede8b46a6374ba2860991c",
+      "current_sha256": "c404164475f4dd684250cdd97d7e11deda12c20ee2ede8b46a6374ba2860991c",
+      "audit_status": "complete",
+      "report": "docs\\audit\\client-luna-vehiclepool.md",
+      "body_records": [
+        {
+          "line": 4,
+          "declarator": "void CVehiclePool::SetUnoccupiedSyncOwner(WORD,WORD)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x10002df0",
+          "mapping_state": "no exact index entry"
+        },
+        {
+          "line": 18,
+          "declarator": "WORD CVehiclePool::FindInRay(float,const CVector*,const CVector*,DWORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001e9f0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 78,
+          "declarator": "void CVehiclePool::Process()",
+          "behavior": "MISMATCH",
+          "candidate_or_official_va": "0x1001ee80",
+          "mapping_state": "replace HasPlayerPed gate with IsTrainPart"
+        },
+        {
+          "line": 173,
+          "declarator": "BOOL CVehiclePool::Create(const VehiclePoolQueueEntry*)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001eb40",
+          "mapping_state": "prior same-start claim win/vehicle_runtime.cpp:12"
+        },
+        {
+          "line": 204,
+          "declarator": "void CVehiclePool::ProcessWaitingList()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001edc0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 235,
+          "declarator": "void CVehiclePool::SendDestroyNotification(WORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001ecf0",
+          "mapping_state": "prior same-start claim core/vehicle_sync.cpp:73; extra state gate in prior adapter"
+        },
+        {
+          "line": 249,
+          "declarator": "void CVehiclePool::UpdateLargestId()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001e470",
+          "mapping_state": "new"
+        },
+        {
+          "line": 258,
+          "declarator": "CVehiclePool::CVehiclePool()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001e4d0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 287,
+          "declarator": "CVehiclePool::~CVehiclePool()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001eb20",
+          "mapping_state": "new"
+        },
+        {
+          "line": 273,
+          "declarator": "BOOL CVehiclePool::Delete(WORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001e540",
+          "mapping_state": "prior same-start claim win/vehicle_runtime.cpp:91; different runtime path"
+        },
+        {
+          "line": 294,
+          "declarator": "void CVehiclePool::ChangeInterior(WORD,int)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001e5c0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 300,
+          "declarator": "void CVehiclePool::AssignSpecialParams(WORD,BYTE,BYTE)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001e5f0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 315,
+          "declarator": "WORD CVehiclePool::FindNearestToLocalPlayer()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001e6c0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 351,
+          "declarator": "WORD CVehiclePool::FindNearestToPoint(float,float,float)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1001e730",
+          "mapping_state": "no exact index entry"
+        },
+        {
+          "line": 392,
+          "declarator": "void CVehiclePool::Queue(const VehiclePoolQueueEntry*)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1001e7d0",
+          "mapping_state": "no exact index entry"
+        },
+        {
+          "line": 406,
+          "declarator": "DWORD CVehiclePool::GetRef(int)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001e680",
+          "mapping_state": "new"
+        },
+        {
+          "line": 411,
+          "declarator": "DWORD CVehiclePool::GetRef(void*)",
+          "behavior": "UNRESOLVED",
+          "candidate_or_official_va": "0x1001e6a0",
+          "mapping_state": "no exact index entry"
+        },
+        {
+          "line": 416,
+          "declarator": "WORD CVehiclePool::Find(void*)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001e650",
+          "mapping_state": "new"
+        },
+        {
+          "line": 423,
+          "declarator": "CVehicle* CVehiclePool::Get(WORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10001120",
+          "mapping_state": "new"
+        },
+        {
+          "line": 431,
+          "declarator": "BOOL CVehiclePool::DoesExist(WORD)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x10001150",
+          "mapping_state": "new"
+        },
+        {
+          "line": 438,
+          "declarator": "bool CVehiclePool::TestCollisionShapes(const GameEntityCollisionShape*,const GameEntityCollisionShape*)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001e8e0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 466,
+          "declarator": "void CVehiclePool::ConstructLicensePlates()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001e830",
+          "mapping_state": "new"
+        },
+        {
+          "line": 489,
+          "declarator": "void CVehiclePool::ShutdownLicensePlates()",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001e8a0",
+          "mapping_state": "new"
+        },
+        {
+          "line": 506,
+          "declarator": "WORD CVehiclePool::FindInLine(DWORD,const CVector*,const CVector*)",
+          "behavior": "MATCH",
+          "candidate_or_official_va": "0x1001e970",
+          "mapping_state": "new"
+        }
+      ]
+    },
+    {
+      "source": "src/client/netstats.cpp",
+      "reference": "source/netstats.cpp",
+      "manifest_sha256": "ea4e38d1a8e5ec0cbad71de2a2cca7c63512506b970229436c6d322f407c2f02",
+      "current_sha256": "ea4e38d1a8e5ec0cbad71de2a2cca7c63512506b970229436c6d322f407c2f02",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/objectedit.cpp",
+      "reference": "source/objectedit.cpp",
+      "manifest_sha256": "b78b30dd291ce08c5b910419c2737c6bf5ef3eb3938a399f175eff22cf25e80f",
+      "current_sha256": "b78b30dd291ce08c5b910419c2737c6bf5ef3eb3938a399f175eff22cf25e80f",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/objectmaterialtext.cpp",
+      "reference": "source/objectmaterialtext.cpp",
+      "manifest_sha256": "866abd67166f5dbbac2f2e9f3f5be9e1a2230ff3fdc87a1edc6f6b24bc84d16d",
+      "current_sha256": "866abd67166f5dbbac2f2e9f3f5be9e1a2230ff3fdc87a1edc6f6b24bc84d16d",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/objectselection.cpp",
+      "reference": "source/objectselection.cpp",
+      "manifest_sha256": "9108471d2defa7cf353ffa3fbc0bd6b09591d0657a44a2b3974a6c787d5ca320",
+      "current_sha256": "9108471d2defa7cf353ffa3fbc0bd6b09591d0657a44a2b3974a6c787d5ca320",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/playertags.cpp",
+      "reference": "source/playertags.cpp",
+      "manifest_sha256": "3280df11c3967c0240ac3b78238c13ebb3b3b673d77e976389d19b5a4c091881",
+      "current_sha256": "3280df11c3967c0240ac3b78238c13ebb3b3b673d77e976389d19b5a4c091881",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/renderpanel.cpp",
+      "reference": "source/renderpanel.cpp",
+      "manifest_sha256": "8b4ff7badf855aac7ac6c7394c5cdb93da5eca6022e0aedbc67f0386d0552751",
+      "current_sha256": "8b4ff7badf855aac7ac6c7394c5cdb93da5eca6022e0aedbc67f0386d0552751",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/runutil.cpp",
+      "reference": "source/runutil.cpp",
+      "manifest_sha256": "b0dd208cd3b510cdb0bee8aa297577ed32eb9299f2cfa1f7739d571d5cb630c4",
+      "current_sha256": "d255240f3ff468ef951cc03886e1fb91e56b19a9f49eb6f276fbcba24eb04bdd",
+      "audit_status": "complete",
+      "report": "docs/audit/client-integration.md",
+      "body_records": [],
+      "auditor": "parent"
+    },
+    {
+      "source": "src/client/scoreboard.cpp",
+      "reference": "source/scoreboard.cpp",
+      "manifest_sha256": "1d7b02035589ad4c574686c2d80ecd767e8f252b489e465b833380066e404515",
+      "current_sha256": "1d7b02035589ad4c574686c2d80ecd767e8f252b489e465b833380066e404515",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/spawnscreen.cpp",
+      "reference": "source/spawnscreen.cpp",
+      "manifest_sha256": "92f1cf6859d47719ff6223686018d17602e99619d6fc543dbfbcd0792b972a74",
+      "current_sha256": "92f1cf6859d47719ff6223686018d17602e99619d6fc543dbfbcd0792b972a74",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/subclass.cpp",
+      "reference": "source/subclass.cpp",
+      "manifest_sha256": "a49c779196bfe13dfd2f02cd9e171990c89f20a048224cedb05a8ee6429546ba",
+      "current_sha256": "a49c779196bfe13dfd2f02cd9e171990c89f20a048224cedb05a8ee6429546ba",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/svrnetstats.cpp",
+      "reference": "source/svrnetstats.cpp",
+      "manifest_sha256": "f0f286f30ee997a3f9f65f632779a71d8be40ee5fd98aecae66edfcbe308f900",
+      "current_sha256": "f0f286f30ee997a3f9f65f632779a71d8be40ee5fd98aecae66edfcbe308f900",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    },
+    {
+      "source": "src/client/textdrawselection.cpp",
+      "reference": "source/textdrawselection.cpp",
+      "manifest_sha256": "09e50417045571908eb97b60254adf8a8da487c24819159b252985edc801f781",
+      "current_sha256": "09e50417045571908eb97b60254adf8a8da487c24819159b252985edc801f781",
+      "audit_status": "pending",
+      "report": null,
+      "body_records": []
+    }
+  ]
+}

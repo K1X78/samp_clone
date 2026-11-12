@@ -1,0 +1,651 @@
+source,line,declarator,binary,symbol,address,status,next
+src/client/core/actor_slots.cpp,8,ActorSlots::clear(),samp.dll,FUN_100016c0,0x100016c0,partial,verify semantics and real caller effects
+src/client/core/actor_slots.cpp,18,ActorSlots::recompute_occupied(),samp.dll,FUN_10001660,0x10001660,partial,verify semantics and real caller effects
+src/client/core/actor_slots.cpp,31,ActorSlots::remove(std::size_t slot),samp.dll,FUN_100016f0,0x100016f0,partial,verify semantics and real caller effects
+src/client/core/actor_slots.cpp,48,ActorSlots::find_by_network_id(std::uint32_t network_id) const,samp.dll,FUN_100018b0,0x100018b0,partial,verify semantics and real caller effects
+src/client/core/actor_slots.cpp,59,ActorSlots::delete_all(),samp.dll,FUN_100018e0,0x100018e0,partial,verify semantics and real caller effects
+src/client/core/actor_slots.cpp,66,ActorSlots::used_flag(std::uint16_t slot) const,samp.dll,FUN_10001640,0x10001640,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,29,AssetManager::~AssetManager(),samp.dll,FUN_1000d870,0x1000d870,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,34,AssetManager::release(),samp.dll,FUN_1000d620,0x1000d620,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,41,AssetManager::reset(),samp.dll,FUN_1000d890,0x1000d890,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,64,"AssetManager::stage(const std::uint8_t* data, std::size_t size)",samp.dll,FUN_1000d070,0x1000d070,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,77,"AssetManager::add_asset(std::uint32_t index, const AssetElement& record)",samp.dll,FUN_1000d550,0x1000d550,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,87,AssetManager::remove_asset(std::uint32_t index),samp.dll,FUN_1000d5a0,0x1000d5a0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,96,AssetManager::clear_slot(std::uint32_t index),samp.dll,FUN_1000cfc0,0x1000cfc0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,108,"AssetManager::store_slot(std::uint32_t index, const AssetElement& record)",samp.dll,FUN_1000cff0,0x1000cff0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,117,"AssetManager::find_index(AssetKind kind, std::uint32_t id) const",samp.dll,FUN_1000c7e0,0x1000c7e0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,139,AssetManager::has_texture_record(std::uint32_t id) const,samp.dll,FUN_1000c720,0x1000c720,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,152,AssetManager::has_model_record(std::uint32_t id) const,samp.dll,FUN_1000c6e0,0x1000c6e0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,163,AssetManager::has_model(std::uint32_t id) const,samp.dll,FUN_1000cc80,0x1000cc80,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,177,AssetManager::has_texture(std::uint32_t id) const,samp.dll,FUN_1000ccc0,0x1000ccc0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,192,AssetManager::flag_58(std::uint32_t id) const,samp.dll,FUN_1000cd00,0x1000cd00,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,207,AssetManager::flag_56(std::uint32_t id) const,samp.dll,FUN_1000cf00,0x1000cf00,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,223,AssetManager::flag_57(std::uint32_t id) const,samp.dll,FUN_1000cf40,0x1000cf40,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,239,AssetManager::texture_id_of(std::uint32_t id) const,samp.dll,FUN_1000cdf0,0x1000cdf0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,253,AssetManager::is_id_used(std::uint32_t id) const,samp.dll,FUN_1000ca40,0x1000ca40,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,269,"AssetManager::is_id_missing(std::uint32_t count, std::uint32_t id) const",samp.dll,FUN_1000c950,0x1000c950,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,290,AssetManager::mark_missing_assets(),samp.dll,FUN_1000c9b0,0x1000c9b0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,324,AssetManager::initialize_user_directory(std::string_view user_files_directory),samp.dll,FUN_100c5340,0x100c5340,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,338,AssetManager::initialize_model_cache_root(),samp.dll,FUN_100c51c0,0x100c51c0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,364,"AssetManager::sanitize_cache_component(std::string_view value, std::size_t limit)",samp.dll,FUN_1000b9c0,0x1000b9c0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,380,"AssetManager::initialize_cache(std::string_view server_address, std::uint16_t server_port)",samp.dll,FUN_1000ba40,0x1000ba40,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,400,AssetManager::set_current_id(std::uint32_t id),samp.dll,FUN_1000d030,0x1000d030,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,413,AssetManager::has_cached_model(std::uint32_t id) const,samp.dll,FUN_1000bb10,0x1000bb10,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,428,AssetManager::has_cached_texture(std::uint32_t id) const,samp.dll,FUN_1000bba0,0x1000bba0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,442,"AssetManager::load_model_files(std::uint32_t base_id, std::uint32_t element_id,
+                                    std::uint32_t model_id, std::uint32_t texture_id,
+                                    const AssetLoader& loader)",samp.dll,FUN_1000c1c0,0x1000c1c0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,485,"AssetManager::load_texture_files(std::uint32_t base_id, std::uint32_t element_id,
+                                      std::uint32_t model_id, std::uint32_t texture_id,
+                                      const AssetLoader& loader)",samp.dll,FUN_1000c2e0,0x1000c2e0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,528,"AssetManager::load_model(std::uint32_t element_id, const AssetLoader& loader)",samp.dll,FUN_1000ce30,0x1000ce30,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,547,"AssetManager::load_texture(std::uint32_t element_id, const AssetLoader& loader)",samp.dll,FUN_1000ce90,0x1000ce90,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,567,AssetManager::parse_cache_file_id(std::string_view name),samp.dll,FUN_1000c0b0,0x1000c0b0,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,578,AssetManager::delete_cached_model(std::uint32_t id),samp.dll,FUN_1000c100,0x1000c100,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,587,AssetManager::delete_cached_texture(std::uint32_t id),samp.dll,FUN_1000c140,0x1000c140,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,596,AssetManager::delete_cached_file(std::string_view name),samp.dll,FUN_1000c180,0x1000c180,partial,verify semantics and real caller effects
+src/client/core/asset_manager.cpp,602,AssetManager::collect_garbage(),samp.dll,FUN_1000cbf0,0x1000cbf0,partial,verify semantics and real caller effects
+src/client/core/chat_input.cpp,13,"ChatInput::register_command(std::string_view name, Command callback)",samp.dll,FUN_100691b0,0x100691b0,partial,verify semantics and real caller effects
+src/client/core/chat_input.cpp,21,ChatInput::find_command(std::string_view name) const,samp.dll,FUN_10069150,0x10069150,partial,verify semantics and real caller effects
+src/client/core/chat_input.cpp,38,ChatInput::begin(),samp.dll,FUN_10068ec0,0x10068ec0,partial,verify semantics and real caller effects
+src/client/core/chat_input.cpp,43,ChatInput::cancel(),samp.dll,FUN_10068fc0,0x10068fc0,partial,verify semantics and real caller effects
+src/client/core/chat_input.cpp,48,ChatInput::history_previous(),samp.dll,FUN_10069070,0x10069070,partial,verify semantics and real caller effects
+src/client/core/chat_input.cpp,65,ChatInput::history_next(),samp.dll,FUN_100690e0,0x100690e0,partial,verify semantics and real caller effects
+src/client/core/chat_input.cpp,78,ChatInput::submit(std::string& line),samp.dll,FUN_10069410,0x10069410,partial,verify semantics and real caller effects
+src/client/core/chat_input.cpp,109,ChatInput::remember(std::string_view line),samp.dll,FUN_10069010,0x10069010,partial,verify semantics and real caller effects
+src/client/core/cli.cpp,9,parse_command_line(std::string_view command_line),samp.dll,FUN_100c5c90,0x100c5c90,partial,verify semantics and real caller effects
+src/client/core/connection_flow.cpp,15,"process_connection_wait(ConnectionWait& wait,const ConnectionParameters& parameters,
+                             bool chat,NetworkClient& client)",samp.dll,FUN_10008630,0x10008630,partial,verify semantics and real caller effects
+src/client/core/connection_flow.cpp,42,connection_rejection(std::uint8_t reason),samp.dll,FUN_10010410,0x10010410,partial,verify semantics and real caller effects
+src/client/core/dl_archive.cpp,13,* DlArchive::basename(char* filename),samp.dll,FUN_10062410,0x10062410,partial,verify semantics and real caller effects
+src/client/core/dl_archive.cpp,25,DlArchive::hash_name(const char* lowercase_name),samp.dll,FUN_10064300,0x10064300,partial,verify semantics and real caller effects
+src/client/core/dl_archive.cpp,54,DlArchive::load(const std::filesystem::path& path),samp.dll,FUN_10064550,0x10064550,partial,verify semantics and real caller effects
+src/client/core/dl_archive.cpp,131,"DlArchive::extract(std::uint32_t hash,std::vector<std::uint8_t>& out) const",samp.dll,FUN_100649e0,0x100649e0,partial,verify semantics and real caller effects
+src/client/core/game_model_pools.cpp,15,expand_game_pools(std::vector<PatchRecord>& patches),samp.dll,FUN_100aa180,0x100aa180,partial,verify semantics and real caller effects
+src/client/core/game_model_pools.cpp,90,GameModelPools::install_pointer_lists(std::vector<PatchRecord>& patches),samp.dll,FUN_100aa6a0,0x100aa6a0,partial,verify semantics and real caller effects
+src/client/core/game_model_pools.cpp,154,GameModelPools::install_ped_pool(std::vector<PatchRecord>& patches),samp.dll,FUN_100aa5e0,0x100aa5e0,partial,verify semantics and real caller effects
+src/client/core/game_model_pools.cpp,194,GameModelPools::install_atomic_pool(),samp.dll,FUN_100aa630,0x100aa630,partial,verify semantics and real caller effects
+src/client/core/game_script.cpp,9,"GameScript::command(std::uint16_t opcode, const char* format, ...)",samp.dll,FUN_100b1f10,0x100b1f10,partial,verify semantics and real caller effects
+src/client/core/key_bindings.cpp,10,"expand_key_bindings(char* text, int max_length, const KeyBindingExpander& expander)",samp.dll,FUN_100b5c40,0x100b5c40,partial,verify semantics and real caller effects
+src/client/core/local_lifecycle.cpp,6,"NetworkClient::send_death_notification(std::uint8_t reason, std::uint16_t killer)",samp.dll,FUN_10005660,0x10005660,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,77,NetworkClient::~NetworkClient(),samp.dll,FUN_10033b60,0x10033b60,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,93,NetworkClient::connect(const ConnectionParameters& parameters),samp.dll,FUN_10033bf0,0x10033bf0,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,232,NetworkClient::tick(),samp.dll,FUN_1000af40,0x1000af40,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,911,NetworkClient::request_score_pings(),samp.dll,FUN_10008c00,0x10008c00,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,957,NetworkClient::handle_score_pings(const BitStream& payload),samp.dll,FUN_100102b0,0x100102b0,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,986,"NetworkClient::handle_foot_sync(const BitStream& packet,std::uint64_t stamp)",samp.dll,FUN_1000a420,0x1000a420,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1066,"NetworkClient::handle_vehicle_sync(const BitStream& packet,std::uint64_t stamp)",samp.dll,FUN_1000a6f0,0x1000a6f0,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1141,"NetworkClient::handle_aim_sync(const BitStream& packet,std::uint64_t stamp)",samp.dll,FUN_10009930,0x10009930,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1174,"NetworkClient::handle_bullet_sync(const BitStream& packet,std::uint64_t stamp)",samp.dll,FUN_10009830,0x10009830,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1208,NetworkClient::handle_marker_sync(const BitStream& packet),samp.dll,FUN_10009c00,0x10009c00,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1228,NetworkClient::handle_unoccupied_sync(const BitStream& packet),samp.dll,FUN_10009b10,0x10009b10,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1260,NetworkClient::handle_trailer_sync(const BitStream& packet),samp.dll,FUN_10009730,0x10009730,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1289,NetworkClient::handle_player_init(const BitStream& payload),samp.dll,FUN_10010530,0x10010530,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1357,NetworkClient::request_class(std::uint32_t class_id),samp.dll,FUN_10005720,0x10005720,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1396,NetworkClient::handle_class_response(const BitStream& payload),samp.dll,FUN_1000fea0,0x1000fea0,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1498,NetworkClient::handle_spawn_info(const BitStream& payload),samp.dll,FUN_10017a60,0x10017a60,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1535,NetworkClient::send_player_connect(),samp.dll,FUN_1000aa60,0x1000aa60,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1598,NetworkClient::send_chat(std::string_view text),samp.dll,FUN_10005860,0x10005860,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1654,NetworkClient::send_command(std::string_view command),samp.dll,FUN_10069340,0x10069340,partial,verify semantics and real caller effects
+src/client/core/network_client.cpp,1696,NetworkClient::send_foot_sync(),samp.dll,FUN_10004db0,0x10004db0,partial,verify semantics and real caller effects
+src/client/core/network_disconnect.cpp,21,"NetworkClient::disconnect(std::uint32_t blocking_milliseconds, std::uint8_t ordering_channel)",samp.dll,FUN_100400e0,0x100400e0,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,9,refresh_object_pool(ObjectPoolState& pool),samp.dll,FUN_100126a0,0x100126a0,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,18,clear_object_pool(ObjectPoolState& pool),samp.dll,FUN_10012700,0x10012700,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,27,count_objects(const ObjectPoolState& pool),samp.dll,FUN_10012730,0x10012730,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,36,"remove_object(ObjectPoolState& pool, ObjectPoolHost& host, std::uint16_t slot)",samp.dll,FUN_10012750,0x10012750,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,49,"create_object(ObjectPoolState& pool, ObjectPoolHost& host, ObjectModelHost*& models,
+                   std::uint32_t slot, std::int32_t model, const ObjectCreatePlacement& placement)",samp.dll,FUN_100127d0,0x100127d0,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,68,"find_object_by_handle(const ObjectPoolState& pool, ObjectPoolHost& host,
+                                    std::uint32_t handle)",samp.dll,FUN_100128d0,0x100128d0,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,80,"find_object_slot(const ObjectPoolState& pool, ObjectPoolHost& host,
+                              std::uint32_t handle)",samp.dll,FUN_10012910,0x10012910,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,90,"update_objects(ObjectPoolState& pool, ObjectPoolHost& host, std::uint32_t& last_tick)",samp.dll,FUN_10012950,0x10012950,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,114,"process_objects(ObjectPoolState& pool, ObjectPoolHost& host)",samp.dll,FUN_100129d0,0x100129d0,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,121,"render_tagged_objects(ObjectPoolState& pool, ObjectPoolHost& host)",samp.dll,FUN_10012a10,0x10012a10,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,129,"update_tagged_objects(ObjectPoolState& pool, ObjectPoolHost& host)",samp.dll,FUN_10012a50,0x10012a50,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,137,"render_visible_objects(ObjectPoolState& pool, ObjectPoolHost& host)",samp.dll,FUN_10012a90,0x10012a90,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,145,"render_objects_by_distance(ObjectPoolState& pool, ObjectPoolHost& host)",samp.dll,FUN_10012ad0,0x10012ad0,partial,verify semantics and real caller effects
+src/client/core/object_pool.cpp,170,"attach_first_object(ObjectPoolState& pool, ObjectPoolHost& host,
+                          std::uint32_t first, std::uint32_t second)",samp.dll,FUN_10012ce0,0x10012ce0,partial,verify semantics and real caller effects
+src/client/core/pickup_pool.cpp,8,"create_pickup(PickupPoolState& pool, PickupPoolHost& host,
+                   const PickupDescription& description, std::int32_t slot)",samp.dll,FUN_10013170,0x10013170,partial,verify semantics and real caller effects
+src/client/core/pickup_pool.cpp,25,"remove_pickup(PickupPoolState& pool, PickupPoolHost& host, std::int32_t slot)",samp.dll,FUN_10013220,0x10013220,partial,verify semantics and real caller effects
+src/client/core/pickup_pool.cpp,35,"remove_player_pickups(PickupPoolState& pool, PickupPoolHost& host, std::uint16_t player)",samp.dll,FUN_10013280,0x10013280,partial,verify semantics and real caller effects
+src/client/core/pickup_pool.cpp,48,"find_pickup(const PickupPoolState& pool, std::int32_t game_id)",samp.dll,FUN_100132e0,0x100132e0,partial,verify semantics and real caller effects
+src/client/core/pickup_pool.cpp,56,"destroy_pickups(PickupPoolState& pool, PickupPoolHost& host)",samp.dll,FUN_10013310,0x10013310,partial,verify semantics and real caller effects
+src/client/core/pickup_pool.cpp,63,"notify_pickup(PickupPoolState& pool, PickupPoolHost& host, std::int32_t game_id)",samp.dll,FUN_10013340,0x10013340,partial,verify semantics and real caller effects
+src/client/core/pickup_pool.cpp,74,"process_pickups(PickupPoolState& pool, PickupPoolHost& host)",samp.dll,FUN_10013420,0x10013420,partial,verify semantics and real caller effects
+src/client/core/remote_control.cpp,6,"update_remote_control_pad(RemoteControlPad& pad, const RemotePlayerUpdate& update,
+                               bool in_vehicle, bool jump_task_blocked) noexcept",samp.dll,FUN_100aef40,0x100aef40,partial,verify semantics and real caller effects
+src/client/core/remote_motion.cpp,7,ped_quaternion(const PedMatrix& m),samp.dll,FUN_100b48b0,0x100b48b0,partial,verify semantics and real caller effects
+src/client/core/remote_motion.cpp,21,"ped_rotation(PedMatrix& m,const PedQuaternion& q)",samp.dll,FUN_100b4a50,0x100b4a50,partial,verify semantics and real caller effects
+src/client/core/remote_motion.cpp,32,"blend_ped_rotation(const PedQuaternion& target,const PedQuaternion& current)",samp.dll,FUN_100b4fc0,0x100b4fc0,partial,verify semantics and real caller effects
+src/client/core/selection_ui.cpp,7,"blend_ui_colour(UiBlendColour& colour,unsigned state,float elapsed,float rate)",samp.dll,FUN_10085f40,0x10085f40,partial,verify semantics and real caller effects
+src/client/core/selection_ui.cpp,19,"draw_selection_button(SelectionButton& button,float elapsed,SelectionDrawHost& host)",samp.dll,FUN_1008dfd0,0x1008dfd0,partial,verify semantics and real caller effects
+src/client/core/selection_ui.cpp,39,"selection_button_mouse(SelectionButton& button,std::uint32_t message,
+                            std::int32_t x,std::int32_t y,bool keyboard_input,
+                            SelectionMouseHost& host)",samp.dll,FUN_10084930,0x10084930,partial,verify semantics and real caller effects
+src/client/core/server_rpc_camera.cpp,17,"rpc_attach_camera_to_object(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10019b20,0x10019b20,partial,verify semantics and real caller effects
+src/client/core/server_rpc_camera.cpp,36,"rpc_interpolate_camera(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10019c20,0x10019c20,partial,verify semantics and real caller effects
+src/client/core/server_rpc_camera.cpp,78,"rpc_set_camera_position(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_100195d0,0x100195d0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_camera.cpp,100,"rpc_set_camera_look_at(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_100196a0,0x100196a0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_camera.cpp,129,"rpc_show_menu(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001c650,0x1001c650,partial,verify semantics and real caller effects
+src/client/core/server_rpc_camera.cpp,140,"rpc_hide_menu(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001c700,0x1001c700,partial,verify semantics and real caller effects
+src/client/core/server_rpc_camera.cpp,156,"rpc_text_draw_set_string(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001ca30,0x1001ca30,partial,verify semantics and real caller effects
+src/client/core/server_rpc_camera.cpp,179,"rpc_text_draw_destroy(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001c980,0x1001c980,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,26,"decode_compressed_string_bits(samp::proto::BitStream& in, std::uint16_t bit_count,
+                                       std::size_t max_chars, std::string& output)",samp.dll,FUN_10026230,0x10026230,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,68,"read_compressed_string(samp::proto::BitStream& in, std::string& text,
+                            std::size_t max_chars)",samp.dll,FUN_10053d90,0x10053d90,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,88,"rpc_begin_object_edit(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000e740,0x1000e740,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,98,"rpc_cancel_object_edit(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000e800,0x1000e800,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,108,"rpc_set_clock(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000f2f0,0x1000f2f0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,122,"rpc_toggle_clock(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000f3d0,0x1000f3d0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,133,"rpc_set_player_skill(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000f4b0,0x1000f4b0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,163,"rpc_show_text_label(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000f5e0,0x1000f5e0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,203,"rpc_clear_client_flag(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000e430,0x1000e430,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,213,"rpc_reset_player_state(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000a230,0x1000a230,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,243,"rpc_show_dialog(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000f9c0,0x1000f9c0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,287,"rpc_set_clock_hour(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000edc0,0x1000edc0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,300,"rpc_scm_event(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000f150,0x1000f150,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,335,"rpc_set_client_check_blob(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000e450,0x1000e450,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,348,"rpc_client_check(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10011930,0x10011930,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,398,"rpc_edit_attached_object(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_100116b0,0x100116b0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,413,"rpc_edit_object(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10011770,0x10011770,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,428,"rpc_remove_pickup_model(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000f0b0,0x1000f0b0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,448,"rpc_player_close(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_100115c0,0x100115c0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,475,"rpc_spawn_vehicle(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000e500,0x1000e500,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,561,"rpc_stream_out_vehicle(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10010dc0,0x10010dc0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,596,"rpc_set_player_dead(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10010c20,0x10010c20,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,612,"rpc_set_camera_targeting(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000e8b0,0x1000e8b0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,623,"rpc_show_actor(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000e940,0x1000e940,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,656,"rpc_hide_actor(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10011cd0,0x10011cd0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,671,"rpc_player_stream_in(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_100109d0,0x100109d0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,708,"rpc_request_model(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10011d80,0x10011d80,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,749,"rpc_remove_model(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000ea40,0x1000ea40,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,762,"rpc_model_url(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10011f80,0x10011f80,partial,verify semantics and real caller effects
+src/client/core/server_rpc_packet.cpp,834,"rpc_request_all_models(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000ead0,0x1000ead0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,25,"rpc_set_player_name(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001da90,0x1001da90,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,67,"rpc_set_player_position(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10018e50,0x10018e50,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,89,"rpc_set_player_facing_angle(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001a0d0,0x1001a0d0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,102,"rpc_set_player_position_find_z(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10018f70,0x10018f70,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,124,"rpc_set_player_health(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10019080,0x10019080,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,136,"rpc_toggle_player_controllable(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10019dc0,0x10019dc0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,147,"rpc_player_play_sound(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10019e60,0x10019e60,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,163,"rpc_set_world_bounds(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10019f40,0x10019f40,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,176,"rpc_give_player_money(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001a030,0x1001a030,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,190,"rpc_reset_player_money(ServerRpcContext& context, samp::proto::BitStream& /*in*/)",samp.dll,FUN_10017ba0,0x10017ba0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,198,"rpc_reset_player_weapons(ServerRpcContext& context, samp::proto::BitStream& /*in*/)",samp.dll,FUN_10017bb0,0x10017bb0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,209,"rpc_give_player_weapon(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001a170,0x1001a170,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,225,"rpc_set_player_virtual_world(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001d780,0x1001d780,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,240,"rpc_set_player_armour(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001a690,0x1001a690,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,252,"rpc_set_player_armed_weapon(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10018950,0x10018950,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,266,"rpc_set_player_team(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10019240,0x10019240,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,282,"rpc_set_player_colour(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10019330,0x10019330,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,301,"rpc_force_class_selection(ServerRpcContext& context, samp::proto::BitStream& /*in*/)",samp.dll,FUN_10017be0,0x10017be0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,310,"rpc_set_player_special_action(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_100181a0,0x100181a0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,321,"rpc_set_player_fighting_style(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10018250,0x10018250,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,338,"rpc_set_player_velocity(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10018350,0x10018350,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,353,"rpc_set_player_interior(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10019530,0x10019530,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,366,"rpc_apply_animation(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001a480,0x1001a480,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,422,"rpc_clear_animations(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10018090,0x10018090,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,448,"rpc_toggle_widescreen(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_100185c0,0x100185c0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,460,"rpc_set_world_time(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000fe00,0x1000fe00,partial,verify semantics and real caller effects
+src/client/core/server_rpc_player.cpp,471,"rpc_set_weather(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000f240,0x1000f240,partial,verify semantics and real caller effects
+src/client/core/server_rpc_vehicle.cpp,20,"rpc_set_vehicle_component_states(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_100111c0,0x100111c0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_vehicle.cpp,41,"rpc_remove_vehicle_component(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001c0f0,0x1001c0f0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_vehicle.cpp,63,"rpc_link_vehicle_interior(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10019a60,0x10019a60,partial,verify semantics and real caller effects
+src/client/core/server_rpc_vehicle.cpp,83,"rpc_set_vehicle_velocity(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10018450,0x10018450,partial,verify semantics and real caller effects
+src/client/core/server_rpc_vehicle.cpp,108,"rpc_set_vehicle_tire_status(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10018670,0x10018670,partial,verify semantics and real caller effects
+src/client/core/server_rpc_vehicle.cpp,123,"rpc_set_vehicle_damage_status(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10011090,0x10011090,partial,verify semantics and real caller effects
+src/client/core/server_rpc_vehicle.cpp,144,"rpc_set_object_position(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001b540,0x1001b540,partial,verify semantics and real caller effects
+src/client/core/server_rpc_vehicle.cpp,164,"rpc_set_object_rotation(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001b650,0x1001b650,partial,verify semantics and real caller effects
+src/client/core/server_rpc_vehicle.cpp,181,"rpc_destroy_object(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001b750,0x1001b750,partial,verify semantics and real caller effects
+src/client/core/server_rpc_vehicle.cpp,194,"rpc_move_object(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001ba30,0x1001ba30,partial,verify semantics and real caller effects
+src/client/core/server_rpc_vehicle.cpp,238,"rpc_stop_object(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001bbe0,0x1001bbe0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_vehicle.cpp,254,"rpc_set_vehicle_health(ServerRpcContext& context,samp::proto::BitStream& input)",samp.dll,FUN_1001a8a0,0x1001a8a0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_vehicle.cpp,268,"rpc_set_vehicle_position(ServerRpcContext& context,samp::proto::BitStream& input)",samp.dll,FUN_100197a0,0x100197a0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,23,"rpc_remove_building(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001cff0,0x1001cff0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,35,"rpc_create_map_object(ServerRpcContext& context,samp::proto::BitStream& in)",samp.dll,FUN_1001ae70,0x1001ae70,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,51,"rpc_set_map_icon(ServerRpcContext& context,samp::proto::BitStream& in)",samp.dll,FUN_1001a2c0,0x1001a2c0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,61,"rpc_show_game_text(ServerRpcContext& context,samp::proto::BitStream& in)",samp.dll,FUN_10019420,0x10019420,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,83,"rpc_player_enter_vehicle(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_100114a0,0x100114a0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,104,"rpc_put_player_in_vehicle(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10019130,0x10019130,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,127,"rpc_remove_player_from_vehicle(ServerRpcContext& context, samp::proto::BitStream& /*in*/)",samp.dll,FUN_10017b00,0x10017b00,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,143,"rpc_send_death_message(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001d830,0x1001d830,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,164,"rpc_set_player_chat_bubble(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000f850,0x1000f850,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,193,"rpc_show_player_name_tag(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001b950,0x1001b950,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,209,"rpc_hide_player_text_label(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000f790,0x1000f790,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,228,"rpc_player_join(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000fbb0,0x1000fbb0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,273,"rpc_player_quit(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000fd40,0x1000fd40,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,290,"rpc_player_stream_out(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10010ce0,0x10010ce0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,310,"rpc_set_race_checkpoint(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10010150,0x10010150,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,325,"rpc_disable_race_checkpoint(ServerRpcContext& context, samp::proto::BitStream& /*in*/)",samp.dll,FUN_1000e440,0x1000e440,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,333,"rpc_play_audio_stream(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001ce80,0x1001ce80,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,362,"rpc_stop_audio_stream(ServerRpcContext& context, samp::proto::BitStream& /*in*/)",samp.dll,FUN_10017c00,0x10017c00,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,373,"rpc_create_pickup(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000ef50,0x1000ef50,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,392,"rpc_destroy_pickup(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1000f010,0x1000f010,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,403,"rpc_create_explosion(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001b840,0x1001b840,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,416,"rpc_set_checkpoint(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10010040,0x10010040,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,429,"rpc_show_gang_zone(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001cb40,0x1001cb40,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,443,"rpc_hide_gang_zone(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001cc60,0x1001cc60,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,457,"rpc_flash_gang_zone(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001cd10,0x1001cd10,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,474,"rpc_stop_flash_gang_zone(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_1001cdd0,0x1001cdd0,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,492,"rpc_play_crime_report(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10018b40,0x10018b40,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,518,"rpc_set_gravity(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10018750,0x10018750,partial,verify semantics and real caller effects
+src/client/core/server_rpc_world.cpp,529,"rpc_enable_stunt_bonus(ServerRpcContext& context, samp::proto::BitStream& in)",samp.dll,FUN_10017860,0x10017860,partial,verify semantics and real caller effects
+src/client/core/vehicle_sync.cpp,8,NetworkClient::send_driver_sync(),samp.dll,FUN_10006e80,0x10006e80,partial,verify semantics and real caller effects
+src/client/core/vehicle_sync.cpp,19,NetworkClient::send_passenger_sync(),samp.dll,FUN_10005400,0x10005400,partial,verify semantics and real caller effects
+src/client/core/vehicle_sync.cpp,30,"NetworkClient::handle_passenger_sync(const samp::proto::BitStream& packet,std::uint64_t stamp)",samp.dll,FUN_10009a20,0x10009a20,partial,verify semantics and real caller effects
+src/client/core/vehicle_sync.cpp,53,"NetworkClient::send_enter_vehicle(std::uint16_t id,bool passenger)",samp.dll,FUN_10005920,0x10005920,partial,verify semantics and real caller effects
+src/client/core/vehicle_sync.cpp,64,NetworkClient::send_exit_vehicle(std::uint16_t id),samp.dll,FUN_10005a40,0x10005a40,partial,verify semantics and real caller effects
+src/client/core/vehicle_sync.cpp,75,NetworkClient::send_vehicle_death(std::uint16_t id),samp.dll,FUN_1001ecf0,0x1001ecf0,partial,verify semantics and real caller effects
+src/client/core/weapon_sync.cpp,7,NetworkClient::send_aim_sync(),samp.dll,FUN_10005090,0x10005090,partial,verify semantics and real caller effects
+src/client/core/weapon_sync.cpp,20,"NetworkClient::send_bullet_sync(const std::array<std::uint8_t,40>& bullet)",samp.dll,FUN_100069d0,0x100069d0,partial,verify semantics and real caller effects
+src/client/core/weapon_sync.cpp,30,NetworkClient::send_stats_sync(),samp.dll,FUN_10005b50,0x10005b50,partial,verify semantics and real caller effects
+src/client/core/weapon_sync.cpp,44,NetworkClient::send_weapons_sync(),samp.dll,FUN_100060d0,0x100060d0,partial,verify semantics and real caller effects
+src/client/core/weapon_sync.cpp,63,NetworkClient::send_interior(std::uint8_t interior),samp.dll,FUN_100057c0,0x100057c0,partial,verify semantics and real caller effects
+src/client/core/world_text.cpp,12,WorldTextTable::clear(),samp.dll,FUN_10001190,0x10001190,partial,verify semantics and real caller effects
+src/client/core/world_text.cpp,23,"WorldTextTable::create(std::uint16_t index, const char* name, std::uint32_t colour, float x,
+                            float y, float z, float radius, std::uint8_t flag, std::uint16_t id1,
+                            std::uint16_t id2)",samp.dll,FUN_100011d0,0x100011d0,partial,verify semantics and real caller effects
+src/client/core/world_text.cpp,62,WorldTextTable::remove(std::uint16_t index),samp.dll,FUN_100012e0,0x100012e0,partial,verify semantics and real caller effects
+src/client/core/world_text.cpp,76,WorldTextTable::remove_all(),samp.dll,FUN_100015e0,0x100015e0,partial,verify semantics and real caller effects
+src/client/core/world_text.cpp,86,WorldTextTable::render(WorldTextHost& host) const,samp.dll,FUN_10001350,0x10001350,partial,verify semantics and real caller effects
+src/client/include/samp/client/hud_scalars.hpp,24,hud_radar_scale_minus_one(const HudScalarGlobals& g) noexcept,samp.dll,FUN_1009c2a0,0x1009c2a0,partial,verify semantics and real caller effects
+src/client/include/samp/client/hud_scalars.hpp,30,hud_radar_span_normalised(const HudScalarGlobals& g) noexcept,samp.dll,FUN_1009c2b0,0x1009c2b0,partial,verify semantics and real caller effects
+src/client/include/samp/client/hud_scalars.hpp,36,hud_flags(const HudScalarGlobals& g) noexcept,samp.dll,FUN_10033480,0x10033480,partial,verify semantics and real caller effects
+src/client/include/samp/client/hud_scalars.hpp,40,hud_stream_radius(const HudScalarGlobals& g) noexcept,samp.dll,FUN_1009c400,0x1009c400,partial,verify semantics and real caller effects
+src/client/include/samp/client/zlib_version.hpp,33,* zlib_error_message(int code) noexcept,samp.dll,FUN_100dfc40,0x100dfc40,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,18,"convert_colour_text(const char* text, char16_t* destination, std::uint32_t capacity)",samp.dll,FUN_10073440,0x10073440,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,29,"ColourFontProxy::QueryInterface(const void* iid, void** object)",samp.dll,FUN_10073770,0x10073770,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,34,ColourFontProxy::AddRef(),samp.dll,FUN_10073780,0x10073780,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,39,ColourFontProxy::Release(),samp.dll,FUN_10073790,0x10073790,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,44,ColourFontProxy::GetDevice(void** device),samp.dll,FUN_100737a0,0x100737a0,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,49,ColourFontProxy::GetDescA(void* description),samp.dll,FUN_100737b0,0x100737b0,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,54,ColourFontProxy::GetDescW(void* description),samp.dll,FUN_100737c0,0x100737c0,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,59,ColourFontProxy::GetTextMetricsA(void* metrics),samp.dll,FUN_100737d0,0x100737d0,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,64,ColourFontProxy::GetTextMetricsW(void* metrics),samp.dll,FUN_100737e0,0x100737e0,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,69,ColourFontProxy::GetDC(),samp.dll,FUN_100737f0,0x100737f0,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,74,"ColourFontProxy::GetGlyphData(UINT glyph, void** texture, void* rect, void* cell)",samp.dll,FUN_10073800,0x10073800,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,80,"ColourFontProxy::PreloadCharacters(UINT first, UINT last)",samp.dll,FUN_10073810,0x10073810,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,85,"ColourFontProxy::PreloadGlyphs(UINT first, UINT last)",samp.dll,FUN_10073820,0x10073820,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,90,"ColourFontProxy::PreloadTextA(const char* text, int count)",samp.dll,FUN_10073830,0x10073830,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,95,"ColourFontProxy::PreloadTextW(const char16_t* text, int count)",samp.dll,FUN_10073840,0x10073840,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,103,"ColourFontProxy::DrawTextA(void* sprite, const char* text, int count,
+                                       TextRect* rect, DWORD format, DWORD colour)",samp.dll,FUN_10073680,0x10073680,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,127,"ColourFontProxy::DrawTextW(void* sprite, const char16_t* text, int count,
+                                       TextRect* rect, DWORD format, DWORD colour)",samp.dll,FUN_10073850,0x10073850,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,134,ColourFontProxy::OnLostDevice(),samp.dll,FUN_10073860,0x10073860,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,139,ColourFontProxy::OnResetDevice(),samp.dll,FUN_10073870,0x10073870,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,148,"ColourSpriteProxy::QueryInterface(const void* iid, void** object)",samp.dll,FUN_10073880,0x10073880,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,154,ColourSpriteProxy::AddRef(),samp.dll,FUN_10073890,0x10073890,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,160,ColourSpriteProxy::Release(),samp.dll,FUN_100738a0,0x100738a0,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,166,ColourSpriteProxy::GetDevice(void** device),samp.dll,FUN_100738b0,0x100738b0,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,172,ColourSpriteProxy::GetTransform(void* transform),samp.dll,FUN_100738c0,0x100738c0,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,178,ColourSpriteProxy::SetTransform(const void* transform),samp.dll,FUN_100738d0,0x100738d0,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,184,"ColourSpriteProxy::SetWorldViewRH(const void* world, const void* view)",samp.dll,FUN_100738e0,0x100738e0,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,190,"ColourSpriteProxy::SetWorldViewLH(const void* world, const void* view)",samp.dll,FUN_100738f0,0x100738f0,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,196,ColourSpriteProxy::Begin(DWORD flags),samp.dll,FUN_10073900,0x10073900,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,203,"ColourSpriteProxy::Draw(void* texture, const void* rect, const void* centre,
+                                         const void* position, DWORD)",samp.dll,FUN_10073660,0x10073660,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,212,ColourSpriteProxy::Flush(),samp.dll,FUN_10073910,0x10073910,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,218,ColourSpriteProxy::End(),samp.dll,FUN_10073920,0x10073920,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,224,ColourSpriteProxy::OnLostDevice(),samp.dll,FUN_10073930,0x10073930,partial,verify semantics and real caller effects
+src/client/render/colour_font.cpp,230,ColourSpriteProxy::OnResetDevice(),samp.dll,FUN_10073940,0x10073940,partial,verify semantics and real caller effects
+src/client/render/colour_tags.cpp,8,is_colour_hex(char value),samp.dll,FUN_100b5950,0x100b5950,partial,verify semantics and real caller effects
+src/client/render/colour_tags.cpp,15,is_colour_hex(char16_t value),samp.dll,FUN_100b5980,0x100b5980,partial,verify semantics and real caller effects
+src/client/render/colour_tags.cpp,23,parse_colour_tag(const char* text),samp.dll,FUN_100b59c0,0x100b59c0,partial,verify semantics and real caller effects
+src/client/render/colour_tags.cpp,37,parse_colour_tag(const char16_t* text),samp.dll,FUN_100b5ad0,0x100b5ad0,partial,verify semantics and real caller effects
+src/client/render/death_window.cpp,12,"release_death_resources(DeathWindow& window, DeathWindowHost& host)",samp.dll,FUN_10069580,0x10069580,partial,verify semantics and real caller effects
+src/client/render/death_window.cpp,21,"create_death_auxiliary_fonts(DeathWindow& window, DeathWindowHost& host)",samp.dll,FUN_100695f0,0x100695f0,partial,verify semantics and real caller effects
+src/client/render/death_window.cpp,28,shift_death_entries(DeathWindow& window),samp.dll,FUN_10069660,0x10069660,partial,verify semantics and real caller effects
+src/client/render/death_window.cpp,34,"draw_death_name(DeathWindow& window, DeathWindowHost& host, const char* text,
+                    DeathRect rect, std::uint32_t colour, std::uint32_t flags)",samp.dll,FUN_10069680,0x10069680,partial,verify semantics and real caller effects
+src/client/render/death_window.cpp,54,"draw_death_weapon(DeathWindow& window, DeathWindowHost& host, const char* glyph,
+                      DeathRect rect, std::uint32_t colour)",samp.dll,FUN_10069780,0x10069780,partial,verify semantics and real caller effects
+src/client/render/death_window.cpp,66,"measure_death_weapon(DeathWindow& window, DeathWindowHost& host)",samp.dll,FUN_10069810,0x10069810,partial,verify semantics and real caller effects
+src/client/render/death_window.cpp,77,* death_weapon_glyph(std::uint8_t reason),samp.dll,FUN_10069890,0x10069890,partial,verify semantics and real caller effects
+src/client/render/death_window.cpp,127,"create_death_resources(DeathWindow& window, DeathWindowHost& host)",samp.dll,FUN_10069b90,0x10069b90,partial,verify semantics and real caller effects
+src/client/render/death_window.cpp,152,"render_death_window(DeathWindow& window, DeathWindowHost& host,
+                        std::int32_t screen_width, std::int32_t screen_height)",samp.dll,FUN_10069d20,0x10069d20,partial,verify semantics and real caller effects
+src/client/render/death_window.cpp,202,"append_death_entry(DeathWindow& window, const char* killer, const char* victim,
+                        std::uint32_t killer_colour, std::uint32_t victim_colour, std::uint8_t reason)",samp.dll,FUN_1006a010,0x1006a010,partial,verify semantics and real caller effects
+src/client/render/death_window.cpp,214,"initialize_death_window(DeathWindow& window, DeathWindowHost& host, void* device)",samp.dll,FUN_1006a090,0x1006a090,partial,verify semantics and real caller effects
+src/client/render/death_window.cpp,225,"append_death_entry_forward(DeathWindow& window, const char* killer, const char* victim,
+                                std::uint32_t killer_colour, std::uint32_t victim_colour,
+                                std::uint8_t reason)",samp.dll,thunk_FUN_1006a010,0x1006a0f0,partial,verify semantics and real caller effects
+src/client/render/font_draw.cpp,11,strip_colour_tags(char* text),samp.dll,FUN_100b5c00,0x100b5c00,partial,verify semantics and real caller effects
+src/client/render/font_draw.cpp,24,"draw_text(FontDrawState& state, FontDrawHost& host, void* sprite, const char* text,
+               TextRect rect, std::uint32_t flags, std::uint32_t colour, bool outline)",samp.dll,FUN_1006af20,0x1006af20,partial,verify semantics and real caller effects
+src/client/render/font_draw.cpp,55,"draw_primary_text(FontDrawState& state, FontDrawHost& host, void* sprite, const char* text,
+                       TextRect rect, std::uint32_t colour, bool outline)",samp.dll,FUN_1006ada0,0x1006ada0,partial,verify semantics and real caller effects
+src/client/render/font_draw.cpp,86,"release_font_resources(FontDrawState& state, FontDrawHost& host)",samp.dll,FUN_1006ab40,0x1006ab40,partial,verify semantics and real caller effects
+src/client/render/font_draw.cpp,106,"* measure_primary_text(FontDrawState& state, FontDrawHost& host, TextExtent* result,
+                                 const char* text, std::uint32_t flags)",samp.dll,FUN_1006ac40,0x1006ac40,partial,verify semantics and real caller effects
+src/client/render/font_draw.cpp,122,"* measure_small_text(FontDrawState& state, FontDrawHost& host, TextExtent* result,
+                               const char* text, std::uint32_t flags)",samp.dll,FUN_1006acf0,0x1006acf0,partial,verify semantics and real caller effects
+src/client/render/font_resources.cpp,8,"font_resources_lost(FontDrawState& state, FontResourceHost& host)",samp.dll,FUN_1006abc0,0x1006abc0,partial,verify semantics and real caller effects
+src/client/render/font_resources.cpp,15,"font_resources_reset(FontDrawState& state, FontResourceHost& host)",samp.dll,FUN_1006ac00,0x1006ac00,partial,verify semantics and real caller effects
+src/client/render/font_resources.cpp,23,"recreate_font_resources(FontDrawState& state, FontResourceHost& host)",samp.dll,FUN_1006b320,0x1006b320,partial,verify semantics and real caller effects
+src/client/render/font_resources.cpp,58,"* initialize_font_resources(FontDrawState& state, FontResourceHost& host, void* device)",samp.dll,FUN_1006b530,0x1006b530,partial,verify semantics and real caller effects
+src/client/render/font_settings.cpp,7,"font_height(std::int32_t screen_width, FontSettingsHost& host)",samp.dll,FUN_100c6950,0x100c6950,partial,verify semantics and real caller effects
+src/client/render/font_settings.cpp,17,"small_font_height(std::int32_t screen_width, FontSettingsHost& host)",samp.dll,FUN_100c69a0,0x100c69a0,partial,verify semantics and real caller effects
+src/client/render/font_settings.cpp,26,font_weight(FontSettingsHost& host),samp.dll,FUN_100c6a00,0x100c6a00,partial,verify semantics and real caller effects
+src/client/render/font_settings.cpp,31,* font_face(FontSettingsHost& host),samp.dll,FUN_100c6a30,0x100c6a30,partial,verify semantics and real caller effects
+src/client/render/glyph_colour.cpp,8,advance_glyph_colour(GlyphColourState& state),samp.dll,FUN_10073580,0x10073580,partial,verify semantics and real caller effects
+src/client/render/gui_list_mouse.cpp,8,"gui_list_mouse(GuiListMouse& state,std::uint32_t message,std::int32_t x,std::int32_t y,
+                    std::uint32_t buttons,std::uint32_t parameter,GuiListMouseHost& host)",samp.dll,FUN_1008a6e0,0x1008a6e0,partial,verify semantics and real caller effects
+src/client/render/gui_list_selection.cpp,8,"gui_list_selected_index(const GuiListSelection& state,std::int32_t start)",samp.dll,FUN_100888f0,0x100888f0,partial,verify semantics and real caller effects
+src/client/render/gui_list_selection.cpp,17,"set_gui_list_selected_index(GuiListSelection& state,std::int32_t index,GuiListSelectionHost& host)",samp.dll,FUN_1008a470,0x1008a470,partial,verify semantics and real caller effects
+src/client/render/gui_list_selection.cpp,30,"gui_list_keyboard(GuiListSelection& state,std::uint32_t message,std::uint32_t key,
+                       std::uint32_t parameter,GuiListSelectionHost& host)",samp.dll,FUN_1008a500,0x1008a500,partial,verify semantics and real caller effects
+src/client/render/gui_scrollbar.cpp,7,update_gui_scrollbar_thumb(GuiScrollbar& bar),samp.dll,FUN_10084da0,0x10084da0,partial,verify semantics and real caller effects
+src/client/render/gui_scrollbar.cpp,44,"show_gui_scrollbar_item(GuiScrollbar& bar,std::int32_t item)",samp.dll,FUN_10084e30,0x10084e30,partial,verify semantics and real caller effects
+src/client/render/gui_scrollbar.cpp,60,clamp_gui_scrollbar_position(GuiScrollbar& bar),samp.dll,FUN_10084e80,0x10084e80,partial,verify semantics and real caller effects
+src/client/render/scoreboard_layout.cpp,11,truncate_coordinate(float value),samp.dll,FUN_100f9324,0x100f9324,partial,verify semantics and real caller effects
+src/client/render/scoreboard_layout.cpp,23,"center_scoreboard(ScoreboardLayout& layout, ScoreboardLayoutHost& host)",samp.dll,FUN_1006e360,0x1006e360,partial,verify semantics and real caller effects
+src/client/render/scoreboard_layout.cpp,36,scoreboard_rectangle(const ScoreboardLayout& layout),samp.dll,FUN_1006e3c0,0x1006e3c0,partial,verify semantics and real caller effects
+src/client/render/scoreboard_layout.cpp,50,"* initialize_scoreboard_layout(ScoreboardLayout& layout, ScoreboardLayoutHost& host,
+                                              void* device, bool game_present,
+                                              std::int32_t screen_width)",samp.dll,FUN_1006e460,0x1006e460,partial,verify semantics and real caller effects
+src/client/render/scoreboard_list.cpp,11,"count_scoreboard_players(const ScoreboardPlayers& players, std::int32_t include_npcs)",samp.dll,FUN_100138c0,0x100138c0,partial,verify semantics and real caller effects
+src/client/render/scoreboard_list.cpp,19,"scoreboard_player_score(const ScoreboardPlayers& players, std::uint16_t id)",samp.dll,FUN_1006e290,0x1006e290,partial,verify semantics and real caller effects
+src/client/render/scoreboard_list.cpp,23,"scoreboard_player_ping(const ScoreboardPlayers& players, std::uint16_t id)",samp.dll,FUN_1006e2b0,0x1006e2b0,partial,verify semantics and real caller effects
+src/client/render/scoreboard_list.cpp,27,"refresh_scoreboard_rows(ScoreboardListState& state, ScoreboardListContext& context, ScoreboardListHost& host)",samp.dll,FUN_1006e760,0x1006e760,partial,verify semantics and real caller effects
+src/client/render/scoreboard_list.cpp,85,"close_scoreboard(ScoreboardListState& state, ScoreboardListHost& host, std::uint8_t restore_cursor)",samp.dll,FUN_1006e410,0x1006e410,partial,verify semantics and real caller effects
+src/client/render/scoreboard_list.cpp,94,"open_scoreboard(ScoreboardListState& state, ScoreboardListContext& context, ScoreboardListHost& host)",samp.dll,FUN_1006ee10,0x1006ee10,partial,verify semantics and real caller effects
+src/client/win/game_runtime.cpp,21,"* __cdecl read_frame_name(void* stream,unsigned length,void* object)",samp.dll,FUN_100a5c10,0x100a5c10,partial,verify semantics and real caller effects
+src/client/win/game_runtime.cpp,35,GameRuntime::prepare_boot(),samp.dll,FUN_100aa300,0x100aa300,partial,verify semantics and real caller effects
+src/client/win/game_runtime.cpp,134,GameRuntime::begin_loading(),samp.dll,FUN_100aaad0,0x100aaad0,partial,verify semantics and real caller effects
+src/client/win/game_runtime.cpp,287,"GameRuntime::set_ped_model(std::uint8_t* ped, std::uint32_t model)",samp.dll,FUN_1009ed90,0x1009ed90,partial,verify semantics and real caller effects
+src/client/win/game_runtime.cpp,315,* GameRuntime::resolve_actor(std::uint32_t actor),samp.dll,FUN_100b3770,0x100b3770,partial,verify semantics and real caller effects
+src/client/win/game_runtime.cpp,327,GameRuntime::stream_remote_player(const RemotePlayerStream& command),samp.dll,FUN_10016c50,0x10016c50,partial,verify semantics and real caller effects
+src/client/win/game_runtime.cpp,403,"GameRuntime::process_ped_control(void* object, void*)",samp.dll,FUN_100a26d0,0x100a26d0,partial,verify semantics and real caller effects
+src/client/win/game_runtime.cpp,498,GameRuntime::process_connection_scene(),samp.dll,FUN_100086a0,0x100086a0,partial,verify semantics and real caller effects
+src/client/win/game_runtime.cpp,528,GameRuntime::spawn_player(const WorldClass& spawn),samp.dll,FUN_10003b20,0x10003b20,partial,verify semantics and real caller effects
+src/client/win/game_runtime.cpp,635,"GameRuntime::tick(bool connected,bool network_spawned,bool class_ready,const WorldClass& spawn,
+                       std::vector<GameCommand>& pending_commands)",samp.dll,FUN_100072d0,0x100072d0,partial,verify semantics and real caller effects
+src/client/win/player_death.cpp,7,"GameRuntime::death_info(const std::uint8_t* ped, std::uint16_t& killer) const",samp.dll,FUN_100ac470,0x100ac470,partial,verify semantics and real caller effects
+src/client/win/samp_dll.cpp,193,request_client_exit(std::string_view),samp.dll,FUN_100c5550,0x100c5550,partial,verify semantics and real caller effects
+src/client/win/samp_dll.cpp,207,"samp_d3d_present(IDirect3DDevice9* present_device, const RECT* present_source, const RECT* destination,
+                       HWND window, const RGNDATA* dirty)",samp.dll,FUN_100751b0,0x100751b0,partial,verify semantics and real caller effects
+src/client/win/samp_dll.cpp,944,"samp_d3d_reset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* parameters)",samp.dll,FUN_10074060,0x10074060,partial,verify semantics and real caller effects
+src/client/win/samp_dll.cpp,988,worker(LPVOID),samp.dll,FUN_100c5150,0x100c5150,partial,verify semantics and real caller effects
+src/client/win/samp_dll.cpp,1214,"DllMain(HMODULE module, DWORD reason, LPVOID reserved)",samp.dll,entry,0x100fdb60,partial,verify semantics and real caller effects
+src/client/win/scoreboard_dialog.cpp,21,"ChatHook::window_proc(HWND window,UINT message,WPARAM wparam,LPARAM lparam)",samp.dll,FUN_100610d0,0x100610d0,partial,verify semantics and real caller effects
+src/client/win/scoreboard_dialog.cpp,391,ScoreboardDialog::~ScoreboardDialog(),samp.dll,FUN_1008c6b0,0x1008c6b0,partial,verify semantics and real caller effects
+src/client/win/scoreboard_dialog.cpp,401,"ScoreboardDialog::draw(IDirect3DDevice9* device,std::string_view server,std::uint16_t local,
+    std::span<const ScoreboardPlayerView> players,int width,int height,render::FontDrawState* fonts)",samp.dll,FUN_1008d200,0x1008d200,partial,verify semantics and real caller effects
+src/client/win/scoreboard_dialog_impl.hpp,51,"update_layout(int width,int height)",samp.dll,FUN_10088700,0x10088700,partial,verify semantics and real caller effects
+src/client/win/selection_dialog.cpp,14,"SelectionDialog::mouse_mode(bool enabled,bool immediate_restore,bool scoreboard)",samp.dll,FUN_100a0530,0x100a0530,partial,verify semantics and real caller effects
+src/client/win/selection_dialog.cpp,86,SelectionDialog::restore_mouse(),samp.dll,FUN_100a0410,0x100a0410,partial,verify semantics and real caller effects
+src/client/win/vehicle_runtime.cpp,12,GameRuntime::stream_vehicle(const VehicleSpawnCommand& command),samp.dll,FUN_1001eb40,0x1001eb40,partial,verify semantics and real caller effects
+src/client/win/vehicle_runtime.cpp,91,GameRuntime::remove_vehicle(std::uint16_t id),samp.dll,FUN_1001e540,0x1001e540,partial,verify semantics and real caller effects
+src/client/win/weapon_runtime.cpp,10,"GameRuntime::capture_shot(const float* origin,const float* position,void* entity,std::uint8_t weapon)",samp.dll,FUN_100a5170,0x100a5170,partial,verify semantics and real caller effects
+src/client/win/weapon_runtime.cpp,35,"GameRuntime::give_weapon(std::uint8_t* ped,std::uint32_t weapon,std::uint32_t ammo)",samp.dll,FUN_100af390,0x100af390,partial,verify semantics and real caller effects
+src/client/win/weapon_runtime.cpp,47,GameRuntime::replay_bullet(const RemoteBulletCommand& command),samp.dll,FUN_100af670,0x100af670,partial,verify semantics and real caller effects
+src/pawn/amx_control_api.cpp,10,"flags(const samp::amx::Amx* state, std::int16_t* result) noexcept",samp-server.exe,FUN_00401030,0x00401030,partial,verify semantics and real caller effects
+src/pawn/amx_control_api.cpp,28,"initialize_jit(samp::amx::Amx*, void*, void*) noexcept",samp-server.exe,FUN_00401400,0x00401400,partial,verify semantics and real caller effects
+src/pawn/amx_control_api.cpp,33,"push(samp::amx::Amx* state, samp::amx::cell value) noexcept",samp-server.exe,FUN_00401c50,0x00401c50,partial,verify semantics and real caller effects
+src/pawn/amx_control_api.cpp,58,"set_callback(samp::amx::Amx* state, void* function) noexcept",samp-server.exe,FUN_004030d0,0x004030d0,partial,verify semantics and real caller effects
+src/pawn/amx_control_api.cpp,63,"set_debug_hook(samp::amx::Amx* state, void* function) noexcept",samp-server.exe,FUN_004030e0,0x004030e0,partial,verify semantics and real caller effects
+src/pawn/amx_control_api.cpp,71,"callback(samp::amx::Amx* state, samp::amx::cell index,
+             samp::amx::cell* result, const samp::amx::cell* parameters) noexcept",samp-server.exe,FUN_00401070,0x00401070,partial,verify semantics and real caller effects
+src/pawn/amx_host_api.cpp,10,"get_user_data(const samp::amx::Amx& state, std::int32_t tag, void*& value) noexcept",samp-server.exe,FUN_00401a80,0x00401a80,partial,verify semantics and real caller effects
+src/pawn/amx_host_api.cpp,23,"set_user_data(samp::amx::Amx& state, std::int32_t tag, void* value) noexcept",samp-server.exe,FUN_00401ac0,0x00401ac0,partial,verify semantics and real caller effects
+src/pawn/amx_host_api.cpp,48,"raise_error(samp::amx::Amx& state, int error) noexcept",samp-server.exe,FUN_004030f0,0x004030f0,partial,verify semantics and real caller effects
+src/pawn/amx_host_api.cpp,55,"native_count(const samp::amx::Amx& state, int& count) noexcept",samp-server.exe,FUN_00401570,0x00401570,partial,verify semantics and real caller effects
+src/pawn/amx_host_api.cpp,66,"public_count(const samp::amx::Amx& state, int& count) noexcept",samp-server.exe,FUN_00401690,0x00401690,partial,verify semantics and real caller effects
+src/pawn/amx_host_api.cpp,77,"public_variable_count(const samp::amx::Amx& state, int& count) noexcept",samp-server.exe,FUN_004017d0,0x004017d0,partial,verify semantics and real caller effects
+src/pawn/amx_host_api.cpp,90,"tag_count(const samp::amx::Amx& state, int& count) noexcept",samp-server.exe,FUN_00401920,0x00401920,partial,verify semantics and real caller effects
+src/pawn/amx_loader.cpp,18,"AmxImage::load_from_memory(const std::uint8_t* data, std::size_t size, AmxImage& out)",samp-server.exe,FUN_00401320,0x00401320,partial,verify semantics and real caller effects
+src/pawn/amx_lookup_api.cpp,14,"get_native(const samp::amx::Amx* state, int index, char* name) noexcept",samp-server.exe,FUN_00401590,0x00401590,partial,verify semantics and real caller effects
+src/pawn/amx_lookup_api.cpp,37,"get_public(const samp::amx::Amx* state, int index, char* name) noexcept",samp-server.exe,FUN_004016b0,0x004016b0,partial,verify semantics and real caller effects
+src/pawn/amx_lookup_api.cpp,63,"get_public_variable(const samp::amx::Amx* state, int index, char* name,
+                        samp::amx::cell* address) noexcept",samp-server.exe,FUN_004017f0,0x004017f0,partial,verify semantics and real caller effects
+src/pawn/amx_lookup_api.cpp,91,"get_tag(const samp::amx::Amx* state, int index, char* name,
+            samp::amx::cell* tag) noexcept",samp-server.exe,FUN_00401970,0x00401970,partial,verify semantics and real caller effects
+src/pawn/amx_lookup_api.cpp,127,"find_native(const samp::amx::Amx* state, const char* name, int* index) noexcept",samp-server.exe,FUN_004015f0,0x004015f0,partial,verify semantics and real caller effects
+src/pawn/amx_lookup_api.cpp,148,"find_public(const samp::amx::Amx* state, const char* name, int* index) noexcept",samp-server.exe,FUN_00401710,0x00401710,partial,verify semantics and real caller effects
+src/pawn/amx_lookup_api.cpp,175,"find_public_variable(const samp::amx::Amx* state, const char* name,
+                         samp::amx::cell* address) noexcept",samp-server.exe,FUN_00401860,0x00401860,partial,verify semantics and real caller effects
+src/pawn/amx_lookup_api.cpp,204,"find_tag_id(const samp::amx::Amx* state, samp::amx::cell tag, char* name) noexcept",samp-server.exe,FUN_00401a00,0x00401a00,partial,verify semantics and real caller effects
+src/pawn/amx_memory_api.cpp,11,"get_address(samp::amx::Amx* state, samp::amx::cell address,
+                samp::amx::cell** physical) noexcept",samp-server.exe,FUN_00403100,0x00403100,partial,verify semantics and real caller effects
+src/pawn/amx_memory_api.cpp,30,"allot(samp::amx::Amx* state, int cells, samp::amx::cell* address,
+          samp::amx::cell** physical) noexcept",samp-server.exe,FUN_00403150,0x00403150,partial,verify semantics and real caller effects
+src/pawn/amx_memory_api.cpp,49,"release(samp::amx::Amx* state, samp::amx::cell address) noexcept",samp-server.exe,FUN_004031b0,0x004031b0,partial,verify semantics and real caller effects
+src/pawn/amx_memory_api.cpp,56,"validate(samp::amx::Amx* state, samp::amx::cell address) noexcept",samp-server.exe,FUN_004061c0,0x004061c0,partial,verify semantics and real caller effects
+src/pawn/amx_registration_api.cpp,9,"find_function(const char* name,
+                            const samp::amx::AmxNativeInfo* functions,
+                            int maximum) noexcept",samp-server.exe,FUN_00401b20,0x00401b20,partial,verify semantics and real caller effects
+src/pawn/amx_registration_api.cpp,32,"register_natives(samp::amx::Amx* state,
+                     const samp::amx::AmxNativeInfo* functions,
+                     int maximum) noexcept",samp-server.exe,FUN_00401ba0,0x00401ba0,partial,verify semantics and real caller effects
+src/pawn/amx_runtime_api.cpp,14,"clone(samp::amx::Amx* destination, const samp::amx::Amx* source, void* data) noexcept",samp-server.exe,FUN_00401410,0x00401410,partial,verify semantics and real caller effects
+src/pawn/amx_runtime_api.cpp,72,"memory_info(const samp::amx::Amx* state, samp::amx::cell* code_bytes,
+                samp::amx::cell* data_bytes, samp::amx::cell* stack_bytes) noexcept",samp-server.exe,FUN_004014e0,0x004014e0,partial,verify semantics and real caller effects
+src/pawn/amx_runtime_api.cpp,96,"name_length(const samp::amx::Amx* state, int* length) noexcept",samp-server.exe,FUN_00401540,0x00401540,partial,verify semantics and real caller effects
+src/pawn/amx_runtime_api.cpp,111,cleanup(samp::amx::Amx*) noexcept,samp-server.exe,FUN_00407de0,0x00407de0,partial,verify semantics and real caller effects
+src/pawn/amx_runtime_api.cpp,116,"* native_info(const char* name,
+                                    decltype(samp::amx::AmxNativeInfo::func) function) noexcept",samp-server.exe,FUN_00401c30,0x00401c30,partial,verify semantics and real caller effects
+src/pawn/amx_runtime_api.cpp,127,"push_array(samp::amx::Amx* state, samp::amx::cell* address,
+               samp::amx::cell** physical, const samp::amx::cell* source, int cells) noexcept",samp-server.exe,FUN_004035c0,0x004035c0,partial,verify semantics and real caller effects
+src/pawn/amx_runtime_api.cpp,152,"push_string(samp::amx::Amx* state, samp::amx::cell* address,
+                samp::amx::cell** physical, const void* source,
+                int pack, int use_wide_characters) noexcept",samp-server.exe,FUN_00403610,0x00403610,partial,verify semantics and real caller effects
+src/pawn/amx_set_string_api.cpp,9,"set_string(samp::amx::cell* destination, const void* source,
+               int pack, int use_wide_characters, std::uint32_t capacity) noexcept",samp-server.exe,FUN_00403250,0x00403250,partial,verify semantics and real caller effects
+src/pawn/amx_string_api.cpp,8,"length(const samp::amx::cell* source, int& characters) noexcept",samp-server.exe,FUN_004031d0,0x004031d0,partial,verify semantics and real caller effects
+src/pawn/amx_string_api.cpp,44,"get_string(void* destination, const samp::amx::cell* source,
+               int use_wide_characters, std::uint32_t capacity) noexcept",samp-server.exe,FUN_00403350,0x00403350,partial,verify semantics and real caller effects
+src/pawn/core_natives.cpp,20,"argument_count(samp::amx::Amx* state, std::span<const cell>)",samp-server.exe,FUN_004045b0,0x004045b0,partial,verify semantics and real caller effects
+src/pawn/core_natives.cpp,34,"get_argument(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_004045d0,0x004045d0,partial,verify semantics and real caller effects
+src/pawn/core_natives.cpp,52,"set_argument(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00404600,0x00404600,partial,verify semantics and real caller effects
+src/pawn/core_natives.cpp,70,"heap_space(samp::amx::Amx* state, std::span<const cell>)",samp-server.exe,FUN_00404650,0x00404650,partial,verify semantics and real caller effects
+src/pawn/core_natives.cpp,76,"function_index(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00404660,0x00404660,partial,verify semantics and real caller effects
+src/pawn/core_natives.cpp,89,"swap_characters(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_004046f0,0x004046f0,partial,verify semantics and real caller effects
+src/pawn/core_natives.cpp,97,"lower(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00404730,0x00404730,partial,verify semantics and real caller effects
+src/pawn/core_natives.cpp,107,"upper(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00404740,0x00404740,partial,verify semantics and real caller effects
+src/pawn/core_natives.cpp,117,"minimum(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00404750,0x00404750,partial,verify semantics and real caller effects
+src/pawn/core_natives.cpp,122,"maximum(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00404770,0x00404770,partial,verify semantics and real caller effects
+src/pawn/core_natives.cpp,128,"clamp(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00404790,0x00404790,partial,verify semantics and real caller effects
+src/pawn/core_natives.cpp,140,"random(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00404ac0,0x00404ac0,partial,verify semantics and real caller effects
+src/pawn/db_natives.cpp,73,register_db_natives(PawnVm& vm),samp-server.exe,FUN_00481880,0x00481880,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,15,"from_integer(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405be0,0x00405be0,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,20,"from_string(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00405bf0,0x00405bf0,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,32,"multiply(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405c60,0x00405c60,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,37,"divide(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405c80,0x00405c80,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,42,"add(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405ca0,0x00405ca0,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,47,"subtract(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405cc0,0x00405cc0,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,52,"fraction(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405ce0,0x00405ce0,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,60,"round(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405d10,0x00405d10,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,76,"compare(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405d70,0x00405d70,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,86,"square_root(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405db0,0x00405db0,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,91,"power(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405de0,0x00405de0,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,100,"logarithm(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00405e00,0x00405e00,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,115,"radians(float value, cell mode)",samp-server.exe,FUN_00405e90,0x00405e90,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,142,"sine(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405eb0,0x00405eb0,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,162,"cosine(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405ed0,0x00405ed0,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,182,"tangent(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405ef0,0x00405ef0,partial,verify semantics and real caller effects
+src/pawn/float_natives.cpp,204,"absolute(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00405f10,0x00405f10,partial,verify semantics and real caller effects
+src/pawn/natives.cpp,29,"register_server_natives(PawnVm& vm, NativeHost& host)",samp-server.exe,FUN_0047a100,0x0047a100,partial,verify semantics and real caller effects
+src/pawn/pawn_vm.cpp,54,"PawnVm::execute(std::string_view public_name, std::span<const cell> args, cell& result,
+                    std::optional<int> entry_index)",samp-server.exe,FUN_00401c90,0x00401c90,partial,verify semantics and real caller effects
+src/pawn/property_natives.cpp,29,* allocate(Property& head),samp-server.exe,FUN_00404480,0x00404480,partial,verify semantics and real caller effects
+src/pawn/property_natives.cpp,41,"erase(Property& previous, Property* item)",samp-server.exe,FUN_004044b0,0x004044b0,partial,verify semantics and real caller effects
+src/pawn/property_natives.cpp,49,"update(Property& item, const char* text, cell id, cell value)",samp-server.exe,FUN_004044d0,0x004044d0,partial,verify semantics and real caller effects
+src/pawn/property_natives.cpp,63,"* find(Property& head, cell id, const char* name, cell value,
+               Property** previous = nullptr)",samp-server.exe,FUN_00404530,0x00404530,partial,verify semantics and real caller effects
+src/pawn/property_natives.cpp,87,* narrow(const cell* source),samp-server.exe,FUN_004047d0,0x004047d0,partial,verify semantics and real caller effects
+src/pawn/property_natives.cpp,100,"set(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00404910,0x00404910,partial,verify semantics and real caller effects
+src/pawn/property_natives.cpp,124,"remove(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00404a00,0x00404a00,partial,verify semantics and real caller effects
+src/pawn/property_natives.cpp,140,"exists(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00404a70,0x00404a70,partial,verify semantics and real caller effects
+src/pawn/property_natives.cpp,152,"get(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00404810,0x00404810,partial,verify semantics and real caller effects
+src/pawn/string_cells.cpp,16,"pack(cell* destination, const cell* source, cell offset, cell count)",samp-server.exe,FUN_00405f60,0x00405f60,partial,verify semantics and real caller effects
+src/pawn/string_cells.cpp,84,"unpack(cell* destination, const cell* source, cell count)",samp-server.exe,FUN_00406100,0x00406100,partial,verify semantics and real caller effects
+src/pawn/string_cells.cpp,116,"* packed_byte(const cell* source, std::uint32_t index)",samp-server.exe,FUN_00406170,0x00406170,partial,verify semantics and real caller effects
+src/pawn/string_cells.cpp,123,"character(const cell* source, cell index, bool ignore_case)",samp-server.exe,FUN_00406190,0x00406190,partial,verify semantics and real caller effects
+src/pawn/string_cells.cpp,143,"compare(const cell* left, const cell* right, cell count,
+              cell left_offset, bool ignore_case)",samp-server.exe,FUN_004064e0,0x004064e0,partial,verify semantics and real caller effects
+src/pawn/string_cells.cpp,158,"uu_decode(std::uint8_t* destination, const char* source)",samp-server.exe,FUN_00406c90,0x00406c90,partial,verify semantics and real caller effects
+src/pawn/string_cells.cpp,183,"uu_encode(char* destination, const std::uint8_t* source, cell bytes)",samp-server.exe,FUN_00406d10,0x00406d10,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,16,"length(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_004061f0,0x004061f0,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,27,"number(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00406b00,0x00406b00,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,50,"is_packed(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00406c60,0x00406c60,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,61,"copy_memory(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00406f70,0x00406f70,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,78,"pack(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00406230,0x00406230,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,96,"unpack(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_004062f0,0x004062f0,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,114,"concatenate(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_004063a0,0x004063a0,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,152,"compare(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00406540,0x00406540,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,170,"find(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_004065e0,0x004065e0,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,197,"middle(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_004066c0,0x004066c0,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,251,"erase(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00406850,0x00406850,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,289,"insert(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00406930,0x00406930,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,338,"value_string(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00406bc0,0x00406bc0,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,366,"uu_decode(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00406e10,0x00406e10,partial,verify semantics and real caller effects
+src/pawn/string_natives.cpp,386,"uu_encode(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00406ea0,0x00406ea0,partial,verify semantics and real caller effects
+src/pawn/time_natives.cpp,10,"get_time(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00407060,0x00407060,partial,verify semantics and real caller effects
+src/pawn/time_natives.cpp,24,"set_time(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00407010,0x00407010,partial,verify semantics and real caller effects
+src/pawn/time_natives.cpp,37,"get_date(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_00407150,0x00407150,partial,verify semantics and real caller effects
+src/pawn/time_natives.cpp,51,"set_date(samp::amx::Amx*, std::span<const cell> args)",samp-server.exe,FUN_00407100,0x00407100,partial,verify semantics and real caller effects
+src/pawn/time_natives.cpp,64,"ticks(samp::amx::Amx* state, std::span<const cell> args)",samp-server.exe,FUN_004071f0,0x004071f0,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,47,BitStream(std::size_t capacityBytes),samp.dll,FUN_1001f220,0x1001f220,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,52,write0(),samp.dll,FUN_1001f9d0,0x1001f9d0,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,62,write1(),samp.dll,FUN_1001f9f0,0x1001f9f0,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,78,"writeBits(const std::uint8_t* input, int numberOfBitsToWrite, bool rightAlignedBits = false)",samp.dll,FUN_1001faa0,0x1001faa0,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,115,"write(const void* input, std::size_t numberOfBytes)",samp.dll,FUN_1001fb50,0x1001fb50,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,130,"writeAlignedBytes(const std::uint8_t* input, std::size_t numberOfBytes)",samp.dll,FUN_1001fbe0,0x1001fbe0,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,144,writeBitStream(const BitStream& source),samp.dll,FUN_1001f880,0x1001f880,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,155,"writeCompressed(const std::uint8_t* input, int sizeBits, bool unsignedData)",samp.dll,FUN_1001fbf0,0x1001fbf0,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,190,readBit(),samp.dll,FUN_1001f3e0,0x1001f3e0,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,201,"readBits(std::uint8_t* output, int numberOfBitsToRead, bool alignBitsToRight = true)",samp.dll,FUN_1001f470,0x1001f470,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,238,"read(void* output, std::size_t numberOfBytes)",samp.dll,FUN_1001f960,0x1001f960,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,252,"readAlignedBytes(std::uint8_t* output, std::size_t numberOfBytes)",samp.dll,FUN_1001fa30,0x1001fa30,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,268,"readCompressed(std::uint8_t* output, int sizeBits, bool unsignedData)",samp.dll,FUN_1001f530,0x1001f530,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,299,alignWriteToByteBoundary(),samp.dll,FUN_1001f420,0x1001f420,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,306,alignReadToByteBoundary(),samp.dll,FUN_1001f440,0x1001f440,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,317,reset(),samp.dll,FUN_1001f3b0,0x1001f3b0,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/bitstream.hpp,324,addBitsAndReallocate(int bits),samp.dll,FUN_1001f630,0x1001f630,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/obfuscation.hpp,37,obfuscation_checksum(std::span<const std::uint8_t> plain) noexcept,samp.dll,FUN_1001f0f0,0x1001f0f0,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/obfuscation.hpp,47,"obfuscate(std::span<const std::uint8_t> plain,
+                                                         std::uint16_t port)",samp.dll,FUN_1001f170,0x1001f170,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/obfuscation.hpp,62,"deobfuscate(
+    std::span<const std::uint8_t> datagram, std::uint16_t port)",samp-server.exe,FUN_0046a910,0x0046a910,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/raknet.hpp,119,encode_connected_datagram(const ConnectedDatagram& datagram),samp.dll,FUN_10047b30,0x10047b30,partial,verify semantics and real caller effects
+src/protocol/include/samp/proto/sha1.hpp,53,* digest() const noexcept,samp.dll,FUN_10053250,0x10053250,partial,verify semantics and real caller effects
+src/protocol/reliability_frame.cpp,9,"reliability_sequence_older(std::uint16_t incoming, std::uint16_t expected)",samp.dll,FUN_10043ac0,0x10043ac0,partial,verify semantics and real caller effects
+src/protocol/reliability_frame.cpp,16,reliability_retry_delay(std::uint32_t ping_ms),samp.dll,FUN_10043b30,0x10043b30,partial,verify semantics and real caller effects
+src/protocol/reliability_frame.cpp,22,"set_reliability_ping(ReliabilitySendState& state, std::uint32_t ping_ms)",samp.dll,FUN_100456c0,0x100456c0,partial,verify semantics and real caller effects
+src/protocol/reliability_frame.cpp,30,reliability_header_bits(const ReliabilityFrame& frame),samp.dll,FUN_10043980,0x10043980,partial,verify semantics and real caller effects
+src/protocol/reliability_frame.cpp,38,"queue_reliability_frame(ReliabilitySendState& state, ReliabilityFrame frame,
+                             std::uint16_t& next_message_number, std::uint64_t now_ms)",samp.dll,FUN_100465c0,0x100465c0,partial,verify semantics and real caller effects
+src/protocol/reliability_frame.cpp,96,"acknowledge_reliability_frames(ReliabilitySendState& state, const std::vector<AckRange>& ranges,
+                                    std::uint64_t now_ms)",samp.dll,FUN_10048170,0x10048170,partial,verify semantics and real caller effects
+src/protocol/reliability_frame.cpp,113,"update_reliability_sends(ReliabilitySendState& state, std::uint64_t now_ms,
+                              std::uint16_t* next_message_number)",samp.dll,FUN_100495a0,0x100495a0,partial,verify semantics and real caller effects
+src/protocol/reliability_frame.cpp,233,"queue_connected_ping(ReliabilitySendState& state, std::uint16_t& next_message_number,
+                           std::uint64_t now_ms)",samp.dll,FUN_1003ec60,0x1003ec60,partial,verify semantics and real caller effects
+src/protocol/reliability_frame.cpp,247,"handle_connected_ping(ReliabilitySendState& state, const BitStream& message,
+                            std::uint16_t& next_message_number, std::uint64_t now_ms)",samp.dll,FUN_10040f10,0x10040f10,partial,verify semantics and real caller effects
+src/protocol/reliability_frame.cpp,281,"decode_reliability_frame(BitStream& input, ReliabilityFrame& frame)",samp.dll,FUN_10045110,0x10045110,partial,verify semantics and real caller effects
+src/protocol/reliability_frame.cpp,316,"encode_reliability_frame(BitStream& output, const ReliabilityFrame& frame)",samp.dll,FUN_10044ff0,0x10044ff0,partial,verify semantics and real caller effects
+src/protocol/reliability_frame.cpp,340,"decode_connected_datagram(std::span<const std::uint8_t> bytes, ConnectedDatagram& output,
+                               ReliabilityReceiveState* state, std::uint64_t now_ms)",samp.dll,FUN_10048d10,0x10048d10,partial,verify semantics and real caller effects
+src/protocol/remote_sync.cpp,16,"read_compressed_velocity(BitStream& stream, sync::Vector3& out)",samp.dll,FUN_1000a0a0,0x1000a0a0,partial,verify semantics and real caller effects
+src/protocol/samp_key.cpp,17,update(std::span<const std::uint8_t> data) noexcept,samp.dll,FUN_10063d30,0x10063d30,partial,verify semantics and real caller effects
+src/protocol/samp_key.cpp,31,state() const noexcept,samp.dll,FUN_10063ce0,0x10063ce0,partial,verify semantics and real caller effects
+src/protocol/samp_key.cpp,51,compress(const std::uint8_t* block) noexcept,samp.dll,FUN_100635f0,0x100635f0,partial,verify semantics and real caller effects
+src/protocol/samp_key.cpp,113,"multiply(std::span<std::uint8_t> value, std::uint32_t factor) noexcept",samp.dll,FUN_10059380,0x10059380,partial,verify semantics and real caller effects
+src/protocol/samp_key.cpp,124,to_hex(std::span<const std::uint8_t> value),samp.dll,FUN_1005a910,0x1005a910,partial,verify semantics and real caller effects
+src/protocol/samp_key.cpp,154,"generate(std::string_view seed, std::uint32_t multiplier)",samp.dll,FUN_1005fa60,0x1005fa60,partial,verify semantics and real caller effects
+src/protocol/sha1.cpp,10,Sha1::reset() noexcept,samp.dll,FUN_100511b0,0x100511b0,partial,verify semantics and real caller effects
+src/protocol/sha1.cpp,20,Sha1::compress(const std::uint8_t* block) noexcept,samp.dll,FUN_100511e0,0x100511e0,partial,verify semantics and real caller effects
+src/protocol/sha1.cpp,70,"Sha1::update(const std::uint8_t* data, std::size_t length) noexcept",samp.dll,FUN_10052e00,0x10052e00,partial,verify semantics and real caller effects
+src/protocol/sha1.cpp,85,Sha1::finalize() noexcept,samp.dll,FUN_10052fb0,0x10052fb0,partial,verify semantics and real caller effects
+src/server/connection.cpp,12,"RakNetServer::handle_connection_request(RakNetPeer& peer, const samp::proto::BitStream& message)",samp-server.exe,FUN_00457e80,0x00457e80,partial,verify semantics and real caller effects
+src/server/connection.cpp,30,RakNetServer::begin_authentication(RakNetPeer& peer),samp-server.exe,FUN_004558c0,0x004558c0,partial,verify semantics and real caller effects
+src/server/connection.cpp,44,"RakNetServer::handle_authentication(RakNetPeer& peer, const samp::proto::BitStream& message)",samp-server.exe,FUN_0048f9e0,0x0048f9e0,partial,verify semantics and real caller effects
+src/server/connection.cpp,60,RakNetServer::accept_connection(RakNetPeer& peer),samp-server.exe,FUN_0048f8a0,0x0048f8a0,partial,verify semantics and real caller effects
+src/server/connection.cpp,73,"GameLayer::disconnect_player(int id, std::uint8_t reason)",samp-server.exe,FUN_00466550,0x00466550,partial,verify semantics and real caller effects
+src/server/console.cpp,29,"parse_ipv4(std::string_view text, std::string& out)",samp-server.exe,FUN_0048fd60,0x0048fd60,partial,verify semantics and real caller effects
+src/server/console.cpp,55,Console::command_list(),samp-server.exe,FUN_00490200,0x00490200,partial,verify semantics and real caller effects
+src/server/console.cpp,64,Console::variable_list(),samp-server.exe,FUN_004905e0,0x004905e0,partial,verify semantics and real caller effects
+src/server/console.cpp,105,Console::command_echo(const ConsoleLine& line),samp-server.exe,FUN_0048fbd0,0x0048fbd0,partial,verify semantics and real caller effects
+src/server/console.cpp,110,Console::command_exec(const ConsoleLine& line),samp-server.exe,FUN_00491150,0x00491150,partial,verify semantics and real caller effects
+src/server/console.cpp,198,Console::command_exit(),samp-server.exe,FUN_0048fbc0,0x0048fbc0,partial,verify semantics and real caller effects
+src/server/console.cpp,203,Console::command_players(),samp-server.exe,FUN_0048ff70,0x0048ff70,partial,verify semantics and real caller effects
+src/server/console.cpp,218,Console::command_kick(const ConsoleLine& line),samp-server.exe,FUN_0048fc00,0x0048fc00,partial,verify semantics and real caller effects
+src/server/console.cpp,235,Console::command_ban(const ConsoleLine& line),samp-server.exe,FUN_0048fca0,0x0048fca0,partial,verify semantics and real caller effects
+src/server/console.cpp,255,Console::command_ban_ip(const ConsoleLine& line),samp-server.exe,FUN_0048fe10,0x0048fe10,partial,verify semantics and real caller effects
+src/server/console.cpp,273,Console::command_unban_ip(const ConsoleLine& line),samp-server.exe,FUN_0048fe60,0x0048fe60,partial,verify semantics and real caller effects
+src/server/console.cpp,281,Console::command_reload_log(),samp-server.exe,FUN_0048ff60,0x0048ff60,partial,verify semantics and real caller effects
+src/server/console.cpp,290,Console::command_gravity(const ConsoleLine& line),samp-server.exe,FUN_00490020,0x00490020,partial,verify semantics and real caller effects
+src/server/console.cpp,297,Console::command_weather(const ConsoleLine& line),samp-server.exe,FUN_00490050,0x00490050,partial,verify semantics and real caller effects
+src/server/console.cpp,303,Console::command_load_filterscript(const ConsoleLine& line),samp-server.exe,FUN_00490080,0x00490080,partial,verify semantics and real caller effects
+src/server/console.cpp,311,Console::command_unload_filterscript(const ConsoleLine& line),samp-server.exe,FUN_00490190,0x00490190,partial,verify semantics and real caller effects
+src/server/console.cpp,331,Console::command_reload_filterscript(const ConsoleLine& line),samp-server.exe,FUN_004900f0,0x004900f0,partial,verify semantics and real caller effects
+src/server/console.cpp,337,Console::execute(std::string_view input),samp-server.exe,FUN_00490ce0,0x00490ce0,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,34,sanitise_chat_text(std::string text),samp-server.exe,FUN_004690d0,0x004690d0,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,68,"GameLayer::send_stream_in(GamePlayer& receiver, const GamePlayer& other)",samp-server.exe,FUN_00483b80,0x00483b80,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,93,"GameLayer::send_stream_out(GamePlayer& receiver, const GamePlayer& other)",samp-server.exe,FUN_00483c10,0x00483c10,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,107,GameLayer::update_streaming(),samp-server.exe,FUN_004851d0,0x004851d0,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,152,GameLayer::load_filterscript(const std::string& name),samp-server.exe,FUN_0046a9d0,0x0046a9d0,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,192,GameLayer::start_gamemode(),samp-server.exe,FUN_0046af20,0x0046af20,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,208,GameLayer::max_players() const,samp-server.exe,FUN_00473240,0x00473240,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,213,GameLayer::set_game_mode_text(std::string_view text),samp-server.exe,FUN_0046fef0,0x0046fef0,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,218,GameLayer::set_world_time(int hour),samp-server.exe,FUN_00472f50,0x00472f50,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,226,GameLayer::set_weather(int id),samp-server.exe,FUN_00473f20,0x00473f20,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,232,GameLayer::kick_player(int id),samp-server.exe,FUN_004708c0,0x004708c0,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,237,"GameLayer::send_client_message(int id, int type, std::string_view text)",samp-server.exe,FUN_00471b70,0x00471b70,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,255,GameLayer::add_player_class(const samp::pawn::PlayerClassSpec& spec),samp-server.exe,FUN_0046fff0,0x0046fff0,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,260,"GameLayer::set_player_interior(int id, int interior)",samp-server.exe,FUN_0047bb00,0x0047bb00,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,270,"GameLayer::set_player_pos(int id, float x, float y, float z)",samp-server.exe,FUN_0047ae30,0x0047ae30,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,283,"GameLayer::set_player_facing_angle(int id, float angle)",samp-server.exe,FUN_0047c920,0x0047c920,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,294,"GameLayer::set_camera_pos(int id, float x, float y, float z)",samp-server.exe,FUN_0047bcc0,0x0047bcc0,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,306,"GameLayer::set_camera_look_at(int id, float x, float y, float z, int cut)",samp-server.exe,FUN_0047bde0,0x0047bde0,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,319,"GameLayer::toggle_player_clock(int id, bool on)",samp-server.exe,FUN_00473050,0x00473050,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,330,"GameLayer::on_user_message(RakNetPeer& peer, const BitStream& message)",samp-server.exe,FUN_00496890,0x00496890,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,398,"GameLayer::handle_player_connect(RakNetPeer& peer, const BitStream& payload)",samp-server.exe,FUN_0049cea0,0x0049cea0,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,631,"GameLayer::handle_game_packet(RakNetPeer& peer, const BitStream& message)",samp-server.exe,FUN_00494dc0,0x00494dc0,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,825,"GameLayer::handle_player_request_class(RakNetPeer& peer, const BitStream& payload)",samp-server.exe,FUN_00498560,0x00498560,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,875,GameLayer::handle_player_request_spawn(RakNetPeer& peer),samp-server.exe,FUN_00498780,0x00498780,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,903,GameLayer::handle_player_in_game(RakNetPeer& peer),samp-server.exe,FUN_00497750,0x00497750,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,948,"GameLayer::handle_player_chat(RakNetPeer& peer, const BitStream& payload)",samp-server.exe,FUN_00498340,0x00498340,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,1041,"GameLayer::handle_player_command(RakNetPeer& peer, const BitStream& payload)",samp-server.exe,FUN_00498ea0,0x00498ea0,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,1141,"GameLayer::broadcast_player_chat(const GamePlayer& sender, std::string_view text)",samp-server.exe,FUN_00484eb0,0x00484eb0,partial,verify semantics and real caller effects
+src/server/game_layer.cpp,1156,"GameLayer::send_rpc(RakNetPeer& peer, std::uint8_t rpc_id, const BitStream& payload)",samp-server.exe,FUN_00456040,0x00456040,partial,verify semantics and real caller effects
+src/server/include/samp/server/config.hpp,143,"get(std::string_view key, std::string_view fallback = """") const",samp-server.exe,FUN_00490ba0,0x00490ba0,partial,verify semantics and real caller effects
+src/server/include/samp/server/config.hpp,149,"getInt(std::string_view key, int fallback = 0) const",samp-server.exe,FUN_00490c80,0x00490c80,partial,verify semantics and real caller effects
+src/server/include/samp/server/config.hpp,162,"getFloat(std::string_view key, float fallback = 0.0f) const",samp-server.exe,FUN_00490c30,0x00490c30,partial,verify semantics and real caller effects
+src/server/include/samp/server/config.hpp,177,"getBool(std::string_view key, bool fallback = false) const",samp-server.exe,FUN_00490cc0,0x00490cc0,partial,verify semantics and real caller effects
+src/server/main.cpp,81,print(std::string_view line) override,samp-server.exe,FUN_00491fa0,0x00491fa0,partial,verify semantics and real caller effects
+src/server/main.cpp,111,say_to_players(std::string_view text) override,samp-server.exe,FUN_0048ff00,0x0048ff00,partial,verify semantics and real caller effects
+src/server/main.cpp,127,reload_log() override,samp-server.exe,FUN_00492380,0x00492380,partial,verify semantics and real caller effects
+src/server/main.cpp,148,"handle_query(Server& server, const QueryRequest& request)",samp-server.exe,FUN_0049e480,0x0049e480,partial,verify semantics and real caller effects
+src/server/main.cpp,291,"main(int argc, char** argv)",samp-server.exe,FUN_00492420,0x00492420,partial,verify semantics and real caller effects
+src/server/player_lifecycle.cpp,6,"GameLayer::set_player_state(GamePlayer& player, std::uint8_t state)",samp-server.exe,FUN_00483630,0x00483630,partial,verify semantics and real caller effects
+src/server/player_lifecycle.cpp,18,"GameLayer::handle_player_death(RakNetPeer& peer, const samp::proto::BitStream& payload)",samp-server.exe,FUN_00498950,0x00498950,partial,verify semantics and real caller effects
+src/server/player_lifecycle.cpp,42,"GameLayer::handle_player_interior(RakNetPeer& peer,const samp::proto::BitStream& payload)",samp-server.exe,FUN_004992a0,0x004992a0,partial,verify semantics and real caller effects
+src/server/player_lifecycle.cpp,55,"GameLayer::notify_key_change(GamePlayer& player,std::uint32_t old_keys)",samp-server.exe,FUN_00484080,0x00484080,partial,verify semantics and real caller effects
+src/server/player_sync.cpp,10,"GameLayer::relay_sync(const GamePlayer& player, const samp::proto::BitStream& payload)",samp-server.exe,FUN_00493d40,0x00493d40,partial,verify semantics and real caller effects
+src/server/player_sync.cpp,27,"GameLayer::handle_aim_packet(GamePlayer& player, const samp::proto::BitStream& message)",samp-server.exe,FUN_00494f00,0x00494f00,partial,verify semantics and real caller effects
+src/server/player_sync.cpp,45,"GameLayer::handle_bullet_packet(GamePlayer& player, const samp::proto::BitStream& message)",samp-server.exe,FUN_004956d0,0x004956d0,partial,verify semantics and real caller effects
+src/server/player_sync.cpp,77,"GameLayer::handle_stats_packet(GamePlayer& player, const samp::proto::BitStream& message)",samp-server.exe,FUN_00495860,0x00495860,partial,verify semantics and real caller effects
+src/server/player_sync.cpp,84,"GameLayer::handle_weapons_packet(GamePlayer& player, const samp::proto::BitStream& message)",samp-server.exe,FUN_00495940,0x00495940,partial,verify semantics and real caller effects
+src/server/raknet_server.cpp,34,"RakNetPeer::send(std::span<const std::uint8_t> message, Reliability reliability,
+                      std::uint8_t channel, std::size_t bit_count, std::uint8_t priority)",samp-server.exe,FUN_00455ec0,0x00455ec0,partial,verify semantics and real caller effects
+src/server/raknet_server.cpp,53,"RakNetServer::handle_datagram(std::uint32_t address, std::uint16_t port,
+                                   std::span<const std::uint8_t> data)",samp-server.exe,FUN_00456650,0x00456650,partial,verify semantics and real caller effects
+src/server/raknet_server.cpp,197,RakNetServer::tick(std::uint64_t now),samp-server.exe,FUN_00457ca0,0x00457ca0,partial,verify semantics and real caller effects
+src/server/vehicle_lifecycle.cpp,8,GameLayer::update_vehicles(std::uint64_t now),samp-server.exe,FUN_00467640,0x00467640,partial,verify semantics and real caller effects
+src/server/vehicle_lifecycle.cpp,13,"GameLayer::process_vehicle(GameVehicle& vehicle,std::uint64_t now)",samp-server.exe,FUN_00489b60,0x00489b60,partial,verify semantics and real caller effects
+src/server/vehicle_lifecycle.cpp,37,"GameLayer::respawn_vehicle(GameVehicle& vehicle,std::uint64_t now)",samp-server.exe,FUN_00489790,0x00489790,partial,verify semantics and real caller effects
+src/server/vehicle_lifecycle.cpp,53,"GameLayer::handle_vehicle_death(RakNetPeer& peer,const samp::proto::BitStream& payload)",samp-server.exe,FUN_00499880,0x00499880,partial,verify semantics and real caller effects
+src/server/vehicle_stream.cpp,9,"GameLayer::send_vehicle_stream_in(GamePlayer& player, const GameVehicle& vehicle)",samp-server.exe,FUN_00483aa0,0x00483aa0,partial,verify semantics and real caller effects
+src/server/vehicle_stream.cpp,33,"GameLayer::send_vehicle_stream_out(GamePlayer& player, std::uint16_t vehicle)",samp-server.exe,FUN_00483a20,0x00483a20,partial,verify semantics and real caller effects
+src/server/vehicle_sync.cpp,10,"GameLayer::handle_driver_packet(GamePlayer& player,const samp::proto::BitStream& message)",samp-server.exe,FUN_00494fd0,0x00494fd0,partial,verify semantics and real caller effects
+src/server/vehicle_sync.cpp,79,"GameLayer::handle_passenger_packet(GamePlayer& player,const samp::proto::BitStream& message)",samp-server.exe,FUN_00495140,0x00495140,partial,verify semantics and real caller effects
+src/server/vehicle_sync.cpp,107,"GameLayer::handle_vehicle_enter(RakNetPeer& peer,const samp::proto::BitStream& payload)",samp-server.exe,FUN_00498bf0,0x00498bf0,partial,verify semantics and real caller effects
+src/server/vehicle_sync.cpp,127,"GameLayer::handle_vehicle_exit(RakNetPeer& peer,const samp::proto::BitStream& payload)",samp-server.exe,FUN_00498d60,0x00498d60,partial,verify semantics and real caller effects

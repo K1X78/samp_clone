@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-04",
+  "evidence": "User confirmation: \"everything from what you said work, ive confirmed that\" referring to the four immediately preceding baseline checks.",
+  "pairing": "clone client / clone server",
+  "gamemode": "bare",
+  "client_sha256": "1601d044085384d4fdebf8cd02066e6e30d5f61321e24fff20d7b08a98b81c5b",
+  "server_sha256": "09de7f8106af8566a3da1cfa385ca1a51e71e6e126e416b6e98ddfa9a973f2dc",
+  "checks": {
+    "visible_cursor": "user-confirmed pass",
+    "mouse_spawn": "user-confirmed pass",
+    "selection_ui_disappears_and_movement_works": "user-confirmed pass",
+    "reconnect_repeats_baseline_flow": "user-confirmed pass"
+  },
+  "scope": "Minimal Bare baseline only; does not close vehicle/custom-model or cross-implementation acceptance."
+}

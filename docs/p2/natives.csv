@@ -1,0 +1,498 @@
+name,family,table,entry,callback,registrar,table_bytes_verified,source,status,detail
+numargs,core,core,0x004b23b0,0x004045b0,0x00404b40,True,src/pawn/core_natives.cpp:20,partial,table-driven core_natives::kNatives -> argument_count; behavioral scope remains per fixture
+getarg,core,core,0x004b23b8,0x004045d0,0x00404b40,True,src/pawn/core_natives.cpp:34,partial,table-driven core_natives::kNatives -> get_argument; behavioral scope remains per fixture
+setarg,core,core,0x004b23c0,0x00404600,0x00404b40,True,src/pawn/core_natives.cpp:52,partial,table-driven core_natives::kNatives -> set_argument; behavioral scope remains per fixture
+heapspace,core,core,0x004b23c8,0x00404650,0x00404b40,True,src/pawn/core_natives.cpp:70,partial,table-driven core_natives::kNatives -> heap_space; behavioral scope remains per fixture
+funcidx,core,core,0x004b23d0,0x00404660,0x00404b40,True,src/pawn/core_natives.cpp:76,partial,table-driven core_natives::kNatives -> function_index; behavioral scope remains per fixture
+swapchars,core,core,0x004b23d8,0x004046f0,0x00404b40,True,src/pawn/core_natives.cpp:89,partial,table-driven core_natives::kNatives -> swap_characters; behavioral scope remains per fixture
+tolower,core,core,0x004b23e0,0x00404730,0x00404b40,True,src/pawn/core_natives.cpp:97,partial,table-driven core_natives::kNatives -> lower; behavioral scope remains per fixture
+toupper,core,core,0x004b23e8,0x00404740,0x00404b40,True,src/pawn/core_natives.cpp:107,partial,table-driven core_natives::kNatives -> upper; behavioral scope remains per fixture
+min,core,core,0x004b23f0,0x00404750,0x00404b40,True,src/pawn/core_natives.cpp:117,partial,table-driven core_natives::kNatives -> minimum; behavioral scope remains per fixture
+max,core,core,0x004b23f8,0x00404770,0x00404b40,True,src/pawn/core_natives.cpp:122,partial,table-driven core_natives::kNatives -> maximum; behavioral scope remains per fixture
+clamp,core,core,0x004b2400,0x00404790,0x00404b40,True,src/pawn/core_natives.cpp:128,partial,table-driven core_natives::kNatives -> clamp; behavioral scope remains per fixture
+random,core,core,0x004b2408,0x00404ac0,0x00404b40,True,src/pawn/core_natives.cpp:140,partial,table-driven core_natives::kNatives -> random; behavioral scope remains per fixture
+getproperty,core,core,0x004b2410,0x00404810,0x00404b40,True,src/pawn/property_natives.cpp:152,partial,table-driven property_natives::kNatives -> get; behavioral scope remains per fixture
+setproperty,core,core,0x004b2418,0x00404910,0x00404b40,True,src/pawn/property_natives.cpp:100,partial,table-driven property_natives::kNatives -> set; behavioral scope remains per fixture
+deleteproperty,core,core,0x004b2420,0x00404a00,0x00404b40,True,src/pawn/property_natives.cpp:124,partial,table-driven property_natives::kNatives -> remove; behavioral scope remains per fixture
+existproperty,core,core,0x004b2428,0x00404a70,0x00404b40,True,src/pawn/property_natives.cpp:140,partial,table-driven property_natives::kNatives -> exists; behavioral scope remains per fixture
+float,float,float,0x004b25a8,0x00405be0,0x00405f40,True,src/pawn/float_natives.cpp:15,partial,table-driven float_natives::kNatives -> from_integer; behavioral scope remains per fixture
+floatstr,float,float,0x004b25b0,0x00405bf0,0x00405f40,True,src/pawn/float_natives.cpp:20,partial,table-driven float_natives::kNatives -> from_string; behavioral scope remains per fixture
+floatmul,float,float,0x004b25b8,0x00405c60,0x00405f40,True,src/pawn/float_natives.cpp:32,partial,table-driven float_natives::kNatives -> multiply; behavioral scope remains per fixture
+floatdiv,float,float,0x004b25c0,0x00405c80,0x00405f40,True,src/pawn/float_natives.cpp:37,partial,table-driven float_natives::kNatives -> divide; behavioral scope remains per fixture
+floatadd,float,float,0x004b25c8,0x00405ca0,0x00405f40,True,src/pawn/float_natives.cpp:42,partial,table-driven float_natives::kNatives -> add; behavioral scope remains per fixture
+floatsub,float,float,0x004b25d0,0x00405cc0,0x00405f40,True,src/pawn/float_natives.cpp:47,partial,table-driven float_natives::kNatives -> subtract; behavioral scope remains per fixture
+floatfract,float,float,0x004b25d8,0x00405ce0,0x00405f40,True,src/pawn/float_natives.cpp:52,partial,table-driven float_natives::kNatives -> fraction; behavioral scope remains per fixture
+floatround,float,float,0x004b25e0,0x00405d10,0x00405f40,True,src/pawn/float_natives.cpp:60,partial,table-driven float_natives::kNatives -> round; behavioral scope remains per fixture
+floatcmp,float,float,0x004b25e8,0x00405d70,0x00405f40,True,src/pawn/float_natives.cpp:76,partial,table-driven float_natives::kNatives -> compare; behavioral scope remains per fixture
+floatsqroot,float,float,0x004b25f0,0x00405db0,0x00405f40,True,src/pawn/float_natives.cpp:86,partial,table-driven float_natives::kNatives -> square_root; behavioral scope remains per fixture
+floatpower,float,float,0x004b25f8,0x00405de0,0x00405f40,True,src/pawn/float_natives.cpp:91,partial,table-driven float_natives::kNatives -> power; behavioral scope remains per fixture
+floatlog,float,float,0x004b2600,0x00405e00,0x00405f40,True,src/pawn/float_natives.cpp:100,partial,table-driven float_natives::kNatives -> logarithm; behavioral scope remains per fixture
+floatsin,float,float,0x004b2608,0x00405eb0,0x00405f40,True,src/pawn/float_natives.cpp:142,partial,table-driven float_natives::kNatives -> sine; behavioral scope remains per fixture
+floatcos,float,float,0x004b2610,0x00405ed0,0x00405f40,True,src/pawn/float_natives.cpp:162,partial,table-driven float_natives::kNatives -> cosine; behavioral scope remains per fixture
+floattan,float,float,0x004b2618,0x00405ef0,0x00405f40,True,src/pawn/float_natives.cpp:182,partial,table-driven float_natives::kNatives -> tangent; behavioral scope remains per fixture
+floatabs,float,float,0x004b2620,0x00405f10,0x00405f40,True,src/pawn/float_natives.cpp:204,partial,table-driven float_natives::kNatives -> absolute; behavioral scope remains per fixture
+ispacked,string,string,0x004b2720,0x00406c60,0x00406fe0,True,src/pawn/string_natives.cpp:50,partial,table-driven string_natives::kNatives -> is_packed; behavioral scope remains per fixture
+memcpy,string,string,0x004b2728,0x00406f70,0x00406fe0,True,src/pawn/string_natives.cpp:61,partial,table-driven string_natives::kNatives -> copy_memory; behavioral scope remains per fixture
+strcat,string,string,0x004b2730,0x004063a0,0x00406fe0,True,src/pawn/string_natives.cpp:114,partial,table-driven string_natives::kNatives -> concatenate; behavioral scope remains per fixture
+strcmp,string,string,0x004b2738,0x00406540,0x00406fe0,True,src/pawn/string_natives.cpp:152,partial,table-driven string_natives::kNatives -> compare; behavioral scope remains per fixture
+strdel,string,string,0x004b2740,0x00406850,0x00406fe0,True,src/pawn/string_natives.cpp:251,partial,table-driven string_natives::kNatives -> erase; behavioral scope remains per fixture
+strfind,string,string,0x004b2748,0x004065e0,0x00406fe0,True,src/pawn/string_natives.cpp:170,partial,table-driven string_natives::kNatives -> find; behavioral scope remains per fixture
+strins,string,string,0x004b2750,0x00406930,0x00406fe0,True,src/pawn/string_natives.cpp:289,partial,table-driven string_natives::kNatives -> insert; behavioral scope remains per fixture
+strlen,string,string,0x004b2758,0x004061f0,0x00406fe0,True,src/pawn/string_natives.cpp:16,partial,table-driven string_natives::kNatives -> length; behavioral scope remains per fixture
+strmid,string,string,0x004b2760,0x004066c0,0x00406fe0,True,src/pawn/string_natives.cpp:197,partial,table-driven string_natives::kNatives -> middle; behavioral scope remains per fixture
+strpack,string,string,0x004b2768,0x00406230,0x00406fe0,True,src/pawn/string_natives.cpp:78,partial,table-driven string_natives::kNatives -> pack; behavioral scope remains per fixture
+strunpack,string,string,0x004b2770,0x004062f0,0x00406fe0,True,src/pawn/string_natives.cpp:96,partial,table-driven string_natives::kNatives -> unpack; behavioral scope remains per fixture
+strval,string,string,0x004b2778,0x00406b00,0x00406fe0,True,src/pawn/string_natives.cpp:27,partial,table-driven string_natives::kNatives -> number; behavioral scope remains per fixture
+uudecode,string,string,0x004b2780,0x00406e10,0x00406fe0,True,src/pawn/string_natives.cpp:366,partial,table-driven string_natives::kNatives -> uu_decode; behavioral scope remains per fixture
+uuencode,string,string,0x004b2788,0x00406ea0,0x00406fe0,True,src/pawn/string_natives.cpp:386,partial,table-driven string_natives::kNatives -> uu_encode; behavioral scope remains per fixture
+valstr,string,string,0x004b2790,0x00406bc0,0x00406fe0,True,src/pawn/string_natives.cpp:338,partial,table-driven string_natives::kNatives -> value_string; behavioral scope remains per fixture
+fopen,file,file,0x004ca0b0,0x004055a0,0x00405bc0,True,src/pawn/natives.cpp:154,partial,registered body present; semantic verification pending
+fclose,file,file,0x004ca0b8,0x004056c0,0x00405bc0,True,src/pawn/natives.cpp:187,partial,registered body present; semantic verification pending
+fwrite,file,file,0x004ca0c0,0x004056e0,0x00405bc0,True,src/pawn/natives.cpp:209,partial,registered body present; semantic verification pending
+fread,file,file,0x004ca0c8,0x00405770,0x00405bc0,True,src/pawn/natives.cpp:193,partial,registered body present; semantic verification pending
+fputchar,file,file,0x004ca0d0,0x00405830,0x00405bc0,True,,absent,no literal registration in native host
+fgetchar,file,file,0x004ca0d8,0x00405880,0x00405bc0,True,,absent,no literal registration in native host
+fblockwrite,file,file,0x004ca0e0,0x004058d0,0x00405bc0,True,,absent,no literal registration in native host
+fblockread,file,file,0x004ca0e8,0x00405950,0x00405bc0,True,,absent,no literal registration in native host
+ftemp,file,file,0x004ca0f0,0x004059d0,0x00405bc0,True,,absent,no literal registration in native host
+fseek,file,file,0x004ca0f8,0x004059e0,0x00405bc0,True,,absent,no literal registration in native host
+fexist,file,file,0x004ca100,0x00405a40,0x00405bc0,True,src/pawn/natives.cpp:225,partial,registered body present; semantic verification pending
+flength,file,file,0x004ca108,0x00405b80,0x00405bc0,True,src/pawn/natives.cpp:236,partial,registered body present; semantic verification pending
+fremove,file,file,0x004ca110,0x00405ae0,0x00405bc0,True,,absent,no literal registration in native host
+gettime,time,time,0x004b282c,0x00407060,0x004072f0,True,src/pawn/time_natives.cpp:10,partial,table-driven time_natives::kNatives -> get_time; behavioral scope remains per fixture
+settime,time,time,0x004b2834,0x00407010,0x004072f0,True,src/pawn/time_natives.cpp:24,partial,table-driven time_natives::kNatives -> set_time; behavioral scope remains per fixture
+getdate,time,time,0x004b283c,0x00407150,0x004072f0,True,src/pawn/time_natives.cpp:37,partial,table-driven time_natives::kNatives -> get_date; behavioral scope remains per fixture
+setdate,time,time,0x004b2844,0x00407100,0x004072f0,True,src/pawn/time_natives.cpp:51,partial,table-driven time_natives::kNatives -> set_date; behavioral scope remains per fixture
+tickcount,time,time,0x004b284c,0x004071f0,0x004072f0,True,src/pawn/time_natives.cpp:64,partial,table-driven time_natives::kNatives -> ticks; behavioral scope remains per fixture
+settimer,time,time,0x004b2854,0x00407240,0x004072f0,True,,absent,no literal registration in native host
+gpci,samp,samp,0x004cee90,0x00471410,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerPoolSize,samp,samp,0x004cee98,0x00471460,0x0047a100,True,src/pawn/natives.cpp:259,partial,registered body present; semantic verification pending
+GetVehiclePoolSize,samp,samp,0x004ceea0,0x00471480,0x0047a100,True,,absent,no literal registration in native host
+GetActorPoolSize,samp,samp,0x004ceea8,0x004714a0,0x0047a100,True,,absent,no literal registration in native host
+print,samp,samp,0x004ceeb0,0x00473090,0x0047a100,True,src/pawn/natives.cpp:98,partial,registered body present; semantic verification pending
+printf,samp,samp,0x004ceeb8,0x00473110,0x0047a100,True,src/pawn/natives.cpp:105,partial,registered body present; semantic verification pending
+format,samp,samp,0x004ceec0,0x00473140,0x0047a100,True,src/pawn/natives.cpp:112,partial,registered body present; semantic verification pending
+SetTimer,samp,samp,0x004ceec8,0x00473190,0x0047a100,True,,absent,no literal registration in native host
+KillTimer,samp,samp,0x004ceed0,0x00473210,0x0047a100,True,,absent,no literal registration in native host
+GetTickCount,samp,samp,0x004ceed8,0x00473230,0x0047a100,True,src/pawn/natives.cpp:135,partial,registered body present; semantic verification pending
+GetMaxPlayers,samp,samp,0x004ceee0,0x00473240,0x0047a100,True,src/pawn/natives.cpp:256,partial,registered body present; semantic verification pending
+SetTimerEx,samp,samp,0x004ceee8,0x00473c80,0x0047a100,True,,absent,no literal registration in native host
+LimitGlobalChatRadius,samp,samp,0x004ceef0,0x00473260,0x0047a100,True,,absent,no literal registration in native host
+LimitPlayerMarkerRadius,samp,samp,0x004ceef8,0x00473280,0x0047a100,True,,absent,no literal registration in native host
+SetWeather,samp,samp,0x004cef00,0x00473f20,0x0047a100,True,src/pawn/natives.cpp:268,partial,registered body present; semantic verification pending
+SetPlayerWeather,samp,samp,0x004cef08,0x0047d3b0,0x0047a100,True,,absent,no literal registration in native host
+CallRemoteFunction,samp,samp,0x004cef10,0x00474420,0x0047a100,True,,absent,no literal registration in native host
+CallLocalFunction,samp,samp,0x004cef18,0x004747d0,0x0047a100,True,,absent,no literal registration in native host
+VectorSize,samp,samp,0x004cef20,0x00473f40,0x0047a100,True,,absent,no literal registration in native host
+asin,samp,samp,0x004cef28,0x00473f70,0x0047a100,True,,absent,no literal registration in native host
+acos,samp,samp,0x004cef30,0x00473f90,0x0047a100,True,,absent,no literal registration in native host
+atan2,samp,samp,0x004cef38,0x00473fd0,0x0047a100,True,,absent,no literal registration in native host
+atan,samp,samp,0x004cef40,0x00473fb0,0x0047a100,True,,absent,no literal registration in native host
+SHA256_PassHash,samp,samp,0x004cef48,0x00473ff0,0x0047a100,True,,absent,no literal registration in native host
+SetSVarInt,samp,samp,0x004cef50,0x00478b80,0x0047a100,True,,absent,no literal registration in native host
+SetSVarString,samp,samp,0x004cef58,0x00478c10,0x0047a100,True,,absent,no literal registration in native host
+SetSVarFloat,samp,samp,0x004cef60,0x00478cf0,0x0047a100,True,,absent,no literal registration in native host
+GetSVarInt,samp,samp,0x004cef68,0x00478d80,0x0047a100,True,,absent,no literal registration in native host
+GetSVarString,samp,samp,0x004cef70,0x00478e80,0x0047a100,True,,absent,no literal registration in native host
+GetSVarFloat,samp,samp,0x004cef78,0x00478e00,0x0047a100,True,,absent,no literal registration in native host
+DeleteSVar,samp,samp,0x004cef80,0x00478f20,0x0047a100,True,,absent,no literal registration in native host
+GetSVarType,samp,samp,0x004cef88,0x00478fa0,0x0047a100,True,,absent,no literal registration in native host
+GetSVarNameAtIndex,samp,samp,0x004cef90,0x00479020,0x0047a100,True,,absent,no literal registration in native host
+GetSVarsUpperIndex,samp,samp,0x004cef98,0x00479070,0x0047a100,True,,absent,no literal registration in native host
+GameModeExit,samp,samp,0x004cefa0,0x0046feb0,0x0047a100,True,,absent,no literal registration in native host
+SetGameModeText,samp,samp,0x004cefa8,0x0046fef0,0x0047a100,True,src/pawn/natives.cpp:249,partial,registered body present; semantic verification pending
+SetTeamCount,samp,samp,0x004cefb0,0x00407de0,0x0047a100,True,,absent,no literal registration in native host
+AddPlayerClass,samp,samp,0x004cefb8,0x0046ff70,0x0047a100,True,src/pawn/natives.cpp:441,partial,registered body present; semantic verification pending
+AddPlayerClassEx,samp,samp,0x004cefc0,0x0046fff0,0x0047a100,True,src/pawn/natives.cpp:459,partial,registered body present; semantic verification pending
+AddStaticVehicle,samp,samp,0x004cefc8,0x00470070,0x0047a100,True,src/pawn/natives.cpp:509,partial,registered body present; semantic verification pending
+AddStaticVehicleEx,samp,samp,0x004cefd0,0x004701c0,0x0047a100,True,src/pawn/natives.cpp:510,partial,registered body present; semantic verification pending
+AddStaticPickup,samp,samp,0x004cefd8,0x004707e0,0x0047a100,True,,absent,no literal registration in native host
+CreatePickup,samp,samp,0x004cefe0,0x00470840,0x0047a100,True,,absent,no literal registration in native host
+DestroyPickup,samp,samp,0x004cefe8,0x004708a0,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerWorldBounds,samp,samp,0x004ceff0,0x0047a230,0x0047a100,True,,absent,no literal registration in native host
+ShowNameTags,samp,samp,0x004ceff8,0x00473460,0x0047a100,True,src/pawn/natives.cpp:278,placeholder,constant return 0
+ShowPlayerMarkers,samp,samp,0x004cf000,0x00473480,0x0047a100,True,src/pawn/natives.cpp:279,placeholder,constant return 0
+SetWorldTime,samp,samp,0x004cf008,0x00472f50,0x0047a100,True,src/pawn/natives.cpp:262,partial,registered body present; semantic verification pending
+GetWeaponName,samp,samp,0x004cf010,0x004717a0,0x0047a100,True,,absent,no literal registration in native host
+EnableTirePopping,samp,samp,0x004cf018,0x00473ef0,0x0047a100,True,,absent,no literal registration in native host
+EnableVehicleFriendlyFire,samp,samp,0x004cf020,0x00473f10,0x0047a100,True,,absent,no literal registration in native host
+AllowInteriorWeapons,samp,samp,0x004cf028,0x004734a0,0x0047a100,True,,absent,no literal registration in native host
+SetGravity,samp,samp,0x004cf030,0x004740f0,0x0047a100,True,src/pawn/natives.cpp:274,placeholder,constant return 0
+GetGravity,samp,samp,0x004cf038,0x00474b30,0x0047a100,True,src/pawn/natives.cpp:275,partial,registered body present; semantic verification pending
+AllowAdminTeleport,samp,samp,0x004cf040,0x00474340,0x0047a100,True,src/pawn/natives.cpp:327,placeholder,constant return 0
+SetDeathDropAmount,samp,samp,0x004cf048,0x00474b10,0x0047a100,True,,absent,no literal registration in native host
+CreateExplosion,samp,samp,0x004cf050,0x0047f5d0,0x0047a100,True,,absent,no literal registration in native host
+CreateExplosionForPlayer,samp,samp,0x004cf058,0x0047f6d0,0x0047a100,True,,absent,no literal registration in native host
+SetDisabledWeapons,samp,samp,0x004cf060,0x00475e90,0x0047a100,True,,absent,no literal registration in native host
+UsePlayerPedAnims,samp,samp,0x004cf068,0x004734c0,0x0047a100,True,,absent,no literal registration in native host
+DisableInteriorEnterExits,samp,samp,0x004cf070,0x004777f0,0x0047a100,True,src/pawn/natives.cpp:281,placeholder,constant return 0
+SetNameTagDrawDistance,samp,samp,0x004cf078,0x00477800,0x0047a100,True,src/pawn/natives.cpp:283,placeholder,constant return 0
+DisableNameTagLOS,samp,samp,0x004cf080,0x00477820,0x0047a100,True,,absent,no literal registration in native host
+ConnectNPC,samp,samp,0x004cf088,0x00477ed0,0x0047a100,True,,absent,no literal registration in native host
+IsPlayerNPC,samp,samp,0x004cf090,0x00478120,0x0047a100,True,src/pawn/natives.cpp:409,partial,registered body present; semantic verification pending
+Create3DTextLabel,samp,samp,0x004cf098,0x00477a00,0x0047a100,True,,absent,no literal registration in native host
+Delete3DTextLabel,samp,samp,0x004cf0a0,0x00477bd0,0x0047a100,True,,absent,no literal registration in native host
+Attach3DTextLabelToPlayer,samp,samp,0x004cf0a8,0x00477c80,0x0047a100,True,,absent,no literal registration in native host
+Attach3DTextLabelToVehicle,samp,samp,0x004cf0b0,0x00477cd0,0x0047a100,True,,absent,no literal registration in native host
+Update3DTextLabelText,samp,samp,0x004cf0b8,0x00477d20,0x0047a100,True,,absent,no literal registration in native host
+CreatePlayer3DTextLabel,samp,samp,0x004cf0c0,0x00477ac0,0x0047a100,True,,absent,no literal registration in native host
+DeletePlayer3DTextLabel,samp,samp,0x004cf0c8,0x00477c10,0x0047a100,True,,absent,no literal registration in native host
+UpdatePlayer3DTextLabelText,samp,samp,0x004cf0d0,0x00477dd0,0x0047a100,True,,absent,no literal registration in native host
+ShowPlayerDialog,samp,samp,0x004cf0d8,0x004809f0,0x0047a100,True,,absent,no literal registration in native host
+EnableZoneNames,samp,samp,0x004cf0e0,0x00475eb0,0x0047a100,True,src/pawn/natives.cpp:280,placeholder,constant return 0
+GangZoneCreate,samp,samp,0x004cf0e8,0x004771a0,0x0047a100,True,,absent,no literal registration in native host
+GangZoneDestroy,samp,samp,0x004cf0f0,0x004771e0,0x0047a100,True,,absent,no literal registration in native host
+GangZoneShowForPlayer,samp,samp,0x004cf0f8,0x00477220,0x0047a100,True,,absent,no literal registration in native host
+GangZoneShowForAll,samp,samp,0x004cf100,0x00477290,0x0047a100,True,,absent,no literal registration in native host
+GangZoneHideForPlayer,samp,samp,0x004cf108,0x004772d0,0x0047a100,True,,absent,no literal registration in native host
+GangZoneHideForAll,samp,samp,0x004cf110,0x00477330,0x0047a100,True,,absent,no literal registration in native host
+GangZoneFlashForPlayer,samp,samp,0x004cf118,0x00477370,0x0047a100,True,,absent,no literal registration in native host
+GangZoneFlashForAll,samp,samp,0x004cf120,0x004773e0,0x0047a100,True,,absent,no literal registration in native host
+GangZoneStopFlashForPlayer,samp,samp,0x004cf128,0x00477420,0x0047a100,True,,absent,no literal registration in native host
+GangZoneStopFlashForAll,samp,samp,0x004cf130,0x00477480,0x0047a100,True,,absent,no literal registration in native host
+IsPlayerAdmin,samp,samp,0x004cf138,0x00470bc0,0x0047a100,True,,absent,no literal registration in native host
+Kick,samp,samp,0x004cf140,0x004708c0,0x0047a100,True,src/pawn/natives.cpp:421,partial,registered body present; semantic verification pending
+Ban,samp,samp,0x004cf148,0x004708e0,0x0047a100,True,,absent,no literal registration in native host
+BanEx,samp,samp,0x004cf150,0x00470990,0x0047a100,True,,absent,no literal registration in native host
+SendRconCommand,samp,samp,0x004cf158,0x00473d50,0x0047a100,True,,absent,no literal registration in native host
+GetServerVarAsString,samp,samp,0x004cf160,0x004774c0,0x0047a100,True,,absent,no literal registration in native host
+GetServerVarAsInt,samp,samp,0x004cf168,0x00477550,0x0047a100,True,,absent,no literal registration in native host
+GetServerVarAsBool,samp,samp,0x004cf170,0x004775c0,0x0047a100,True,,absent,no literal registration in native host
+GetConsoleVarAsString,samp,samp,0x004cf178,0x004774c0,0x0047a100,True,,absent,no literal registration in native host
+GetConsoleVarAsInt,samp,samp,0x004cf180,0x00477550,0x0047a100,True,,absent,no literal registration in native host
+GetConsoleVarAsBool,samp,samp,0x004cf188,0x004775c0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerNetworkStats,samp,samp,0x004cf190,0x004735b0,0x0047a100,True,,absent,no literal registration in native host
+GetNetworkStats,samp,samp,0x004cf198,0x00473b70,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerVersion,samp,samp,0x004cf1a0,0x004713c0,0x0047a100,True,,absent,no literal registration in native host
+BlockIpAddress,samp,samp,0x004cf1a8,0x00470aa0,0x0047a100,True,,absent,no literal registration in native host
+UnBlockIpAddress,samp,samp,0x004cf1b0,0x00470b30,0x0047a100,True,,absent,no literal registration in native host
+GetServerTickRate,samp,samp,0x004cf1b8,0x004736d0,0x0047a100,True,,absent,no literal registration in native host
+NetStats_GetConnectedTime,samp,samp,0x004cf1c0,0x004736e0,0x0047a100,True,,absent,no literal registration in native host
+NetStats_MessagesReceived,samp,samp,0x004cf1c8,0x00473750,0x0047a100,True,,absent,no literal registration in native host
+NetStats_BytesReceived,samp,samp,0x004cf1d0,0x004737d0,0x0047a100,True,,absent,no literal registration in native host
+NetStats_MessagesSent,samp,samp,0x004cf1d8,0x00473860,0x0047a100,True,,absent,no literal registration in native host
+NetStats_BytesSent,samp,samp,0x004cf1e0,0x004738d0,0x0047a100,True,,absent,no literal registration in native host
+NetStats_MessagesRecvPerSecond,samp,samp,0x004cf1e8,0x00473950,0x0047a100,True,,absent,no literal registration in native host
+NetStats_PacketLossPercent,samp,samp,0x004cf1f0,0x004739b0,0x0047a100,True,,absent,no literal registration in native host
+NetStats_ConnectionStatus,samp,samp,0x004cf1f8,0x00473a90,0x0047a100,True,,absent,no literal registration in native host
+NetStats_GetIpPort,samp,samp,0x004cf200,0x00473af0,0x0047a100,True,,absent,no literal registration in native host
+SetSpawnInfo,samp,samp,0x004cf208,0x00470c00,0x0047a100,True,src/pawn/natives.cpp:630,partial,registered body present; semantic verification pending
+SpawnPlayer,samp,samp,0x004cf210,0x0047a380,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerTeam,samp,samp,0x004cf218,0x0047ad00,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerTeam,samp,samp,0x004cf220,0x00470e50,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerName,samp,samp,0x004cf228,0x0047a490,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerSkin,samp,samp,0x004cf230,0x0047a6b0,0x0047a100,True,src/pawn/natives.cpp:705,partial,registered body present; semantic verification pending
+GetPlayerSkin,samp,samp,0x004cf238,0x00470ea0,0x0047a100,True,src/pawn/natives.cpp:727,partial,registered body present; semantic verification pending
+GetPlayerPos,samp,samp,0x004cf240,0x00470ff0,0x0047a100,True,src/pawn/natives.cpp:393,partial,registered body present; semantic verification pending
+SetPlayerPos,samp,samp,0x004cf248,0x0047ae30,0x0047a100,True,src/pawn/natives.cpp:290,partial,registered body present; semantic verification pending
+SetPlayerPosFindZ,samp,samp,0x004cf250,0x0047af60,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerLastShotVectors,samp,samp,0x004cf258,0x004710a0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerHealth,samp,samp,0x004cf260,0x004711b0,0x0047a100,True,src/pawn/natives.cpp:379,partial,registered body present; semantic verification pending
+SetPlayerHealth,samp,samp,0x004cf268,0x0047b090,0x0047a100,True,src/pawn/natives.cpp:375,partial,registered body present; semantic verification pending
+SetPlayerColor,samp,samp,0x004cf270,0x00471cd0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerColor,samp,samp,0x004cf278,0x00471d10,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerVehicleID,samp,samp,0x004cf280,0x00471d40,0x0047a100,True,src/pawn/natives.cpp:580,partial,registered body present; semantic verification pending
+GetPlayerVehicleSeat,samp,samp,0x004cf288,0x00471e30,0x0047a100,True,src/pawn/natives.cpp:583,partial,registered body present; semantic verification pending
+GetPlayerSurfingVehicleID,samp,samp,0x004cf290,0x00471d80,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerSurfingObjectID,samp,samp,0x004cf298,0x00471dd0,0x0047a100,True,,absent,no literal registration in native host
+PutPlayerInVehicle,samp,samp,0x004cf2a0,0x0047b180,0x0047a100,True,src/pawn/natives.cpp:566,partial,registered body present; semantic verification pending
+RemovePlayerFromVehicle,samp,samp,0x004cf2a8,0x00471210,0x0047a100,True,src/pawn/natives.cpp:576,partial,registered body present; semantic verification pending
+IsPlayerInVehicle,samp,samp,0x004cf2b0,0x004712e0,0x0047a100,True,,absent,no literal registration in native host
+IsPlayerInAnyVehicle,samp,samp,0x004cf2b8,0x00471330,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerName,samp,samp,0x004cf2c0,0x00471370,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerCheckpoint,samp,samp,0x004cf2c8,0x00471e80,0x0047a100,True,,absent,no literal registration in native host
+DisablePlayerCheckpoint,samp,samp,0x004cf2d0,0x00471ed0,0x0047a100,True,,absent,no literal registration in native host
+IsPlayerInCheckpoint,samp,samp,0x004cf2d8,0x00471f10,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerRaceCheckpoint,samp,samp,0x004cf2e0,0x00471f40,0x0047a100,True,,absent,no literal registration in native host
+DisablePlayerRaceCheckpoint,samp,samp,0x004cf2e8,0x00471fa0,0x0047a100,True,,absent,no literal registration in native host
+IsPlayerInRaceCheckpoint,samp,samp,0x004cf2f0,0x00471fe0,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerInterior,samp,samp,0x004cf2f8,0x0047bb00,0x0047a100,True,src/pawn/natives.cpp:284,partial,registered body present; semantic verification pending
+GetPlayerInterior,samp,samp,0x004cf300,0x00472010,0x0047a100,True,src/pawn/natives.cpp:415,partial,registered body present; semantic verification pending
+SetPlayerAttachedObject,samp,samp,0x004cf308,0x00479230,0x0047a100,True,,absent,no literal registration in native host
+RemovePlayerAttachedObject,samp,samp,0x004cf310,0x00479330,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerAttachedObject,samp,samp,0x004cf318,0x00479230,0x0047a100,True,,absent,no literal registration in native host
+IsPlayerAttachedObjectSlotUsed,samp,samp,0x004cf320,0x00479390,0x0047a100,True,,absent,no literal registration in native host
+EditAttachedObject,samp,samp,0x004cf328,0x00480ed0,0x0047a100,True,,absent,no literal registration in native host
+SendClientCheck,samp,samp,0x004cf330,0x00479570,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerCameraLookAt,samp,samp,0x004cf338,0x0047bde0,0x0047a100,True,src/pawn/natives.cpp:310,partial,registered body present; semantic verification pending
+SetPlayerCameraPos,samp,samp,0x004cf340,0x0047bcc0,0x0047a100,True,src/pawn/natives.cpp:303,partial,registered body present; semantic verification pending
+SetCameraBehindPlayer,samp,samp,0x004cf348,0x004723e0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerCameraMode,samp,samp,0x004cf350,0x004724a0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerCameraAspectRatio,samp,samp,0x004cf358,0x004724f0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerCameraZoom,samp,samp,0x004cf360,0x00472560,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerCameraPos,samp,samp,0x004cf368,0x00472090,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerCameraFrontVector,samp,samp,0x004cf370,0x00472160,0x0047a100,True,,absent,no literal registration in native host
+EnablePlayerCameraTarget,samp,samp,0x004cf378,0x00472230,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerCameraTargetObject,samp,samp,0x004cf380,0x004722a0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerCameraTargetVehicle,samp,samp,0x004cf388,0x004722f0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerCameraTargetPlayer,samp,samp,0x004cf390,0x00472340,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerCameraTargetActor,samp,samp,0x004cf398,0x00472390,0x0047a100,True,,absent,no literal registration in native host
+AttachCameraToObject,samp,samp,0x004cf3a0,0x0047bf20,0x0047a100,True,,absent,no literal registration in native host
+AttachCameraToPlayerObject,samp,samp,0x004cf3a8,0x0047c020,0x0047a100,True,,absent,no literal registration in native host
+InterpolateCameraPos,samp,samp,0x004cf3b0,0x0047c130,0x0047a100,True,,absent,no literal registration in native host
+InterpolateCameraLookAt,samp,samp,0x004cf3b8,0x0047c300,0x0047a100,True,,absent,no literal registration in native host
+TogglePlayerControllable,samp,samp,0x004cf3c0,0x0047c4d0,0x0047a100,True,,absent,no literal registration in native host
+PlayerPlaySound,samp,samp,0x004cf3c8,0x0047ccf0,0x0047a100,True,src/pawn/natives.cpp:328,placeholder,constant return 0
+SetPlayerScore,samp,samp,0x004cf3d0,0x00472ad0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerScore,samp,samp,0x004cf3d8,0x00472b10,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerFacingAngle,samp,samp,0x004cf3e0,0x0047c920,0x0047a100,True,src/pawn/natives.cpp:297,partial,registered body present; semantic verification pending
+GetPlayerFacingAngle,samp,samp,0x004cf3e8,0x00472e30,0x0047a100,True,src/pawn/natives.cpp:397,partial,registered body present; semantic verification pending
+GivePlayerMoney,samp,samp,0x004cf3f0,0x0047c710,0x0047a100,True,src/pawn/natives.cpp:353,partial,registered body present; semantic verification pending
+GetPlayerMoney,samp,samp,0x004cf3f8,0x00472b40,0x0047a100,True,src/pawn/natives.cpp:338,partial,registered body present; semantic verification pending
+ResetPlayerMoney,samp,samp,0x004cf400,0x00472b70,0x0047a100,True,src/pawn/natives.cpp:349,partial,registered body present; semantic verification pending
+IsPlayerConnected,samp,samp,0x004cf408,0x00472dd0,0x0047a100,True,src/pawn/natives.cpp:412,partial,registered body present; semantic verification pending
+GetPlayerState,samp,samp,0x004cf410,0x00472e00,0x0047a100,True,src/pawn/natives.cpp:331,partial,registered body present; semantic verification pending
+ResetPlayerWeapons,samp,samp,0x004cf418,0x00472e90,0x0047a100,True,src/pawn/natives.cpp:370,partial,registered body present; semantic verification pending
+GivePlayerWeapon,samp,samp,0x004cf420,0x0047ca00,0x0047a100,True,src/pawn/natives.cpp:361,partial,registered body present; semantic verification pending
+SetPlayerArmedWeapon,samp,samp,0x004cf428,0x0047caf0,0x0047a100,True,src/pawn/natives.cpp:366,partial,registered body present; semantic verification pending
+GetPlayerIp,samp,samp,0x004cf430,0x004734d0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerPing,samp,samp,0x004cf438,0x00473540,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerWeapon,samp,samp,0x004cf440,0x00473c40,0x0047a100,True,src/pawn/natives.cpp:334,partial,registered body present; semantic verification pending
+SetPlayerArmour,samp,samp,0x004cf448,0x0047cf30,0x0047a100,True,src/pawn/natives.cpp:384,partial,registered body present; semantic verification pending
+GetPlayerArmour,samp,samp,0x004cf450,0x00473dd0,0x0047a100,True,src/pawn/natives.cpp:388,partial,registered body present; semantic verification pending
+SetPlayerMapIcon,samp,samp,0x004cf458,0x0047d130,0x0047a100,True,,absent,no literal registration in native host
+RemovePlayerMapIcon,samp,samp,0x004cf460,0x0047d2c0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerKeys,samp,samp,0x004cf468,0x00473e30,0x0047a100,True,src/pawn/natives.cpp:342,partial,registered body present; semantic verification pending
+SetPlayerMarkerForPlayer,samp,samp,0x004cf470,0x0047d010,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerAmmo,samp,samp,0x004cf478,0x00472c50,0x0047a100,True,src/pawn/natives.cpp:621,partial,registered body present; semantic verification pending
+SetPlayerAmmo,samp,samp,0x004cf480,0x0047c820,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerTargetPlayer,samp,samp,0x004cf488,0x00472cb0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerTargetActor,samp,samp,0x004cf490,0x00472cf0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerWeaponData,samp,samp,0x004cf498,0x00472d30,0x0047a100,True,src/pawn/natives.cpp:596,partial,registered body present; semantic verification pending
+GetPlayerWeaponState,samp,samp,0x004cf4a0,0x00479080,0x0047a100,True,,absent,no literal registration in native host
+AllowPlayerTeleport,samp,samp,0x004cf4a8,0x00474320,0x0047a100,True,,absent,no literal registration in native host
+ForceClassSelection,samp,samp,0x004cf4b0,0x00470d90,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerWantedLevel,samp,samp,0x004cf4b8,0x0047f9d0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerWantedLevel,samp,samp,0x004cf4c0,0x00475ee0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerFightingStyle,samp,samp,0x004cf4c8,0x00475f10,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerFightingStyle,samp,samp,0x004cf4d0,0x0047fac0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerVelocity,samp,samp,0x004cf4d8,0x00477830,0x0047a100,True,src/pawn/natives.cpp:402,partial,registered body present; semantic verification pending
+SetPlayerVelocity,samp,samp,0x004cf4e0,0x0047fe30,0x0047a100,True,,absent,no literal registration in native host
+IsPlayerInRangeOfPoint,samp,samp,0x004cf4e8,0x004714c0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerDistanceFromPoint,samp,samp,0x004cf4f0,0x00471550,0x0047a100,True,,absent,no literal registration in native host
+IsPlayerStreamedIn,samp,samp,0x004cf4f8,0x00471650,0x0047a100,True,,absent,no literal registration in native host
+IsVehicleStreamedIn,samp,samp,0x004cf500,0x004716c0,0x0047a100,True,,absent,no literal registration in native host
+IsActorStreamedIn,samp,samp,0x004cf508,0x00471730,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerVirtualWorld,samp,samp,0x004cf510,0x00470ee0,0x0047a100,True,src/pawn/natives.cpp:587,partial,registered body present; semantic verification pending
+GetPlayerVirtualWorld,samp,samp,0x004cf518,0x00470f30,0x0047a100,True,src/pawn/natives.cpp:418,partial,registered body present; semantic verification pending
+ShowPlayerNameTagForPlayer,samp,samp,0x004cf520,0x0047ce10,0x0047a100,True,,absent,no literal registration in native host
+EnableStuntBonusForAll,samp,samp,0x004cf528,0x00477640,0x0047a100,True,src/pawn/natives.cpp:282,placeholder,constant return 0
+EnableStuntBonusForPlayer,samp,samp,0x004cf530,0x00477700,0x0047a100,True,,absent,no literal registration in native host
+TogglePlayerSpectating,samp,samp,0x004cf538,0x0047a8a0,0x0047a100,True,src/pawn/natives.cpp:326,placeholder,constant return 0
+GetPlayerDrunkLevel,samp,samp,0x004cf540,0x004779c0,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerDrunkLevel,samp,samp,0x004cf548,0x004801e0,0x0047a100,True,,absent,no literal registration in native host
+PlayerSpectateVehicle,samp,samp,0x004cf550,0x0047a9b0,0x0047a100,True,,absent,no literal registration in native host
+PlayerSpectatePlayer,samp,samp,0x004cf558,0x0047ab50,0x0047a100,True,,absent,no literal registration in native host
+ApplyAnimation,samp,samp,0x004cf560,0x0047d490,0x0047a100,True,,absent,no literal registration in native host
+ClearAnimations,samp,samp,0x004cf568,0x0047d7a0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerAnimationIndex,samp,samp,0x004cf570,0x004741e0,0x0047a100,True,,absent,no literal registration in native host
+GetAnimationName,samp,samp,0x004cf578,0x00474240,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerSpecialAction,samp,samp,0x004cf580,0x0047bbe0,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerSpecialAction,samp,samp,0x004cf588,0x00472040,0x0047a100,True,,absent,no literal registration in native host
+StartRecordingPlayerData,samp,samp,0x004cf590,0x00471a80,0x0047a100,True,,absent,no literal registration in native host
+StopRecordingPlayerData,samp,samp,0x004cf598,0x00471b30,0x0047a100,True,,absent,no literal registration in native host
+PlayCrimeReportForPlayer,samp,samp,0x004cf5a0,0x004804d0,0x0047a100,True,,absent,no literal registration in native host
+PlayAudioStreamForPlayer,samp,samp,0x004cf5a8,0x004807f0,0x0047a100,True,,absent,no literal registration in native host
+StopAudioStreamForPlayer,samp,samp,0x004cf5b0,0x00478170,0x0047a100,True,,absent,no literal registration in native host
+RemoveBuildingForPlayer,samp,samp,0x004cf5b8,0x00480d70,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerShopName,samp,samp,0x004cf5c0,0x00478240,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerSkillLevel,samp,samp,0x004cf5c8,0x00478390,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerChatBubble,samp,samp,0x004cf5d0,0x004802d0,0x0047a100,True,,absent,no literal registration in native host
+SelectTextDraw,samp,samp,0x004cf5d8,0x0047fc10,0x0047a100,True,,absent,no literal registration in native host
+CancelSelectTextDraw,samp,samp,0x004cf5e0,0x0047fd20,0x0047a100,True,,absent,no literal registration in native host
+DisableRemoteVehicleCollisions,samp,samp,0x004cf5e8,0x004795e0,0x0047a100,True,,absent,no literal registration in native host
+SetPVarInt,samp,samp,0x004cf5f0,0x004783e0,0x0047a100,True,,absent,no literal registration in native host
+SetPVarString,samp,samp,0x004cf5f8,0x004784b0,0x0047a100,True,,absent,no literal registration in native host
+SetPVarFloat,samp,samp,0x004cf600,0x004785e0,0x0047a100,True,,absent,no literal registration in native host
+GetPVarInt,samp,samp,0x004cf608,0x004786b0,0x0047a100,True,,absent,no literal registration in native host
+GetPVarString,samp,samp,0x004cf610,0x00478840,0x0047a100,True,,absent,no literal registration in native host
+GetPVarFloat,samp,samp,0x004cf618,0x00478770,0x0047a100,True,,absent,no literal registration in native host
+DeletePVar,samp,samp,0x004cf620,0x00478920,0x0047a100,True,,absent,no literal registration in native host
+GetPVarType,samp,samp,0x004cf628,0x004789e0,0x0047a100,True,,absent,no literal registration in native host
+GetPVarNameAtIndex,samp,samp,0x004cf630,0x00478aa0,0x0047a100,True,,absent,no literal registration in native host
+GetPVarsUpperIndex,samp,samp,0x004cf638,0x00478b20,0x0047a100,True,,absent,no literal registration in native host
+CreatePlayerTextDraw,samp,samp,0x004cf640,0x00476680,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawSetString,samp,samp,0x004cf648,0x00476770,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawLetterSize,samp,samp,0x004cf650,0x00476870,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawTextSize,samp,samp,0x004cf658,0x004768f0,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawAlignment,samp,samp,0x004cf660,0x00476970,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawColor,samp,samp,0x004cf668,0x004769f0,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawUseBox,samp,samp,0x004cf670,0x00476a70,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawBoxColor,samp,samp,0x004cf678,0x00476b00,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawSetShadow,samp,samp,0x004cf680,0x00476b80,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawSetOutline,samp,samp,0x004cf688,0x00476c00,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawBackgroundColor,samp,samp,0x004cf690,0x00476c80,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawFont,samp,samp,0x004cf698,0x00476d00,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawSetProportional,samp,samp,0x004cf6a0,0x00476d80,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawSetSelectable,samp,samp,0x004cf6a8,0x00476e10,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawSetPreviewModel,samp,samp,0x004cf6b0,0x00476e90,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawSetPreviewRot,samp,samp,0x004cf6b8,0x00476f10,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawSetPreviewVehCol,samp,samp,0x004cf6c0,0x00476fc0,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawShow,samp,samp,0x004cf6c8,0x00477050,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawHide,samp,samp,0x004cf6d0,0x004770c0,0x0047a100,True,,absent,no literal registration in native host
+PlayerTextDrawDestroy,samp,samp,0x004cf6d8,0x00477130,0x0047a100,True,,absent,no literal registration in native host
+IsValidVehicle,samp,samp,0x004cf6e0,0x00474150,0x0047a100,True,,absent,no literal registration in native host
+CreateVehicle,samp,samp,0x004cf6e8,0x004717e0,0x0047a100,True,src/pawn/natives.cpp:508,partial,registered body present; semantic verification pending
+DestroyVehicle,samp,samp,0x004cf6f0,0x004718b0,0x0047a100,True,src/pawn/natives.cpp:512,partial,registered body present; semantic verification pending
+GetVehiclePos,samp,samp,0x004cf6f8,0x004718f0,0x0047a100,True,src/pawn/natives.cpp:525,partial,registered body present; semantic verification pending
+SetVehiclePos,samp,samp,0x004cf700,0x00471980,0x0047a100,True,src/pawn/natives.cpp:547,partial,registered body present; semantic verification pending
+GetVehicleZAngle,samp,samp,0x004cf708,0x004732a0,0x0047a100,True,,absent,no literal registration in native host
+GetVehicleRotationQuat,samp,samp,0x004cf710,0x00473390,0x0047a100,True,,absent,no literal registration in native host
+GetVehicleDistanceFromPoint,samp,samp,0x004cf718,0x004715d0,0x0047a100,True,,absent,no literal registration in native host
+SetVehicleZAngle,samp,samp,0x004cf720,0x0047cbd0,0x0047a100,True,,absent,no literal registration in native host
+SetVehicleParamsForPlayer,samp,samp,0x004cf728,0x0047c5d0,0x0047a100,True,,absent,no literal registration in native host
+ManualVehicleEngineAndLights,samp,samp,0x004cf730,0x004725d0,0x0047a100,True,,absent,no literal registration in native host
+SetVehicleParamsEx,samp,samp,0x004cf738,0x004725f0,0x0047a100,True,,absent,no literal registration in native host
+GetVehicleParamsEx,samp,samp,0x004cf740,0x004726b0,0x0047a100,True,,absent,no literal registration in native host
+SetVehicleParamsCarDoors,samp,samp,0x004cf748,0x004727d0,0x0047a100,True,,absent,no literal registration in native host
+GetVehicleParamsCarDoors,samp,samp,0x004cf750,0x00472880,0x0047a100,True,,absent,no literal registration in native host
+SetVehicleParamsCarWindows,samp,samp,0x004cf758,0x00472950,0x0047a100,True,,absent,no literal registration in native host
+GetVehicleParamsCarWindows,samp,samp,0x004cf760,0x00472a00,0x0047a100,True,,absent,no literal registration in native host
+SetVehicleToRespawn,samp,samp,0x004cf768,0x00470350,0x0047a100,True,,absent,no literal registration in native host
+GetVehicleModelInfo,samp,samp,0x004cf770,0x00470390,0x0047a100,True,,absent,no literal registration in native host
+RepairVehicle,samp,samp,0x004cf778,0x00470420,0x0047a100,True,,absent,no literal registration in native host
+AddVehicleComponent,samp,samp,0x004cf780,0x00470460,0x0047a100,True,,absent,no literal registration in native host
+RemoveVehicleComponent,samp,samp,0x004cf788,0x004704a0,0x0047a100,True,,absent,no literal registration in native host
+ChangeVehicleColor,samp,samp,0x004cf790,0x004704e0,0x0047a100,True,,absent,no literal registration in native host
+ChangeVehiclePaintjob,samp,samp,0x004cf798,0x00470530,0x0047a100,True,,absent,no literal registration in native host
+LinkVehicleToInterior,samp,samp,0x004cf7a0,0x0047a120,0x0047a100,True,src/pawn/natives.cpp:558,partial,registered body present; semantic verification pending
+SetVehicleHealth,samp,samp,0x004cf7a8,0x00474110,0x0047a100,True,src/pawn/natives.cpp:539,partial,registered body present; semantic verification pending
+GetVehicleHealth,samp,samp,0x004cf7b0,0x00474180,0x0047a100,True,src/pawn/natives.cpp:529,partial,registered body present; semantic verification pending
+AttachTrailerToVehicle,samp,samp,0x004cf7b8,0x0047d8a0,0x0047a100,True,,absent,no literal registration in native host
+DetachTrailerFromVehicle,samp,samp,0x004cf7c0,0x0047d9d0,0x0047a100,True,,absent,no literal registration in native host
+IsTrailerAttachedToVehicle,samp,samp,0x004cf7c8,0x00474360,0x0047a100,True,,absent,no literal registration in native host
+GetVehicleTrailer,samp,samp,0x004cf7d0,0x004743c0,0x0047a100,True,,absent,no literal registration in native host
+SetVehicleNumberPlate,samp,samp,0x004cf7d8,0x00470570,0x0047a100,True,,absent,no literal registration in native host
+GetVehicleModel,samp,samp,0x004cf7e0,0x00470690,0x0047a100,True,,absent,no literal registration in native host
+GetVehicleParamsSirenState,samp,samp,0x004cf7e8,0x004706e0,0x0047a100,True,,absent,no literal registration in native host
+GetVehicleComponentInSlot,samp,samp,0x004cf7f0,0x00470740,0x0047a100,True,,absent,no literal registration in native host
+GetVehicleComponentType,samp,samp,0x004cf7f8,0x004707b0,0x0047a100,True,,absent,no literal registration in native host
+GetVehicleVelocity,samp,samp,0x004cf800,0x00477930,0x0047a100,True,,absent,no literal registration in native host
+SetVehicleVelocity,samp,samp,0x004cf808,0x0047ff40,0x0047a100,True,,absent,no literal registration in native host
+SetVehicleAngularVelocity,samp,samp,0x004cf810,0x00480090,0x0047a100,True,,absent,no literal registration in native host
+GetVehicleDamageStatus,samp,samp,0x004cf818,0x004790e0,0x0047a100,True,,absent,no literal registration in native host
+UpdateVehicleDamageStatus,samp,samp,0x004cf820,0x004791c0,0x0047a100,True,,absent,no literal registration in native host
+SetVehicleVirtualWorld,samp,samp,0x004cf828,0x00470f70,0x0047a100,True,src/pawn/natives.cpp:535,partial,registered body present; semantic verification pending
+GetVehicleVirtualWorld,samp,samp,0x004cf830,0x00470fb0,0x0047a100,True,src/pawn/natives.cpp:532,partial,registered body present; semantic verification pending
+SendClientMessage,samp,samp,0x004cf838,0x00471b70,0x0047a100,True,src/pawn/natives.cpp:427,partial,registered body present; semantic verification pending
+SendClientMessageToAll,samp,samp,0x004cf840,0x00471c40,0x0047a100,True,,absent,no literal registration in native host
+SendDeathMessage,samp,samp,0x004cf848,0x0047b650,0x0047a100,True,,absent,no literal registration in native host
+SendDeathMessageToPlayer,samp,samp,0x004cf850,0x0047b730,0x0047a100,True,,absent,no literal registration in native host
+GameTextForAll,samp,samp,0x004cf858,0x0047b810,0x0047a100,True,,absent,no literal registration in native host
+GameTextForPlayer,samp,samp,0x004cf860,0x0047b970,0x0047a100,True,src/pawn/natives.cpp:329,placeholder,constant return 0
+SendPlayerMessageToPlayer,samp,samp,0x004cf868,0x0047b370,0x0047a100,True,,absent,no literal registration in native host
+SendPlayerMessageToAll,samp,samp,0x004cf870,0x0047b4f0,0x0047a100,True,,absent,no literal registration in native host
+TextDrawCreate,samp,samp,0x004cf878,0x00475f70,0x0047a100,True,src/pawn/natives.cpp:604,placeholder,constant return -1
+TextDrawSetString,samp,samp,0x004cf880,0x00476010,0x0047a100,True,src/pawn/natives.cpp:605,placeholder,constant return 0
+TextDrawLetterSize,samp,samp,0x004cf888,0x004760d0,0x0047a100,True,src/pawn/natives.cpp:606,placeholder,constant return 0
+TextDrawTextSize,samp,samp,0x004cf890,0x00476110,0x0047a100,True,src/pawn/natives.cpp:607,placeholder,constant return 0
+TextDrawAlignment,samp,samp,0x004cf898,0x00476150,0x0047a100,True,src/pawn/natives.cpp:608,placeholder,constant return 0
+TextDrawColor,samp,samp,0x004cf8a0,0x00476190,0x0047a100,True,src/pawn/natives.cpp:609,placeholder,constant return 0
+TextDrawUseBox,samp,samp,0x004cf8a8,0x004761d0,0x0047a100,True,src/pawn/natives.cpp:610,placeholder,constant return 0
+TextDrawBoxColor,samp,samp,0x004cf8b0,0x00476220,0x0047a100,True,src/pawn/natives.cpp:611,placeholder,constant return 0
+TextDrawSetShadow,samp,samp,0x004cf8b8,0x00476260,0x0047a100,True,src/pawn/natives.cpp:612,placeholder,constant return 0
+TextDrawSetOutline,samp,samp,0x004cf8c0,0x004762a0,0x0047a100,True,src/pawn/natives.cpp:613,placeholder,constant return 0
+TextDrawBackgroundColor,samp,samp,0x004cf8c8,0x004762e0,0x0047a100,True,src/pawn/natives.cpp:614,placeholder,constant return 0
+TextDrawFont,samp,samp,0x004cf8d0,0x00476320,0x0047a100,True,src/pawn/natives.cpp:615,placeholder,constant return 0
+TextDrawSetProportional,samp,samp,0x004cf8d8,0x00476360,0x0047a100,True,,absent,no literal registration in native host
+TextDrawSetSelectable,samp,samp,0x004cf8e0,0x004763b0,0x0047a100,True,,absent,no literal registration in native host
+TextDrawSetPreviewModel,samp,samp,0x004cf8e8,0x004763f0,0x0047a100,True,,absent,no literal registration in native host
+TextDrawSetPreviewRot,samp,samp,0x004cf8f0,0x00476430,0x0047a100,True,,absent,no literal registration in native host
+TextDrawSetPreviewVehCol,samp,samp,0x004cf8f8,0x004764b0,0x0047a100,True,,absent,no literal registration in native host
+TextDrawShowForPlayer,samp,samp,0x004cf900,0x00476500,0x0047a100,True,src/pawn/natives.cpp:616,placeholder,constant return 0
+TextDrawShowForAll,samp,samp,0x004cf908,0x004765c0,0x0047a100,True,,absent,no literal registration in native host
+TextDrawHideForPlayer,samp,samp,0x004cf910,0x00476560,0x0047a100,True,src/pawn/natives.cpp:617,placeholder,constant return 0
+TextDrawHideForAll,samp,samp,0x004cf918,0x00476600,0x0047a100,True,,absent,no literal registration in native host
+TextDrawDestroy,samp,samp,0x004cf920,0x00476640,0x0047a100,True,src/pawn/natives.cpp:618,placeholder,constant return 0
+CreateObject,samp,samp,0x004cf928,0x00474b40,0x0047a100,True,src/pawn/natives.cpp:737,partial,registered body present; semantic verification pending
+AttachObjectToVehicle,samp,samp,0x004cf930,0x00474c20,0x0047a100,True,,absent,no literal registration in native host
+AttachPlayerObjectToVehicle,samp,samp,0x004cf938,0x00474cf0,0x0047a100,True,,absent,no literal registration in native host
+AttachObjectToObject,samp,samp,0x004cf940,0x00474da0,0x0047a100,True,,absent,no literal registration in native host
+SetObjectPos,samp,samp,0x004cf948,0x0047dab0,0x0047a100,True,src/pawn/natives.cpp:772,partial,registered body present; semantic verification pending
+SetObjectRot,samp,samp,0x004cf950,0x0047dc10,0x0047a100,True,src/pawn/natives.cpp:773,partial,registered body present; semantic verification pending
+GetObjectPos,samp,samp,0x004cf958,0x00475260,0x0047a100,True,src/pawn/natives.cpp:781,partial,registered body present; semantic verification pending
+GetObjectRot,samp,samp,0x004cf960,0x004752f0,0x0047a100,True,src/pawn/natives.cpp:782,partial,registered body present; semantic verification pending
+GetObjectModel,samp,samp,0x004cf968,0x00475390,0x0047a100,True,src/pawn/natives.cpp:760,partial,registered body present; semantic verification pending
+SetObjectNoCameraCol,samp,samp,0x004cf970,0x004753d0,0x0047a100,True,,absent,no literal registration in native host
+IsValidObject,samp,samp,0x004cf978,0x00475460,0x0047a100,True,src/pawn/natives.cpp:759,partial,registered body present; semantic verification pending
+DestroyObject,samp,samp,0x004cf980,0x0047dd60,0x0047a100,True,src/pawn/natives.cpp:749,partial,registered body present; semantic verification pending
+IsObjectMoving,samp,samp,0x004cf988,0x004754a0,0x0047a100,True,,absent,no literal registration in native host
+MoveObject,samp,samp,0x004cf990,0x0047de70,0x0047a100,True,,absent,no literal registration in native host
+StopObject,samp,samp,0x004cf998,0x0047e140,0x0047a100,True,,absent,no literal registration in native host
+EditObject,samp,samp,0x004cf9a0,0x0047e250,0x0047a100,True,,absent,no literal registration in native host
+EditPlayerObject,samp,samp,0x004cf9a8,0x0047e390,0x0047a100,True,,absent,no literal registration in native host
+SelectObject,samp,samp,0x004cf9b0,0x004754e0,0x0047a100,True,,absent,no literal registration in native host
+CancelEdit,samp,samp,0x004cf9b8,0x004755d0,0x0047a100,True,,absent,no literal registration in native host
+SetObjectMaterial,samp,samp,0x004cf9c0,0x00474e80,0x0047a100,True,,absent,no literal registration in native host
+SetObjectMaterialText,samp,samp,0x004cf9c8,0x00475080,0x0047a100,True,,absent,no literal registration in native host
+CreatePlayerObject,samp,samp,0x004cf9d0,0x004756b0,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerObjectPos,samp,samp,0x004cf9d8,0x0047e4d0,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerObjectRot,samp,samp,0x004cf9e0,0x0047e690,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerObjectPos,samp,samp,0x004cf9e8,0x00475780,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerObjectRot,samp,samp,0x004cf9f0,0x00475830,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerObjectModel,samp,samp,0x004cf9f8,0x00475900,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerObjectNoCameraCol,samp,samp,0x004cfa00,0x0047e860,0x0047a100,True,,absent,no literal registration in native host
+IsValidPlayerObject,samp,samp,0x004cfa08,0x00475960,0x0047a100,True,,absent,no literal registration in native host
+DestroyPlayerObject,samp,samp,0x004cfa10,0x0047e980,0x0047a100,True,,absent,no literal registration in native host
+IsPlayerObjectMoving,samp,samp,0x004cfa18,0x004759d0,0x0047a100,True,,absent,no literal registration in native host
+MovePlayerObject,samp,samp,0x004cfa20,0x0047eab0,0x0047a100,True,,absent,no literal registration in native host
+StopPlayerObject,samp,samp,0x004cfa28,0x0047edf0,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerObjectMaterial,samp,samp,0x004cfa30,0x0047ef20,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerObjectMaterialText,samp,samp,0x004cfa38,0x0047f270,0x0047a100,True,,absent,no literal registration in native host
+AttachObjectToPlayer,samp,samp,0x004cfa40,0x0047f7e0,0x0047a100,True,,absent,no literal registration in native host
+AttachPlayerObjectToPlayer,samp,samp,0x004cfa48,0x00475ed0,0x0047a100,True,,absent,no literal registration in native host
+SetObjectsDefaultCameraCol,samp,samp,0x004cfa50,0x00475a40,0x0047a100,True,,absent,no literal registration in native host
+CreateActor,samp,samp,0x004cfa58,0x004796c0,0x0047a100,True,,absent,no literal registration in native host
+DestroyActor,samp,samp,0x004cfa60,0x00479700,0x0047a100,True,,absent,no literal registration in native host
+SetActorPos,samp,samp,0x004cfa68,0x00480ff0,0x0047a100,True,,absent,no literal registration in native host
+GetActorPos,samp,samp,0x004cfa70,0x00479740,0x0047a100,True,,absent,no literal registration in native host
+SetActorVirtualWorld,samp,samp,0x004cfa78,0x00479850,0x0047a100,True,,absent,no literal registration in native host
+GetActorVirtualWorld,samp,samp,0x004cfa80,0x00479890,0x0047a100,True,,absent,no literal registration in native host
+ApplyActorAnimation,samp,samp,0x004cfa88,0x004798d0,0x0047a100,True,,absent,no literal registration in native host
+ClearActorAnimations,samp,samp,0x004cfa90,0x00479a30,0x0047a100,True,,absent,no literal registration in native host
+SetActorFacingAngle,samp,samp,0x004cfa98,0x004811e0,0x0047a100,True,,absent,no literal registration in native host
+GetActorFacingAngle,samp,samp,0x004cfaa0,0x004797f0,0x0047a100,True,,absent,no literal registration in native host
+GetActorHealth,samp,samp,0x004cfaa8,0x00479a90,0x0047a100,True,,absent,no literal registration in native host
+SetActorHealth,samp,samp,0x004cfab0,0x00479af0,0x0047a100,True,,absent,no literal registration in native host
+IsValidActor,samp,samp,0x004cfab8,0x00479b30,0x0047a100,True,,absent,no literal registration in native host
+SetActorInvulnerable,samp,samp,0x004cfac0,0x00479b70,0x0047a100,True,,absent,no literal registration in native host
+IsActorInvulnerable,samp,samp,0x004cfac8,0x00479bb0,0x0047a100,True,,absent,no literal registration in native host
+CreateMenu,samp,samp,0x004cfad0,0x00475a70,0x0047a100,True,,absent,no literal registration in native host
+DestroyMenu,samp,samp,0x004cfad8,0x00475b20,0x0047a100,True,,absent,no literal registration in native host
+AddMenuItem,samp,samp,0x004cfae0,0x00475b50,0x0047a100,True,,absent,no literal registration in native host
+SetMenuColumnHeader,samp,samp,0x004cfae8,0x00475c10,0x0047a100,True,,absent,no literal registration in native host
+ShowMenuForPlayer,samp,samp,0x004cfaf0,0x00475cc0,0x0047a100,True,,absent,no literal registration in native host
+HideMenuForPlayer,samp,samp,0x004cfaf8,0x00475d30,0x0047a100,True,,absent,no literal registration in native host
+IsValidMenu,samp,samp,0x004cfb00,0x00475da0,0x0047a100,True,,absent,no literal registration in native host
+DisableMenu,samp,samp,0x004cfb08,0x00475dd0,0x0047a100,True,,absent,no literal registration in native host
+DisableMenuRow,samp,samp,0x004cfb10,0x00475e10,0x0047a100,True,,absent,no literal registration in native host
+GetPlayerMenu,samp,samp,0x004cfb18,0x00475e50,0x0047a100,True,,absent,no literal registration in native host
+SetPlayerTime,samp,samp,0x004cfb20,0x00472f70,0x0047a100,True,,absent,no literal registration in native host
+TogglePlayerClock,samp,samp,0x004cfb28,0x00473050,0x0047a100,True,src/pawn/natives.cpp:320,partial,registered body present; semantic verification pending
+GetPlayerTime,samp,samp,0x004cfb30,0x00472fb0,0x0047a100,True,,absent,no literal registration in native host
+HTTP,samp,samp,0x004cfb38,0x004793f0,0x0047a100,True,,absent,no literal registration in native host
+AddCharModel,samp,samp,0x004cfb40,0x00479bf0,0x0047a100,True,src/pawn/natives.cpp:653,partial,registered body present; semantic verification pending
+AddSimpleModel,samp,samp,0x004cfb48,0x00479cf0,0x0047a100,True,src/pawn/natives.cpp:660,partial,registered body present; semantic verification pending
+AddSimpleModelTimed,samp,samp,0x004cfb50,0x00479df0,0x0047a100,True,src/pawn/natives.cpp:667,partial,registered body present; semantic verification pending
+FindModelFileNameFromCRC,samp,samp,0x004cfb58,0x00479f10,0x0047a100,True,src/pawn/natives.cpp:692,partial,registered body present; semantic verification pending
+FindTextureFileNameFromCRC,samp,samp,0x004cfb60,0x00479f70,0x0047a100,True,src/pawn/natives.cpp:693,partial,registered body present; semantic verification pending
+RedirectDownload,samp,samp,0x004cfb68,0x00479fe0,0x0047a100,True,src/pawn/natives.cpp:695,partial,registered body present; semantic verification pending
+GetPlayerCustomSkin,samp,samp,0x004cfb70,0x0047a0c0,0x0047a100,True,src/pawn/natives.cpp:699,partial,registered body present; semantic verification pending
+db_open,sqlite,sqlite,0x004cfba0,0x00482190,0x00481880,True,src/pawn/db_natives.cpp:136,partial,registered body present; semantic verification pending
+db_close,sqlite,sqlite,0x004cfba8,0x004822d0,0x00481880,True,src/pawn/db_natives.cpp:154,partial,registered body present; semantic verification pending
+db_query,sqlite,sqlite,0x004cfbb0,0x00482330,0x00481880,True,src/pawn/db_natives.cpp:165,partial,registered body present; semantic verification pending
+db_free_result,sqlite,sqlite,0x004cfbb8,0x004824c0,0x00481880,True,src/pawn/db_natives.cpp:208,partial,registered body present; semantic verification pending
+db_num_rows,sqlite,sqlite,0x004cfbc0,0x00481950,0x00481880,True,src/pawn/db_natives.cpp:215,partial,registered body present; semantic verification pending
+db_next_row,sqlite,sqlite,0x004cfbc8,0x00481990,0x00481880,True,src/pawn/db_natives.cpp:224,partial,registered body present; semantic verification pending
+db_num_fields,sqlite,sqlite,0x004cfbd0,0x004819e0,0x00481880,True,src/pawn/db_natives.cpp:234,partial,registered body present; semantic verification pending
+db_field_name,sqlite,sqlite,0x004cfbd8,0x00481a20,0x00481880,True,src/pawn/db_natives.cpp:242,partial,registered body present; semantic verification pending
+db_get_field,sqlite,sqlite,0x004cfbe0,0x00481ac0,0x00481880,True,src/pawn/db_natives.cpp:258,partial,registered body present; semantic verification pending
+db_get_field_int,sqlite,sqlite,0x004cfbe8,0x00481b70,0x00481880,True,src/pawn/db_natives.cpp:276,partial,registered body present; semantic verification pending
+db_get_field_float,sqlite,sqlite,0x004cfbf0,0x00481be0,0x00481880,True,src/pawn/db_natives.cpp:290,partial,registered body present; semantic verification pending
+db_get_field_assoc,sqlite,sqlite,0x004cfbf8,0x00481c60,0x00481880,True,src/pawn/db_natives.cpp:307,partial,registered body present; semantic verification pending
+db_get_field_assoc_int,sqlite,sqlite,0x004cfc00,0x00481df0,0x00481880,True,src/pawn/db_natives.cpp:333,partial,registered body present; semantic verification pending
+db_get_field_assoc_float,sqlite,sqlite,0x004cfc08,0x00481f40,0x00481880,True,src/pawn/db_natives.cpp:352,partial,registered body present; semantic verification pending
+db_debug_openfiles,sqlite,sqlite,0x004cfc10,0x004820a0,0x00481880,True,src/pawn/db_natives.cpp:389,partial,registered body present; semantic verification pending
+db_debug_openresults,sqlite,sqlite,0x004cfc18,0x004820b0,0x00481880,True,src/pawn/db_natives.cpp:393,partial,registered body present; semantic verification pending
+db_get_mem_handle,sqlite,sqlite,0x004cfc20,0x004820c0,0x00481880,True,src/pawn/db_natives.cpp:374,partial,registered body present; semantic verification pending
+db_get_result_mem_handle,sqlite,sqlite,0x004cfc28,0x004820e0,0x00481880,True,src/pawn/db_natives.cpp:383,partial,registered body present; semantic verification pending

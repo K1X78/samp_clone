@@ -1,0 +1,1229 @@
+{
+  "date": "2026-11-03",
+  "base_commit": "e902f980b70c4a2434507e314116688fafb0191a",
+  "working_tree": "uncommitted P1 changes",
+  "status": "seven packages implemented and deterministic offline gate passed; live runtime/interoperability pending explicit request",
+  "evidence_kind": "local original 0.3.DL PE and generated assembly, plus offline fixtures; 64-byte windows identify owner entries and are not claimed complete function extents",
+  "references": {
+    "samp.dll": {
+      "sha256": "bccdb297464bd382625635be25585df07a8fa6668bc0015650708e3eb4ffcd4b",
+      "bytes": 1466368,
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    "samp-server.exe": {
+      "sha256": "96e3a6a41c8e84adfd633a5292ca2a8c3fd474ded022d85e79796f86caab6a4a",
+      "bytes": 978944,
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    }
+  },
+  "packages": [
+    {
+      "id": "P1.1",
+      "title": "Transport fragmentation and reliability",
+      "status": "implemented; offline verified; runtime gate pending",
+      "owners": [
+        {
+          "source": "src/protocol/include/samp/proto/raknet.hpp",
+          "line": 119,
+          "declarator": "encode_connected_datagram(const ConnectedDatagram& datagram)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10047b30",
+          "address": "0x10047b30",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "23bcf9d25ad76e3ee609ad5f403e2cea5088bed85ff7c6d8bd524bd0f625b2b3"
+        },
+        {
+          "source": "src/protocol/reliability_frame.cpp",
+          "line": 9,
+          "declarator": "reliability_sequence_older(std::uint16_t incoming, std::uint16_t expected)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10043ac0",
+          "address": "0x10043ac0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "f9497c762073b4a271d6110a6de52580014f0961fbfc82a0ec8ccb13cac8d428"
+        },
+        {
+          "source": "src/protocol/reliability_frame.cpp",
+          "line": 16,
+          "declarator": "reliability_retry_delay(std::uint32_t ping_ms)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10043b30",
+          "address": "0x10043b30",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "0cf8fd28021837a0c4a790863fd385339a7284d1b0291676c1fc953395d4fe21"
+        },
+        {
+          "source": "src/protocol/reliability_frame.cpp",
+          "line": 22,
+          "declarator": "set_reliability_ping(ReliabilitySendState& state, std::uint32_t ping_ms)",
+          "binary": "samp.dll",
+          "symbol": "FUN_100456c0",
+          "address": "0x100456c0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "4782e44b9b718953b278874da3007284970500acc0a423f51fead6afc26dd6b1"
+        },
+        {
+          "source": "src/protocol/reliability_frame.cpp",
+          "line": 30,
+          "declarator": "reliability_header_bits(const ReliabilityFrame& frame)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10043980",
+          "address": "0x10043980",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "bff0256881813f66ab096d1f02ebb8437099d61d6abb7e250a7fd2337a7933cf"
+        },
+        {
+          "source": "src/protocol/reliability_frame.cpp",
+          "line": 38,
+          "declarator": "queue_reliability_frame(ReliabilitySendState& state, ReliabilityFrame frame,\n                             std::uint16_t& next_message_number, std::uint64_t now_ms)",
+          "binary": "samp.dll",
+          "symbol": "FUN_100465c0",
+          "address": "0x100465c0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "50edaefcc95efd577ce65ed84c4e5f52427cf7e75a18653e54ac50dae8debbb2"
+        },
+        {
+          "source": "src/protocol/reliability_frame.cpp",
+          "line": 96,
+          "declarator": "acknowledge_reliability_frames(ReliabilitySendState& state, const std::vector<AckRange>& ranges,\n                                    std::uint64_t now_ms)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10048170",
+          "address": "0x10048170",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "3477f6a091c535638618e6609e09e402e284dbabd9cdf4320c5a67af568b7060"
+        },
+        {
+          "source": "src/protocol/reliability_frame.cpp",
+          "line": 113,
+          "declarator": "update_reliability_sends(ReliabilitySendState& state, std::uint64_t now_ms,\n                              std::uint16_t* next_message_number)",
+          "binary": "samp.dll",
+          "symbol": "FUN_100495a0",
+          "address": "0x100495a0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "3a866b57507d4ad805e24b129134757341d1ddae94cfb43a91abda6450099bf4"
+        },
+        {
+          "source": "src/protocol/reliability_frame.cpp",
+          "line": 233,
+          "declarator": "queue_connected_ping(ReliabilitySendState& state, std::uint16_t& next_message_number,\n                           std::uint64_t now_ms)",
+          "binary": "samp.dll",
+          "symbol": "FUN_1003ec60",
+          "address": "0x1003ec60",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "ca815293ad5047ed2f2c4a63694b4d4724bb2fb4786f68023d2485b2b5205323"
+        },
+        {
+          "source": "src/protocol/reliability_frame.cpp",
+          "line": 247,
+          "declarator": "handle_connected_ping(ReliabilitySendState& state, const BitStream& message,\n                            std::uint16_t& next_message_number, std::uint64_t now_ms)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10040f10",
+          "address": "0x10040f10",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "ca7f209d1b56e93d623efea6d6dc7077b0f181b526063f0e7067aa3d4601566f"
+        },
+        {
+          "source": "src/protocol/reliability_frame.cpp",
+          "line": 281,
+          "declarator": "decode_reliability_frame(BitStream& input, ReliabilityFrame& frame)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10045110",
+          "address": "0x10045110",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "5b944a8d02c7b2c4ff8066c26af0ab425b8cf5542b878a22d29c592b210f4a75"
+        },
+        {
+          "source": "src/protocol/reliability_frame.cpp",
+          "line": 316,
+          "declarator": "encode_reliability_frame(BitStream& output, const ReliabilityFrame& frame)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10044ff0",
+          "address": "0x10044ff0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "80ad110ead22240072e413d29d80a448d5ad5cc14b0b98ce779a821dadeec30e"
+        },
+        {
+          "source": "src/protocol/reliability_frame.cpp",
+          "line": 340,
+          "declarator": "decode_connected_datagram(std::span<const std::uint8_t> bytes, ConnectedDatagram& output,\n                               ReliabilityReceiveState* state, std::uint64_t now_ms)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10048d10",
+          "address": "0x10048d10",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "497db617d6516789c12c17abb8c181699fac479b1e99185442e10a28e138d6c2"
+        }
+      ]
+    },
+    {
+      "id": "P1.2",
+      "title": "Connect, reject, disconnect and reconnect",
+      "status": "implemented; offline verified; runtime gate pending",
+      "owners": [
+        {
+          "source": "src/client/core/network_client.cpp",
+          "line": 93,
+          "declarator": "NetworkClient::connect(const ConnectionParameters& parameters)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10033bf0",
+          "address": "0x10033bf0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "0df13060efec3cb7093d44ad7c641095a0f735c2aeb3b3b6f82e2911d6a576c2"
+        },
+        {
+          "source": "src/client/core/network_client.cpp",
+          "line": 232,
+          "declarator": "NetworkClient::tick()",
+          "binary": "samp.dll",
+          "symbol": "FUN_1000af40",
+          "address": "0x1000af40",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "758d21fdc3f1c311f69e5c77c5ed4f1ed54ced5de45dfbfdd9923ffd31cc2733"
+        },
+        {
+          "source": "src/server/connection.cpp",
+          "line": 12,
+          "declarator": "RakNetServer::handle_connection_request(RakNetPeer& peer, const samp::proto::BitStream& message)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00457e80",
+          "address": "0x00457e80",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "fbf7559085bd2bc2b5c15d4008da53275fcdb048e4857090af84d1e0ba16b3fc"
+        },
+        {
+          "source": "src/server/connection.cpp",
+          "line": 30,
+          "declarator": "RakNetServer::begin_authentication(RakNetPeer& peer)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_004558c0",
+          "address": "0x004558c0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "aff4d95678515688f8829fd29c40efc2b297b188b2d955bef2aa0905057624a7"
+        },
+        {
+          "source": "src/server/connection.cpp",
+          "line": 44,
+          "declarator": "RakNetServer::handle_authentication(RakNetPeer& peer, const samp::proto::BitStream& message)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_0048f9e0",
+          "address": "0x0048f9e0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "1b0f62525e3a75ceb30e5f1304260674bb7ba0d089cd632dd1d022ef4013872c"
+        },
+        {
+          "source": "src/server/connection.cpp",
+          "line": 60,
+          "declarator": "RakNetServer::accept_connection(RakNetPeer& peer)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_0048f8a0",
+          "address": "0x0048f8a0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "fad16bcfec027910c5079fa8fa2894131a52bf565fdc45d53a1ed7c6bceb0f31"
+        },
+        {
+          "source": "src/server/connection.cpp",
+          "line": 73,
+          "declarator": "GameLayer::disconnect_player(int id, std::uint8_t reason)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00466550",
+          "address": "0x00466550",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "83a8973e8a4fdf20796f6725df69a9b11cd5758fb57c6f10a8991d0a9d6877f5"
+        },
+        {
+          "source": "src/server/game_layer.cpp",
+          "line": 398,
+          "declarator": "GameLayer::handle_player_connect(RakNetPeer& peer, const BitStream& payload)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_0049cea0",
+          "address": "0x0049cea0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "b0068d02abf48a63d35020332810ee00cc8ffc6fe3cc338c2e5d5f96535f8c77"
+        }
+      ]
+    },
+    {
+      "id": "P1.3",
+      "title": "Class, spawn, death and respawn",
+      "status": "implemented; offline verified; runtime gate pending",
+      "owners": [
+        {
+          "source": "src/client/core/local_lifecycle.cpp",
+          "line": 6,
+          "declarator": "NetworkClient::send_death_notification(std::uint8_t reason, std::uint16_t killer)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10005660",
+          "address": "0x10005660",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "83f47ffe9fade2a42df23c7aaae63d9a010d12e324b22b9e9a40ccb8f80aad3f"
+        },
+        {
+          "source": "src/client/win/game_runtime.cpp",
+          "line": 523,
+          "declarator": "GameRuntime::spawn_player(const WorldClass& spawn)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10003b20",
+          "address": "0x10003b20",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "6ac4bef77b405e6e24dbcee354f147a21e79b72d39f13ee6495956a24895697c"
+        },
+        {
+          "source": "src/client/win/game_runtime.cpp",
+          "line": 630,
+          "declarator": "GameRuntime::tick(bool connected,bool network_spawned,bool class_ready,const WorldClass& spawn,\n                       std::vector<GameCommand>& pending_commands)",
+          "binary": "samp.dll",
+          "symbol": "FUN_100072d0",
+          "address": "0x100072d0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "c86cc35b64a4fa5d986e9912f760d4e683c892622576a087e06d960d5c821171"
+        },
+        {
+          "source": "src/client/win/player_death.cpp",
+          "line": 7,
+          "declarator": "GameRuntime::death_info(const std::uint8_t* ped, std::uint16_t& killer) const",
+          "binary": "samp.dll",
+          "symbol": "FUN_100ac470",
+          "address": "0x100ac470",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "377ac2790a02c02385b76e34ed03eea2d3eafe92a8419a32546707f18e49bc14"
+        },
+        {
+          "source": "src/server/game_layer.cpp",
+          "line": 825,
+          "declarator": "GameLayer::handle_player_request_class(RakNetPeer& peer, const BitStream& payload)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00498560",
+          "address": "0x00498560",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "e75d58ac597edd3ac26b2e2ce6cafc080e6ed3116effefea55e6c403a169286a"
+        },
+        {
+          "source": "src/server/game_layer.cpp",
+          "line": 875,
+          "declarator": "GameLayer::handle_player_request_spawn(RakNetPeer& peer)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00498780",
+          "address": "0x00498780",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "46e5714bb762de7222e170787fb958500009367a3191dd87c68f7e808748d506"
+        },
+        {
+          "source": "src/server/game_layer.cpp",
+          "line": 903,
+          "declarator": "GameLayer::handle_player_in_game(RakNetPeer& peer)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00497750",
+          "address": "0x00497750",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "736c99482170c4c570e63423c7a3cfdfa9327819fbd36e42502a7da65ea0d424"
+        },
+        {
+          "source": "src/server/player_lifecycle.cpp",
+          "line": 6,
+          "declarator": "GameLayer::set_player_state(GamePlayer& player, std::uint8_t state)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00483630",
+          "address": "0x00483630",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "2e5c8d06aa470aab288406e9d76baa311ebcfa945a195ea1be3290717d26dd70"
+        },
+        {
+          "source": "src/server/player_lifecycle.cpp",
+          "line": 18,
+          "declarator": "GameLayer::handle_player_death(RakNetPeer& peer, const samp::proto::BitStream& payload)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00498950",
+          "address": "0x00498950",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "2685ed837dfbecfe5fac6d98f085e22199f926c3c435d3f15c74a57c552d57c7"
+        },
+        {
+          "source": "src/server/player_lifecycle.cpp",
+          "line": 42,
+          "declarator": "GameLayer::handle_player_interior(RakNetPeer& peer,const samp::proto::BitStream& payload)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_004992a0",
+          "address": "0x004992a0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "14a8313377646e508748c3a08ac6a9e9d67b24be3239eb458fb5c5546c3da6fd"
+        },
+        {
+          "source": "src/server/player_lifecycle.cpp",
+          "line": 55,
+          "declarator": "GameLayer::notify_key_change(GamePlayer& player,std::uint32_t old_keys)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00484080",
+          "address": "0x00484080",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "542e7232f3fc7a6d69e4d0f4b30e0e61e7babb7928038a85da14ad13dd6c7e5d"
+        }
+      ]
+    },
+    {
+      "id": "P1.4",
+      "title": "Core player native, state, RPC and engine loop",
+      "status": "implemented; offline verified; runtime gate pending",
+      "owners": [
+        {
+          "source": "src/client/core/server_rpc_player.cpp",
+          "line": 124,
+          "declarator": "rpc_set_player_health(ServerRpcContext& context, samp::proto::BitStream& in)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10019080",
+          "address": "0x10019080",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "3e3ba78566f17c03b25e2ae2dc07bf7087c5ddc5d91319e360c678ad87bab7c4"
+        },
+        {
+          "source": "src/client/core/server_rpc_player.cpp",
+          "line": 176,
+          "declarator": "rpc_give_player_money(ServerRpcContext& context, samp::proto::BitStream& in)",
+          "binary": "samp.dll",
+          "symbol": "FUN_1001a030",
+          "address": "0x1001a030",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "ad11c59023eef6bc56dd4e2696fd405a6b917350465855efc6f4c34d0b3a4a07"
+        },
+        {
+          "source": "src/client/core/server_rpc_player.cpp",
+          "line": 190,
+          "declarator": "rpc_reset_player_money(ServerRpcContext& context, samp::proto::BitStream& /*in*/)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10017ba0",
+          "address": "0x10017ba0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "55d19abe44020897b3c3f72927bd9fb933c63a3dd7c82c516c0bce88b52b5d78"
+        },
+        {
+          "source": "src/client/core/server_rpc_player.cpp",
+          "line": 198,
+          "declarator": "rpc_reset_player_weapons(ServerRpcContext& context, samp::proto::BitStream& /*in*/)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10017bb0",
+          "address": "0x10017bb0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "7846e55b202d41c90761acc1d95b20efbf55c863c1486de219ac4957529f7942"
+        },
+        {
+          "source": "src/client/core/server_rpc_player.cpp",
+          "line": 209,
+          "declarator": "rpc_give_player_weapon(ServerRpcContext& context, samp::proto::BitStream& in)",
+          "binary": "samp.dll",
+          "symbol": "FUN_1001a170",
+          "address": "0x1001a170",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "fe0da58977cfd3633d277b879ebb8725d6cfbe0cb680beb7b775bc59038673f4"
+        },
+        {
+          "source": "src/client/core/server_rpc_player.cpp",
+          "line": 240,
+          "declarator": "rpc_set_player_armour(ServerRpcContext& context, samp::proto::BitStream& in)",
+          "binary": "samp.dll",
+          "symbol": "FUN_1001a690",
+          "address": "0x1001a690",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "ebc854d5c9b5b548a8353c50b124c7a55206863e6b735d80cc44886cd31684e3"
+        },
+        {
+          "source": "src/client/core/server_rpc_player.cpp",
+          "line": 252,
+          "declarator": "rpc_set_player_armed_weapon(ServerRpcContext& context, samp::proto::BitStream& in)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10018950",
+          "address": "0x10018950",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "e59edf0509b0c1571a2e4e658e9e866ec86e8e78552250dd4be2cecd612296dd"
+        },
+        {
+          "source": "src/client/core/server_rpc_player.cpp",
+          "line": 338,
+          "declarator": "rpc_set_player_velocity(ServerRpcContext& context, samp::proto::BitStream& in)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10018350",
+          "address": "0x10018350",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "05259a462fdb53284649cb984a83a4183c03510c51bbcc002200b62d7368d326"
+        },
+        {
+          "source": "src/server/game_layer.cpp",
+          "line": 260,
+          "declarator": "GameLayer::set_player_interior(int id, int interior)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_0047bb00",
+          "address": "0x0047bb00",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "b58d728e255d28f8caaa3d87277c26b1b670bc48c363b210518f3dd695f947df"
+        },
+        {
+          "source": "src/server/game_layer.cpp",
+          "line": 270,
+          "declarator": "GameLayer::set_player_pos(int id, float x, float y, float z)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_0047ae30",
+          "address": "0x0047ae30",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "cee9476c66afb43611d301d1f31d7014332028739a0ef0bed3ee216c346169c1"
+        },
+        {
+          "source": "src/server/game_layer.cpp",
+          "line": 283,
+          "declarator": "GameLayer::set_player_facing_angle(int id, float angle)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_0047c920",
+          "address": "0x0047c920",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "b58d728e255d28f8caaa3d87277c26b1b670bc48c363b210518f3dd695f947df"
+        }
+      ],
+      "native_table_evidence": [
+        {
+          "name": "IsPlayerNPC",
+          "callback": "0x00478120",
+          "entry": "0x004cf090",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:458",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "SetSpawnInfo",
+          "callback": "0x00470c00",
+          "entry": "0x004cf208",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:678",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GetPlayerPos",
+          "callback": "0x00470ff0",
+          "entry": "0x004cf240",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:442",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GetPlayerHealth",
+          "callback": "0x004711b0",
+          "entry": "0x004cf260",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:428",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "SetPlayerHealth",
+          "callback": "0x0047b090",
+          "entry": "0x004cf268",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:424",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GetPlayerInterior",
+          "callback": "0x00472010",
+          "entry": "0x004cf300",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:464",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GetPlayerFacingAngle",
+          "callback": "0x00472e30",
+          "entry": "0x004cf3e8",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:446",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GivePlayerMoney",
+          "callback": "0x0047c710",
+          "entry": "0x004cf3f0",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:402",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GetPlayerMoney",
+          "callback": "0x00472b40",
+          "entry": "0x004cf3f8",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:387",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "ResetPlayerMoney",
+          "callback": "0x00472b70",
+          "entry": "0x004cf400",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:398",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "IsPlayerConnected",
+          "callback": "0x00472dd0",
+          "entry": "0x004cf408",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:461",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GetPlayerState",
+          "callback": "0x00472e00",
+          "entry": "0x004cf410",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:380",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "ResetPlayerWeapons",
+          "callback": "0x00472e90",
+          "entry": "0x004cf418",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:419",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GivePlayerWeapon",
+          "callback": "0x0047ca00",
+          "entry": "0x004cf420",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:410",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "SetPlayerArmedWeapon",
+          "callback": "0x0047caf0",
+          "entry": "0x004cf428",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:415",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GetPlayerWeapon",
+          "callback": "0x00473c40",
+          "entry": "0x004cf440",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:383",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "SetPlayerArmour",
+          "callback": "0x0047cf30",
+          "entry": "0x004cf448",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:433",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GetPlayerArmour",
+          "callback": "0x00473dd0",
+          "entry": "0x004cf450",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:437",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GetPlayerKeys",
+          "callback": "0x00473e30",
+          "entry": "0x004cf468",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:391",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GetPlayerAmmo",
+          "callback": "0x00472c50",
+          "entry": "0x004cf478",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:669",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GetPlayerWeaponData",
+          "callback": "0x00472d30",
+          "entry": "0x004cf498",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:644",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GetPlayerVelocity",
+          "callback": "0x00477830",
+          "entry": "0x004cf4d8",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:451",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "SetPlayerVirtualWorld",
+          "callback": "0x00470ee0",
+          "entry": "0x004cf510",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:636",
+          "table_bytes_verified": "True"
+        },
+        {
+          "name": "GetPlayerVirtualWorld",
+          "callback": "0x00470f30",
+          "entry": "0x004cf518",
+          "table": "samp",
+          "source": "src/pawn/natives.cpp:467",
+          "table_bytes_verified": "True"
+        }
+      ]
+    },
+    {
+      "id": "P1.5",
+      "title": "On-foot, aim, bullet, stats and weapons",
+      "status": "implemented; offline verified; runtime gate pending",
+      "owners": [
+        {
+          "source": "src/client/core/network_client.cpp",
+          "line": 986,
+          "declarator": "NetworkClient::handle_foot_sync(const BitStream& packet,std::uint64_t stamp)",
+          "binary": "samp.dll",
+          "symbol": "FUN_1000a420",
+          "address": "0x1000a420",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "2f361ac51c571ecdcc79fea76ad3c6938540f7c5a517f3199712fa521676ebb0"
+        },
+        {
+          "source": "src/client/core/network_client.cpp",
+          "line": 1141,
+          "declarator": "NetworkClient::handle_aim_sync(const BitStream& packet,std::uint64_t stamp)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10009930",
+          "address": "0x10009930",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "bbf92908ec5ff7d430e71bb7460b7dc7d90aec492290786b9eb81d53a76d2f53"
+        },
+        {
+          "source": "src/client/core/network_client.cpp",
+          "line": 1174,
+          "declarator": "NetworkClient::handle_bullet_sync(const BitStream& packet,std::uint64_t stamp)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10009830",
+          "address": "0x10009830",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "490f815bc83a6f7a7cbb3fe937be1cfc46cecf3beceb78d00a3bcdedd072c72e"
+        },
+        {
+          "source": "src/client/core/network_client.cpp",
+          "line": 1694,
+          "declarator": "NetworkClient::send_foot_sync()",
+          "binary": "samp.dll",
+          "symbol": "FUN_10004db0",
+          "address": "0x10004db0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "7f232766a15a73e00627c4f796f5d4a990f5373f2ebf04e1fc5a35578f1e5ac2"
+        },
+        {
+          "source": "src/client/core/weapon_sync.cpp",
+          "line": 7,
+          "declarator": "NetworkClient::send_aim_sync()",
+          "binary": "samp.dll",
+          "symbol": "FUN_10005090",
+          "address": "0x10005090",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "9d2ef32e3155930bbf98a56c27f3fd36d317a7de7dcf51a899a27ce948b2fc7e"
+        },
+        {
+          "source": "src/client/core/weapon_sync.cpp",
+          "line": 20,
+          "declarator": "NetworkClient::send_bullet_sync(const std::array<std::uint8_t,40>& bullet)",
+          "binary": "samp.dll",
+          "symbol": "FUN_100069d0",
+          "address": "0x100069d0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "f5af0bee7653111c0ada79915cbc45f65e3e42588883b937eea28038ab73f90e"
+        },
+        {
+          "source": "src/client/core/weapon_sync.cpp",
+          "line": 30,
+          "declarator": "NetworkClient::send_stats_sync()",
+          "binary": "samp.dll",
+          "symbol": "FUN_10005b50",
+          "address": "0x10005b50",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "8029891acd683d2342c5002e17ad609bb65834eff23130dadaced0bd52734572"
+        },
+        {
+          "source": "src/client/core/weapon_sync.cpp",
+          "line": 44,
+          "declarator": "NetworkClient::send_weapons_sync()",
+          "binary": "samp.dll",
+          "symbol": "FUN_100060d0",
+          "address": "0x100060d0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "9bf16f4d712f9fef12b95947113f987b1799f0eaee98806d1ca56039d1e69cdf"
+        },
+        {
+          "source": "src/client/core/weapon_sync.cpp",
+          "line": 63,
+          "declarator": "NetworkClient::send_interior(std::uint8_t interior)",
+          "binary": "samp.dll",
+          "symbol": "FUN_100057c0",
+          "address": "0x100057c0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "f508f04a0087e0588c21ed094988fcee02d366bb6777e698d8bf09d9b264f429"
+        },
+        {
+          "source": "src/client/win/game_runtime.cpp",
+          "line": 398,
+          "declarator": "GameRuntime::process_ped_control(void* object, void*)",
+          "binary": "samp.dll",
+          "symbol": "FUN_100a26d0",
+          "address": "0x100a26d0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "7a37776d3c55e78ed0197251518ccccba46cb8ee724d549d40b3a2bcc54e61ec"
+        },
+        {
+          "source": "src/client/win/weapon_runtime.cpp",
+          "line": 10,
+          "declarator": "GameRuntime::capture_shot(const float* origin,const float* position,void* entity,std::uint8_t weapon)",
+          "binary": "samp.dll",
+          "symbol": "FUN_100a5170",
+          "address": "0x100a5170",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "5bf9a3b03d3f5cffc0a1d3760c2c319982531e2b4da5f66b3fbd9e67d997a2f4"
+        },
+        {
+          "source": "src/client/win/weapon_runtime.cpp",
+          "line": 35,
+          "declarator": "GameRuntime::give_weapon(std::uint8_t* ped,std::uint32_t weapon,std::uint32_t ammo)",
+          "binary": "samp.dll",
+          "symbol": "FUN_100af390",
+          "address": "0x100af390",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "871056925b8f8939885c2f64881fc0446139ba869f0840a4e95016c7dc5b5e82"
+        },
+        {
+          "source": "src/client/win/weapon_runtime.cpp",
+          "line": 47,
+          "declarator": "GameRuntime::replay_bullet(const RemoteBulletCommand& command)",
+          "binary": "samp.dll",
+          "symbol": "FUN_100af670",
+          "address": "0x100af670",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "f91d071cc8545c1eec789e318b3342a71f769b2a8dd5e2c1412fce6d7d9bb41b"
+        },
+        {
+          "source": "src/server/game_layer.cpp",
+          "line": 631,
+          "declarator": "GameLayer::handle_game_packet(RakNetPeer& peer, const BitStream& message)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00494dc0",
+          "address": "0x00494dc0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "da0ad7331acd0ed08292d78cd3bc7f013d23bc90cf7c802ffec79ed42f5af878"
+        },
+        {
+          "source": "src/server/player_sync.cpp",
+          "line": 10,
+          "declarator": "GameLayer::relay_sync(const GamePlayer& player, const samp::proto::BitStream& payload)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00493d40",
+          "address": "0x00493d40",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "ef2438dda35ffbf16dfa98dd5fa27bc4f4458635e8e4d024273965b433b339a7"
+        },
+        {
+          "source": "src/server/player_sync.cpp",
+          "line": 27,
+          "declarator": "GameLayer::handle_aim_packet(GamePlayer& player, const samp::proto::BitStream& message)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00494f00",
+          "address": "0x00494f00",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "2d830d7eb7554fde8e310870433bcdb537f9b48adf44e91716551c9cf157c6dc"
+        },
+        {
+          "source": "src/server/player_sync.cpp",
+          "line": 45,
+          "declarator": "GameLayer::handle_bullet_packet(GamePlayer& player, const samp::proto::BitStream& message)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_004956d0",
+          "address": "0x004956d0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "9f3eb1a1bcfacbd85e8852f444bd7a0deebc04b3fa82160005ed6ccdf22d02d2"
+        },
+        {
+          "source": "src/server/player_sync.cpp",
+          "line": 77,
+          "declarator": "GameLayer::handle_stats_packet(GamePlayer& player, const samp::proto::BitStream& message)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00495860",
+          "address": "0x00495860",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "0ef4237d07e2c5b8b1f7544f0f747916da8e7323a3c4366a9cbe5afa036bcb7f"
+        },
+        {
+          "source": "src/server/player_sync.cpp",
+          "line": 84,
+          "declarator": "GameLayer::handle_weapons_packet(GamePlayer& player, const samp::proto::BitStream& message)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00495940",
+          "address": "0x00495940",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "56261241b93e96eedcbf56d69572aa4972a189cfd104111d7989a8b8e2b44f85"
+        }
+      ]
+    },
+    {
+      "id": "P1.6",
+      "title": "Essential vehicle loop",
+      "status": "implemented; offline verified; runtime gate pending",
+      "owners": [
+        {
+          "source": "src/client/core/network_client.cpp",
+          "line": 1066,
+          "declarator": "NetworkClient::handle_vehicle_sync(const BitStream& packet,std::uint64_t stamp)",
+          "binary": "samp.dll",
+          "symbol": "FUN_1000a6f0",
+          "address": "0x1000a6f0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "f3a2f403fd95aac97f362e6889469ab088f7538cafc104f455436fcc2682e31f"
+        },
+        {
+          "source": "src/client/core/server_rpc_packet.cpp",
+          "line": 475,
+          "declarator": "rpc_spawn_vehicle(ServerRpcContext& context, samp::proto::BitStream& in)",
+          "binary": "samp.dll",
+          "symbol": "FUN_1000e500",
+          "address": "0x1000e500",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "eaf5a8ca8eb78f51269c556abc51aa1313ab4cb73baac52900aadd6c7da12b67"
+        },
+        {
+          "source": "src/client/core/server_rpc_packet.cpp",
+          "line": 561,
+          "declarator": "rpc_stream_out_vehicle(ServerRpcContext& context, samp::proto::BitStream& in)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10010dc0",
+          "address": "0x10010dc0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "8e735f88bff71b53464e7198d64e5975f60461ca2059df97b412632aa7b800ef"
+        },
+        {
+          "source": "src/client/core/server_rpc_vehicle.cpp",
+          "line": 63,
+          "declarator": "rpc_link_vehicle_interior(ServerRpcContext& context, samp::proto::BitStream& in)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10019a60",
+          "address": "0x10019a60",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "c41d0b84bca0a5a3ad49b228790ac6b14517f39a505af5de854b49be4d044825"
+        },
+        {
+          "source": "src/client/core/server_rpc_vehicle.cpp",
+          "line": 254,
+          "declarator": "rpc_set_vehicle_health(ServerRpcContext& context,samp::proto::BitStream& input)",
+          "binary": "samp.dll",
+          "symbol": "FUN_1001a8a0",
+          "address": "0x1001a8a0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "1dbbeb2d4179b98ac95c270e6a3ba7f7b22022cb80f989581595d09fee9da59b"
+        },
+        {
+          "source": "src/client/core/server_rpc_vehicle.cpp",
+          "line": 268,
+          "declarator": "rpc_set_vehicle_position(ServerRpcContext& context,samp::proto::BitStream& input)",
+          "binary": "samp.dll",
+          "symbol": "FUN_100197a0",
+          "address": "0x100197a0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "20206e5ef68c4ef87efb0f960cc746fc429e16a8e96dafefd73beb84e6fd36b8"
+        },
+        {
+          "source": "src/client/core/server_rpc_world.cpp",
+          "line": 104,
+          "declarator": "rpc_put_player_in_vehicle(ServerRpcContext& context, samp::proto::BitStream& in)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10019130",
+          "address": "0x10019130",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "a0834e404feff10c09115832cf462d62ca37905684419ffad85afad2f051ec13"
+        },
+        {
+          "source": "src/client/core/server_rpc_world.cpp",
+          "line": 127,
+          "declarator": "rpc_remove_player_from_vehicle(ServerRpcContext& context, samp::proto::BitStream& /*in*/)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10017b00",
+          "address": "0x10017b00",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "0f63eefa88a0d5e14280fc8251cb29c5e54a2ab6ad5e0df69ef9eb59658c4a8a"
+        },
+        {
+          "source": "src/client/core/vehicle_sync.cpp",
+          "line": 8,
+          "declarator": "NetworkClient::send_driver_sync()",
+          "binary": "samp.dll",
+          "symbol": "FUN_10006e80",
+          "address": "0x10006e80",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "a077b9dd48e67da83a01dcf773f13cd84b6568319edc3dac2e3b203f82371fab"
+        },
+        {
+          "source": "src/client/core/vehicle_sync.cpp",
+          "line": 19,
+          "declarator": "NetworkClient::send_passenger_sync()",
+          "binary": "samp.dll",
+          "symbol": "FUN_10005400",
+          "address": "0x10005400",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "d1965d9976c8867afb2064dd866914edfc07035642852dd5f34cd2f0c1ae4195"
+        },
+        {
+          "source": "src/client/core/vehicle_sync.cpp",
+          "line": 30,
+          "declarator": "NetworkClient::handle_passenger_sync(const samp::proto::BitStream& packet,std::uint64_t stamp)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10009a20",
+          "address": "0x10009a20",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "ae67145a1f69fe38b8a916483add060d8aa4a5ff6954dcd180182293f43af7e8"
+        },
+        {
+          "source": "src/client/core/vehicle_sync.cpp",
+          "line": 53,
+          "declarator": "NetworkClient::send_enter_vehicle(std::uint16_t id,bool passenger)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10005920",
+          "address": "0x10005920",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "a4ef2f48cdd6d6af2cff0f7d80b994961e501e551bda811e764175a29e7257c9"
+        },
+        {
+          "source": "src/client/core/vehicle_sync.cpp",
+          "line": 64,
+          "declarator": "NetworkClient::send_exit_vehicle(std::uint16_t id)",
+          "binary": "samp.dll",
+          "symbol": "FUN_10005a40",
+          "address": "0x10005a40",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "8a90b310411b9e26cf59dc9f0512bac37f86233c6f9e399c267cb30b46cbe667"
+        },
+        {
+          "source": "src/client/core/vehicle_sync.cpp",
+          "line": 75,
+          "declarator": "NetworkClient::send_vehicle_death(std::uint16_t id)",
+          "binary": "samp.dll",
+          "symbol": "FUN_1001ecf0",
+          "address": "0x1001ecf0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "3f635a6e63b52043eaac2a164774f0d4349b760be9be1c1cf01d150172260ae1"
+        },
+        {
+          "source": "src/client/win/vehicle_runtime.cpp",
+          "line": 12,
+          "declarator": "GameRuntime::stream_vehicle(const VehicleSpawnCommand& command)",
+          "binary": "samp.dll",
+          "symbol": "FUN_1001eb40",
+          "address": "0x1001eb40",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "b5721dfefb5b07afa84840b2281c7f7c9a624e1430ee84d7664b9875102de1be"
+        },
+        {
+          "source": "src/client/win/vehicle_runtime.cpp",
+          "line": 91,
+          "declarator": "GameRuntime::remove_vehicle(std::uint16_t id)",
+          "binary": "samp.dll",
+          "symbol": "FUN_1001e540",
+          "address": "0x1001e540",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "cd9a3675624bba3214571d7dfc4f3d699ee33233d56e989d7f552d6adb3948c0"
+        },
+        {
+          "source": "src/server/vehicle_lifecycle.cpp",
+          "line": 8,
+          "declarator": "GameLayer::update_vehicles(std::uint64_t now)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00467640",
+          "address": "0x00467640",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "dc5dac208d030d44730a5eef53bb9ed7b5c86aa5ae3c8d14219af1d3b4fb63ca"
+        },
+        {
+          "source": "src/server/vehicle_lifecycle.cpp",
+          "line": 13,
+          "declarator": "GameLayer::process_vehicle(GameVehicle& vehicle,std::uint64_t now)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00489b60",
+          "address": "0x00489b60",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "d56e0b36ea34aba0b48e2c07529a3c903359c03e9c581ed67450da3e65d5d269"
+        },
+        {
+          "source": "src/server/vehicle_lifecycle.cpp",
+          "line": 37,
+          "declarator": "GameLayer::respawn_vehicle(GameVehicle& vehicle,std::uint64_t now)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00489790",
+          "address": "0x00489790",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "249ee8bbcf46eff12a173bd31a4396f2376cec5d5d24103398ce004b84909008"
+        },
+        {
+          "source": "src/server/vehicle_lifecycle.cpp",
+          "line": 53,
+          "declarator": "GameLayer::handle_vehicle_death(RakNetPeer& peer,const samp::proto::BitStream& payload)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00499880",
+          "address": "0x00499880",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "ce622b8b2fe6a500305a00ccf1d253c7eb6cea8c864565bdca03d329a189de76"
+        },
+        {
+          "source": "src/server/vehicle_stream.cpp",
+          "line": 9,
+          "declarator": "GameLayer::send_vehicle_stream_in(GamePlayer& player, const GameVehicle& vehicle)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00483aa0",
+          "address": "0x00483aa0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "d3b26782bf8ac397e15944b51ac26ea4970d9d48044b3667e2d79eaf3e3cc785"
+        },
+        {
+          "source": "src/server/vehicle_stream.cpp",
+          "line": 33,
+          "declarator": "GameLayer::send_vehicle_stream_out(GamePlayer& player, std::uint16_t vehicle)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00483a20",
+          "address": "0x00483a20",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "12bac64c53225d065bb27454ff265fc30fda7bb0f750d027d2e26600ab74f938"
+        },
+        {
+          "source": "src/server/vehicle_sync.cpp",
+          "line": 10,
+          "declarator": "GameLayer::handle_driver_packet(GamePlayer& player,const samp::proto::BitStream& message)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00494fd0",
+          "address": "0x00494fd0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "ae98953113c30c47a21b50c8d6e5241baa3fada687edf7f2affb091d8aa4c394"
+        },
+        {
+          "source": "src/server/vehicle_sync.cpp",
+          "line": 79,
+          "declarator": "GameLayer::handle_passenger_packet(GamePlayer& player,const samp::proto::BitStream& message)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00495140",
+          "address": "0x00495140",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "087ae4af03f976ccc057ea900136436d43824df28e07ce42f76a8ef58811db29"
+        },
+        {
+          "source": "src/server/vehicle_sync.cpp",
+          "line": 107,
+          "declarator": "GameLayer::handle_vehicle_enter(RakNetPeer& peer,const samp::proto::BitStream& payload)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00498bf0",
+          "address": "0x00498bf0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "196a6a74ac95d0c75625fe5158d5cc07c53a5468efd3a49502af4f0198f56a67"
+        },
+        {
+          "source": "src/server/vehicle_sync.cpp",
+          "line": 127,
+          "declarator": "GameLayer::handle_vehicle_exit(RakNetPeer& peer,const samp::proto::BitStream& payload)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00498d60",
+          "address": "0x00498d60",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "a2fb91294c2bbe1b9b666f3d47254ac14660957496df6e59706523575f14430f"
+        }
+      ],
+      "supporting_regions": [
+        {
+          "binary": "samp.dll",
+          "address": "0x100ac100",
+          "bytes": 144,
+          "sha256": "fa6bdcd63cc9f7b37c55b0f8b230e25bcb76aa3c778601189aeb19e3aab81585",
+          "purpose": "RPC71 leave-vehicle owner, in-vehicle guard and model exclusions"
+        },
+        {
+          "binary": "samp.dll",
+          "address": "0x100ab8b0",
+          "bytes": 32,
+          "sha256": "dda8c5359471782156c941158c673709bbb668b924fedecde50c985155d427aa",
+          "purpose": "Current vehicle handle lookup"
+        },
+        {
+          "binary": "samp.dll",
+          "address": "0x1011f008",
+          "bytes": 6,
+          "sha256": "a146a105519c72c6217e54f0186f70369676932762a13dbfdc5c5dfe6f9b6139",
+          "purpose": "Opcode05cd actor/vehicle script descriptor"
+        }
+      ]
+    },
+    {
+      "id": "P1.7",
+      "title": "Visibility and world isolation",
+      "status": "implemented; offline verified; runtime gate pending",
+      "owners": [
+        {
+          "source": "src/server/game_layer.cpp",
+          "line": 68,
+          "declarator": "GameLayer::send_stream_in(GamePlayer& receiver, const GamePlayer& other)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00483b80",
+          "address": "0x00483b80",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "925bc71873775faa2eee8f33c749ca562177db553603a013b2807968773c2f6f"
+        },
+        {
+          "source": "src/server/game_layer.cpp",
+          "line": 93,
+          "declarator": "GameLayer::send_stream_out(GamePlayer& receiver, const GamePlayer& other)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00483c10",
+          "address": "0x00483c10",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "e9e3a02669693bbe966c84492196f217ed682c1e88942757e7569573147d472a"
+        },
+        {
+          "source": "src/server/game_layer.cpp",
+          "line": 107,
+          "declarator": "GameLayer::update_streaming()",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_004851d0",
+          "address": "0x004851d0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "18331573ae68bd1d5204683e13e25aa5bb63cc090e44a82c065b87335e0804ef"
+        },
+        {
+          "source": "src/server/player_sync.cpp",
+          "line": 10,
+          "declarator": "GameLayer::relay_sync(const GamePlayer& player, const samp::proto::BitStream& payload)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00493d40",
+          "address": "0x00493d40",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "ef2438dda35ffbf16dfa98dd5fa27bc4f4458635e8e4d024273965b433b339a7"
+        },
+        {
+          "source": "src/server/vehicle_stream.cpp",
+          "line": 9,
+          "declarator": "GameLayer::send_vehicle_stream_in(GamePlayer& player, const GameVehicle& vehicle)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00483aa0",
+          "address": "0x00483aa0",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "d3b26782bf8ac397e15944b51ac26ea4970d9d48044b3667e2d79eaf3e3cc785"
+        },
+        {
+          "source": "src/server/vehicle_stream.cpp",
+          "line": 33,
+          "declarator": "GameLayer::send_vehicle_stream_out(GamePlayer& player, std::uint16_t vehicle)",
+          "binary": "samp-server.exe",
+          "symbol": "FUN_00483a20",
+          "address": "0x00483a20",
+          "entry_window_bytes": 64,
+          "entry_window_sha256": "12bac64c53225d065bb27454ff265fc30fda7bb0f750d027d2e26600ab74f938"
+        }
+      ]
+    }
+  ],
+  "validation_source_input_sha256": "e4980a0e8241df13fd44a5d4fb6ad4736f3262c8079384efaa82ed92415c86b8",
+  "validation": "validation/build.json"
+}

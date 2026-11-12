@@ -1,0 +1,606 @@
+{
+  "date": "2026-11-10",
+  "reference_project": "build/reference-source/1therealcloud_samp/sa-mp.vcproj",
+  "reference_project_sha256": "1b1ac0721cb7aab633deac579236457f58e63f7041d9b5125416d4b70a2362c8",
+  "client_cpp_files": 87,
+  "dxut_cpp_files": 11,
+  "project_source_set_matches_build": true,
+  "imported_source_bodies_detected": 2210,
+  "imported_bodies_are_independently_verified": false,
+  "build": "MSVC 19.51, Win32, RelWithDebInfo",
+  "tests": {
+    "passed": 23,
+    "total": 23
+  },
+  "runtime_gameplay_tested": false,
+  "files": [
+    {
+      "reference": "source/anticheat.cpp",
+      "source": "src/client/anticheat.cpp",
+      "reference_sha256": "94799b2cb131c2b9e4efd647dfd42aeb1bcc75d96ac8818c8ab8f2c4a842ded8",
+      "merged_sha256": "94799b2cb131c2b9e4efd647dfd42aeb1bcc75d96ac8818c8ab8f2c4a842ded8"
+    },
+    {
+      "reference": "source/archive/ArchiveFS.cpp",
+      "source": "src/client/ArchiveFS.cpp",
+      "reference_sha256": "5b2b6ff1eff8592ddb6400d1eafd6cb4489665820bd69f71b6ee776c0c9ced85",
+      "merged_sha256": "5b2b6ff1eff8592ddb6400d1eafd6cb4489665820bd69f71b6ee776c0c9ced85"
+    },
+    {
+      "reference": "source/archive/CryptoContext.cpp",
+      "source": "src/client/CryptoContext.cpp",
+      "reference_sha256": "b650f4a4f745d62e153a3aff09be960c45e51b0f162bfbe357168f9df79cbcb2",
+      "merged_sha256": "b650f4a4f745d62e153a3aff09be960c45e51b0f162bfbe357168f9df79cbcb2"
+    },
+    {
+      "reference": "source/archive/CryptoFns.cpp",
+      "source": "src/client/CryptoFns.cpp",
+      "reference_sha256": "c4b12cf97f64349618d85d19d8be8d5956a78327a5c21e543244c0b0f9449019",
+      "merged_sha256": "c4b12cf97f64349618d85d19d8be8d5956a78327a5c21e543244c0b0f9449019"
+    },
+    {
+      "reference": "source/archive/Hasher.cpp",
+      "source": "src/client/Hasher.cpp",
+      "reference_sha256": "24e607b3491e4bb7077055ac1b7f859e45ee0f8057b170434da7fc82bc3c151c",
+      "merged_sha256": "24e607b3491e4bb7077055ac1b7f859e45ee0f8057b170434da7fc82bc3c151c"
+    },
+    {
+      "reference": "source/archive/KeyPair.cpp",
+      "source": "src/client/KeyPair.cpp",
+      "reference_sha256": "7a2400b8bfc738482e270c24fef6e854178e9ed8d94a63756e2da70105e6e06e",
+      "merged_sha256": "7a2400b8bfc738482e270c24fef6e854178e9ed8d94a63756e2da70105e6e06e"
+    },
+    {
+      "reference": "source/archive/Signer.cpp",
+      "source": "src/client/Signer.cpp",
+      "reference_sha256": "f6aaa9d548b1e06d8dfeddbe1aa2610fd8963c3cb2828b2bd74d77018f4f0c69",
+      "merged_sha256": "f6aaa9d548b1e06d8dfeddbe1aa2610fd8963c3cb2828b2bd74d77018f4f0c69"
+    },
+    {
+      "reference": "source/archive/TinyEncrypt.cpp",
+      "source": "src/client/TinyEncrypt.cpp",
+      "reference_sha256": "9509b0a186c08d76c7f6a9bf1dabd2a3af574e3e1fc66a423d518bdb3cff9093",
+      "merged_sha256": "9509b0a186c08d76c7f6a9bf1dabd2a3af574e3e1fc66a423d518bdb3cff9093"
+    },
+    {
+      "reference": "source/audiostream.cpp",
+      "source": "src/client/audiostream.cpp",
+      "reference_sha256": "6edc9d20be8e58d2899c0e6555065226a83b4146b583343e5937d5f979333577",
+      "merged_sha256": "6edc9d20be8e58d2899c0e6555065226a83b4146b583343e5937d5f979333577"
+    },
+    {
+      "reference": "source/chatbubble.cpp",
+      "source": "src/client/chatbubble.cpp",
+      "reference_sha256": "4a9ca45e7472e31e1cd3fabf5623ca40bdd4e0a76b3de4197b466f3a04edf094",
+      "merged_sha256": "4a9ca45e7472e31e1cd3fabf5623ca40bdd4e0a76b3de4197b466f3a04edf094"
+    },
+    {
+      "reference": "source/chatwindow.cpp",
+      "source": "src/client/chatwindow.cpp",
+      "reference_sha256": "07f074d8dbb7443674d068e5aa9d994ebb9f76c85217b5c19c1be630b3c1f60e",
+      "merged_sha256": "f5ddeb9f957977f32672395d06b115319fe396b1376422fcd905e9f0d56a2821"
+    },
+    {
+      "reference": "source/cmdprocs.cpp",
+      "source": "src/client/cmdprocs.cpp",
+      "reference_sha256": "f8052d01dbb4f8ec228f247cb2c15368f992cde1faffe7b23ef52cadc31c578b",
+      "merged_sha256": "f8052d01dbb4f8ec228f247cb2c15368f992cde1faffe7b23ef52cadc31c578b"
+    },
+    {
+      "reference": "source/cmdwindow.cpp",
+      "source": "src/client/cmdwindow.cpp",
+      "reference_sha256": "ca236745f13ca2d8ea784b929963aae6e73eff6642720afb610d29a0a5840a3c",
+      "merged_sha256": "ca236745f13ca2d8ea784b929963aae6e73eff6642720afb610d29a0a5840a3c"
+    },
+    {
+      "reference": "source/config.cpp",
+      "source": "src/client/config.cpp",
+      "reference_sha256": "5d08131d032519c112d9c28467320c49988c14967c8fd99f5d3378c9d78cd87a",
+      "merged_sha256": "5d08131d032519c112d9c28467320c49988c14967c8fd99f5d3378c9d78cd87a"
+    },
+    {
+      "reference": "source/d3dhook/ID3DXFontHook.cpp",
+      "source": "src/client/d3dhook/ID3DXFontHook.cpp",
+      "reference_sha256": "c1575fdf292af8098ee1543e2a92a95dff6be47d743890928e54060bc3f847f1",
+      "merged_sha256": "c1575fdf292af8098ee1543e2a92a95dff6be47d743890928e54060bc3f847f1"
+    },
+    {
+      "reference": "source/d3dhook/IDirect3DDevice9Hook.cpp",
+      "source": "src/client/d3dhook/IDirect3DDevice9Hook.cpp",
+      "reference_sha256": "dccc5c703110042e4000423db4776711ea1141d15dba3bcfdcdae89856347f41",
+      "merged_sha256": "dccc5c703110042e4000423db4776711ea1141d15dba3bcfdcdae89856347f41"
+    },
+    {
+      "reference": "source/deathwindow.cpp",
+      "source": "src/client/deathwindow.cpp",
+      "reference_sha256": "c59a64fd72092039c035d3f12d08712fb1a0faaf91c031acc03e7869953bb4f0",
+      "merged_sha256": "c59a64fd72092039c035d3f12d08712fb1a0faaf91c031acc03e7869953bb4f0"
+    },
+    {
+      "reference": "source/dialog.cpp",
+      "source": "src/client/dialog.cpp",
+      "reference_sha256": "4a4677218e807e393cad87869a5a45925c0488d63ddb1f496d981934d0bb57fb",
+      "merged_sha256": "4a4677218e807e393cad87869a5a45925c0488d63ddb1f496d981934d0bb57fb"
+    },
+    {
+      "reference": "source/dllmain.cpp",
+      "source": "src/client/dllmain.cpp",
+      "reference_sha256": "c08210140360e0a2877ff5c8550c3596255357818d8eb79d9ab2d9cbbdc93585",
+      "merged_sha256": "c08210140360e0a2877ff5c8550c3596255357818d8eb79d9ab2d9cbbdc93585"
+    },
+    {
+      "reference": "source/downloadwindow.cpp",
+      "source": "src/client/downloadwindow.cpp",
+      "reference_sha256": "2242138afedf293aec36c63f4df4aece4d1cb69c2e6d48db2d6c3548b0d77cae",
+      "merged_sha256": "2242138afedf293aec36c63f4df4aece4d1cb69c2e6d48db2d6c3548b0d77cae"
+    },
+    {
+      "reference": "source/events.cpp",
+      "source": "src/client/events.cpp",
+      "reference_sha256": "da1e4606d182f53eebe8e57f31a642612b714517460e0b1a6ba4018c8ba7fe2b",
+      "merged_sha256": "da1e4606d182f53eebe8e57f31a642612b714517460e0b1a6ba4018c8ba7fe2b"
+    },
+    {
+      "reference": "source/exceptions.cpp",
+      "source": "src/client/exceptions.cpp",
+      "reference_sha256": "71bcf7ee9d07ce927f2c3bbf6cdedc9e9265cac24d6d8f652acdab8da33f17a0",
+      "merged_sha256": "71bcf7ee9d07ce927f2c3bbf6cdedc9e9265cac24d6d8f652acdab8da33f17a0"
+    },
+    {
+      "reference": "source/filechecks.cpp",
+      "source": "src/client/filechecks.cpp",
+      "reference_sha256": "c769f7a7ebf35d1df4388fdb0fde5014ec37e038f8994799e38e6ef4a429f5d3",
+      "merged_sha256": "c769f7a7ebf35d1df4388fdb0fde5014ec37e038f8994799e38e6ef4a429f5d3"
+    },
+    {
+      "reference": "source/filehooks.cpp",
+      "source": "src/client/filehooks.cpp",
+      "reference_sha256": "eac7ae5821ccd9a84f16ee60f76793c85e5584239921e71046c55e0a8bc61bfc",
+      "merged_sha256": "eac7ae5821ccd9a84f16ee60f76793c85e5584239921e71046c55e0a8bc61bfc"
+    },
+    {
+      "reference": "source/filesystem.cpp",
+      "source": "src/client/filesystem.cpp",
+      "reference_sha256": "78fd841a0c0b77340a6c028bed9599ec25e1cf13c2b358a12738da6cd51f28a9",
+      "merged_sha256": "78fd841a0c0b77340a6c028bed9599ec25e1cf13c2b358a12738da6cd51f28a9"
+    },
+    {
+      "reference": "source/fontrender.cpp",
+      "source": "src/client/fontrender.cpp",
+      "reference_sha256": "7a3ab998406d17c20be3c00dabb5358f19e29746171e9e2706037bb280aeb049",
+      "merged_sha256": "7a3ab998406d17c20be3c00dabb5358f19e29746171e9e2706037bb280aeb049"
+    },
+    {
+      "reference": "source/game/actor.cpp",
+      "source": "src/client/game/actor.cpp",
+      "reference_sha256": "631085156f46853d5abb6e4c9e76f8aba02dabcc15a37e8fc283303f65f33b60",
+      "merged_sha256": "631085156f46853d5abb6e4c9e76f8aba02dabcc15a37e8fc283303f65f33b60"
+    },
+    {
+      "reference": "source/game/aimstuff.cpp",
+      "source": "src/client/game/aimstuff.cpp",
+      "reference_sha256": "253d0e68c5f767d45fb4594d8b61023fabdd974c69a98ab029fc00b601dd69ad",
+      "merged_sha256": "253d0e68c5f767d45fb4594d8b61023fabdd974c69a98ab029fc00b601dd69ad"
+    },
+    {
+      "reference": "source/game/animation.cpp",
+      "source": "src/client/game/animation.cpp",
+      "reference_sha256": "bd1ecbceb0c0d8ed102f6cf5faaa35117890886af115f913902f15c612d6d1f0",
+      "merged_sha256": "bd1ecbceb0c0d8ed102f6cf5faaa35117890886af115f913902f15c612d6d1f0"
+    },
+    {
+      "reference": "source/game/audio.cpp",
+      "source": "src/client/game/audio.cpp",
+      "reference_sha256": "3f8c7d3df7c0da65ccc3a6ba3a0b963e3a2bfad91099feb54a552cb71195c4d5",
+      "merged_sha256": "3f8c7d3df7c0da65ccc3a6ba3a0b963e3a2bfad91099feb54a552cb71195c4d5"
+    },
+    {
+      "reference": "source/game/building_removal.cpp",
+      "source": "src/client/game/building_removal.cpp",
+      "reference_sha256": "873cd7bc31a738f822442b083e7ecf0eaf6746f667f39b4df89f26607748a646",
+      "merged_sha256": "873cd7bc31a738f822442b083e7ecf0eaf6746f667f39b4df89f26607748a646"
+    },
+    {
+      "reference": "source/game/camera.cpp",
+      "source": "src/client/game/camera.cpp",
+      "reference_sha256": "089f734d70d8c65be726cbf0d65996e31431874560fc9b58ca63ae50207126f5",
+      "merged_sha256": "089f734d70d8c65be726cbf0d65996e31431874560fc9b58ca63ae50207126f5"
+    },
+    {
+      "reference": "source/game/custommodels.cpp",
+      "source": "src/client/game/custommodels.cpp",
+      "reference_sha256": "d60e2ec4dc05a9d9efcc4a64785d3a2efe1b0c92be1474babe9af414cb575a76",
+      "merged_sha256": "5b35f29358c83089f048801cced636f135092516fa7a77344ace3299fa860367"
+    },
+    {
+      "reference": "source/game/debug.cpp",
+      "source": "src/client/game/debug.cpp",
+      "reference_sha256": "82aaca2fba5c46433232482fb31338e4e5839345e67586f36cd82d3e72a68d3b",
+      "merged_sha256": "82aaca2fba5c46433232482fb31338e4e5839345e67586f36cd82d3e72a68d3b"
+    },
+    {
+      "reference": "source/game/debugscript.cpp",
+      "source": "src/client/game/debugscript.cpp",
+      "reference_sha256": "b55f71079050d23076daeb3b569e41cfa2aca348fae0cb49385638f04fb5dcc6",
+      "merged_sha256": "b55f71079050d23076daeb3b569e41cfa2aca348fae0cb49385638f04fb5dcc6"
+    },
+    {
+      "reference": "source/game/entity.cpp",
+      "source": "src/client/game/entity.cpp",
+      "reference_sha256": "fdcba7ed1ef175cdd1acf7ac28d787a24768ab5331ccb36edcb06f59f8952525",
+      "merged_sha256": "7cd64714958ac3722007cac1ae896ab3de340ebf08c86f0abd1ff61069be8e23"
+    },
+    {
+      "reference": "source/game/font.cpp",
+      "source": "src/client/game/font.cpp",
+      "reference_sha256": "4723321fd3f942918932c374051737c34713ccd06c28a813ac86d4bad5b317ce",
+      "merged_sha256": "4723321fd3f942918932c374051737c34713ccd06c28a813ac86d4bad5b317ce"
+    },
+    {
+      "reference": "source/game/game.cpp",
+      "source": "src/client/game/game.cpp",
+      "reference_sha256": "943d4a90fd086e7ae18f81980890eec771d190ad5d33bf28ac54fb4be5fa7ee0",
+      "merged_sha256": "943d4a90fd086e7ae18f81980890eec771d190ad5d33bf28ac54fb4be5fa7ee0"
+    },
+    {
+      "reference": "source/game/hooks.cpp",
+      "source": "src/client/game/hooks.cpp",
+      "reference_sha256": "f78c30b40342224188adcfca3e7924d09dc2650e2c9c42b50ca9526d0da4352d",
+      "merged_sha256": "f78c30b40342224188adcfca3e7924d09dc2650e2c9c42b50ca9526d0da4352d"
+    },
+    {
+      "reference": "source/game/keystuff.cpp",
+      "source": "src/client/game/keystuff.cpp",
+      "reference_sha256": "9e7e5643aac1646972902fa4bfc5b70937df7fd1f3328fd09a70759ca3836707",
+      "merged_sha256": "9e7e5643aac1646972902fa4bfc5b70937df7fd1f3328fd09a70759ca3836707"
+    },
+    {
+      "reference": "source/game/model_preview.cpp",
+      "source": "src/client/game/model_preview.cpp",
+      "reference_sha256": "7c3fcef35a76152aaabab1068fa14e6ccbd4cb1df8bee247fd9a379584fc645f",
+      "merged_sha256": "7c3fcef35a76152aaabab1068fa14e6ccbd4cb1df8bee247fd9a379584fc645f"
+    },
+    {
+      "reference": "source/game/modelfile.cpp",
+      "source": "src/client/game/modelfile.cpp",
+      "reference_sha256": "df3394c862657c62db34e6ef77e94e1194c4d38cdbb27c87311171f73f4aa5a8",
+      "merged_sha256": "df3394c862657c62db34e6ef77e94e1194c4d38cdbb27c87311171f73f4aa5a8"
+    },
+    {
+      "reference": "source/game/object.cpp",
+      "source": "src/client/game/object.cpp",
+      "reference_sha256": "8c35ac2dd898e425b01814d446bdfa8d2ce90dafe0c36f2e33130309ce5e8118",
+      "merged_sha256": "8c35ac2dd898e425b01814d446bdfa8d2ce90dafe0c36f2e33130309ce5e8118"
+    },
+    {
+      "reference": "source/game/patches.cpp",
+      "source": "src/client/game/patches.cpp",
+      "reference_sha256": "3b81e77a9a0276c961dc7ea2566ae903adb13beb0ec721e573dd9e21d6977aeb",
+      "merged_sha256": "3b81e77a9a0276c961dc7ea2566ae903adb13beb0ec721e573dd9e21d6977aeb"
+    },
+    {
+      "reference": "source/game/playerped.cpp",
+      "source": "src/client/game/playerped.cpp",
+      "reference_sha256": "34a757ff1f4815e48439e7978a33dfd498a1355ffde52d5d1a7413cdbff150af",
+      "merged_sha256": "34a757ff1f4815e48439e7978a33dfd498a1355ffde52d5d1a7413cdbff150af"
+    },
+    {
+      "reference": "source/game/quaternion.cpp",
+      "source": "src/client/game/quaternion.cpp",
+      "reference_sha256": "337703e2cb506622491a6699438f23ce8d3e5868071ca8444fd5d9ae507b1a36",
+      "merged_sha256": "337703e2cb506622491a6699438f23ce8d3e5868071ca8444fd5d9ae507b1a36"
+    },
+    {
+      "reference": "source/game/scripting.cpp",
+      "source": "src/client/game/scripting.cpp",
+      "reference_sha256": "7df41d889b922987d9e12edb4fb236624b75e56efda8454e8728eb74fb55e34c",
+      "merged_sha256": "7df41d889b922987d9e12edb4fb236624b75e56efda8454e8728eb74fb55e34c"
+    },
+    {
+      "reference": "source/game/skinnedmesh.cpp",
+      "source": "src/client/game/skinnedmesh.cpp",
+      "reference_sha256": "54ef13a8bdd2e4e5375b77912b874cafb8fb00da69b89a108e9abc838a8695ac",
+      "merged_sha256": "54ef13a8bdd2e4e5375b77912b874cafb8fb00da69b89a108e9abc838a8695ac"
+    },
+    {
+      "reference": "source/game/task.cpp",
+      "source": "src/client/game/task.cpp",
+      "reference_sha256": "5ae13e9dd2974cd1a4fe55115d854a3e1c38242e9df3d358c932e4099f8cc3e4",
+      "merged_sha256": "5ae13e9dd2974cd1a4fe55115d854a3e1c38242e9df3d358c932e4099f8cc3e4"
+    },
+    {
+      "reference": "source/game/textdraw.cpp",
+      "source": "src/client/game/textdraw.cpp",
+      "reference_sha256": "058b65b4a127b0c2fcbdd5a5438c2f0cccd05d8c7e787fb09565c5017dec780a",
+      "merged_sha256": "058b65b4a127b0c2fcbdd5a5438c2f0cccd05d8c7e787fb09565c5017dec780a"
+    },
+    {
+      "reference": "source/game/util.cpp",
+      "source": "src/client/game/util.cpp",
+      "reference_sha256": "b03fde283ddb9aafee6db7d85ba380d118c21912b504ee1b237a171abce4e535",
+      "merged_sha256": "b03fde283ddb9aafee6db7d85ba380d118c21912b504ee1b237a171abce4e535"
+    },
+    {
+      "reference": "source/game/vehicle.cpp",
+      "source": "src/client/game/vehicle.cpp",
+      "reference_sha256": "fa0349dd49dcc55f2b44dac7b4e47e6cd809704b1e69ed28c2d9c607186caaf0",
+      "merged_sha256": "fa0349dd49dcc55f2b44dac7b4e47e6cd809704b1e69ed28c2d9c607186caaf0"
+    },
+    {
+      "reference": "source/gui.cpp",
+      "source": "src/client/gui.cpp",
+      "reference_sha256": "ee911d81a42438b53e15f4c716b04666fa2126121273ae7a221e16f0a5d75bd9",
+      "merged_sha256": "ee911d81a42438b53e15f4c716b04666fa2126121273ae7a221e16f0a5d75bd9"
+    },
+    {
+      "reference": "source/helpdialog.cpp",
+      "source": "src/client/helpdialog.cpp",
+      "reference_sha256": "85f40093ad03535c8643c87c230671ca1ba0776ca8d183ff8499112d3bd645e8",
+      "merged_sha256": "85f40093ad03535c8643c87c230671ca1ba0776ca8d183ff8499112d3bd645e8"
+    },
+    {
+      "reference": "source/httpclient.cpp",
+      "source": "src/client/httpclient.cpp",
+      "reference_sha256": "62a5dc65651ba2f660d0316f4527821eb480419f9f7757a5ba316e1d0d60e289",
+      "merged_sha256": "62a5dc65651ba2f660d0316f4527821eb480419f9f7757a5ba316e1d0d60e289"
+    },
+    {
+      "reference": "source/label.cpp",
+      "source": "src/client/label.cpp",
+      "reference_sha256": "85dbf60652e0eec9be561e363f49235a9f431afec5a6eb81f80f9c0870263157",
+      "merged_sha256": "85dbf60652e0eec9be561e363f49235a9f431afec5a6eb81f80f9c0870263157"
+    },
+    {
+      "reference": "source/licenseplate.cpp",
+      "source": "src/client/licenseplate.cpp",
+      "reference_sha256": "09b25db34a1a6b841e437bebe1436edca04e72580dc272adca86e48024bc85ac",
+      "merged_sha256": "09b25db34a1a6b841e437bebe1436edca04e72580dc272adca86e48024bc85ac"
+    },
+    {
+      "reference": "source/main.cpp",
+      "source": "src/client/main.cpp",
+      "reference_sha256": "11d50cc3b96dabe6bd4d811bd2f9f903a66c82b7ccd1e8a43f3a18ab27e75872",
+      "merged_sha256": "11d50cc3b96dabe6bd4d811bd2f9f903a66c82b7ccd1e8a43f3a18ab27e75872"
+    },
+    {
+      "reference": "source/md5.cpp",
+      "source": "src/client/md5.cpp",
+      "reference_sha256": "7705c2912bc06cb407c9fb25ce46497668ae10bbb358a962626c004fcd1e7fce",
+      "merged_sha256": "7705c2912bc06cb407c9fb25ce46497668ae10bbb358a962626c004fcd1e7fce"
+    },
+    {
+      "reference": "source/menu.cpp",
+      "source": "src/client/menu.cpp",
+      "reference_sha256": "94838c8456df14d4bc00f46fc72c9217fbe0d87f6a9ea0af315b8257f1b9b2a0",
+      "merged_sha256": "94838c8456df14d4bc00f46fc72c9217fbe0d87f6a9ea0af315b8257f1b9b2a0"
+    },
+    {
+      "reference": "source/net/actorpool.cpp",
+      "source": "src/client/net/actorpool.cpp",
+      "reference_sha256": "8a3b59836f4fc9782402d6d832412d91dbfc5d86f86125b8f1b27973c19c19fe",
+      "merged_sha256": "8a3b59836f4fc9782402d6d832412d91dbfc5d86f86125b8f1b27973c19c19fe"
+    },
+    {
+      "reference": "source/net/gangzonepool.cpp",
+      "source": "src/client/net/gangzonepool.cpp",
+      "reference_sha256": "ab87c93995d95a8f2441e1cfb484670562233dcecad14769eee186ddc43bb36f",
+      "merged_sha256": "ab87c93995d95a8f2441e1cfb484670562233dcecad14769eee186ddc43bb36f"
+    },
+    {
+      "reference": "source/net/labelpool.cpp",
+      "source": "src/client/net/labelpool.cpp",
+      "reference_sha256": "be2bbf21c73ec3dbc2d6dbcbf8c97be6dce33cb453c23525937c6287321b9a20",
+      "merged_sha256": "be2bbf21c73ec3dbc2d6dbcbf8c97be6dce33cb453c23525937c6287321b9a20"
+    },
+    {
+      "reference": "source/net/localplayer.cpp",
+      "source": "src/client/net/localplayer.cpp",
+      "reference_sha256": "2cbb18c86d08816e0d147a0022ce82b50a41c6cf950005325becac5e61dba554",
+      "merged_sha256": "2cbb18c86d08816e0d147a0022ce82b50a41c6cf950005325becac5e61dba554"
+    },
+    {
+      "reference": "source/net/menupool.cpp",
+      "source": "src/client/net/menupool.cpp",
+      "reference_sha256": "45b178e1d043f1b7b1517a0649fc59adc02f7c8b041d4dec7ee8f38ff89e95ac",
+      "merged_sha256": "45b178e1d043f1b7b1517a0649fc59adc02f7c8b041d4dec7ee8f38ff89e95ac"
+    },
+    {
+      "reference": "source/net/netgame.cpp",
+      "source": "src/client/net/netgame.cpp",
+      "reference_sha256": "eb5a5d9144c948897186741717abec86687e86a9423611fd89373a14b5242f21",
+      "merged_sha256": "eb5a5d9144c948897186741717abec86687e86a9423611fd89373a14b5242f21"
+    },
+    {
+      "reference": "source/net/netrpc.cpp",
+      "source": "src/client/net/netrpc.cpp",
+      "reference_sha256": "cc254c8d935a7f1a20018b82f06fc80fb2e80c81a39304e0640394fa54b3a0b4",
+      "merged_sha256": "cc254c8d935a7f1a20018b82f06fc80fb2e80c81a39304e0640394fa54b3a0b4"
+    },
+    {
+      "reference": "source/net/objectpool.cpp",
+      "source": "src/client/net/objectpool.cpp",
+      "reference_sha256": "67745fc9a4e4c041fef238714427203fcbe9475fcd07f3ddcfaea2b13d4f78a5",
+      "merged_sha256": "67745fc9a4e4c041fef238714427203fcbe9475fcd07f3ddcfaea2b13d4f78a5"
+    },
+    {
+      "reference": "source/net/pickuppool.cpp",
+      "source": "src/client/net/pickuppool.cpp",
+      "reference_sha256": "836216cc14401273c37d64ef85fd82f5936ad3fd08332eeb2a52abb65ccfa507",
+      "merged_sha256": "836216cc14401273c37d64ef85fd82f5936ad3fd08332eeb2a52abb65ccfa507"
+    },
+    {
+      "reference": "source/net/playerinfo.cpp",
+      "source": "src/client/net/playerinfo.cpp",
+      "reference_sha256": "0ea0550bdfe9e3f65cf6accfd0902879652826bba2b46de6085a9f5bff836c9d",
+      "merged_sha256": "0ea0550bdfe9e3f65cf6accfd0902879652826bba2b46de6085a9f5bff836c9d"
+    },
+    {
+      "reference": "source/net/playerpool.cpp",
+      "source": "src/client/net/playerpool.cpp",
+      "reference_sha256": "cb20b8e938a0e3106a3177bdac19b914109e6e421a02aeed536b3108ce9e97bc",
+      "merged_sha256": "cb20b8e938a0e3106a3177bdac19b914109e6e421a02aeed536b3108ce9e97bc"
+    },
+    {
+      "reference": "source/net/remoteplayer.cpp",
+      "source": "src/client/net/remoteplayer.cpp",
+      "reference_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d",
+      "merged_sha256": "d6d4f152e391945fdd0458fe51e19e5477e402c51e777e7abc43b3d809b3750d"
+    },
+    {
+      "reference": "source/net/scriptrpc.cpp",
+      "source": "src/client/net/scriptrpc.cpp",
+      "reference_sha256": "8ee24da1ab3e25f43a226b919d0e3e5ea745bcc54849efe9ee9a1a7b0ecb19ae",
+      "merged_sha256": "8ee24da1ab3e25f43a226b919d0e3e5ea745bcc54849efe9ee9a1a7b0ecb19ae"
+    },
+    {
+      "reference": "source/net/textdrawpool.cpp",
+      "source": "src/client/net/textdrawpool.cpp",
+      "reference_sha256": "24e096aafc7ae0b3e9eaf0cb7d5ea70bc30cdfb803ab90492315f5189c5dd3d6",
+      "merged_sha256": "24e096aafc7ae0b3e9eaf0cb7d5ea70bc30cdfb803ab90492315f5189c5dd3d6"
+    },
+    {
+      "reference": "source/net/vehiclepool.cpp",
+      "source": "src/client/net/vehiclepool.cpp",
+      "reference_sha256": "c404164475f4dd684250cdd97d7e11deda12c20ee2ede8b46a6374ba2860991c",
+      "merged_sha256": "c404164475f4dd684250cdd97d7e11deda12c20ee2ede8b46a6374ba2860991c"
+    },
+    {
+      "reference": "source/netstats.cpp",
+      "source": "src/client/netstats.cpp",
+      "reference_sha256": "ea4e38d1a8e5ec0cbad71de2a2cca7c63512506b970229436c6d322f407c2f02",
+      "merged_sha256": "ea4e38d1a8e5ec0cbad71de2a2cca7c63512506b970229436c6d322f407c2f02"
+    },
+    {
+      "reference": "source/objectedit.cpp",
+      "source": "src/client/objectedit.cpp",
+      "reference_sha256": "b78b30dd291ce08c5b910419c2737c6bf5ef3eb3938a399f175eff22cf25e80f",
+      "merged_sha256": "b78b30dd291ce08c5b910419c2737c6bf5ef3eb3938a399f175eff22cf25e80f"
+    },
+    {
+      "reference": "source/objectmaterialtext.cpp",
+      "source": "src/client/objectmaterialtext.cpp",
+      "reference_sha256": "866abd67166f5dbbac2f2e9f3f5be9e1a2230ff3fdc87a1edc6f6b24bc84d16d",
+      "merged_sha256": "866abd67166f5dbbac2f2e9f3f5be9e1a2230ff3fdc87a1edc6f6b24bc84d16d"
+    },
+    {
+      "reference": "source/objectselection.cpp",
+      "source": "src/client/objectselection.cpp",
+      "reference_sha256": "9108471d2defa7cf353ffa3fbc0bd6b09591d0657a44a2b3974a6c787d5ca320",
+      "merged_sha256": "9108471d2defa7cf353ffa3fbc0bd6b09591d0657a44a2b3974a6c787d5ca320"
+    },
+    {
+      "reference": "source/playertags.cpp",
+      "source": "src/client/playertags.cpp",
+      "reference_sha256": "0fe925c65ad0ea846011cb7f2cdeb69648ebcf00eb5f1d6382225d06adc88a6b",
+      "merged_sha256": "3280df11c3967c0240ac3b78238c13ebb3b3b673d77e976389d19b5a4c091881"
+    },
+    {
+      "reference": "source/renderpanel.cpp",
+      "source": "src/client/renderpanel.cpp",
+      "reference_sha256": "8b4ff7badf855aac7ac6c7394c5cdb93da5eca6022e0aedbc67f0386d0552751",
+      "merged_sha256": "8b4ff7badf855aac7ac6c7394c5cdb93da5eca6022e0aedbc67f0386d0552751"
+    },
+    {
+      "reference": "source/runutil.cpp",
+      "source": "src/client/runutil.cpp",
+      "reference_sha256": "b0dd208cd3b510cdb0bee8aa297577ed32eb9299f2cfa1f7739d571d5cb630c4",
+      "merged_sha256": "b0dd208cd3b510cdb0bee8aa297577ed32eb9299f2cfa1f7739d571d5cb630c4"
+    },
+    {
+      "reference": "source/scoreboard.cpp",
+      "source": "src/client/scoreboard.cpp",
+      "reference_sha256": "1d7b02035589ad4c574686c2d80ecd767e8f252b489e465b833380066e404515",
+      "merged_sha256": "1d7b02035589ad4c574686c2d80ecd767e8f252b489e465b833380066e404515"
+    },
+    {
+      "reference": "source/spawnscreen.cpp",
+      "source": "src/client/spawnscreen.cpp",
+      "reference_sha256": "92f1cf6859d47719ff6223686018d17602e99619d6fc543dbfbcd0792b972a74",
+      "merged_sha256": "92f1cf6859d47719ff6223686018d17602e99619d6fc543dbfbcd0792b972a74"
+    },
+    {
+      "reference": "source/subclass.cpp",
+      "source": "src/client/subclass.cpp",
+      "reference_sha256": "a49c779196bfe13dfd2f02cd9e171990c89f20a048224cedb05a8ee6429546ba",
+      "merged_sha256": "a49c779196bfe13dfd2f02cd9e171990c89f20a048224cedb05a8ee6429546ba"
+    },
+    {
+      "reference": "source/svrnetstats.cpp",
+      "source": "src/client/svrnetstats.cpp",
+      "reference_sha256": "f0f286f30ee997a3f9f65f632779a71d8be40ee5fd98aecae66edfcbe308f900",
+      "merged_sha256": "f0f286f30ee997a3f9f65f632779a71d8be40ee5fd98aecae66edfcbe308f900"
+    },
+    {
+      "reference": "source/textdrawselection.cpp",
+      "source": "src/client/textdrawselection.cpp",
+      "reference_sha256": "09e50417045571908eb97b60254adf8a8da487c24819159b252985edc801f781",
+      "merged_sha256": "09e50417045571908eb97b60254adf8a8da487c24819159b252985edc801f781"
+    },
+    {
+      "reference": "third-party/dxut/D3DUtil.cpp",
+      "source": "third_party/dxut/D3DUtil.cpp",
+      "reference_sha256": "4dc401b7915f206ffe0db84e44ebb2b00f13f716d0c27b6a8efd24d14fb7c344",
+      "merged_sha256": "4dc401b7915f206ffe0db84e44ebb2b00f13f716d0c27b6a8efd24d14fb7c344"
+    },
+    {
+      "reference": "third-party/dxut/DXUT.cpp",
+      "source": "third_party/dxut/DXUT.cpp",
+      "reference_sha256": "ebbdb7e2c55c8064509921a048039370bff21e6c772d5d859f20763857b776e1",
+      "merged_sha256": "ebbdb7e2c55c8064509921a048039370bff21e6c772d5d859f20763857b776e1"
+    },
+    {
+      "reference": "third-party/dxut/DXUTMesh.cpp",
+      "source": "third_party/dxut/DXUTMesh.cpp",
+      "reference_sha256": "a3eadbcf7bb6eafdbdba0796a72cd936a9d3743f016ccc6a1104f402ee2c7fcc",
+      "merged_sha256": "a3eadbcf7bb6eafdbdba0796a72cd936a9d3743f016ccc6a1104f402ee2c7fcc"
+    },
+    {
+      "reference": "third-party/dxut/DXUTSettingsDlg.cpp",
+      "source": "third_party/dxut/DXUTSettingsDlg.cpp",
+      "reference_sha256": "c7a9d4c4dd6282c177a1dec2b1417b6965155d5cf4ea9a1cebde7962dfe82c64",
+      "merged_sha256": "c7a9d4c4dd6282c177a1dec2b1417b6965155d5cf4ea9a1cebde7962dfe82c64"
+    },
+    {
+      "reference": "third-party/dxut/DXUTenum.cpp",
+      "source": "third_party/dxut/DXUTenum.cpp",
+      "reference_sha256": "3977be610f3ac828476504b36629ea22a74e28c4863320828f813d2c2c08023f",
+      "merged_sha256": "3977be610f3ac828476504b36629ea22a74e28c4863320828f813d2c2c08023f"
+    },
+    {
+      "reference": "third-party/dxut/DXUTgui.cpp",
+      "source": "third_party/dxut/DXUTgui.cpp",
+      "reference_sha256": "57869fa4805e355c59fa7de0eba62073fa931fbf0bf0c1a22d545ec07d199ad1",
+      "merged_sha256": "57869fa4805e355c59fa7de0eba62073fa931fbf0bf0c1a22d545ec07d199ad1"
+    },
+    {
+      "reference": "third-party/dxut/DXUTmedia.cpp",
+      "source": "third_party/dxut/DXUTmedia.cpp",
+      "reference_sha256": "a57d65547c90c48df4859b9cc675de9817f0164947dfd408b4e1e5668df07f91",
+      "merged_sha256": "a57d65547c90c48df4859b9cc675de9817f0164947dfd408b4e1e5668df07f91"
+    },
+    {
+      "reference": "third-party/dxut/DXUTmisc.cpp",
+      "source": "third_party/dxut/DXUTmisc.cpp",
+      "reference_sha256": "366bc9cacd1c573b0c950216c1c4d0d175f2f4efda31d51c7c593092b366a352",
+      "merged_sha256": "366bc9cacd1c573b0c950216c1c4d0d175f2f4efda31d51c7c593092b366a352"
+    },
+    {
+      "reference": "third-party/dxut/DXUTsound.cpp",
+      "source": "third_party/dxut/DXUTsound.cpp",
+      "reference_sha256": "9a5aae48e5f1f0b7119ee27bf9b24994186d8acb2575d6f3f5ff056b9b456210",
+      "merged_sha256": "9a5aae48e5f1f0b7119ee27bf9b24994186d8acb2575d6f3f5ff056b9b456210"
+    },
+    {
+      "reference": "third-party/dxut/DXUtil.cpp",
+      "source": "third_party/dxut/DXUtil.cpp",
+      "reference_sha256": "9004021b755bf04c27bd75b69ef652f0d319ffab02331cc876a6438324e59bbc",
+      "merged_sha256": "9004021b755bf04c27bd75b69ef652f0d319ffab02331cc876a6438324e59bbc"
+    },
+    {
+      "reference": "third-party/dxut/dxstdafx.cpp",
+      "source": "third_party/dxut/dxstdafx.cpp",
+      "reference_sha256": "360c820645d5ee3c53c3b566de69c8a854885ea99824347202e45f7eca371fc5",
+      "merged_sha256": "360c820645d5ee3c53c3b566de69c8a854885ea99824347202e45f7eca371fc5"
+    }
+  ]
+}

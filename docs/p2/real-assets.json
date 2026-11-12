@@ -1,0 +1,109 @@
+{
+  "verified_at_utc": "2026-11-03T20:37:24.886753+00:00",
+  "origin": "Read-only extraction of sector-aligned members from local GTA Sa samp_clone/models/gta3.img; assets remain in ignored build-msvc, not redistributed",
+  "runs": [
+    {
+      "command": [
+        "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/model_pipeline_test.exe",
+        "--validate-assets",
+        "build/archive/build-msvc/p2-reference-assets/ce_ground01.dff",
+        "build/archive/build-msvc/p2-reference-assets/ce_ground01.txd",
+        "build/archive/build-msvc/p2-reference-assets/fam1.dff",
+        "build/archive/build-msvc/p2-reference-assets/fam1.txd",
+        "build/archive/build-msvc/p2-reference-assets/male01.dff",
+        "build/archive/build-msvc/p2-reference-assets/male01.txd"
+      ],
+      "exit_code": 0,
+      "stdout": "ce_ground01.dff: accepted\nce_ground01.txd: accepted\nfam1.dff: accepted\nfam1.txd: accepted\nmale01.dff: accepted\nmale01.txd: accepted\n"
+    },
+    {
+      "command": [
+        "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/model_pipeline_test.exe",
+        "--transfer-assets",
+        "build/archive/build-msvc/p2-reference-assets/male01.dff",
+        "build/archive/build-msvc/p2-reference-assets/male01.txd"
+      ],
+      "exit_code": 0,
+      "stdout": "real asset transfer/cache: 0 failures\n"
+    },
+    {
+      "command": [
+        "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/model_pipeline_test.exe",
+        "--transfer-assets",
+        "build/archive/build-msvc/p2-reference-assets/fam1.dff",
+        "build/archive/build-msvc/p2-reference-assets/fam1.txd"
+      ],
+      "exit_code": 0,
+      "stdout": "real asset transfer/cache: 0 failures\n"
+    },
+    {
+      "command": [
+        "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/model_pipeline_test.exe",
+        "--transfer-assets",
+        "build/archive/build-msvc/p2-manual/models/sign.dff",
+        "build/archive/build-msvc/p2-manual/models/sign.txd"
+      ],
+      "exit_code": 0,
+      "stdout": "real asset transfer/cache: 0 failures\n"
+    },
+    {
+      "command": [
+        "build/archive/build-msvc/p0-win32/tests/RelWithDebInfo/model_pipeline_test.exe",
+        "--transfer-assets",
+        "build/archive/build-msvc/p2-manual/models/bridge.dff",
+        "build/archive/build-msvc/p2-manual/models/bridge.txd"
+      ],
+      "exit_code": 0,
+      "stdout": "real asset transfer/cache: 0 failures\n"
+    }
+  ],
+  "assets": [
+    {
+      "path": "build/archive/build-msvc/p2-reference-assets/bridge_1.dff",
+      "bytes": 8192,
+      "sha256": "5c773a6f2cfb9e450c41ca7b7b0a3e51f18d982053aec3b48fc74a72cc7bafdd"
+    },
+    {
+      "path": "build/archive/build-msvc/p2-reference-assets/ce_ground01.dff",
+      "bytes": 40960,
+      "sha256": "d39e791a7ed80c277d0f7f0cade9f4c7ead9afe26119055fb599e2eb634829bc"
+    },
+    {
+      "path": "build/archive/build-msvc/p2-reference-assets/ce_ground01.txd",
+      "bytes": 1419264,
+      "sha256": "4ed76cc463059941939dee4acb301f8bf1682b71bd32922952a01b6751fbf88a"
+    },
+    {
+      "path": "build/archive/build-msvc/p2-reference-assets/d_sign.dff",
+      "bytes": 4096,
+      "sha256": "e3702180c1f804f3f6d28112cbccea063a0ae2332d89ba80a01f3e28aaca2265"
+    },
+    {
+      "path": "build/archive/build-msvc/p2-reference-assets/fam1.dff",
+      "bytes": 81920,
+      "sha256": "a84a4eb45c0c3f944314c1749df12d6bdcfcdb004965538a3f781c00d013e669"
+    },
+    {
+      "path": "build/archive/build-msvc/p2-reference-assets/fam1.txd",
+      "bytes": 18432,
+      "sha256": "a6d42db9bfc87fa6f5cd8ca9d73daeccb359db0485774a44ee82902016a8d357"
+    },
+    {
+      "path": "build/archive/build-msvc/p2-reference-assets/male01.dff",
+      "bytes": 92160,
+      "sha256": "2610e0daa6d29bc652d033236f80049febe0d9a7221deb89c8cc9c39f3cc5205"
+    },
+    {
+      "path": "build/archive/build-msvc/p2-reference-assets/male01.txd",
+      "bytes": 18432,
+      "sha256": "2e8fa65ea4c02c7331b5ee39a863d7495bdd6d1c83644e15d01ff21ea6af439f"
+    },
+    {
+      "path": "build/archive/build-msvc/p2-reference-assets/weemap.txd",
+      "bytes": 1019904,
+      "sha256": "b86bd4a6c7651b35882a8e76d5cbbf460e214a68d813609a2127b2e923bc4ed5"
+    }
+  ],
+  "scope": "parser validation and real byte transfer/cache; no GTA execution or rendering claim",
+  "test_binary_sha256": "eeb3f1ef014753a68d8439898e8d444554fa3a77e483d413b2918fb19c47bfd3"
+}

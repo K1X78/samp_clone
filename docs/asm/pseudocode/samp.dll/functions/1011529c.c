@@ -1,0 +1,20 @@
+/*
+ * Generated Ghidra pseudocode, NOT verified source.
+ * Binary: samp.dll.official
+ * Entry: 0x1011529c
+ * Name: Unwind_1011529c
+ * Status: ok
+ * Full provenance, body ranges, references: ../index.json
+ * Diagnostic: 
+ */
+
+
+void Unwind_1011529c(void)
+
+{
+  FUN_1001f390();
+  return;
+}
+
+
+/* END FUNCTION 0x1011529c */

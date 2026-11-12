@@ -1,0 +1,39 @@
+{
+  "directory": "build/archive/build-msvc/p2-manual",
+  "gamemode_source": "docs/p2/p2_smoke.pwn",
+  "gamemode_compiled": false,
+  "compiler_status": "0.3.DL Pawn compiler not installed in workspace; compile this optional fixture with the original compiler/includes before using it",
+  "assets": [
+    {
+      "path": "build/archive/build-msvc/p2-manual/models/bridge.dff",
+      "bytes": 8192,
+      "sha256": "5c773a6f2cfb9e450c41ca7b7b0a3e51f18d982053aec3b48fc74a72cc7bafdd"
+    },
+    {
+      "path": "build/archive/build-msvc/p2-manual/models/bridge.txd",
+      "bytes": 1019904,
+      "sha256": "b86bd4a6c7651b35882a8e76d5cbbf460e214a68d813609a2127b2e923bc4ed5"
+    },
+    {
+      "path": "build/archive/build-msvc/p2-manual/models/fam1.dff",
+      "bytes": 81920,
+      "sha256": "a84a4eb45c0c3f944314c1749df12d6bdcfcdb004965538a3f781c00d013e669"
+    },
+    {
+      "path": "build/archive/build-msvc/p2-manual/models/fam1.txd",
+      "bytes": 18432,
+      "sha256": "a6d42db9bfc87fa6f5cd8ca9d73daeccb359db0485774a44ee82902016a8d357"
+    },
+    {
+      "path": "build/archive/build-msvc/p2-manual/models/sign.dff",
+      "bytes": 4096,
+      "sha256": "e3702180c1f804f3f6d28112cbccea063a0ae2332d89ba80a01f3e28aaca2265"
+    },
+    {
+      "path": "build/archive/build-msvc/p2-manual/models/sign.txd",
+      "bytes": 18432,
+      "sha256": "a51ead3ce95a880d2f590567079eca504825667aa2f6daf0cfc458bb3c85feaa"
+    }
+  ],
+  "scope": "private local extraction; no asset redistribution; no GTA/client execution"
+}

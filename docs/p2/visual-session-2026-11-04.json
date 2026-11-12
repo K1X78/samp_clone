@@ -1,0 +1,27 @@
+{
+  "recorded_at_utc": "2026-11-04T11:36:02.836823+00:00",
+  "session_directory": "C:\\Users\\PC GAMER\\samp\\samp_clone\\build-msvc\\visual-review\\20261104-110315",
+  "port": 7811,
+  "client_dll_sha256": "eac4261bb77bf19d752ebb9c9cbab40875095773ccecad96c6a6d8261444634b",
+  "server_sha256": "7d14c06dbcb4da385ff0e3af6ee8fa06c4390328447b70d58d0c442d50ff4482",
+  "game_pid": 22228,
+  "debugger_attached_to_game": false,
+  "observations": [
+    "Debugger launch with clone DLL failed at GTA0040FB80 with ECX=BAADF00D",
+    "Reference official DLL under the same debugger also failed at GTA0040FB80",
+    "Plain launch with clone DLL reached GTA phase9, valid collision pool and a local player",
+    "Client reports Connected, class_ready=true, selecting=true, playing=false, spawn_requested=false before user selects Spawn",
+    "Camera RPC and actual GTA camera/actor positions reached the outdoor Las Venturas fixture location; custom model20001 applied",
+    "User reported initial beach background then outdoor character/vehicle preview with selection UI and cursor; awaiting explicit Spawn result"
+  ],
+  "hypothesis": "Debugger heap/launch environment is implicated; exact causality not proved by the plain-vs-debug comparison. No resolution or CPU core changes were made.",
+  "diagnostics": [
+    "game-debug-v3.dmp",
+    "game-debug-pooltrace.dmp",
+    "reference-control.dmp",
+    "crash-analysis.txt",
+    "state-symbols.txt"
+  ],
+  "debugger_source_update": "Future diagnostic launcher requests _NO_DEBUG_HEAP=1. A deliberately crashing probe still generated a dump. GTA has not been relaunched under that revised debugger.",
+  "visual_checks_status": "partial; user controls visuals; no computer-use actions taken"
+}

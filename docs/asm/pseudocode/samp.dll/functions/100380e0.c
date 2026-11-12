@@ -1,0 +1,22 @@
+/*
+ * Generated Ghidra pseudocode, NOT verified source.
+ * Binary: samp.dll.official
+ * Entry: 0x100380e0
+ * Name: FUN_100380e0
+ * Status: ok
+ * Full provenance, body ranges, references: ../index.json
+ * Diagnostic: 
+ */
+
+
+void FUN_100380e0(char *param_1,int param_2)
+
+{
+  if (((param_1 != (char *)0x0) && (*param_1 != '\0')) && (param_2 != 0)) {
+    FUN_10051170((int)*param_1,param_2,1);
+  }
+  return;
+}
+
+
+/* END FUNCTION 0x100380e0 */

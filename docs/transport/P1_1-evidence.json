@@ -1,0 +1,134 @@
+{
+  "artifact": "GTA Sa samp_clone/samp.dll.official",
+  "sha256": "bccdb297464bd382625635be25585df07a8fa6668bc0015650708e3eb4ffcd4b",
+  "evidence_kind": "local original PE bytes and generated assembly; byte windows identify inspected regions, not necessarily complete function extents; isolated helper execution is described in the validation report",
+  "owners": [
+    {
+      "symbol": "FUN_1003ec60",
+      "address": "0x1003ec60",
+      "region_bytes": 64,
+      "region_sha1": "1e458126382a26c2362c5962e6b5767e6c335eba",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_10040f10",
+      "address": "0x10040f10",
+      "region_bytes": 64,
+      "region_sha1": "d66994b8aa423f371a8f9c4aa1722928ba91c44a",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_10043980",
+      "address": "0x10043980",
+      "region_bytes": 64,
+      "region_sha1": "6dc86018c61519ca386a7fc7c5154868c0f4f222",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_10043ac0",
+      "address": "0x10043ac0",
+      "region_bytes": 64,
+      "region_sha1": "45615a9cd6c83f09766dc72482a3c17c2036093b",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_10043b30",
+      "address": "0x10043b30",
+      "region_bytes": 64,
+      "region_sha1": "1b2cb852e6659d9f82fbecaf7f622e9527bd571d",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_10044ff0",
+      "address": "0x10044ff0",
+      "region_bytes": 288,
+      "region_sha1": "7dd8f8a1ea86757dcd7622829e902455e6db0153",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_10045110",
+      "address": "0x10045110",
+      "region_bytes": 432,
+      "region_sha1": "bfa63e34ec32e12c62da34769d9af7eafd450ff1",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_100452c0",
+      "address": "0x100452c0",
+      "region_bytes": 688,
+      "region_sha1": "aea459081d09ee9c0662c021923cbc1eb7687b9d",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_100456c0",
+      "address": "0x100456c0",
+      "region_bytes": 272,
+      "region_sha1": "c43adc957f675b3f6a7e2b607b60e3116c55af4f",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_100465c0",
+      "address": "0x100465c0",
+      "region_bytes": 432,
+      "region_sha1": "ff8653cafff0fb9ac05aee3736bed1a4ae10f98b",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_10047240",
+      "address": "0x10047240",
+      "region_bytes": 64,
+      "region_sha1": "846e13cdadd74bd06218fcc55d63f3a6f6bb5291",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_10047b30",
+      "address": "0x10047b30",
+      "region_bytes": 1600,
+      "region_sha1": "f087d174c24e2dc29ae67ddd8469d32d78d49178",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_10048170",
+      "address": "0x10048170",
+      "region_bytes": 80,
+      "region_sha1": "9cfc7939457bb9b5169a759020028a5bab2c4f67",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_100481e0",
+      "address": "0x100481e0",
+      "region_bytes": 544,
+      "region_sha1": "290f2675702c040568f25ab6432dac6d0744e705",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_10048400",
+      "address": "0x10048400",
+      "region_bytes": 688,
+      "region_sha1": "61195a5d160cb6be32ab6e47977e11cde8739367",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_100486b0",
+      "address": "0x100486b0",
+      "region_bytes": 336,
+      "region_sha1": "bbba3f8a94ad38d37b57385282f63750e1d2b4c7",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_10048d10",
+      "address": "0x10048d10",
+      "region_bytes": 2192,
+      "region_sha1": "13c2f1ccc33bf70aec713680ba2b28d31b1640c3",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    },
+    {
+      "symbol": "FUN_100495a0",
+      "address": "0x100495a0",
+      "region_bytes": 1760,
+      "region_sha1": "0e9f4b0c92a88fc83b1f28abc5e8d183d6d8ca3b",
+      "assembly": "on-demand official PE disassembly via tools/read_reference_function.py --asm"
+    }
+  ],
+  "scope": "Region hashes verify artifact alignment; source bodies remain partial reconstructions, not semantic-equivalence proofs."
+}

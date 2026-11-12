@@ -1,0 +1,52 @@
+/*
+ * Generated Ghidra pseudocode, NOT verified source.
+ * Binary: samp-server.exe.official
+ * Entry: 0x004a6142
+ * Name: __close_lk
+ * Status: ok
+ * Full provenance, body ranges, references: ../index.json
+ * Diagnostic: 
+ */
+
+
+undefined4 __cdecl __close_lk(uint param_1)
+
+{
+  intptr_t iVar1;
+  intptr_t iVar2;
+  HANDLE hObject;
+  BOOL BVar3;
+  DWORD DVar4;
+  undefined4 uVar5;
+  
+  iVar1 = __get_osfhandle(param_1);
+  if (iVar1 != -1) {
+    if ((param_1 == 1) || (param_1 == 2)) {
+      iVar1 = __get_osfhandle(2);
+      iVar2 = __get_osfhandle(1);
+      if (iVar2 == iVar1) goto LAB_004a6190;
+    }
+    hObject = (HANDLE)__get_osfhandle(param_1);
+    BVar3 = CloseHandle(hObject);
+    if (BVar3 == 0) {
+      DVar4 = GetLastError();
+      goto LAB_004a6192;
+    }
+  }
+LAB_004a6190:
+  DVar4 = 0;
+LAB_004a6192:
+  __free_osfhnd(param_1);
+  *(undefined1 *)((&DAT_0051c940)[(int)param_1 >> 5] + 4 + (param_1 & 0x1f) * 0x24) = 0;
+  if (DVar4 == 0) {
+    uVar5 = 0;
+  }
+  else {
+    __dosmaperr(DVar4);
+    uVar5 = 0xffffffff;
+  }
+  return uVar5;
+}
+
+
+/* END FUNCTION 0x004a6142 */

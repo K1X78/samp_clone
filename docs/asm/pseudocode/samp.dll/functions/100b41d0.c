@@ -1,0 +1,24 @@
+/*
+ * Generated Ghidra pseudocode, NOT verified source.
+ * Binary: samp.dll.official
+ * Entry: 0x100b41d0
+ * Name: FUN_100b41d0
+ * Status: ok
+ * Full provenance, body ranges, references: ../index.json
+ * Diagnostic: 
+ */
+
+
+void FUN_100b41d0(undefined4 param_1,int param_2)
+
+{
+  int *piVar1;
+  
+  piVar1 = (int *)FUN_100a7630(param_1);
+  piVar1[7] = param_2;
+  (**(code **)(*piVar1 + 0x40))(param_2);
+  return;
+}
+
+
+/* END FUNCTION 0x100b41d0 */

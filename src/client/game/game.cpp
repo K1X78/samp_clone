@@ -1,0 +1,2406 @@
+#include "game/game.h"
+#include "game/modelfile.h"
+#include "main.h"
+#include <process.h>
+// 0x000607b0
+// Official: FUN_100607b0 @ 0x100607b0 (samp.dll)
+int CGame::GetScreenWidth()
+{
+    return *(int*)0xc17044;
+}
+// 0x00065ee0
+// Official: FUN_10065ee0 @ 0x10065ee0 (samp.dll)
+int CGame::GetScreenHeight()
+{
+    return *(int*)0xc17048;
+}
+// 0x000b26d0
+// Official: FUN_100b26d0 @ 0x100b26d0 (samp.dll)
+float CGame::GetHudVertScale()
+{
+    return *(const float*)0x859524;
+}
+// 0x000b26e0
+// Official: FUN_100b26e0 @ 0x100b26e0 (samp.dll)
+float CGame::GetHudHorizScale()
+{
+    return *(const float*)0x859520;
+}
+// 0x00060d20
+// Official: FUN_10060d20 @ 0x10060d20 (samp.dll)
+int CGame::GetCursorMode()
+{
+    return m_nCursorMode;
+}
+// 0x0006d430
+// Official: FUN_1006d430 @ 0x1006d430 (samp.dll)
+void CGame::ResetInputEnableWait()
+{
+    m_nInputEnableWaitFrames = 0;
+}
+// 0x00067f10
+// Official: FUN_10067f10 @ 0x10067f10 (samp.dll)
+void CGame::SetHeadMovement(BOOL enabled)
+{
+    m_bHeadMove = enabled;
+}
+// 0x000080f0
+// Official: FUN_100080f0 @ 0x100080f0 (samp.dll)
+void CGame::SetCheckpointEnabled(DWORD enabled)
+{
+    m_checkpoints.enabled = enabled;
+}
+// 0x00008100
+// Official: FUN_10008100 @ 0x10008100 (samp.dll)
+void CGame::SetRacingCheckpointEnabled(DWORD enabled)
+{
+    m_checkpoints.raceEnabled = enabled;
+}
+#include <string.h>
+// 0x0018e1d8
+BOOL g_gameUsedPlayerSlots[210];
+// 0x0009fdc0
+// Official: FUN_1009fdc0 @ 0x1009fdc0 (samp.dll)
+CGame::CGame()
+{
+    m_pAudio = new CAudio;
+    m_pCamera = new CCamera;
+    m_pPlayerPed = 0;
+    m_checkpoints.enabled = 0;
+    m_checkpoints.raceEnabled = 0;
+    m_checkpoints.raceCheckpoint = 0;
+    m_nCursorMode = 0;
+    m_nInputEnableWaitFrames = 0;
+    m_bClockEnabled = FALSE;
+    unknown6d = 0;
+    memset(g_gameUsedPlayerSlots, 0, sizeof(g_gameUsedPlayerSlots));
+    memset(m_aKeepLoadedVehicleModels, 0, sizeof(m_aKeepLoadedVehicleModels));
+    m_nTrackedNameDigestMatches = 0;
+    m_bHeadMove = TRUE;
+    m_nFrameLimiter = 90;
+}
+// 0x000a1190
+// Official: FUN_100a1190 @ 0x100a1190 (samp.dll)
+IDirect3DDevice9* CGame::GetDevice()
+{
+    // Legacy 0.2x source matches this native body; both RenderWare calls take no stack arguments.
+    IDirect3DDevice9* device = 0;
+    if (g_gameVersion == 1)
+    {
+        // clang-format off
+        __asm mov edx,0x7f9d50
+        __asm call edx
+        __asm mov device,eax
+        // clang-format on
+    }
+    else if (g_gameVersion == 2)
+    {
+        // clang-format off
+        __asm mov edx,0x7f9d90
+        __asm call edx
+        __asm mov device,eax
+        // clang-format on
+    }
+    return device;
+}
+// 0x000a0770
+// Official: FUN_100a0770 @ 0x100a0770 (samp.dll)
+BOOL CGame::IsStarted()
+{
+    return *(BYTE*)0xba6831 == 0;
+}
+// 0x000a09f0
+// Official: FUN_100a09f0 @ 0x100a09f0 (samp.dll)
+void CGame::SetFrameLimiter(int value)
+{
+    m_nFrameLimiter = value;
+    UnFuck((void*)0xc1704c, 4);
+    *(DWORD*)0xc1704c = 200;
+}
+// 0x000a1280
+// Official: FUN_100a1280 @ 0x100a1280 (samp.dll)
+void CGame::EnableClock(bool enable)
+{
+    UnFuck((void*)0x859a6c, 10);
+    UnFuck((void*)0x52cf10, 1);
+    if (enable)
+    {
+        *(BYTE*)0x52cf10 = 0x56;
+        m_bClockEnabled = TRUE;
+        memcpy((void*)0x859a6c, "%02d:%02d", 10);
+    }
+    else
+    {
+        *(BYTE*)0x52cf10 = 0xc3;
+        m_bClockEnabled = FALSE;
+        memset((void*)0x859a6c, 0, 10);
+    }
+}
+// 0x00002d40
+// Official: FUN_10002d40 @ 0x10002d40 (samp.dll)
+void* CGame::GetWindowHandle()
+{
+    return *(void**)0xc97c1c;
+}
+// 0x00002d50
+// Official: FUN_10002d50 @ 0x10002d50 (samp.dll)
+CAudio* CGame::GetAudio()
+{
+    return m_pAudio;
+}
+// 0x00002d60
+// Official: FUN_10002d60 @ 0x10002d60 (samp.dll)
+CCamera* CGame::GetCamera()
+{
+    return m_pCamera;
+}
+// 0x00002d70
+// Official: FUN_10002d70 @ 0x10002d70 (samp.dll)
+BOOL CGame::DoesHeadMoves()
+{
+    return m_bHeadMove;
+}
+
+// GTA SA virtual addresses: fixed range8E6C10..8E7C8C, stride20 (211 records).
+// Tests the entire DWORD, never substitute a live vehicle-pool count.
+// 0x000a1410
+// Official: FUN_100a1410 @ 0x100a1410 (samp.dll)
+int CGame::CountBackendVehicleModelRecords()
+{
+    int count = 0;
+    for (DWORD address = 0x8e6c10; address != 0x8e7c8c; address += 20)
+    {
+        if (*(DWORD*)address)
+            ++count;
+    }
+    return count;
+}
+
+// GTA SA virtual addresses: direct original game storage; no SA-MP-owned alias.
+// 0x000a0db0
+// Official: FUN_100a0db0 @ 0x100a0db0 (samp.dll)
+int CGame::GetPlayerMoney()
+{
+    return *(int*)0xb7ce50;
+}
+
+// GTA SA virtual addresses: direct original game storage; no SA-MP-owned alias.
+// 0x000a13f0
+// Official: FUN_100a13f0 @ 0x100a13f0 (samp.dll)
+DWORD CGame::GetUsedMemory()
+{
+    return *(DWORD*)0x8e4cb4;
+}
+
+// GTA SA virtual addresses: direct original game storage; no SA-MP-owned alias.
+// 0x000a1400
+// Official: FUN_100a1400 @ 0x100a1400 (samp.dll)
+DWORD CGame::GetStreamingMemory()
+{
+    return *(DWORD*)0x8a5a80;
+}
+
+// GTA SA virtual addresses: direct original game storage; no SA-MP-owned alias.
+// 0x000a1240
+// Official: FUN_100a1240 @ 0x100a1240 (samp.dll)
+void CGame::SetWantedLevel(BYTE level)
+{
+    *(BYTE*)0x58db60 = level;
+}
+
+// GTA SA virtual addresses: direct original game storage; no SA-MP-owned alias.
+// 0x000a0920
+// Official: FUN_100a0920 @ 0x100a0920 (samp.dll)
+void CGame::GetWorldTime(BYTE* hour, BYTE* minute)
+{
+    *minute = *(BYTE*)0xb70152;
+    *hour = *(BYTE*)0xb70153;
+}
+
+#include "game/scripting.h"
+
+// 0x000a0a50
+// Official: FUN_100a0a50 @ 0x100a0a50 (samp.dll)
+void CGame::DisableTrainTraffic()
+{
+    Scripting::ProcessCommand(&g_gameDisableTrainTrafficCommand, 0);
+}
+
+// 0x000a0a90
+// Official: FUN_100a0a90 @ 0x100a0a90 (samp.dll)
+void CGame::RequestAnimation(const char* name)
+{
+    Scripting::ProcessCommand(&g_gameRequestAnimationCommand, name);
+}
+
+// 0x000a0ab0
+// Official: FUN_100a0ab0 @ 0x100a0ab0 (samp.dll)
+DWORD CGame::IsAnimationLoaded(const char* name)
+{
+    return Scripting::ProcessCommand(&g_gameIsAnimationLoadedCommand, name);
+}
+
+// 0x000a0ce0
+// Official: FUN_100a0ce0 @ 0x100a0ce0 (samp.dll)
+void CGame::DeleteMarker(DWORD marker)
+{
+    Scripting::ProcessCommand(&g_gameDeleteMarkerCommand, marker);
+}
+
+// 0x000a0d90
+// Official: FUN_100a0d90 @ 0x100a0d90 (samp.dll)
+void CGame::IncreasePlayerMoney(int amount)
+{
+    Scripting::ProcessCommand(&g_gameIncreaseMoneyCommand, 0, amount);
+}
+
+// 0x000a1340
+// Official: FUN_100a1340 @ 0x100a1340 (samp.dll)
+void CGame::EnableZoneDisplaying(BYTE enabled)
+{
+    Scripting::ProcessCommand(&g_gameZoneDisplayCommand, (DWORD)enabled);
+}
+
+// 0x000a1360
+// Official: FUN_100a1360 @ 0x100a1360 (samp.dll)
+void CGame::EnableStuntBonus(BYTE enabled)
+{
+    // GTA SA virtual address: 0x00a4a474.
+    UnFuck((void*)0xa4a474, 4);
+    *(DWORD*)0xa4a474 = enabled;
+}
+
+// 0x000a1220
+// Official: FUN_100a1220 @ 0x100a1220 (samp.dll)
+void CGame::SetWorldGravity(float gravity)
+{
+    // GTA SA virtual address: 0x00863984; store raw float bits without x87 conversion.
+    UnFuck((void*)0x863984, 4);
+    *(DWORD*)0x863984 = *(DWORD*)&gravity;
+}
+
+// 0x000a13d0
+// Official: FUN_100a13d0 @ 0x100a13d0 (samp.dll)
+void CGame::LoadScene(const char* name)
+{
+    // GTA SA virtual address: 0x005b8700, cdecl.
+    ((void(__cdecl*)(const char*))0x5b8700)(name);
+}
+
+// 0x000a19a0
+// Official: FUN_100a19a0 @ 0x100a19a0 (samp.dll)
+void CGame::LoadCollisionFile(const char* name)
+{
+    // GTA SA virtual address: 0x005b4e60, cdecl; native second argument is zero.
+    ((void(__cdecl*)(const char*, int))0x5b4e60)(name, 0);
+}
+
+// 0x000a19c0
+// Official: FUN_100a19c0 @ 0x100a19c0 (samp.dll)
+void CGame::LoadCullZone(const char* name)
+{
+    // GTA SA virtual address: 0x005b4b40, cdecl.
+    ((void(__cdecl*)(const char*))0x5b4b40)(name);
+}
+
+// 0x000a1200
+// Official: FUN_100a1200 @ 0x100a1200 (samp.dll)
+void* CGame::GetWeaponInfo(int weapon, int skill)
+{
+    // GTA SA virtual address: 0x00743c60, cdecl; raw backend pointer.
+    return ((void*(__cdecl*)(int, int))0x743c60)(weapon, skill);
+}
+
+// 0x000a19f0
+// Official: FUN_100a19f0 @ 0x100a19f0 (samp.dll)
+void CGame::DisableAutoAiming()
+{
+    // GTA SA virtual addresses: 0x0060dc50 and 0x0060e530..0x0060e532.
+    UnFuck((void*)0x60dc50, 1);
+    *(BYTE*)0x60dc50 = 0xc3;
+    UnFuck((void*)0x60e530, 3);
+    *(BYTE*)0x60e530 = 0xc2;
+    *(BYTE*)0x60e531 = 8;
+    *(BYTE*)0x60e532 = 0;
+}
+
+// 0x000a1380
+// Official: FUN_100a1380 @ 0x100a1380 (samp.dll)
+void CGame::DisableEnterExits()
+{
+    // GTA SA virtual address: 0x0096a7d8; unchecked native array/count prefix.
+    BYTE* pool = *(BYTE* volatile*)0x96a7d8;
+    BYTE* record = *(BYTE* volatile*)pool;
+    DWORD count = *(volatile DWORD*)(pool + 8);
+    while (count)
+    {
+        *(volatile WORD*)(record + 0x30) &= 0;
+        record += 0x3c;
+        --count;
+    }
+}
+
+// 0x000a0240
+// Official: FUN_100a0240 @ 0x100a0240 (samp.dll)
+float CGame::FindGroundZ(float x, float y, float z)
+{
+    Scripting::ProcessCommand(&g_gameFindGroundZCommand, (double)x, (double)y, (double)z, &z);
+    return z;
+}
+
+// 0x000a0a60
+// Official: FUN_100a0a60 @ 0x100a0a60 (samp.dll)
+void CGame::RefreshRenderer(float x, float y)
+{
+    Scripting::ProcessCommand(&g_gameRefreshRendererCommand, (double)x, (double)y);
+}
+
+#include "game/playerped.h"
+#include "game/vehicle.h"
+
+// 0x000a0090
+// Official: FUN_100a0090 @ 0x100a0090 (samp.dll)
+CVehicle* CGame::CreateVehicle(int model, float x, float y, float z, float rotation, BOOL siren)
+{
+    // Native indexes this+model-0x122 without a model-range check.
+    DWORD keepLoaded = *((BYTE*)this + model - 0x122) != 0;
+    CVehicle* vehicle = new CVehicle(model, x, y, z, rotation, keepLoaded, siren);
+    // Native dereferences even a null allocation; failed backend creation leaks this wrapper.
+    return vehicle->m_pGameVehicle ? vehicle : 0;
+}
+
+// 0x000a0050
+// Official: FUN_100a0050 @ 0x100a0050 (samp.dll)
+BOOL CGame::RemovePed(CPed* ped)
+{
+    if (!ped)
+        return FALSE;
+    BYTE player = ped->m_nPlayerNumber;
+    delete ped;
+    g_gameUsedPlayerSlots[player] = FALSE;
+    return TRUE;
+}
+
+// 0x000a1ee0
+// Official: FUN_100a1ee0 @ 0x100a1ee0 (samp.dll)
+void CGame::ResetMoney()
+{
+    // GTA SA virtual address: 0x00b7ce50. Modular negation preserves INT_MIN.
+    DWORD money = *(DWORD*)0xb7ce50;
+    if (money)
+        Scripting::ProcessCommand(&g_gameIncreaseMoneyCommand, 0, 0u - money);
+}
+
+// 0x000a0b80
+// Official: FUN_100a0b80 @ 0x100a0b80 (samp.dll)
+void CGame::DeleteRacingCheckpoint()
+{
+    if (m_checkpoints.raceCheckpoint)
+    {
+        Scripting::ProcessCommand(&g_gameDeleteRacingCheckpointCommand, m_checkpoints.raceCheckpoint);
+        m_checkpoints.raceCheckpoint = 0;
+    }
+    m_checkpoints.raceEnabled = 0;
+}
+
+// 0x000a0bb0
+// Official: FUN_100a0bb0 @ 0x100a0bb0 (samp.dll)
+DWORD CGame::CreateMarker(int icon, float x, float y, float z, DWORD color, int type)
+{
+    DWORD marker = 0;
+    const Scripting::OpcodeInfo* command = &g_gameCreateMarkerCommand;
+    if (type == 1)
+        command = &g_gameCreateMarkerType1Command;
+    else if (type == 2)
+        command = &g_gameCreateMarkerType2Command;
+    else if (type == 3)
+        command = &g_gameCreateMarkerType3Command;
+    Scripting::ProcessCommand(command, (double)x, (double)y, (double)z, icon, &marker);
+    if (icon == 0)
+    {
+        Scripting::ProcessCommand(&g_gameMarkerColorCommand, marker, color);
+        Scripting::ProcessCommand(&g_gameMarkerModeCommand, marker, color < 1004u ? 2 : 3);
+    }
+    return marker;
+}
+
+// 0x000a1c00
+// Official: FUN_100a1c00 @ 0x100a1c00 (samp.dll)
+void CGame::SetCheckpoint(const CVector* position, const CVector* size)
+{
+    GameCheckpointState* s = &m_checkpoints;
+    s->position = *position;
+    s->size = *size;
+    if (s->marker)
+    {
+        Scripting::ProcessCommand(&g_gameDeleteMarkerCommand, s->marker);
+        s->marker = 0;
+        DWORD marker = 0;
+        Scripting::ProcessCommand(&g_gameCreateMarkerCommand, (double)s->position.x, (double)s->position.y, (double)s->position.z, 0, &marker);
+        Scripting::ProcessCommand(&g_gameMarkerColorCommand, marker, 1005);
+        Scripting::ProcessCommand(&g_gameMarkerModeCommand, marker, 3);
+        s->marker = marker;
+    }
+}
+
+// 0x000a1cc0
+// Official: FUN_100a1cc0 @ 0x100a1cc0 (samp.dll)
+void CGame::CreateRacingCheckpoint()
+{
+    GameCheckpointState* s = &m_checkpoints;
+    if (s->raceCheckpoint)
+    {
+        Scripting::ProcessCommand(&g_gameDeleteRacingCheckpointCommand, s->raceCheckpoint);
+        s->raceCheckpoint = 0;
+    }
+    s->raceEnabled = 0;
+    Scripting::ProcessCommand(&g_gameCreateRacingCheckpointCommand, (DWORD)s->raceType, (double)s->racePosition.x, (double)s->racePosition.y, (double)s->racePosition.z,
+                              (double)s->raceNext.x, (double)s->raceNext.y, (double)s->raceNext.z, (double)s->raceSize, &s->raceCheckpoint);
+    s->raceEnabled = 1;
+}
+
+// 0x000a1f20
+// Official: FUN_100a1f20 @ 0x100a1f20 (samp.dll)
+void CGame::SetRacingCheckpoint(BYTE type, const CVector* position, const CVector* next, float size)
+{
+    GameCheckpointState* s = &m_checkpoints;
+    s->racePosition = *position;
+    s->raceNext = *next;
+    s->raceSize = size;
+    s->raceType = type;
+    if (s->raceMarker)
+    {
+        Scripting::ProcessCommand(&g_gameDeleteMarkerCommand, s->raceMarker);
+        s->raceMarker = 0;
+        DWORD marker = 0;
+        Scripting::ProcessCommand(&g_gameCreateMarkerCommand, (double)s->racePosition.x, (double)s->racePosition.y, (double)s->racePosition.z, 0, &marker);
+        Scripting::ProcessCommand(&g_gameMarkerColorCommand, marker, 1005);
+        Scripting::ProcessCommand(&g_gameMarkerModeCommand, marker, 3);
+        s->raceMarker = marker;
+    }
+    CreateRacingCheckpoint();
+}
+
+// 0x000a1d40
+// Official: FUN_100a1d40 @ 0x100a1d40 (samp.dll)
+void CGame::ProcessCheckpoints()
+{
+    GameCheckpointState* s = &m_checkpoints;
+    if (s->enabled)
+    {
+        CPed* ped = GetPlayerPed();
+        if (ped)
+        {
+            Scripting::ProcessCommand(&g_gameLocateCheckpointCommand, ped->m_nHandle, (double)s->position.x, (double)s->position.y, (double)s->position.z, (double)s->size.x,
+                                      (double)s->size.y, (double)s->size.z, 1);
+            if (!s->marker)
+            {
+                DWORD marker = 0;
+                Scripting::ProcessCommand(&g_gameCreateMarkerCommand, (double)s->position.x, (double)s->position.y, (double)s->position.z, 0, &marker);
+                Scripting::ProcessCommand(&g_gameMarkerColorCommand, marker, 1005);
+                Scripting::ProcessCommand(&g_gameMarkerModeCommand, marker, 3);
+                s->marker = marker;
+            }
+        }
+    }
+    else if (s->marker)
+    {
+        Scripting::ProcessCommand(&g_gameDeleteMarkerCommand, s->marker);
+        s->marker = 0;
+    }
+    if (s->raceEnabled)
+    {
+        if (GetPlayerPed() && !s->raceMarker)
+        {
+            DWORD marker = 0;
+            Scripting::ProcessCommand(&g_gameCreateMarkerCommand, (double)s->racePosition.x, (double)s->racePosition.y, (double)s->racePosition.z, 0, &marker);
+            Scripting::ProcessCommand(&g_gameMarkerColorCommand, marker, 1005);
+            Scripting::ProcessCommand(&g_gameMarkerModeCommand, marker, 3);
+            s->raceMarker = marker;
+        }
+    }
+    else if (s->raceMarker)
+    {
+        Scripting::ProcessCommand(&g_gameDeleteMarkerCommand, s->raceMarker);
+        if (s->raceCheckpoint)
+        {
+            Scripting::ProcessCommand(&g_gameDeleteRacingCheckpointCommand, s->raceCheckpoint);
+            s->raceCheckpoint = 0;
+        }
+        s->raceEnabled = 0;
+        s->raceMarker = 0;
+    }
+}
+
+// 0x000a0b20
+// Official: FUN_100a0b20 @ 0x100a0b20 (samp.dll)
+void CGame::DisplayGameText(const char* text, int time, int style)
+{
+    if (style <= 200)
+    {
+        Scripting::ProcessCommand(&g_gameClearTextCommand);
+        *(DWORD*)g_gameTextBuffer = 0;
+        strncpy(g_gameTextBuffer, text, 512);
+        // GTA SA virtual address: 0x0069f2b0, cdecl.
+        ((void(__cdecl*)(const char*, int, int))0x69f2b0)(g_gameTextBuffer, time, style);
+    }
+}
+
+// 0x000a1010
+// Official: FUN_100a1010 @ 0x100a1010 (samp.dll)
+DWORD CGame::CreatePickup(int model, int type, float x, float y, float z, DWORD* index)
+{
+    int selected = model;
+    if (!GameModelQueryB4170(selected))
+        selected = 18631;
+    if (selected >= 0 && selected <= 20000)
+    {
+        if (!Scripting::ProcessCommand(&g_gameModelAvailableCommand, selected))
+        {
+            Scripting::ProcessCommand(&g_gameRequestModelCommand, selected);
+            Scripting::ProcessCommand(&g_gameLoadModelsCommand);
+            void(WINAPI* volatile sleep)(DWORD) = ::Sleep;
+            while (selected <= 20000 && !Scripting::ProcessCommand(&g_gameModelAvailableCommand, selected))
+                sleep(1);
+        }
+    }
+    // The native output aliases the original model argument, not the selected fallback.
+    Scripting::ProcessCommand(&g_gameCreatePickupCommand, selected, type, (double)x, (double)y, (double)z, &model);
+    if (index)
+        *index = (DWORD)model & 0xffff;
+    return (DWORD)model;
+}
+
+// 0x000a1260
+// Official: FUN_100a1260 @ 0x100a1260 (samp.dll)
+void CGame::DrawGangZone(const float* position, DWORD color)
+{
+    // GTA SA virtual addresses: radar flag0x00ba67a4 and cdecl draw0x005853d0.
+    ((void(__cdecl*)(const float*, DWORD*, DWORD))0x5853d0)(position, &color, (DWORD) * (BYTE*)0xba67a4);
+}
+
+#include "game/custommodels.h"
+#include "game/util.h"
+// 0x000a07e0
+// Official: FUN_100a07e0 @ 0x100a07e0 (samp.dll)
+void CGame::ReleaseModel(int model, BYTE force)
+{
+    if (model >= 0)
+    {
+        if (model >= 20000)
+            return;
+        if (force)
+        {
+            if (Scripting::ProcessCommand(&g_gameModelAvailableCommand, model))
+            {
+                // GTA SA virtual address: 0x004089a0, cdecl model argument.
+                ((void(__cdecl*)(int))0x4089a0)(model);
+            }
+        }
+        else if (Scripting::ProcessCommand(&g_gameModelAvailableCommand, model))
+        {
+            Scripting::ProcessCommand(&g_gameReleaseModelCommand, model);
+        }
+    }
+    else if (g_customModels && g_customModels->IsObjectEntry(model) && !GamePoolHasObjectModel(model))
+    {
+        g_customModels->ReleaseObjectEntry(model);
+    }
+}
+
+// 0x000a1430
+// Official: FUN_100a1430 @ 0x100a1430 (samp.dll)
+void CGame::SetRequiredVehicleModels(BYTE* priorities)
+{
+    memset(m_aKeepLoadedVehicleModels, 0, sizeof(m_aKeepLoadedVehicleModels));
+    for (int model = 400; model < 612; ++model)
+        ReleaseModel(model, 0);
+    int models[212];
+    for (int i = 0; i < 212; ++i)
+        models[i] = 400 + i;
+    for (int count = 211; count > 0; --count)
+    {
+        for (int i = 0; i < count; ++i)
+        {
+            if (priorities[i + 1] > priorities[i])
+            {
+                BYTE priority = priorities[i];
+                priorities[i] = priorities[i + 1];
+                int model = models[i];
+                models[i] = models[i + 1];
+                priorities[i + 1] = priority;
+                models[i + 1] = model;
+            }
+        }
+    }
+    for (int i = 0; i < 80; ++i)
+    {
+        if (priorities[i])
+        {
+            int model = models[i];
+            Scripting::ProcessCommand(&g_gameRequestModelCommand, model);
+            Scripting::ProcessCommand(&g_gameLoadModelsCommand);
+            m_aKeepLoadedVehicleModels[model - 400] = true;
+        }
+    }
+}
+
+// 0x000a16c0
+// Official: FUN_100a16c0 @ 0x100a16c0 (samp.dll)
+void CGame::LoadAnimationsAndModels()
+{
+    if (!IsAnimationLoaded(g_gameParachuteLibrary))
+        RequestAnimation(g_gameParachuteLibrary);
+    if (!IsAnimationLoaded(g_pedDrinkLibrary))
+        RequestAnimation(g_pedDrinkLibrary);
+    if (!IsAnimationLoaded(g_pedSmokeLibrary))
+        RequestAnimation(g_pedSmokeLibrary);
+    if (!IsAnimationLoaded(g_pedUrinationLibrary))
+        RequestAnimation(g_pedUrinationLibrary);
+    if (!IsAnimationLoaded(g_gameVendingLibrary))
+        RequestAnimation(g_gameVendingLibrary);
+    if (!IsAnimationLoaded(g_gameFightBLibrary))
+        RequestAnimation(g_gameFightBLibrary);
+    if (!IsAnimationLoaded(g_gameFightCLibrary))
+        RequestAnimation(g_gameFightCLibrary);
+    if (!IsAnimationLoaded(g_gameFightDLibrary))
+        RequestAnimation(g_gameFightDLibrary);
+    if (!IsAnimationLoaded(g_gameFightELibrary))
+        RequestAnimation(g_gameFightELibrary);
+    if (!Scripting::ProcessCommand(&g_gameModelAvailableCommand, 3131))
+        Scripting::ProcessCommand(&g_gameRequestModelCommand, 3131);
+    if (!Scripting::ProcessCommand(&g_gameModelAvailableCommand, 1485))
+        Scripting::ProcessCommand(&g_gameRequestModelCommand, 1485);
+    if (!Scripting::ProcessCommand(&g_gameModelAvailableCommand, 1486))
+        Scripting::ProcessCommand(&g_gameRequestModelCommand, 1486);
+    if (!Scripting::ProcessCommand(&g_gameModelAvailableCommand, 1543))
+        Scripting::ProcessCommand(&g_gameRequestModelCommand, 1543);
+    if (!Scripting::ProcessCommand(&g_gameModelAvailableCommand, 1546))
+        Scripting::ProcessCommand(&g_gameRequestModelCommand, 1546);
+    if (!Scripting::ProcessCommand(&g_gameModelAvailableCommand, 343))
+        Scripting::ProcessCommand(&g_gameRequestModelCommand, 343);
+    if (!Scripting::ProcessCommand(&g_gameModelAvailableCommand, 342))
+        Scripting::ProcessCommand(&g_gameRequestModelCommand, 342);
+    if (!Scripting::ProcessCommand(&g_gameModelAvailableCommand, 344))
+        Scripting::ProcessCommand(&g_gameRequestModelCommand, 344);
+    if (!Scripting::ProcessCommand(&g_gameModelAvailableCommand, 330))
+        Scripting::ProcessCommand(&g_gameRequestModelCommand, 330);
+}
+
+#include <stddef.h>
+// 0x002ac9d0
+IDirect3DDevice9* g_gameD3DDevice;
+// 0x002ac9b8
+int g_gameVersion;
+// 0x0018e1c8
+DWORD g_gameMouseDummy;
+// 0x00151918
+BYTE g_gameKeyCall[5] = {0xe8, 0x46, 0xf3, 0xfe, 0xff};
+// 0x00151920
+BYTE g_gameMouseCallEU[5] = {0xe8, 0x04, 0x7b, 0x20, 0x00};
+// 0x00151928
+BYTE g_gameMouseCallUS[5] = {0xe8, 0xb4, 0x7a, 0x20, 0x00};
+
+// 0x000aa0b0
+// Official: FUN_100aa0b0 @ 0x100aa0b0 (samp.dll)
+void UnFuck(void* address, SIZE_T size)
+{
+    DWORD oldProtect;
+    VirtualProtect(address, size, PAGE_EXECUTE_READWRITE, &oldProtect);
+}
+// 0x000a02f0
+// Official: FUN_100a02f0 @ 0x100a02f0 (samp.dll)
+void GameClearMouseDelta()
+{
+    *(DWORD*)0xb73424 = 0;
+    *(DWORD*)0xb73428 = 0;
+    ((void(__cdecl*)())0x541bd0)();
+}
+// 0x000a0310
+// Official: FUN_100a0310 @ 0x100a0310 (samp.dll)
+void GameUpdateMouse()
+{
+    ((void(__cdecl*)())0x541dd0)();
+}
+// 0x000a0320
+// Official: FUN_100a0320 @ 0x100a0320 (samp.dll)
+void GameDisableMousePointers()
+{
+    *(DWORD*)0xb7340c = 0;
+    *(DWORD*)0xb73410 = 0;
+    *(DWORD*)0xb73414 = 0;
+    UnFuck((void*)0x53f47a, 4);
+    UnFuck((void*)0x53f49a, 4);
+    UnFuck((void*)0x53f4b3, 4);
+    *(DWORD*)0x53f47a = (DWORD)&g_gameMouseDummy;
+    *(DWORD*)0x53f49a = (DWORD)&g_gameMouseDummy;
+    *(DWORD*)0x53f4b3 = (DWORD)&g_gameMouseDummy;
+}
+// 0x000a0370
+// Official: FUN_100a0370 @ 0x100a0370 (samp.dll)
+void GameRestoreMousePointers()
+{
+    UnFuck((void*)0x53f47a, 4);
+    UnFuck((void*)0x53f49a, 4);
+    UnFuck((void*)0x53f4b3, 4);
+    *(DWORD*)0x53f47a = 0xb73410;
+    *(DWORD*)0x53f49a = 0xb73414;
+    *(DWORD*)0x53f4b3 = 0xb7340c;
+}
+// 0x000a03c0
+// Official: FUN_100a03c0 @ 0x100a03c0 (samp.dll)
+void GameDisableMouseCalls()
+{
+    UnFuck((void*)0x53f417, 5);
+    memset((void*)0x53f417, 0x90, 5);
+    UnFuck((void*)0x53f41f, 4);
+    *(BYTE*)0x53f41f = 0x33;
+    *(BYTE*)0x53f420 = 0xc0;
+    *(BYTE*)0x53f421 = 0x0f;
+    *(BYTE*)0x53f422 = 0x84;
+}
+// 0x000a0760
+// Official: FUN_100a0760 @ 0x100a0760 (samp.dll)
+BOOL CGame::IsMenuVisible()
+{
+    return *(DWORD*)0xba67a4 != 0;
+}
+// 0x000a0530
+// Official: FUN_100a0530 @ 0x100a0530 (samp.dll)
+void CGame::SetCursorMode(int mode, BOOL immediately)
+{
+    CGame* state = this;
+    if (mode == 2)
+    {
+        UnFuck((void*)0x541df5, 5);
+        memset((void*)0x541df5, 0x90, 5);
+        GameDisableMouseCalls();
+        GameClearMouseDelta();
+        GameUpdateMouse();
+        UnFuck((void*)0x6194a0, 1);
+        *(BYTE*)0x6194a0 = 0xc3;
+        g_gameD3DDevice->ShowCursor(TRUE);
+        state->m_nCursorMode = 2;
+    }
+    else if (mode == 1)
+    {
+        if (state->m_nCursorMode != 1)
+        {
+            UnFuck((void*)0x541df5, 5);
+            memset((void*)0x541df5, 0x90, 5);
+            state->m_nCursorMode = 1;
+        }
+    }
+    else if (mode == 3)
+    {
+        if (state->m_nCursorMode != 3)
+        {
+            GameDisableMouseCalls();
+            GameClearMouseDelta();
+            GameUpdateMouse();
+            UnFuck((void*)0x6194a0, 1);
+            *(BYTE*)0x6194a0 = 0xc3;
+            g_gameD3DDevice->ShowCursor(TRUE);
+            state->m_nCursorMode = 3;
+        }
+    }
+    else if (mode == 4)
+    {
+        if (state->m_nCursorMode != 4)
+        {
+            GameDisableMousePointers();
+            GameClearMouseDelta();
+            GameUpdateMouse();
+            UnFuck((void*)0x6194a0, 1);
+            *(BYTE*)0x6194a0 = 0xc3;
+            state->m_nCursorMode = 4;
+        }
+    }
+    else if (mode == 0 && state->m_nCursorMode != 0)
+    {
+        state->m_nInputEnableWaitFrames = immediately ? 0 : 10;
+        g_gameD3DDevice->ShowCursor(FALSE);
+        state->m_nCursorMode = 0;
+    }
+}
+// 0x000a0410
+// Official: FUN_100a0410 @ 0x100a0410 (samp.dll)
+void CGame::ProcessInputEnabling()
+{
+    CGame* state = this;
+    if (state->m_nCursorMode == 0)
+    {
+        if (state->m_nInputEnableWaitFrames == 0)
+        {
+            UnFuck((void*)0x541df5, 5);
+            memcpy((void*)0x541df5, g_gameKeyCall, 5);
+            UnFuck((void*)0x53f417, 5);
+            memcpy((void*)0x53f417, g_gameVersion == 1 ? g_gameMouseCallUS : g_gameMouseCallEU, 5);
+            GameRestoreMousePointers();
+            // Native changes protection at +2, then writes the four-byte instruction.
+            UnFuck((void*)0x53f421, 4);
+            *(BYTE*)0x53f41f = 0x85;
+            *(BYTE*)0x53f420 = 0xc0;
+            *(BYTE*)0x53f421 = 0x0f;
+            *(BYTE*)0x53f422 = 0x8c;
+            GameClearMouseDelta();
+            GameUpdateMouse();
+            GameClearMouseDelta();
+            UnFuck((void*)0x6194a0, 1);
+            *(BYTE*)0x6194a0 = 0xe9;
+            g_gameD3DDevice->ShowCursor(FALSE);
+            --state->m_nInputEnableWaitFrames;
+        }
+        else if (state->m_nInputEnableWaitFrames > 0)
+            --state->m_nInputEnableWaitFrames;
+    }
+}
+
+#include "game/aimstuff.h"
+#include "game/keystuff.h"
+#include "game/util.h"
+#include <stdlib.h>
+// 0x0018e1cc
+char* g_gameTextBuffer;
+// 0x000a06d0
+// Official: FUN_100a06d0 @ 0x100a06d0 (samp.dll)
+void CGame::InitGame()
+{
+    g_gameTextBuffer = (char*)calloc(1, 513);
+    KeyStuff::Initialize();
+    AimStuff::Initialize();
+    PlayerColors::Initialize();
+    if (!GameInitializeVersionPatches())
+    {
+        MessageBoxA(0, "I can't determine your GTA version.\r\nSA-MP only supports GTA:SA v1.0 USA/EU", "Version Error", MB_ICONWARNING);
+        ExitProcess(1);
+    }
+}
+
+#include <stdio.h>
+// 0x002a9270
+DWORD g_gamePhysicalMegabytes;
+// 0x002a9274
+DWORD g_gameStreamingBytes;
+// 0x0011ee84
+const char g_gameStartupTitle[6] = "title";
+// 0x0018f388
+char g_gameFrameNodeError[256];
+// 0x0018f6b4
+bool g_gameCustomStreamRead;
+// 0x0018f6b8
+void* g_gameStreamBuffer;
+// 0x000aa060
+// Official: FUN_100aa060 @ 0x100aa060 (samp.dll)
+void GameWaitUnprotect(BYTE* address, SIZE_T size, BYTE expected)
+{
+    DWORD oldProtect;
+    VirtualProtect(address, size, PAGE_EXECUTE_READWRITE, &oldProtect);
+    if (*address != expected)
+    {
+        do
+        {
+            Sleep(1);
+        }
+        while (*address != expected);
+        VirtualProtect(address, size, PAGE_EXECUTE_READWRITE, &oldProtect);
+    }
+}
+// 0x000aa300
+// Official: FUN_100aa300 @ 0x100aa300 (samp.dll)
+BOOL GameInitializeVersionPatches()
+{
+    BYTE* version = (BYTE*)0x747483;
+    int count = 0;
+    while (*version != 0x89 && *version != 0xc8)
+    {
+        if (*(BYTE*)0xba6831 == 1)
+            return FALSE;
+        Sleep(10);
+        if (++count > 6000)
+            return FALSE;
+    }
+    if (*version == 0x89)
+        g_gameVersion = 1;
+    else if (*version == 0xc8)
+        g_gameVersion = 2;
+    DWORD oldProtect;
+    BYTE* skip = 0;
+    if (g_gameVersion == 1)
+        skip = (BYTE*)0x747483;
+    else if (g_gameVersion == 2)
+        skip = (BYTE*)0x7474d3;
+    if (skip)
+    {
+        VirtualProtect(skip, 6, PAGE_EXECUTE_READWRITE, &oldProtect);
+        *(BYTE*)0xc8d4c0 = 5;
+        memset(skip, 0x90, 6);
+    }
+    VirtualProtect((void*)0x866cd8, 10, PAGE_EXECUTE_READWRITE, &oldProtect);
+    VirtualProtect((void*)0x866ccc, 10, PAGE_EXECUTE_READWRITE, &oldProtect);
+    memcpy((void*)0x866cd8, g_gameStartupTitle, 6);
+    memcpy((void*)0x866ccc, g_gameStartupTitle, 6);
+    VirtualProtect((void*)0x745b87, 0x44, PAGE_EXECUTE_READWRITE, &oldProtect);
+    memset((void*)0x745b87, 0x90, 0x44);
+    VirtualProtect((void*)0x7459e1, 2, PAGE_EXECUTE_READWRITE, &oldProtect);
+    *(WORD*)0x7459e1 = 0x9090;
+    GameWaitUnprotect((BYTE*)0x561872, 0x1e, 0x85);
+    *(BYTE*)0x561872 = 0x33;
+    *(BYTE*)0x561873 = 0xc0;
+    memset((void*)0x561874, 0x90, 27);
+    MEMORYSTATUSEX memory;
+    memory.dwLength = sizeof(memory);
+    GlobalMemoryStatusEx(&memory);
+    g_gamePhysicalMegabytes = (DWORD)(memory.ullTotalPhys >> 20);
+    if (g_gamePhysicalMegabytes > 4000)
+        g_gameStreamingBytes = 0x40000000;
+    else if (g_gamePhysicalMegabytes > 2000)
+        g_gameStreamingBytes = 0x20000000;
+    else if (g_gamePhysicalMegabytes > 1000)
+        g_gameStreamingBytes = 0x10000000;
+    else if (g_gamePhysicalMegabytes > 500)
+        g_gameStreamingBytes = 0x8000000;
+    else
+        g_gameStreamingBytes = 0x6000000;
+    VirtualProtect((void*)0x5b8e6a, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+    *(DWORD*)0x5b8e6a = g_gameStreamingBytes;
+    GameWaitUnprotect((BYTE*)0x4083c0, 1, 0xb8);
+    *(BYTE*)0x4083c0 = 0xc3;
+    VirtualProtect((void*)0x590099, 5, PAGE_EXECUTE_READWRITE, &oldProtect);
+    memset((void*)0x590099, 0x90, 5);
+    VirtualProtect((void*)0x53e94c, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
+    *(BYTE*)0x53e94c = 2;
+    VirtualProtect((void*)0x731f60, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+    *(DWORD*)0x731f60 = 20000;
+    VirtualProtect((void*)0x72fad6, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+    *(DWORD*)0x72fad6 = (DWORD)GameFrameNodeNameHook;
+    VirtualProtect((void*)0x6fa996, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+    *(DWORD*)0x6fa996 = (DWORD)GameDataReadHook;
+    return TRUE;
+}
+// 0x000a5c10
+// Official: FUN_100a5c10 @ 0x100a5c10 (samp.dll)
+DWORD __cdecl GameFrameNodeNameHook(void* arg0, DWORD length, void* arg2)
+{
+    if (length > 23)
+    {
+        if (g_pGame)
+        {
+            _snprintf(g_gameFrameNodeError, 256, "SA-MP: FrameNode name was too long (%u). SA-MP must exit.", length);
+            ShowWindow(g_inputGameWindow, SW_MINIMIZE);
+            MessageBoxA(0, g_gameFrameNodeError, "SA-MP", MB_ICONWARNING);
+        }
+        // clang-format off
+        __asm mov esp,0
+        __asm int 3
+        // clang-format on
+    }
+    return ((DWORD(__cdecl*)(void*, DWORD, void*))0x72fa50)(arg0, length, arg2);
+}
+// 0x000a5c90
+// Official: FUN_100a5c90 @ 0x100a5c90 (samp.dll)
+DWORD __cdecl GameDataReadHook(void* arg0, DWORD length, void* arg2)
+{
+    if (g_gameCustomStreamRead)
+    {
+        g_gameStreamBuffer = calloc(1, length);
+        GameReadStream(arg0, g_gameStreamBuffer, length);
+        GameParseStreamData(g_gameStreamBuffer, length, arg2);
+        if (g_gameStreamBuffer)
+        {
+            free(g_gameStreamBuffer);
+            g_gameStreamBuffer = 0;
+        }
+        return (DWORD)arg0;
+    }
+    return ((DWORD(__cdecl*)(void*, DWORD, void*))0x6f9fd0)(arg0, length, arg2);
+}
+// 0x000b1a40
+// Official: FUN_100b1a40 @ 0x100b1a40 (samp.dll)
+DWORD GameReadStream(void* stream, void* buffer, DWORD length)
+{
+    DWORD address = g_gameVersion == 1 ? 0x7ec9d0 : 0x7eca10;
+    return ((DWORD(__cdecl*)(void*, void*, DWORD))address)(stream, buffer, length);
+}
+
+#include "game/util.h"
+
+#include "game/animation.h"
+#include "game/hooks.h"
+#include "game/patches.h"
+// 0x000a0720
+// Official: FUN_100a0720 @ 0x100a0720 (samp.dll)
+void CGame::StartGame()
+{
+    GameApplyInGamePatches();
+    GameInstallHooks();
+    Scripting::Initialize();
+    GameInitializeAnimationKeys();
+    *(DWORD*)0xc8d4c0 = 8;
+    *(BYTE*)0xba6831 = 1;
+    *(BYTE*)0xba67a4 = 0;
+    *(BYTE*)0xba677b = 0;
+}
+
+// 0x001c0444
+void* g_gameCustomModelInfo[32768];
+// 0x001e0444
+DWORD g_gameUseCustomModelInfo;
+// 0x00152ae0
+void** g_gameModelInfoTable = g_gameCustomModelInfo;
+// 0x001a0448
+DWORD g_gameCustomModelPrefix[32767];
+// 0x0011e664
+const Scripting::OpcodeInfo g_gameRequestModelCommand = {0x247, "i"};
+// 0x0011e678
+const Scripting::OpcodeInfo g_gameLoadModelsCommand = {0x38b, ""};
+// 0x0011e6a0
+const Scripting::OpcodeInfo g_gameModelAvailableCommand = {0x248, "i"};
+// 0x0011e618
+const char g_gameModelTimeoutWarning[41] = "Warning: Model %u wouldn't load in time!";
+// 0x000a7630
+// Official: FUN_100a7630 @ 0x100a7630 (samp.dll)
+void* __stdcall GameGetModelInfo(int model)
+{
+    if (g_gameUseCustomModelInfo)
+        return g_gameModelInfoTable[model];
+    if (model >= 0 && model <= 20000)
+        return ((void**)0xa9b0c8)[model];
+    return 0;
+}
+// 0x000b41a0
+// Official: FUN_100b41a0 @ 0x100b41a0 (samp.dll)
+DWORD __stdcall GameGetModelData1c(int model)
+{
+    return *(DWORD*)((BYTE*)GameGetModelInfo(model) + 0x1c);
+}
+// 0x000a0780
+// Official: FUN_100a0780 @ 0x100a0780 (samp.dll)
+void CGame::RequestModel(int model, int loadingStream)
+{
+    (void)loadingStream;
+    Scripting::ProcessCommand(&g_gameRequestModelCommand, model);
+}
+// 0x000a07a0
+// Official: FUN_100a07a0 @ 0x100a07a0 (samp.dll)
+void CGame::LoadRequestedModels()
+{
+    Scripting::ProcessCommand(&g_gameLoadModelsCommand);
+}
+// Descriptive name; original name and unused parameters are unknown.
+// 0x0000e4f0
+// Official: FUN_1000e4f0 @ 0x1000e4f0 (samp.dll)
+void GameLoadRequestedModelsAndEndThread()
+{
+    g_pGame->LoadRequestedModels();
+    _endthread();
+}
+// Invalid IDs report TRUE. Preserve the inclusive upper bound and raw result.
+// 0x000a07b0
+// Official: FUN_100a07b0 @ 0x100a07b0 (samp.dll)
+BOOL CGame::IsModelAvailable(int model)
+{
+    if (model >= 0 && model <= 20000)
+        return Scripting::ProcessCommand(&g_gameModelAvailableCommand, model);
+    return TRUE;
+}
+
+// 0x000b39b0
+// Official: FUN_100b39b0 @ 0x100b39b0 (samp.dll)
+BOOL __stdcall GameHasModelInfo(int model)
+{
+    return GameGetModelInfo(model) != 0;
+}
+// 0x000b39d0
+// Official: FUN_100b39d0 @ 0x100b39d0 (samp.dll)
+BOOL __stdcall GameIsPedModel(int model)
+{
+    if (model >= 0 && model <= 30000)
+    {
+        void* info = GameGetModelInfo(model);
+        // GTA SA virtual vtable address, not a samp.dll RVA.
+        if (info && *(DWORD*)info == 0x85bdc0)
+            return TRUE;
+    }
+    return FALSE;
+}
+// 0x000b4170
+// Official: FUN_100b4170 @ 0x100b4170 (samp.dll)
+BOOL __stdcall GameModelQueryB4170(int model)
+{
+    void* info = GameGetModelInfo(model);
+    return info && (*(DWORD*)info + 0x14u) != 0;
+}
+
+// Vtable slot semantics remain unknown; do not relabel this as model type.
+// Both successful lookup checks are native, including the second null guard.
+// 0x000b5d90
+// Official: FUN_100b5d90 @ 0x100b5d90 (samp.dll)
+DWORD __cdecl GameQueryModelVirtual2c(int model)
+{
+    if (!g_pGame || !GameGetModelInfo(model))
+        return 0;
+    void* info = GameGetModelInfo(model);
+    if (!info)
+        return 0;
+    DWORD result;
+    // clang-format off
+    __asm {
+        mov ecx,info
+        mov edx,dword ptr [ecx]
+        call dword ptr [edx + 0x2c]
+        mov result,eax
+    }
+    // clang-format on
+    return result;
+}
+
+// 0x000b3d00
+// Official: FUN_100b3d00 @ 0x100b3d00 (samp.dll)
+DWORD __cdecl GameReadPedModelTable28(int model)
+{
+    if (model < 0 || model > 30000)
+        return 0;
+    void* info = GameGetModelInfo(model);
+    // GTA SA virtual address: observed model-info first-word identity0x0085bdc0.
+    if (!info || *(DWORD*)info != 0x85bdc0)
+        return 0;
+    // Keep the second lookup and native extra pointer indirection unchecked.
+    BYTE* table = *(BYTE**)GameGetModelInfo(model);
+    return *(DWORD*)(table + 0x28);
+}
+
+// 0x000b3d40
+// Official: FUN_100b3d40 @ 0x100b3d40 (samp.dll)
+DWORD __cdecl GameReadPedModelTable2c(int model)
+{
+    if (model < 0 || model > 30000)
+        return 0;
+    void* info = GameGetModelInfo(model);
+    // GTA SA virtual address: observed model-info first-word identity0x0085bdc0.
+    if (!info || *(DWORD*)info != 0x85bdc0)
+        return 0;
+    // Keep the second lookup and native extra pointer indirection unchecked.
+    BYTE* table = *(BYTE**)GameGetModelInfo(model);
+    return *(DWORD*)(table + 0x2c);
+}
+
+// 0x000b3d80
+// Official: FUN_100b3d80 @ 0x100b3d80 (samp.dll)
+DWORD __cdecl GameReadPedModelTable24(int model)
+{
+    if (model < 0 || model > 30000)
+        return 0;
+    void* info = GameGetModelInfo(model);
+    // GTA SA virtual address: observed model-info first-word identity0x0085bdc0.
+    if (!info || *(DWORD*)info != 0x85bdc0)
+        return 0;
+    // Keep the second lookup and native extra pointer indirection unchecked.
+    BYTE* table = *(BYTE**)GameGetModelInfo(model);
+    return *(DWORD*)(table + 0x24);
+}
+
+#include "game/entity.h"
+
+// Preserve the second lookup: its result is deliberately not null-checked again.
+// 0x000b5ef0
+// Official: FUN_100b5ef0 @ 0x100b5ef0 (samp.dll)
+float __cdecl GameSetModelCollisionRadius(int model, float radius)
+{
+    if (GameGetModelInfo(model))
+    {
+        BYTE* info = (BYTE*)GameGetModelInfo(model);
+        BYTE* collision = *(BYTE**)(info + 0x14);
+        if (collision)
+        {
+            *(float*)(collision + 0x24) = radius;
+            return radius;
+        }
+    }
+    return g_objectScaleLowerBound;
+}
+// Publish one raw DWORD at a time, preserving alias order and NaN payload bits.
+// 0x000b5f50
+// Official: FUN_100b5f50 @ 0x100b5f50 (samp.dll)
+BOOL __cdecl GameGetModelCollisionCentre(int model, CVector* centre)
+{
+    if (GameGetModelInfo(model))
+    {
+        BYTE* info = (BYTE*)GameGetModelInfo(model);
+        BYTE* collision = *(BYTE**)(info + 0x14);
+        if (collision)
+        {
+            *(DWORD*)&centre->x = *(DWORD*)(collision + 0x18);
+            *(DWORD*)&centre->y = *(DWORD*)(collision + 0x1c);
+            *(DWORD*)&centre->z = *(DWORD*)(collision + 0x20);
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+// Native exposes only AL; no meaning is assigned to individual flag bits.
+// 0x000b5fe0
+// Official: FUN_100b5fe0 @ 0x100b5fe0 (samp.dll)
+BYTE __stdcall GameGetModelFlagsByte(int model)
+{
+    BYTE* info = (BYTE*)GameGetModelInfo(model);
+    return info ? *(BYTE*)(info + 0x12) : 0;
+}
+// Native exposes AX; this reads the full overlapping two-byte field.
+// 0x000b6000
+// Official: FUN_100b6000 @ 0x100b6000 (samp.dll)
+WORD __stdcall GameGetModelFlagsWord(int model)
+{
+    BYTE* info = (BYTE*)GameGetModelInfo(model);
+    return info ? *(WORD*)(info + 0x12) : 0;
+}
+
+// These helpers receive an existing backend model-info pointer, not a model ID.
+// 0x000b4150
+// Official: FUN_100b4150 @ 0x100b4150 (samp.dll)
+void __stdcall GameSetModelDrawDistance(void* info, float distance)
+{
+    *(float*)((BYTE*)info + 0x18) = distance;
+}
+// 0x000b4160
+// Official: FUN_100b4160 @ 0x100b4160 (samp.dll)
+float __stdcall GameGetModelDrawDistance(const void* info)
+{
+    return *(const float*)((const BYTE*)info + 0x18);
+}
+
+// Native writes +1C before invoking the backend virtual slot. Its meaning
+// remains unresolved; preserve the unchecked model lookup and callee-pop call.
+// 0x000b4200
+// Official: FUN_100b4200 @ 0x100b4200 (samp.dll)
+void __stdcall GameSetModelRenderObjectCall3c(int model, void* object)
+{
+    BYTE* info = (BYTE*)GameGetModelInfo(model);
+    *(void**)(info + 0x1c) = object;
+    // clang-format off
+    __asm {
+        mov ecx,info
+        push object
+        mov edx,dword ptr [ecx]
+        call dword ptr [edx+0x3c]
+    }
+    // clang-format on
+}
+
+// GTA SA virtual address: 0x004C4BC0; ECX=model info, initPairedModel=0.
+// 0x000b4230
+// Official: FUN_100b4230 @ 0x100b4230 (samp.dll)
+void __stdcall GameSetModelCollision(int model, void* collision)
+{
+    void* info = GameGetModelInfo(model);
+    // clang-format off
+    __asm {
+        mov ecx,info
+        push 0
+        push collision
+        mov edx,0x4c4bc0
+        call edx
+    }
+    // clang-format on
+}
+
+// Native zero-extends the WORD, including FFFF -> 65535; lookup failure -> -1.
+// 0x000b4280
+// Official: FUN_100b4280 @ 0x100b4280 (samp.dll)
+DWORD __stdcall GameGetModelTxdIndex(int model)
+{
+    const BYTE* info = (const BYTE*)GameGetModelInfo(model);
+    return info ? *(const WORD*)(info + 0xa) : 0xffffffffu;
+}
+
+// No null check is present in either of the following native entries.
+// 0x000b42d0
+// Official: FUN_100b42d0 @ 0x100b42d0 (samp.dll)
+void* __stdcall GameGetModelCollision(int model)
+{
+    BYTE* info = (BYTE*)GameGetModelInfo(model);
+    return *(void**)(info + 0x14);
+}
+// 0x000b4300
+// Official: FUN_100b4300 @ 0x100b4300 (samp.dll)
+WORD __stdcall GameGetModelReferenceCount(int model)
+{
+    const void* info = GameGetModelInfo(model);
+    DWORD result = 0;
+    // Native reads the backend WORD without a null guard and returns raw AX.
+    // clang-format off
+    __asm {
+        mov edx,info
+        mov bx,word ptr [edx+8]
+        mov word ptr result,bx
+    }
+    // clang-format on
+    return (WORD)result;
+}
+
+// Native preserves the first model-info pointer across the second lookup made
+// by the TXD-index helper. Backend call is ECX, no added failure cleanup.
+// 0x000b1c40
+// Official: FUN_100b1c40 @ 0x100b1c40 (samp.dll)
+BOOL GameCleanupModelAndTxd(int model)
+{
+    void* info = GameGetModelInfo(model);
+    if (!info)
+        return FALSE;
+    int index = (int)GameGetModelTxdIndex(model);
+    // clang-format off
+    __asm {
+        mov ecx,info
+        mov edx,0x4c4d50
+        call edx
+    }
+    // clang-format on
+    if (GameTxdGetReferenceCount(index) == 0)
+    {
+        GameTxdRemove(index);
+        GameTxdRemoveSlot(index);
+    }
+    return TRUE;
+}
+
+// Clear the observed collision slot only; no destructor or release is native.
+// 0x000b1070
+// Official: FUN_100b1070 @ 0x100b1070 (samp.dll)
+void GameClearModelCollision(int model)
+{
+    BYTE* info = (BYTE*)GameGetModelInfo(model);
+    if (info)
+        *(void**)(info + 0x14) = 0;
+}
+
+// 0x0011e68c
+const Scripting::OpcodeInfo g_gameSetWorldTime = {0xc0, "ii"};
+// 0x000a0980
+// Official: FUN_100a0980 @ 0x100a0980 (samp.dll)
+void CGame::SetWorldWeather(int weather)
+{
+    BOOL clockEnabled = m_bClockEnabled;
+    // GTA SA virtual addresses: 0x00c81318, 0x00c8131c, 0x00c81320.
+    *(DWORD*)0xc81318 = weather;
+    if (!clockEnabled)
+    {
+        *(DWORD*)0xc8131c = weather;
+        *(DWORD*)0xc81320 = weather;
+    }
+}
+// 0x000a08f0
+// Official: FUN_100a08f0 @ 0x100a08f0 (samp.dll)
+void CGame::SetWorldTime(int hour, int minute)
+{
+    // GTA SA virtual addresses: minute 0x00b70152, hour 0x00b70153.
+    *(BYTE*)0xb70152 = (BYTE)minute;
+    *(BYTE*)0xb70153 = (BYTE)hour;
+    Scripting::ProcessCommand(&g_gameSetWorldTime, hour, minute);
+}
+
+// 0x000a0a20
+// Official: FUN_100a0a20 @ 0x100a0a20 (samp.dll)
+void CGame::SetMaxStats()
+{
+    ((void(__cdecl*)())0x4399d0)();
+    ((void(__cdecl*)())0x439940)();
+    UnFuck((void*)0x55a070, 1);
+    *(BYTE*)0x55a070 = 0xc3;
+}
+// 0x000a0940
+// Official: FUN_100a0940 @ 0x100a0940 (samp.dll)
+void CGame::LetTimeGo(char enabled)
+{
+    UnFuck((void*)0x52cf10, 1);
+    if (enabled)
+    {
+        *(BYTE*)0x52cf10 = 0x56;
+        m_bClockEnabled = TRUE;
+    }
+    else
+    {
+        *(BYTE*)0x52cf10 = 0xc3;
+        m_bClockEnabled = FALSE;
+    }
+}
+
+// 0x0011e410
+const Scripting::OpcodeInfo g_cameraFade = {0x16a, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011e424
+const Scripting::OpcodeInfo g_cameraRestoreJumpcut = {0x373, {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011e438
+const Scripting::OpcodeInfo g_cameraPointAt = {0x160, {0x66, 0x66, 0x66, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011e44c
+const Scripting::OpcodeInfo g_cameraRestore = {0x2eb, {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011e460
+const Scripting::OpcodeInfo g_cameraSet = {0x15f, {0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011e474
+const Scripting::OpcodeInfo g_cameraStop = {0x925, {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011e488
+const Scripting::OpcodeInfo g_cameraMove = {0x936, {0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011e49c
+const Scripting::OpcodeInfo g_cameraTrack = {0x920, {0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011e4b0
+const Scripting::OpcodeInfo g_cameraPersistTrack = {0x92f, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011e4c4
+const Scripting::OpcodeInfo g_cameraPersistPosition = {0x930, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011eaf0
+const Scripting::OpcodeInfo g_audioPlay = {0x18c, {0x66, 0x66, 0x66, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011eb04
+const Scripting::OpcodeInfo g_audioLoad = {0x3cf, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011eb40
+const Scripting::OpcodeInfo g_audioUnload = {0x40d, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011eb54
+const Scripting::OpcodeInfo g_audioSetPosition = {0x3d7, {0x69, 0x66, 0x66, 0x66, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011eb18
+const Scripting::OpcodeInfo g_audioIsLoaded = {0x3d0, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011eb2c
+const Scripting::OpcodeInfo g_audioStart = {0x3d1, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011f7a4
+const Scripting::OpcodeInfo g_vehicleChangeInteriorCommand = {0x840, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f678
+const Scripting::OpcodeInfo g_vehicleIsSunkCommand = {0x2bf, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f7b8
+const Scripting::OpcodeInfo g_vehicleAttachTrailerCommand = {0x893, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f7cc
+const Scripting::OpcodeInfo g_vehicleDetachTrailerCommand = {0x7ac, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f77c
+const Scripting::OpcodeInfo g_vehicleRemoveComponentCommand = {0x6e8, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f72c
+const Scripting::OpcodeInfo g_vehiclePaintjobCommand = {0x6ed, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f614
+const Scripting::OpcodeInfo g_vehicleRotationCommand = {0x175, {0x69, 0x66, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011f6a0
+const Scripting::OpcodeInfo g_vehicleProofsCommand = {0x2ac, {0x69, 0x69, 0x69, 0x69, 0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f790
+const Scripting::OpcodeInfo g_vehicleDamageableCommand = {0x53f, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011f6b4
+const Scripting::OpcodeInfo g_vehicleWarpPedCommand = {0x362, {0x69, 0x66, 0x66, 0x66, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f740
+const Scripting::OpcodeInfo g_vehicleAddComponentCommand = {0x6e7, {0x69, 0x69, 0x76, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f754
+const Scripting::OpcodeInfo g_vehicleComponentLoadedCommand = {0x6ea, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f768
+const Scripting::OpcodeInfo g_vehicleRequestComponentCommand = {0x6e9, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011f628
+const Scripting::OpcodeInfo g_vehicleCreateMarkerCommand = {0x161, {0x69, 0x69, 0x69, 0x76, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f63c
+const Scripting::OpcodeInfo g_vehicleDestroyMarkerCommand = {0x164, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f650
+const Scripting::OpcodeInfo g_vehicleMarkerColorCommand = {0x165, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f664
+const Scripting::OpcodeInfo g_vehicleMarkerModeCommand = {0x168, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011f600
+const Scripting::OpcodeInfo g_vehicleDestroyCommand = {0xa6, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f6dc
+const Scripting::OpcodeInfo g_vehicleDestroyTrainCommand = {0x7bd, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011f5ec
+const Scripting::OpcodeInfo g_vehicleCreateCommand = {0xa5, {0x69, 0x66, 0x66, 0x66, 0x76, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f6f0
+const Scripting::OpcodeInfo g_vehicleGasTankExplosionCommand = {0x9c4, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f718
+const Scripting::OpcodeInfo g_vehicleHydraulicsCommand = {0x7ff, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+// 0x0011f6c8
+const Scripting::OpcodeInfo g_vehicleCreateTrainCommand = {0x6d8, {0x69, 0x66, 0x66, 0x66, 0x69, 0x76, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e790
+const Scripting::OpcodeInfo g_gameDisableTrainTrafficCommand = {0x6d7, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e7e0
+const Scripting::OpcodeInfo g_gameRequestAnimationCommand = {0x4ed, {0x73, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e7f4
+const Scripting::OpcodeInfo g_gameIsAnimationLoadedCommand = {0x4ee, {0x73, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e6b4
+const Scripting::OpcodeInfo g_gameDeleteMarkerCommand = {0x164, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e740
+const Scripting::OpcodeInfo g_gameIncreaseMoneyCommand = {0x109, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e86c
+const Scripting::OpcodeInfo g_gameZoneDisplayCommand = {0x9ba, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e754
+const Scripting::OpcodeInfo g_gameFindGroundZCommand = {0x2ce, {0x66, 0x66, 0x66, 0x76, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e7cc
+const Scripting::OpcodeInfo g_gameRefreshRendererCommand = {0x4e4, {0x66, 0x66, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e77c
+const Scripting::OpcodeInfo g_gameDeleteRacingCheckpointCommand = {0x6d6, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e6dc
+const Scripting::OpcodeInfo g_gameCreateMarkerCommand = {0x4ce, {0x66, 0x66, 0x66, 0x69, 0x76, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e718
+const Scripting::OpcodeInfo g_gameCreateMarkerType1Command = {0x2a8, {0x66, 0x66, 0x66, 0x69, 0x76, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e858
+const Scripting::OpcodeInfo g_gameCreateMarkerType2Command = {0x570, {0x66, 0x66, 0x66, 0x69, 0x76, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e704
+const Scripting::OpcodeInfo g_gameCreateMarkerType3Command = {0x2a7, {0x66, 0x66, 0x66, 0x69, 0x76, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e6c8
+const Scripting::OpcodeInfo g_gameMarkerColorCommand = {0x165, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e6f0
+const Scripting::OpcodeInfo g_gameMarkerModeCommand = {0x168, {0x69, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e768
+const Scripting::OpcodeInfo g_gameCreateRacingCheckpointCommand = {0x6d5, {0x69, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x76, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e72c
+const Scripting::OpcodeInfo g_gameLocateCheckpointCommand = {0xfe, {0x69, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e81c
+const Scripting::OpcodeInfo g_gameClearTextCommand = {0xbe, {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e830
+const Scripting::OpcodeInfo g_gameCreatePickupCommand = {0x213, {0x69, 0x69, 0x66, 0x66, 0x66, 0x76, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011e7a4
+const Scripting::OpcodeInfo g_gameReleaseModelCommand = {0x249, {0x69, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+
+// 0x0011eae4
+const char g_gameParachuteLibrary[10] = {0x50, 0x41, 0x52, 0x41, 0x43, 0x48, 0x55, 0x54, 0x45, 0x0};
+
+// 0x00118224
+const char g_gameVendingLibrary[8] = {0x56, 0x45, 0x4e, 0x44, 0x49, 0x4e, 0x47, 0x0};
+
+// 0x0011eac4
+const char g_gameFightBLibrary[8] = {0x46, 0x49, 0x47, 0x48, 0x54, 0x5f, 0x42, 0x0};
+
+// 0x0011eabc
+const char g_gameFightCLibrary[8] = {0x46, 0x49, 0x47, 0x48, 0x54, 0x5f, 0x43, 0x0};
+
+// 0x0011eab4
+const char g_gameFightDLibrary[8] = {0x46, 0x49, 0x47, 0x48, 0x54, 0x5f, 0x44, 0x0};
+
+// 0x0011eaac
+const char g_gameFightELibrary[8] = {0x46, 0x49, 0x47, 0x48, 0x54, 0x5f, 0x45, 0x0};
+
+#include "game/game.h"
+// GTA SA virtual address: 0x00745C70; no additional validation is native.
+// 0x000b5d10
+// Official: FUN_100b5d10 @ 0x100b5d10 (samp.dll)
+void GameSetVideoMode(DWORD mode)
+{
+    ((void(__cdecl*)(DWORD))0x745c70)(mode);
+}
+
+#include "game/game.h"
+#include "game/patches.h"
+#include "game/playerped.h"
+#include <GetTime.h>
+
+// 0x0018e520
+BYTE g_frameKeyCycle;
+// 0x0018e524
+DWORD g_frameKeyCycleTick;
+// 0x0018e528
+DWORD g_frameSampleCount;
+// 0x0018e52c
+DWORD g_frameSampleTick;
+// 0x0018e530
+DWORD g_frameSleepTick;
+// 0x0018e534
+float g_frameScale;
+// 0x001181d8
+const float g_frameScaleMultiplier = 3.0f;
+// 0x0011c664
+const float g_frameScaleNumerator = 50.0f;
+
+// 0x0009fe50
+// Official: FUN_1009fe50 @ 0x1009fe50 (samp.dll)
+void GameUpdateKeyCycle()
+{
+    DWORD now = RakNet::GetTime();
+    if (!g_frameKeyCycleTick)
+    {
+        g_frameKeyCycleTick = now;
+        return;
+    }
+    if ((LONG)(now - g_frameKeyCycleTick) > 30)
+    {
+        ++g_frameKeyCycle;
+        g_frameKeyCycleTick = now;
+        if (g_frameKeyCycle == 5)
+            g_frameKeyCycle = 0;
+    }
+    *(BYTE*)0xb7356e = g_frameKeyCycle;
+}
+// 0x0009fed0
+// Official: FUN_1009fed0 @ 0x1009fed0 (samp.dll)
+void CGame::Sleep(int elapsed, int limit)
+{
+    if (elapsed && limit)
+    {
+        int period = 1000 / limit;
+        if (elapsed < period)
+            ::Sleep((DWORD)period - (DWORD)elapsed - 1u);
+    }
+}
+
+// 0x000a1a30
+// Official: FUN_100a1a30 @ 0x100a1a30 (samp.dll)
+void CGame::ProcessFrameLimiter()
+{
+    DWORD now = RakNet::GetTime();
+    if (!g_frameSampleTick)
+    {
+        *(DWORD*)0xb7cb5c = 0x3f800000;
+        *(DWORD*)0xb7cb58 = 0x3f800000;
+        g_gamePatchValue1546f0 = 0x40400000;
+        g_frameSampleTick = RakNet::GetTime();
+        g_frameSleepTick = g_frameSampleTick;
+        return;
+    }
+    GameUpdateKeyCycle();
+    ++g_frameSampleCount;
+    if ((LONG)(now - g_frameSampleTick) > 250)
+    {
+        LONG frames = (LONG)(g_frameSampleCount * 4u - 4u);
+        // clang-format off
+        // Preserve the unrounded quotient through publication and multiplication.
+        __asm {
+            cmp frames,16
+            jle minimum_scale
+            fild frames
+            fdivr g_frameScaleNumerator
+            jmp publish_scale
+        minimum_scale:
+            fld g_frameScaleMultiplier
+        publish_scale:
+            fst g_frameScale
+            fld st(0)
+            fxch st(1)
+            fstp dword ptr ds:[0xb7cb5c]
+            fst dword ptr ds:[0xb7cb58]
+            fmul g_frameScaleMultiplier
+            fstp g_gamePatchValue1546f0
+        }
+        // clang-format on
+        g_frameSampleTick = RakNet::GetTime();
+        g_frameSampleCount = 0;
+    }
+    CPed* ped = GetPlayerPed();
+    DWORD elapsed;
+    if (ped && GetPlayerPed()->HasTaskType268())
+    {
+        if (*(BYTE*)0xba6794 && (DWORD)m_nFrameLimiter <= 45)
+        {
+            Sleep((int)(now - g_frameSleepTick), m_nFrameLimiter);
+        }
+        else
+        {
+            elapsed = now - g_frameSleepTick;
+            if (elapsed && (LONG)elapsed < 22)
+                ::Sleep(21u - elapsed);
+        }
+    }
+    else
+    {
+        elapsed = now - g_frameSleepTick;
+        if (!*(BYTE*)0xba6794)
+        {
+            if (elapsed && (LONG)elapsed < 11)
+                ::Sleep(10u - elapsed);
+        }
+        else if (elapsed && m_nFrameLimiter)
+        {
+            int period = 1000 / m_nFrameLimiter;
+            if ((LONG)elapsed < period)
+                ::Sleep((DWORD)period - elapsed - 1u);
+        }
+    }
+    g_frameSleepTick = RakNet::GetTime();
+}
+
+// 0x000a1bd0
+// Official: FUN_100a1bd0 @ 0x100a1bd0 (samp.dll)
+void CGame::EnableHUD(BOOL enabled)
+{
+    if (enabled)
+    {
+        *(BYTE*)0xba6769 = 1;
+        *(BYTE*)0xbaa3fb = 0;
+    }
+    else
+    {
+        *(BYTE*)0xba6769 = 0;
+        *(BYTE*)0xbaa3fb = 1;
+    }
+}
+
+#include "game/custommodels.h"
+#include <stdio.h>
+
+// 0x0011e844
+const Scripting::OpcodeInfo g_gameCreateWeaponPickupCommand = {0x32b, "iiifffv"};
+// 0x000a10f0
+// Official: FUN_100a10f0 @ 0x100a10f0 (samp.dll)
+DWORD CGame::CreateWeaponPickup(int model, int ammo, float x, float y, float z)
+{
+    int selected = model;
+    if (selected >= 0 && selected <= 20000 && !Scripting::ProcessCommand(&g_gameModelAvailableCommand, selected))
+    {
+        Scripting::ProcessCommand(&g_gameRequestModelCommand, selected);
+        Scripting::ProcessCommand(&g_gameLoadModelsCommand);
+        void(WINAPI* volatile sleep)(DWORD) = ::Sleep;
+        while (!Scripting::ProcessCommand(&g_gameModelAvailableCommand, selected))
+            sleep(5);
+    }
+    Scripting::ProcessCommand(&g_gameCreateWeaponPickupCommand, selected, 4, ammo, (double)x, (double)y, (double)z, &model);
+    return (DWORD)model;
+}
+
+// 0x002abe58
+BYTE g_gameLineSphereResult;
+// 0x000b3df0
+// Official: FUN_100b3df0 @ 0x100b3df0 (samp.dll)
+int __cdecl GameCameraSphereQuery(const void* sphere)
+{
+    void* camera = *(void**)0xc1703c;
+    if (!camera)
+        return 0;
+    typedef int(__cdecl * Query)(void*, const void*);
+    Query query = (Query)(g_gameVersion == 1 ? 0x7ee2d0 : 0x7ee310);
+    return query(camera, sphere);
+}
+// 0x000b6110
+// Official: FUN_100b6110 @ 0x100b6110 (samp.dll)
+BYTE __stdcall GameTestEntityLineSphere(const CVector* origin, const CVector* end, void* backend, const CVector* centre, float scale, BYTE cameraCheck)
+{
+    if (!backend || !*(void**)((BYTE*)backend + 0x14))
+        return false;
+    float line[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+    BYTE* model = (BYTE*)GameGetModelInfo(*(short*)((BYTE*)backend + 0x22));
+    BYTE* collision = *(BYTE**)(model + 0x14);
+    if (!collision)
+        return false;
+    struct Sphere
+    {
+        CVector centre;
+        float radius;
+    };
+    if (cameraCheck)
+    {
+        Sphere cameraSphere;
+        cameraSphere.centre = *centre;
+        cameraSphere.radius = *(float*)(collision + 0x24);
+        if (!GameCameraSphereQuery(&cameraSphere))
+            return false;
+    }
+    line[0] = origin->x - centre->x;
+    line[1] = origin->y - centre->y;
+    line[2] = origin->z - centre->z;
+    line[4] = end->x - centre->x;
+    line[5] = end->y - centre->y;
+    line[6] = end->z - centre->z;
+    Sphere sphere;
+    sphere.centre.x = 0;
+    sphere.centre.y = 0;
+    sphere.centre.z = 0;
+    // Keep the native unrounded radius comparison/multiplication sequence.
+    const float half = 0.5f, one = 1.0f, enlarge = 1.5f;
+    float radius;
+    // clang-format off
+    __asm {
+        mov eax,collision
+        fld dword ptr [eax+0x24]
+        fcom half
+        fnstsw ax
+        test ah,5
+        jp radius_above_half
+        fstp st(0)
+        fld half
+        jmp radius_enlarge
+radius_above_half:
+        fcom one
+        fnstsw ax
+        test ah,5
+        jp radius_scale
+radius_enlarge:
+        fmul enlarge
+radius_scale:
+        fmul scale
+        fstp radius
+    }
+    // clang-format on
+    sphere.radius = radius;
+    typedef BYTE(__cdecl * Intersect)(const void*, const void*);
+    g_gameLineSphereResult = ((Intersect)0x417470)(line, &sphere);
+    return g_gameLineSphereResult;
+}
+
+#include "game/object.h"
+// 0x000a0170
+// Official: FUN_100a0170 @ 0x100a0170 (samp.dll)
+CObject* CGame::NewObject(int model, float x, float y, float z, CVector rotation, float drawDistance, BYTE firstHour, BYTE lastHour)
+{
+    CVector position;
+    memcpy(&position.x, &x, 4);
+    memcpy(&position.y, &y, 4);
+    memcpy(&position.z, &z, 4);
+    return new CObject(model, position, rotation, drawDistance, 0, firstHour, lastHour);
+}
+
+#include "game/hooks.h"
+// 0x0011e808
+const Scripting::OpcodeInfo g_gameReleaseAnimationCommand = {0x4ef, "s"};
+// 0x0011e8e0
+const float g_gameFarClipBase = 1250.0f;
+// 0x0011e8dc
+const float g_gameFarClipMinimum = 700.0f;
+// 0x0015196c
+float g_gameFarClipDistance = 1400.0f;
+// 0x0011ea9c
+const char g_gameWeaponName01[15] = "Brass Knuckles";
+// 0x0011ea90
+const char g_gameWeaponName02[10] = "Golf Club";
+// 0x0011ea84
+const char g_gameWeaponName03[11] = "Nite Stick";
+// 0x0011ea7c
+const char g_gameWeaponName04[6] = "Knife";
+// 0x0011ea6c
+const char g_gameWeaponName05[13] = "Baseball Bat";
+// 0x0011ea64
+const char g_gameWeaponName06[7] = "Shovel";
+// 0x0011ea58
+const char g_gameWeaponName07[9] = "Pool Cue";
+// 0x0011ea50
+const char g_gameWeaponName08[7] = "Katana";
+// 0x0011ea44
+const char g_gameWeaponName09[9] = "Chainsaw";
+// 0x0011ea3c
+const char g_gameWeaponName10[6] = "Dildo";
+// 0x0011ea30
+const char g_gameWeaponName12[9] = "Vibrator";
+// 0x0011ea28
+const char g_gameWeaponName14[8] = "Flowers";
+// 0x0011ea20
+const char g_gameWeaponName15[5] = "Cane";
+// 0x0011ea18
+const char g_gameWeaponName16[8] = "Grenade";
+// 0x0011ea10
+const char g_gameWeaponName17[8] = "Teargas";
+// 0x0011ea08
+const char g_gameWeaponName18[8] = "Molotov";
+// 0x0011ea00
+const char g_gameWeaponName22[8] = "Colt 45";
+// 0x0011e9f0
+const char g_gameWeaponName23[16] = "Silenced Pistol";
+// 0x0011e9e0
+const char g_gameWeaponName24[13] = "Desert Eagle";
+// 0x0011e9d8
+const char g_gameWeaponName25[8] = "Shotgun";
+// 0x0011e9c4
+const char g_gameWeaponName26[17] = "Sawn-off Shotgun";
+// 0x0011e9b4
+const char g_gameWeaponName27[15] = "Combat Shotgun";
+// 0x0011e9b0
+const char g_gameWeaponName28[4] = "UZI";
+// 0x0011e9ac
+const char g_gameWeaponName29[4] = "MP5";
+// 0x0011e9a4
+const char g_gameWeaponName30[5] = "AK47";
+// 0x0011e9a0
+const char g_gameWeaponName31[3] = "M4";
+// 0x0011e998
+const char g_gameWeaponName32[5] = "TEC9";
+// 0x0011e990
+const char g_gameWeaponName33[6] = "Rifle";
+// 0x0011e980
+const char g_gameWeaponName34[13] = "Sniper Rifle";
+// 0x0011e970
+const char g_gameWeaponName35[16] = "Rocket Launcher";
+// 0x0011e964
+const char g_gameWeaponName36[12] = "Heat Seaker";
+// 0x0011e954
+const char g_gameWeaponName37[13] = "Flamethrower";
+// 0x0011e94c
+const char g_gameWeaponName38[8] = "Minigun";
+// 0x0011e938
+const char g_gameWeaponName39[19] = "Satchel Explosives";
+// 0x0011e930
+const char g_gameWeaponName40[5] = "Bomb";
+// 0x0011e924
+const char g_gameWeaponName41[10] = "Spray Can";
+// 0x0011e910
+const char g_gameWeaponName42[18] = "Fire Extinguisher";
+// 0x0011e908
+const char g_gameWeaponName43[7] = "Camera";
+// 0x0011e8fc
+const char g_gameWeaponName46[10] = "Parachute";
+// 0x0011e8f4
+const char g_gameWeaponName49[8] = "Vehicle";
+// 0x0011e8ec
+const char g_gameWeaponName53[8] = "Drowned";
+// 0x0011e8e4
+const char g_gameWeaponName54[6] = "Splat";
+
+// 0x000a0ad0
+// Official: FUN_100a0ad0 @ 0x100a0ad0 (samp.dll)
+void CGame::ReleaseAnimation(const char* name)
+{
+    if (Scripting::ProcessCommand(&g_gameIsAnimationLoadedCommand, name))
+        Scripting::ProcessCommand(&g_gameReleaseAnimationCommand, name);
+}
+// 0x000a0b00
+// Official: FUN_100a0b00 @ 0x100a0b00 (samp.dll)
+void CGame::EnableRadar(BOOL enabled)
+{
+    // GTA SA virtual address: radar-disable byte.
+    *(BYTE*)0xbaa3fb = enabled == 0;
+}
+// 0x000a0d20
+// Official: FUN_100a0d20 @ 0x100a0d20 (samp.dll)
+void CGame::UpdateFarClippingPlane()
+{
+    BYTE* ped = (BYTE*)GameFindLocalPed();
+    if (!ped)
+    {
+        g_gameFarClipDistance = 1250.0f;
+        return;
+    }
+    DWORD interior;
+    Scripting::ProcessCommand(&g_gameCurrentInteriorCommand, &interior);
+    if ((BYTE)interior)
+    {
+        g_gameFarClipDistance = 400.0f;
+        return;
+    }
+    const float* height = (const float*)(*(BYTE**)(ped + 0x14) + 0x38);
+    // clang-format off
+    __asm {
+        mov eax,height
+        fld dword ptr [eax]
+        fadd st(0),st(0)
+        fsubr g_gameFarClipBase
+        fst g_gameFarClipDistance
+        fcomp g_gameFarClipMinimum
+        fnstsw ax
+        test ah,5
+        jp far_clip_done
+        mov g_gameFarClipDistance,442f0000h
+far_clip_done:
+    }
+    // clang-format on
+}
+// 0x000a0dc0
+// Official: FUN_100a0dc0 @ 0x100a0dc0 (samp.dll)
+const char* CGame::GetWeaponName(int weapon)
+{
+    switch (weapon)
+    {
+        case 1:
+            return g_gameWeaponName01;
+        case 2:
+            return g_gameWeaponName02;
+        case 3:
+            return g_gameWeaponName03;
+        case 4:
+            return g_gameWeaponName04;
+        case 5:
+            return g_gameWeaponName05;
+        case 6:
+            return g_gameWeaponName06;
+        case 7:
+            return g_gameWeaponName07;
+        case 8:
+            return g_gameWeaponName08;
+        case 9:
+            return g_gameWeaponName09;
+        case 10:
+        case 11:
+            return g_gameWeaponName10;
+        case 12:
+        case 13:
+            return g_gameWeaponName12;
+        case 14:
+            return g_gameWeaponName14;
+        case 15:
+            return g_gameWeaponName15;
+        case 16:
+            return g_gameWeaponName16;
+        case 17:
+            return g_gameWeaponName17;
+        case 18:
+            return g_gameWeaponName18;
+        case 19:
+        case 20:
+        case 21:
+        case 44:
+        case 45:
+        case 47:
+        case 48:
+        case 50:
+        case 51:
+        case 52:
+            return g_pedEmptyDanceAnimation;
+        case 22:
+            return g_gameWeaponName22;
+        case 23:
+            return g_gameWeaponName23;
+        case 24:
+            return g_gameWeaponName24;
+        case 25:
+            return g_gameWeaponName25;
+        case 26:
+            return g_gameWeaponName26;
+        case 27:
+            return g_gameWeaponName27;
+        case 28:
+            return g_gameWeaponName28;
+        case 29:
+            return g_gameWeaponName29;
+        case 30:
+            return g_gameWeaponName30;
+        case 31:
+            return g_gameWeaponName31;
+        case 32:
+            return g_gameWeaponName32;
+        case 33:
+            return g_gameWeaponName33;
+        case 34:
+            return g_gameWeaponName34;
+        case 35:
+            return g_gameWeaponName35;
+        case 36:
+            return g_gameWeaponName36;
+        case 37:
+            return g_gameWeaponName37;
+        case 38:
+            return g_gameWeaponName38;
+        case 39:
+            return g_gameWeaponName39;
+        case 40:
+            return g_gameWeaponName40;
+        case 41:
+            return g_gameWeaponName41;
+        case 42:
+            return g_gameWeaponName42;
+        case 43:
+            return g_gameWeaponName43;
+        case 46:
+            return g_gameWeaponName46;
+        case 49:
+            return g_gameWeaponName49;
+        case 53:
+            return g_gameWeaponName53;
+        case 54:
+            return g_gameWeaponName54;
+        default:
+            return g_pedEmptyDanceAnimation;
+    }
+}
+// 0x000a11d0
+// Official: FUN_100a11d0 @ 0x100a11d0 (samp.dll)
+void CGame::Restart()
+{
+    // GTA SA virtual addresses: restart flags and three no-argument backend calls.
+    *(BYTE*)0xba67a5 = 1;
+    *(BYTE*)0xba67a6 = 1;
+    ((void(__cdecl*)())0x53c550)();
+    ((void(__cdecl*)())0x561aa0)();
+    ((void(__cdecl*)())0x53c680)();
+    *(BYTE*)0xba6831 = 1;
+}
+// 0x000a1250
+// Official: FUN_100a1250 @ 0x100a1250 (samp.dll)
+void CGame::SetNumberOfIntroTextLinesThisFrame(WORD value)
+{
+    *(WORD*)0xa44b68 = value;
+}
+// 0x000a1590
+// Official: FUN_100a1590 @ 0x100a1590 (samp.dll)
+int CGame::GetTimer()
+{
+    return *(int*)0xb7cb84;
+}
+// 0x000a19e0
+// Official: FUN_100a19e0 @ 0x100a19e0 (samp.dll)
+BOOL CGame::UsingGamepad()
+{
+    return *(BYTE*)0xba6818 != 0;
+}
+
+// 0x0009ff50
+// Official: FUN_1009ff50 @ 0x1009ff50 (samp.dll)
+CPed* CGame::CreatePed(int model, CVector position, float rotation, DWORD, BOOL playerFlag)
+{
+    BYTE slot = 2;
+    while (g_gameUsedPlayerSlots[slot] == 1)
+    {
+        if (++slot == 210)
+            return 0;
+    }
+    if (!slot)
+        return 0;
+    CPed* ped = new CPed(slot, model, position, rotation);
+    if (ped && ped->m_pGamePed)
+    {
+        g_gameUsedPlayerSlots[slot] = 1;
+        GameSetPlayerFlag(slot, playerFlag ? 1 : 0);
+    }
+    // Native returns an allocated wrapper even when its GTA backend is null.
+    return ped;
+}
+
+// 0x0009fea0
+// Official: FUN_1009fea0 @ 0x1009fea0 (samp.dll)
+void CGame::SetTimeScale(float scale)
+{
+    // clang-format off
+    // GTA SA virtual addresses: paired game time-scale words.
+    __asm {
+        mov eax,scale
+        fld scale
+        fmul g_frameScaleMultiplier
+        mov dword ptr ds:[0b7cb5ch],eax
+        mov ecx,eax
+        mov dword ptr ds:[0b7cb58h],ecx
+        fstp dword ptr g_gamePatchValue1546f0
+    }
+    // clang-format on
+}
+
+// 0x0009ff00
+// Official: FUN_1009ff00 @ 0x1009ff00 (samp.dll)
+BYTE CGame::FindFreePlayerSlot()
+{
+    for (int player = 2; player < 210; player++)
+        if (g_gameUsedPlayerSlots[player] != 1)
+            return (BYTE)player;
+    return 0;
+}
+
+// 0x0009ff30
+// Official: FUN_1009ff30 @ 0x1009ff30 (samp.dll)
+BYTE CGame::CountUsedPlayerSlots()
+{
+    BYTE count = 0;
+    for (int player = 2; player < 210; player++)
+        if (g_gameUsedPlayerSlots[player] == 1)
+            ++count;
+    return count;
+}
+
+// 0x000a0120
+// Official: FUN_100a0120 @ 0x100a0120 (samp.dll)
+void CGame::SetEightByteName(const char* name)
+{
+    if (name && *name && strlen(name) <= 8)
+        GameSetEightByteName(name);
+}
+
+// 0x000a0150
+// Official: FUN_100a0150 @ 0x100a0150 (samp.dll)
+BOOL CGame::DeleteEntity(CEntity* entity)
+{
+    if (!entity)
+        return FALSE;
+    delete entity;
+    return TRUE;
+}
+
+// 0x000a0210
+// Official: FUN_100a0210 @ 0x100a0210 (samp.dll)
+int CGame::GetWeaponModel(int weapon)
+{
+    return GameGetWeaponModel(weapon);
+}
+
+// 0x000a0220
+// Official: FUN_100a0220 @ 0x100a0220 (samp.dll)
+BOOL CGame::IsKeyPressed(int key)
+{
+    KeyPad* keys = KeyStuff::GetInternalKeys();
+    return *((WORD*)keys + key) != 0;
+}
+
+// 0x000a0870
+// Official: FUN_100a0870 @ 0x100a0870 (samp.dll)
+BOOL CGame::LoadModelNow(int model)
+{
+    if (model < 0 || model > 20000)
+        return TRUE;
+    if (Scripting::ProcessCommand(&g_gameModelAvailableCommand, model))
+        return TRUE;
+    // GTA SA virtual addresses: request/load are direct cdecl backends here.
+    ((void(__cdecl*)(int, int))0x4087e0)(model, 2);
+    ((void(__cdecl*)(int))0x40ea10)(0);
+    DWORD offset = (DWORD)model * 20;
+    if (*(BYTE*)(0x8e4cd0 + offset) != 1)
+        return FALSE;
+    if (*(BYTE*)(0x8e4cc6 + offset) & 2)
+    {
+        ((void(__cdecl*)(int))0x409c10)(model);
+        ((void(__cdecl*)(int))0x409c70)(model);
+    }
+    return TRUE;
+}
+
+// 0x000a09a0
+// Official: FUN_100a09a0 @ 0x100a09a0 (samp.dll)
+DWORD CGame::GetWeather()
+{
+    // GTA SA virtual address: raw weather DWORD.
+    return *(DWORD*)0xc81318;
+}
+
+// 0x000a09b0
+// Official: FUN_100a09b0 @ 0x100a09b0 (samp.dll)
+BYTE CGame::GetFrontendByteBA6769()
+{
+    // GTA SA virtual address: raw frontend byte; semantic name unestablished.
+    return *(BYTE*)0xba6769;
+}
+
+// 0x000a09d0
+// Official: FUN_100a09d0 @ 0x100a09d0 (samp.dll)
+BOOL CGame::IsFrontendFlagBA6794Set()
+{
+    // GTA SA virtual address: frontend flag, normalized to BOOL.
+    return *(BYTE*)0xba6794 != 0;
+}
+
+// 0x000a09e0
+// Official: FUN_100a09e0 @ 0x100a09e0 (samp.dll)
+void CGame::SetFrontendFlagBA6794()
+{
+    // GTA SA virtual address: native writes exactly one byte.
+    *(BYTE*)0xba6794 = 1;
+}
+
+// 0x000a1570
+// Official: FUN_100a1570 @ 0x100a1570 (samp.dll)
+void CGame::SetTimer(DWORD value)
+{
+    if (m_bClockEnabled)
+        return;
+    // GTA SA virtual address: native timer word, upper two bits stripped.
+    *(DWORD*)0xb7cb84 = value & 0x3fffffff;
+    g_gameTimerOverridden = 1;
+}
+
+// 0x000a15a0
+// Official: FUN_100a15a0 @ 0x100a15a0 (samp.dll)
+DWORD CGame::GetBackendWordB71804()
+{
+    // GTA SA virtual address: raw DWORD; semantic name unestablished.
+    return *(DWORD*)0xb71804;
+}
+
+// Eight bytes are read by the native getter; the wrapper also permits8 chars
+// plus the terminating NUL. Longer native-helper overflow adjacency is unproven.
+// 0x00151950
+char g_gameEightByteName[9] = "SAMP03";
+// 0x0018e53c
+BYTE g_gameTimerOverridden;
+
+// 0x000a3ed0
+// Official: FUN_100a3ed0 @ 0x100a3ed0 (samp.dll)
+void GameSetEightByteName(const char* name)
+{
+    volatile DWORD* words = (volatile DWORD*)g_gameEightByteName;
+    words[0] = 0;
+    words[1] = 0;
+    // Native forward copy also retains the clear-before-read alias behavior.
+    char* out = g_gameEightByteName;
+    do
+    {
+        *out++ = *name;
+    }
+    while (*name++);
+}
+// 0x000a3f00
+// Official: FUN_100a3f00 @ 0x100a3f00 (samp.dll)
+bool GameCopyEightByteName(void* output)
+{
+    volatile DWORD* out = (volatile DWORD*)output;
+    const volatile DWORD* source = (const volatile DWORD*)g_gameEightByteName;
+    out[0] = 0;
+    out[1] = 0;
+    out[0] = source[0];
+    out[1] = source[1];
+    return true;
+}
+
+// 0x0018eb98
+DWORD g_gamePreviewPed[488];
+
+// 0x000a15b0
+// Official: FUN_100a15b0 @ 0x100a15b0 (samp.dll)
+void CGame::ApplyPreviewAnimation(DWORD first, DWORD second, BOOL useVehicle, int model, DWORD color)
+{
+    memset(g_gamePreviewPed, 0, sizeof(g_gamePreviewPed));
+    // GTA SA virtual address: native permanent39-byte NOP patch, no restoration.
+    UnFuck((void*)0x4e7529, 39);
+    memset((void*)0x4e7529, 0x90, 39);
+    BYTE* local = (BYTE*)GameFindLocalPed();
+    CVehicle* vehicle = 0;
+    if (useVehicle && model >= 400 && model < 612)
+    {
+        vehicle = new CVehicle(model, 0, 0, 0, 0, 0, 0);
+        // Native does not handle a failed allocation before this call.
+        vehicle->SetColor((BYTE)color, 0xff);
+        vehicle->Remove();
+        // Native aliases within the same preview-ped storage, not new globals.
+        // samp.dll RVAs: vehicle pointer0018f124, flags0018f004.
+        g_gamePreviewPed[0x58c / 4] = (DWORD)vehicle->m_pGameVehicle;
+        g_gamePreviewPed[0x46c / 4] |= 0x100;
+    }
+    if (local)
+    {
+        BYTE* intelligence = *(BYTE**)(local + 0x480);
+        void* receiver = (BYTE*)*(void**)intelligence + 0x21c;
+        // clang-format off
+        // GTA SA virtual address: thiscall backend(receiver,A4,first,second).
+        __asm {
+            push second
+            push first
+            push 0a4h
+            mov ecx,receiver
+            mov edx,4e71e0h
+            call edx
+        }
+        // clang-format on
+    }
+    if (vehicle)
+        delete vehicle;
+}
+
+// 0x000a7720
+// Official: FUN_100a7720 @ 0x100a7720 (samp.dll)
+void GameFreeModelInfo(int model)
+{
+    void* info = g_gameModelInfoTable[model];
+    if (info)
+    {
+        free(info);
+        g_gameModelInfoTable[model] = 0;
+    }
+}
+
+// 0x0011e7b8
+const Scripting::OpcodeInfo g_gameCurrentInteriorCommand = {0x77e, "v"};
+
+// 0x000a0d00
+// Official: FUN_100a0d00 @ 0x100a0d00 (samp.dll)
+BYTE CGame::GetCurrentInterior()
+{
+    DWORD interior;
+    Scripting::ProcessCommand(&g_gameCurrentInteriorCommand, &interior);
+    return (BYTE)interior;
+}

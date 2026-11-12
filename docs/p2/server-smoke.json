@@ -1,0 +1,17 @@
+{
+  "verified_at_utc": "2026-11-03T20:37:23.659194+00:00",
+  "executable": "C:\\Users\\PC GAMER\\samp\\samp_clone\\build-msvc\\p0-win32\\src\\server\\RelWithDebInfo\\samp-server.exe",
+  "sha256": "7d14c06dbcb4da385ff0e3af6ee8fa06c4390328447b70d58d0c442d50ff4482",
+  "fixture_directory": "build/archive/build-msvc/p2-server-smoke/35791968000000",
+  "log": "build/archive/build-msvc/p2-server-smoke/35791968000000/stdout.log",
+  "bind": "127.0.0.1",
+  "port": 54134,
+  "query": "SA-MP info",
+  "query_response_hex": "53414d507f00000176d3690000000400190000005032207465726d696e616c20617274776f726b20736d6f6b650b000000426172652053637269707400000000",
+  "artwork_enabled": true,
+  "registered_model": "AddCharModel(7,20001,male01.dff,male01.txd)",
+  "gamemode": "unmodified local bare.amx",
+  "result": "startup and loopback query passed; production download flow covered separately by model_pipeline_test",
+  "process_cleanup": "terminated only the spawned child and waited for exit",
+  "game_launched": false
+}

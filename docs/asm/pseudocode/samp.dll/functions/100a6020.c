@@ -1,0 +1,268 @@
+/*
+ * Generated Ghidra pseudocode, NOT verified source.
+ * Binary: samp.dll.official
+ * Entry: 0x100a6020
+ * Name: FUN_100a6020
+ * Status: ok
+ * Full provenance, body ranges, references: ../index.json
+ * Diagnostic: 
+ */
+
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void FUN_100a6020(void)
+
+{
+  DWORD local_8;
+  DWORD local_4;
+  
+  FUN_100a5e30();
+  FUN_100a5d80(&DAT_004d3aa0,&LAB_100a3f30,0x4d3934,&DAT_10151a10,10);
+  FUN_100a5d80(0x4d4610,&LAB_100a3fe0,0x4d4609,&DAT_10151a1c,7);
+  VirtualProtect(&DAT_0086d190,4,0x40,&local_8);
+  _DAT_0086d190 = &LAB_100a26d0;
+  VirtualProtect(&DAT_0086d190,4,local_8,&local_4);
+  VirtualProtect(&DAT_0086c0d0,4,0x40,&local_8);
+  _DAT_0086c0d0 = &LAB_100a29d0;
+  VirtualProtect(&DAT_0086c0d0,4,local_8,&local_4);
+  VirtualProtect(&DAT_0086d744,4,0x40,&local_8);
+  _DAT_0086d744 = &LAB_100a2b50;
+  VirtualProtect(&DAT_0086d744,4,local_8,&local_4);
+  VirtualProtect(&DAT_007330a2,5,0x40,&local_8);
+  DAT_007330a2 = 0xe8;
+  _DAT_007330a3 = 0xf96fa09;
+  VirtualProtect(&DAT_007330a2,5,local_8,&local_4);
+  VirtualProtect(&DAT_0086d194,4,0x40,&local_8);
+  _DAT_0086d194 = &LAB_100a3e50;
+  VirtualProtect(&DAT_0086d194,4,local_8,&local_4);
+  VirtualProtect(&DAT_005689fd,5,0x40,&local_8);
+  DAT_005689fd = 0xe8;
+  _DAT_005689fe = 0xfb3bcae;
+  VirtualProtect(&DAT_005689fd,5,local_8,&local_4);
+  VirtualProtect(&DAT_0053ea03,5,0x40,&local_8);
+  DAT_0053ea03 = 0xe8;
+  _DAT_0053ea04 = 0xfb63968;
+  VirtualProtect(&DAT_0053ea03,5,local_8,&local_4);
+  VirtualProtect(&DAT_00871148,4,0x40,&local_8);
+  _DAT_00871148 = &LAB_100a2e70;
+  VirtualProtect(&DAT_00871148,4,local_8,&local_4);
+  VirtualProtect(&DAT_008721c8,4,0x40,&local_8);
+  _DAT_008721c8 = &LAB_100a2e70;
+  VirtualProtect(&DAT_008721c8,4,local_8,&local_4);
+  VirtualProtect(&DAT_00871388,4,0x40,&local_8);
+  _DAT_00871388 = &LAB_100a2e70;
+  VirtualProtect(&DAT_00871388,4,local_8,&local_4);
+  VirtualProtect(&DAT_00871970,4,0x40,&local_8);
+  _DAT_00871970 = &LAB_100a2e70;
+  VirtualProtect(&DAT_00871970,4,local_8,&local_4);
+  VirtualProtect(&DAT_008716a8,4,0x40,&local_8);
+  _DAT_008716a8 = &LAB_100a2e70;
+  VirtualProtect(&DAT_008716a8,4,local_8,&local_4);
+  VirtualProtect(&DAT_00871550,4,0x40,&local_8);
+  _DAT_00871550 = &LAB_100a2e70;
+  VirtualProtect(&DAT_00871550,4,local_8,&local_4);
+  VirtualProtect(&DAT_00871800,4,0x40,&local_8);
+  _DAT_00871800 = &LAB_100a2e70;
+  VirtualProtect(&DAT_00871800,4,local_8,&local_4);
+  VirtualProtect(&DAT_00871b10,4,0x40,&local_8);
+  _DAT_00871b10 = &LAB_100a2e70;
+  VirtualProtect(&DAT_00871b10,4,local_8,&local_4);
+  VirtualProtect(&DAT_00872398,4,0x40,&local_8);
+  _DAT_00872398 = &LAB_100a2e70;
+  VirtualProtect(&DAT_00872398,4,local_8,&local_4);
+  VirtualProtect(&DAT_00871c50,4,0x40,&local_8);
+  _DAT_00871c50 = &LAB_100a2e70;
+  VirtualProtect(&DAT_00871c50,4,local_8,&local_4);
+  VirtualProtect(&DAT_00501b1d,5,0x40,&local_8);
+  DAT_00501b1d = 0xe8;
+  _DAT_00501b1e = 0xfba189e;
+  VirtualProtect(&DAT_00501b1d,5,local_8,&local_4);
+  VirtualProtect(&DAT_00501b42,5,0x40,&local_8);
+  DAT_00501b42 = 0xe8;
+  _DAT_00501b43 = 0xfba1879;
+  VirtualProtect(&DAT_00501b42,5,local_8,&local_4);
+  VirtualProtect(&DAT_00501fc2,5,0x40,&local_8);
+  DAT_00501fc2 = 0xe8;
+  _DAT_00501fc3 = 0xfba13f9;
+  VirtualProtect(&DAT_00501fc2,5,local_8,&local_4);
+  VirtualProtect(&DAT_00502067,5,0x40,&local_8);
+  DAT_00502067 = 0xe8;
+  _DAT_00502068 = 0xfba1354;
+  VirtualProtect(&DAT_00502067,5,local_8,&local_4);
+  VirtualProtect(&DAT_005021ae,5,0x40,&local_8);
+  DAT_005021ae = 0xe8;
+  _DAT_005021af = 0xfba120d;
+  VirtualProtect(&DAT_005021ae,5,local_8,&local_4);
+  VirtualProtect(&DAT_005869bf,5,0x40,&local_8);
+  DAT_005869bf = 0xe8;
+  _DAT_005869c0 = 0xfb1d29c;
+  VirtualProtect(&DAT_005869bf,5,local_8,&local_4);
+  VirtualProtect(&DAT_005759e4,5,0x40,&local_8);
+  DAT_005759e4 = 0xe8;
+  _DAT_005759e5 = 0xfb2e277;
+  VirtualProtect(&DAT_005759e4,5,local_8,&local_4);
+  VirtualProtect(&DAT_00609a4e,5,0x40,&local_8);
+  DAT_00609a4e = 0xe8;
+  _DAT_00609a4f = 0xfa9a22d;
+  VirtualProtect(&DAT_00609a4e,5,local_8,&local_4);
+  VirtualProtect(&DAT_004579c6,5,0x40,&local_8);
+  DAT_004579c6 = 0xe9;
+  _DAT_004579c7 = 0xfc4c2d5;
+  VirtualProtect(&DAT_004579c6,5,local_8,&local_4);
+  VirtualProtect(&DAT_0073c252,5,0x40,&local_8);
+  DAT_0073c252 = 0xe9;
+  _DAT_0073c253 = 0xf967879;
+  VirtualProtect(&DAT_0073c252,5,local_8,&local_4);
+  VirtualProtect(&DAT_0073ace2,5,0x40,&local_8);
+  DAT_0073ace2 = 0xe8;
+  _DAT_0073ace3 = 0xf968dd9;
+  VirtualProtect(&DAT_0073ace2,5,local_8,&local_4);
+  VirtualProtect(&DAT_006f8cf8,5,0x40,&local_8);
+  DAT_006f8cf8 = 0xe8;
+  _DAT_006f8cf9 = 0xf9aae03;
+  VirtualProtect(&DAT_006f8cf8,5,local_8,&local_4);
+  FUN_100a5d80(0x6402f0,&LAB_100a3580,0x6919bb,&DAT_1015197c,7);
+  FUN_100a5d80(0x63b8c0,&LAB_100a35e0,0x63b8ba,&DAT_10151984,7);
+  FUN_100a5d80(0x438576,&LAB_100a37c0,0x4385aa,&DAT_10151994,7);
+  FUN_100a5d80(0x584770,&LAB_100a37a0,0x584a79,&DAT_1015198c,7);
+  FUN_100a5d80(0x53c900,&LAB_100a3800,0x53c8f1,&DAT_101519b0,7);
+  FUN_100a5d80(0x4b5ac0,&LAB_100a3a70,0x4b5abc,&DAT_101519b8,6);
+  VirtualProtect(&DAT_004d41c0,5,0x40,&local_8);
+  DAT_004d41c0 = 0xe9;
+  _DAT_004d41c1 = 0xfbcf95b;
+  VirtualProtect(&DAT_004d41c0,5,local_8,&local_4);
+  VirtualProtect(&DAT_004e7427,5,0x40,&local_8);
+  DAT_004e7427 = 0xe8;
+  _DAT_004e7428 = 0xfbbca94;
+  VirtualProtect(&DAT_004e7427,5,local_8,&local_4);
+  FUN_100a5d80(0x738f3a,&LAB_100a3ce0,0x738b1b,&DAT_101519e8,6);
+  FUN_100a5d80(0x738877,&LAB_100a3d20,0x73885b,&DAT_101519f0,6);
+  FUN_100a5d80(0x6a0050,FUN_100a3d90,0x6a0043,&DAT_101519d4,9);
+  VirtualProtect(&DAT_006fded6,5,0x40,&local_8);
+  DAT_006fded6 = 0xe8;
+  _DAT_006fded7 = 0xf9a63a5;
+  VirtualProtect(&DAT_006fded6,5,local_8,&local_4);
+  if (DAT_102ac9b8 == 1) {
+    FUN_100a5d80(0x7fb020,&LAB_100a4190,0x59c721,&DAT_10151a34,6);
+    DAT_1018f56c = 0x7fb026;
+  }
+  else {
+    FUN_100a5d80(0x7fb060,&LAB_100a4190,0x59c721,&DAT_10151a34,6);
+    DAT_1018f56c = 0x7fb066;
+  }
+  VirtualProtect(&DAT_006d0e7e,5,0x40,&local_8);
+  DAT_006d0e7e = 0xe8;
+  _DAT_006d0e7f = 0xf9d343d;
+  VirtualProtect(&DAT_006d0e7e,5,local_8,&local_4);
+  VirtualProtect(&DAT_00866fa8,4,0x40,&local_8);
+  _DAT_00866fa8 = &LAB_100a42d0;
+  VirtualProtect(&DAT_00866fa8,4,local_8,&local_4);
+  VirtualProtect(&DAT_00586c0a,5,0x40,&local_8);
+  DAT_00586c0a = 0xe8;
+  _DAT_00586c0b = 0xfb1db61;
+  VirtualProtect(&DAT_00586c0a,5,local_8,&local_4);
+  FUN_100a5d80(0x538090,&LAB_100a47d0,0x538084,&DAT_10151a3c,7);
+  VirtualProtect(&DAT_00718599,5,0x40,&local_8);
+  DAT_00718599 = 0xe8;
+  _DAT_0071859a = 0xf98c3c2;
+  VirtualProtect(&DAT_00718599,5,local_8,&local_4);
+  VirtualProtect(&DAT_00866f7c,4,0x40,&local_8);
+  _DAT_00866f7c = &LAB_100a4850;
+  VirtualProtect(&DAT_00866f7c,4,local_8,&local_4);
+  VirtualProtect(&DAT_00866f80,4,0x40,&local_8);
+  _DAT_00866f80 = &LAB_100a48c0;
+  VirtualProtect(&DAT_00866f80,4,local_8,&local_4);
+  VirtualProtect(&DAT_008585e8,4,0x40,&local_8);
+  _DAT_008585e8 = &LAB_100a48c0;
+  VirtualProtect(&DAT_008585e8,4,local_8,&local_4);
+  VirtualProtect(&DAT_00871218,4,0x40,&local_8);
+  _DAT_00871218 = &LAB_100a49d0;
+  VirtualProtect(&DAT_00871218,4,local_8,&local_4);
+  VirtualProtect(&DAT_00871778,4,0x40,&local_8);
+  _DAT_00871778 = &LAB_100a49d0;
+  VirtualProtect(&DAT_00871778,4,local_8,&local_4);
+  VirtualProtect(&DAT_008718d0,4,0x40,&local_8);
+  _DAT_008718d0 = &LAB_100a49d0;
+  VirtualProtect(&DAT_008718d0,4,local_8,&local_4);
+  VirtualProtect(&DAT_00871a40,4,0x40,&local_8);
+  _DAT_00871a40 = &LAB_100a49d0;
+  VirtualProtect(&DAT_00871a40,4,local_8,&local_4);
+  VirtualProtect(&DAT_00871be0,4,0x40,&local_8);
+  _DAT_00871be0 = &LAB_100a49d0;
+  VirtualProtect(&DAT_00871be0,4,local_8,&local_4);
+  VirtualProtect(&DAT_005648d3,5,0x40,&local_8);
+  DAT_005648d3 = 0xe8;
+  _DAT_005648d4 = 0xfb40358;
+  VirtualProtect(&DAT_005648d3,5,local_8,&local_4);
+  VirtualProtect(&DAT_0053dfdd,5,0x40,&local_8);
+  DAT_0053dfdd = 0xe8;
+  _DAT_0053dfde = 0xfb66e0e;
+  VirtualProtect(&DAT_0053dfdd,5,local_8,&local_4);
+  VirtualProtect(&DAT_0053e019,5,0x40,&local_8);
+  DAT_0053e019 = 0xe8;
+  _DAT_0053e01a = 0xfb66e12;
+  VirtualProtect(&DAT_0053e019,5,local_8,&local_4);
+  FUN_100a5d80(0x5534b0,FUN_100a4e70,0x5534a6,&DAT_10151a44,9);
+  VirtualProtect(&DAT_005342f9,5,0x40,&local_8);
+  DAT_005342f9 = 0xe8;
+  _DAT_005342fa = 0xfb70e52;
+  VirtualProtect(&DAT_005342f9,5,local_8,&local_4);
+  FUN_100a5d80(0x4b35a0,&LAB_100a5100,0x4b3433,&DAT_10151a50,6);
+  VirtualProtect(&DAT_0041b02e,5,0x40,&local_8);
+  DAT_0041b02e = 0xe8;
+  _DAT_0041b02f = 0xfc8a67d;
+  VirtualProtect(&DAT_0041b02e,5,local_8,&local_4);
+  VirtualProtect(&DAT_0041af80,5,0x40,&local_8);
+  DAT_0041af80 = 0xe8;
+  _DAT_0041af81 = 0xfc8a89b;
+  VirtualProtect(&DAT_0041af80,5,local_8,&local_4);
+  VirtualProtect(&DAT_0041ab78,5,0x40,&local_8);
+  DAT_0041ab78 = 0xe8;
+  _DAT_0041ab79 = 0xfc8acd3;
+  VirtualProtect(&DAT_0041ab78,5,local_8,&local_4);
+  VirtualProtect(&DAT_00871178,4,0x40,&local_8);
+  _DAT_00871178 = &LAB_100a5870;
+  VirtualProtect(&DAT_00871178,4,local_8,&local_4);
+  VirtualProtect(&DAT_008716d8,4,0x40,&local_8);
+  _DAT_008716d8 = &LAB_100a5870;
+  VirtualProtect(&DAT_008716d8,4,local_8,&local_4);
+  VirtualProtect(&DAT_008719a0,4,0x40,&local_8);
+  _DAT_008719a0 = &LAB_100a5870;
+  VirtualProtect(&DAT_008719a0,4,local_8,&local_4);
+  VirtualProtect(&DAT_00871b40,4,0x40,&local_8);
+  _DAT_00871b40 = &LAB_100a5870;
+  VirtualProtect(&DAT_00871b40,4,local_8,&local_4);
+  VirtualProtect(&DAT_008713b8,4,0x40,&local_8);
+  _DAT_008713b8 = &LAB_100a5910;
+  VirtualProtect(&DAT_008713b8,4,local_8,&local_4);
+  VirtualProtect(&DAT_00871580,4,0x40,&local_8);
+  _DAT_00871580 = &LAB_100a5910;
+  VirtualProtect(&DAT_00871580,4,local_8,&local_4);
+  VirtualProtect(&DAT_00871830,4,0x40,&local_8);
+  _DAT_00871830 = &LAB_100a59b0;
+  VirtualProtect(&DAT_00871830,4,local_8,&local_4);
+  VirtualProtect(&DAT_008721f8,4,0x40,&local_8);
+  _DAT_008721f8 = &LAB_100a5a50;
+  VirtualProtect(&DAT_008721f8,4,local_8,&local_4);
+  VirtualProtect(&DAT_006e0954,5,0x40,&local_8);
+  DAT_006e0954 = 0xe8;
+  _DAT_006e0955 = 0xf9c5197;
+  VirtualProtect(&DAT_006e0954,5,local_8,&local_4);
+  VirtualProtect(&DAT_006b2bcb,5,0x40,&local_8);
+  DAT_006b2bcb = 0xe8;
+  _DAT_006b2bcc = 0xf9f2f20;
+  VirtualProtect(&DAT_006b2bcb,5,local_8,&local_4);
+  VirtualProtect(&DAT_004f77da,5,0x40,&local_8);
+  DAT_004f77da = 0xe8;
+  _DAT_004f77db = 0xfbae311;
+  VirtualProtect(&DAT_004f77da,5,local_8,&local_4);
+  VirtualProtect(&DAT_00872a74,4,0x40,&local_8);
+  _DAT_00872a74 = &LAB_100a5b90;
+  VirtualProtect(&DAT_00872a74,4,local_8,&local_4);
+  FUN_100a5d80(0x5674e0,&LAB_100a5d20,0x5674db,&DAT_10151a68,6);
+  return;
+}
+
+
+/* END FUNCTION 0x100a6020 */
