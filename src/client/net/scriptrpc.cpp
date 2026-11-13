@@ -23,7 +23,6 @@
 #include "net/textdrawpool.h"
 #include "net/vehiclepool.h"
 #include "textdrawselection.h"
-#include <limits>
 #include <string.h>
 // 0x00118288
 const Scripting::OpcodeInfo g_rpcAttachObjectToPlayerCommand = {0x69b, "iiffffff"};
@@ -210,22 +209,16 @@ void ScrAttachObjectToPlayer(RPCParameters* parameters)
 // Official: FUN_10018a00 @ 0x10018a00 (samp.dll)
 void ScrSetPlayerAttachedObject(RPCParameters* parameters)
 {
-    if (!parameters || !parameters->input || parameters->numberOfBitsOfData < 49 ||
-        parameters->numberOfBitsOfData > static_cast<unsigned>((std::numeric_limits<int>::max)() - 7))
-        return;
-    const unsigned bits = parameters->numberOfBitsOfData;
-    RakNet::BitStream stream(parameters->input, (bits + 7u) / 8u, false);
-    // The byte constructor includes padding bits; RPC fields must be bounded
-    // by the actual wire bit count, including the one-bit create flag.
-    stream.SetWriteOffset(static_cast<int>(bits));
+    RakNet::BitStream stream(parameters->input, (int)parameters->numberOfBitsOfData / 8 + 1, false);
     PedAccessoryState info = {0};
-    WORD player = 0xffff;
-    int index = 0;
-    bool create = false;
-    if (!stream.Read(player) || !stream.Read(index) || !stream.Read(create))
-        return;
-    if (create && !stream.Read((char*)&info, 52))
-        return;
+    WORD player;
+    int index;
+    bool create;
+    stream.Read(player);
+    stream.Read(index);
+    stream.Read(create);
+    if (create)
+        stream.Read((char*)&info, 52);
     CPlayerPool* pool = ((CNetGame*)g_pNetGame)->pools->players;
     if (!pool)
         return;
@@ -1333,29 +1326,23 @@ void ScrHideMenu(RPCParameters* parameters)
 // Official: FUN_1001c850 @ 0x1001c850 (samp.dll)
 void ScrShowTextDraw(RPCParameters* parameters)
 {
-    if (!parameters || !parameters->input || parameters->numberOfBitsOfData < 536 ||
-        parameters->numberOfBitsOfData > static_cast<unsigned>((std::numeric_limits<int>::max)() - 7))
-        return;
-    const unsigned bits = parameters->numberOfBitsOfData;
-    RakNet::BitStream stream(parameters->input, (bits + 7u) / 8u, false);
-    stream.SetWriteOffset(static_cast<int>(bits));
-    WORD id = 0xffff;
+    RakNet::BitStream stream(parameters->input, (int)parameters->numberOfBitsOfData / 8 + 1, false);
     WORD length = 0;
-    TextDrawTransmit info = {};
-    if (!stream.Read(id) || id >= 2304 || !stream.Read((char*)&info, 63) || !stream.Read(length))
-        return;
-    char text[800];
-    if (length < 800)
-    {
-        if (!stream.Read(text, length))
-            return;
-        text[length] = 0;
-    }
     CTextDrawPool* pool = ((CNetGame*)g_pNetGame)->pools->textDraws;
     if (pool)
     {
+        WORD id;
+        TextDrawTransmit info;
+        char text[800];
+        stream.Read(id);
+        stream.Read((char*)&info, 63);
+        stream.Read(length);
         if (length < 800)
+        {
+            stream.Read(text, length);
+            text[length] = 0;
             pool->Create(id, &info, text);
+        }
         else if (g_pChat)
             g_pChat->AddInfoMessage(g_rpcLargeTextDrawWarning, (unsigned)length);
     }
@@ -1364,41 +1351,37 @@ void ScrShowTextDraw(RPCParameters* parameters)
 // Official: FUN_1001c980 @ 0x1001c980 (samp.dll)
 void ScrHideTextDrawForPlayer(RPCParameters* parameters)
 {
-    if (!parameters || !parameters->input || parameters->numberOfBitsOfData < 16 ||
-        parameters->numberOfBitsOfData > static_cast<unsigned>((std::numeric_limits<int>::max)() - 7))
-        return;
-    const unsigned bits = parameters->numberOfBitsOfData;
-    RakNet::BitStream stream(parameters->input, (bits + 7u) / 8u, false);
-    stream.SetWriteOffset(static_cast<int>(bits));
-    WORD id = 0xffff;
-    if (!stream.Read(id) || id >= 2304)
-        return;
+    RakNet::BitStream stream(parameters->input, (int)parameters->numberOfBitsOfData / 8 + 1, false);
     CTextDrawPool* pool = ((CNetGame*)g_pNetGame)->pools->textDraws;
     if (pool)
+    {
+        WORD id;
+        stream.Read(id);
         pool->Delete(id);
+    }
 }
 // 0x0001ca30
 // Official: FUN_1001ca30 @ 0x1001ca30 (samp.dll)
 void ScrTextDrawSetString(RPCParameters* parameters)
 {
-    if (!parameters || !parameters->input || parameters->numberOfBitsOfData < 32 ||
-        parameters->numberOfBitsOfData > static_cast<unsigned>((std::numeric_limits<int>::max)() - 7))
-        return;
-    const unsigned bits = parameters->numberOfBitsOfData;
-    RakNet::BitStream stream(parameters->input, (bits + 7u) / 8u, false);
-    stream.SetWriteOffset(static_cast<int>(bits));
-    WORD id = 0xffff;
+    RakNet::BitStream stream(parameters->input, (int)parameters->numberOfBitsOfData / 8 + 1, false);
     WORD length = 0;
-    if (!stream.Read(id) || !stream.Read(length) || length > 800)
-        return;
-    // Preserve the native 800-byte limit while reserving its terminator.
-    char text[801];
-    if (!stream.Read(text, length))
-        return;
-    text[length] = 0;
     CTextDrawPool* pool = ((CNetGame*)g_pNetGame)->pools->textDraws;
-    if (pool && id < 2304 && pool->active[id] && pool->draws[id])
-        pool->draws[id]->SetText(text);
+    if (pool)
+    {
+        WORD id;
+        char text[800];
+        stream.Read(id);
+        stream.Read(length);
+        // Native accepts800 and writes its terminator one byte beyond this buffer.
+        if (length <= 800)
+        {
+            stream.Read(text, length);
+            text[length] = 0;
+            if (id < 2304 && pool->active[id] && pool->draws[id])
+                pool->draws[id]->SetText(text);
+        }
+    }
 }
 // 0x00019e60
 // Official: FUN_10019e60 @ 0x10019e60 (samp.dll)

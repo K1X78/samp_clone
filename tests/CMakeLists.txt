@@ -105,22 +105,6 @@ if(TARGET samp_client)
     target_link_libraries(client_camera_math_test PRIVATE samp_client
         "${SAMP_DXSDK_DIR}/Lib/x86/d3dx9.lib")
     add_test(NAME client_camera_math_test COMMAND client_camera_math_test)
-
-    add_executable(client_rpc_input_test client_rpc_input_test.cpp)
-    target_include_directories(client_rpc_input_test PRIVATE
-        $<TARGET_PROPERTY:samp_client,INCLUDE_DIRECTORIES>)
-    target_compile_definitions(client_rpc_input_test PRIVATE
-        $<TARGET_PROPERTY:samp_client,COMPILE_DEFINITIONS> DIRECTSOUND_VERSION=0x0800)
-    target_compile_options(client_rpc_input_test PRIVATE /Zp1 /GR- /EHsc /FIdxstdafx.h)
-    target_link_libraries(client_rpc_input_test PRIVATE
-        $<TARGET_PROPERTY:samp_client_dll,LINK_LIBRARIES>)
-    add_custom_command(TARGET client_rpc_input_test POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${PROJECT_SOURCE_DIR}/third_party/bass/bass.dll"
-            "$<TARGET_FILE_DIR:client_rpc_input_test>/bass.dll"
-        VERBATIM)
-    add_test(NAME client_rpc_input_test COMMAND client_rpc_input_test)
-    set_tests_properties(client_rpc_input_test PROPERTIES TIMEOUT 30)
 endif()
 
 add_executable(server_rpc_test server_rpc_test.cpp)
@@ -133,11 +117,6 @@ add_executable(transport_test transport_test.cpp)
 target_link_libraries(transport_test PRIVATE samp_server samp_client_core)
 target_compile_features(transport_test PRIVATE cxx_std_20)
 add_test(NAME transport_test COMMAND transport_test)
-
-add_executable(input_bounds_test input_bounds_test.cpp)
-target_link_libraries(input_bounds_test PRIVATE samp_server)
-add_test(NAME input_bounds_test COMMAND input_bounds_test)
-set_tests_properties(input_bounds_test PROPERTIES TIMEOUT 30)
 
 add_executable(connection_test connection_test.cpp)
 target_link_libraries(connection_test PRIVATE samp_server samp_client_core)

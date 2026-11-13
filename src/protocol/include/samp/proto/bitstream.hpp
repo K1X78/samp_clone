@@ -32,8 +32,6 @@
 #include <cstring>
 #include <array>
 #include <bit>
-#include <limits>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -117,11 +115,6 @@ public:
     void write(const void* input, std::size_t numberOfBytes) {
         if (numberOfBytes == 0) {
             return;
-        }
-        // The native bit-count API is signed 32-bit. Reject unsupported
-        // byte counts before multiplication, allocation or buffer access.
-        if (numberOfBytes > static_cast<std::size_t>((std::numeric_limits<int>::max)()) / 8u) {
-            throw std::length_error("BitStream byte count exceeds the signed bit-count range");
         }
         if ((numberOfBitsUsed_ & 7u) == 0u) {
             addBitsAndReallocate(static_cast<int>(numberOfBytes * 8u));
@@ -243,9 +236,6 @@ public:
     // unaligned path delegates to ReadBits and that rejects a zero bit count.
     // Official: FUN_1001f960 @ 0x1001f960 (samp.dll)
     bool read(void* output, std::size_t numberOfBytes) {
-        if (numberOfBytes > static_cast<std::size_t>((std::numeric_limits<int>::max)()) / 8u) {
-            return false;
-        }
         if ((readOffset_ & 7u) == 0u) {
             if ((numberOfBitsUsed_ > readOffset_ ? numberOfBitsUsed_ - readOffset_ : 0) <
                 numberOfBytes * 8u) {
@@ -260,8 +250,7 @@ public:
 
     // Official: FUN_1001fa30 @ 0x1001fa30 (samp.dll)
     bool readAlignedBytes(std::uint8_t* output, std::size_t numberOfBytes) {
-        if (numberOfBytes == 0 ||
-            numberOfBytes > static_cast<std::size_t>((std::numeric_limits<int>::max)()) / 8u) {
+        if (numberOfBytes == 0) {
             return false;
         }
         alignReadToByteBoundary();

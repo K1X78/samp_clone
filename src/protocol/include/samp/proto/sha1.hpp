@@ -49,8 +49,6 @@ public:
     // Official: FUN_10052fb0 @ 0x10052fb0 (samp.dll)
     void finalize() noexcept;
 
-    // Call finalize() after the most recent reset()/update() before reading
-    // this buffer. Like the native accessor, this does not finalize the hash.
     // Official: FUN_10053250 @ 0x10053250 (samp.dll)
     [[nodiscard]] const std::uint8_t* digest() const noexcept { return digest_; }
 
