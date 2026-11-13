@@ -8,6 +8,7 @@
 #include <cstring>
 #include <fstream>
 #include <iterator>
+#include <limits>
 #include <random>
 
 #if !defined(_WIN32)
@@ -414,6 +415,13 @@ void GameLayer::on_user_message(RakNetPeer& peer, const BitStream& message) {
             (static_cast<std::uint32_t>(bit_count_bytes[1])<<8) |
             (static_cast<std::uint32_t>(bit_count_bytes[2])<<16) |
             (static_cast<std::uint32_t>(bit_count_bytes[3])<<24);
+        // Bound the clone's RPC envelope before allocating or narrowing to
+        // BitStream's signed bit count. This parser runs before RPC dispatch.
+        const std::size_t remaining_bits = in.numberOfBitsUsed_ > in.readOffset_
+            ? in.numberOfBitsUsed_ - in.readOffset_ : 0;
+        constexpr auto max_payload_bits =
+            static_cast<std::uint32_t>((std::numeric_limits<int>::max)() / 8) * 8u;
+        if (payload_bits > remaining_bits || payload_bits > max_payload_bits) return;
         BitStream payload;
         if(payload_bits>0) {
             const std::size_t payload_bytes=(static_cast<std::size_t>(payload_bits)+7u)>>3;

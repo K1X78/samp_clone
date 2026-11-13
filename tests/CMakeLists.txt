@@ -118,6 +118,11 @@ target_link_libraries(transport_test PRIVATE samp_server samp_client_core)
 target_compile_features(transport_test PRIVATE cxx_std_20)
 add_test(NAME transport_test COMMAND transport_test)
 
+add_executable(rpc_length_bounds_test rpc_length_bounds_test.cpp)
+target_link_libraries(rpc_length_bounds_test PRIVATE samp_server)
+add_test(NAME rpc_length_bounds_test COMMAND rpc_length_bounds_test)
+set_tests_properties(rpc_length_bounds_test PROPERTIES TIMEOUT 30)
+
 add_executable(connection_test connection_test.cpp)
 target_link_libraries(connection_test PRIVATE samp_server samp_client_core)
 target_compile_features(connection_test PRIVATE cxx_std_20)
