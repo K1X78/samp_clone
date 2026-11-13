@@ -24,6 +24,8 @@ CTextDrawPool::CTextDrawPool()
 // Official: FUN_1001e2b0 @ 0x1001e2b0 (samp.dll)
 void CTextDrawPool::Delete(WORD id)
 {
+    if (id >= 2304)
+        return;
     CTextDraw* draw = draws[id];
     if (!draw)
         return;
@@ -49,6 +51,8 @@ CTextDrawPool::~CTextDrawPool()
 // Official: FUN_1001e3d0 @ 0x1001e3d0 (samp.dll)
 CTextDraw* CTextDrawPool::Create(WORD id, const TextDrawTransmit* info, const char* text)
 {
+    if (id >= 2304)
+        return 0;
     if (draws[id])
         Delete(id);
     CTextDraw* draw = new CTextDraw(info, text);
