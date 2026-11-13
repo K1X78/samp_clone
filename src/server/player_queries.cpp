@@ -6,6 +6,14 @@
 #include <set>
 
 namespace samp::server {
+// Official: FUN_00465c50 @ 0x00465c50 (samp-server.exe)
+void GameLayer::update_player_pool_size() {
+    player_pool_highest_ = 0;
+    const auto end = std::min<std::size_t>(1000, players_.size());
+    for (std::size_t slot = 0; slot < end; ++slot)
+        if (players_[slot].in_use) player_pool_highest_ = static_cast<int>(slot);
+}
+
 // Official: FUN_00499090 @ 0x00499090 (samp-server.exe)
 void GameLayer::handle_score_request(RakNetPeer& peer) {
     const auto found=std::find_if(players_.begin(),players_.end(),[&](const auto& player){return player.in_use && player.joined && player.peer==&peer;});

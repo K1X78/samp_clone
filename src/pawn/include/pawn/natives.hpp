@@ -90,7 +90,7 @@ struct PlayerNativeState {
     std::uint32_t skin = 0;
     std::uint32_t custom_model = 0;
     float x = 0, y = 0, z = 0, angle = 0;
-    bool clock_enabled = false;
+    std::uint8_t clock_enabled = 0;
     PlayerClassSpec spawn_info{};
     bool has_spawn_info = false;
     bool spawn_authorized = false;
@@ -183,6 +183,7 @@ class NativeHost {
 public:
     virtual ~NativeHost() = default;
     std::vector<PlayerNativeState> players_;
+    int player_pool_highest_ = 0;
     std::map<std::uint32_t,ScriptTimer> script_timers_;
     std::uint32_t next_script_timer_=0;
     bool gamemode_exit_requested_=false;
@@ -236,7 +237,7 @@ public:
     virtual void set_player_facing_angle(int id, float angle) = 0;
     virtual void set_camera_pos(int id, float x, float y, float z) = 0;
     virtual void set_camera_look_at(int id, float x, float y, float z, int cut) = 0;
-    virtual void toggle_player_clock(int id, bool on) = 0;
+    virtual void toggle_player_clock(int id, std::uint8_t on) = 0;
 };
 
 // Registers the natives on the virtual machine.

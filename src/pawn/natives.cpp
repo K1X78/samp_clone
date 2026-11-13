@@ -292,8 +292,11 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     vm.native_functions_["GetMaxPlayers"] = [&host](std::span<const cell>) -> cell {
         return host.max_players();
     };
+    // Official: FUN_00471460 @ 0x00471460 (samp-server.exe)
     vm.native_functions_["GetPlayerPoolSize"] = [&host](std::span<const cell>) -> cell {
-        return host.max_players();
+        // Native reads the cached pool value, updated after join/quit
+        // callbacks, rather than recalculating during those callbacks.
+        return host.player_pool_highest_;
     };
     // Official: FUN_00472f50 @ 0x00472f50 (samp-server.exe)
     vm.native_functions_["SetWorldTime"] = [&host](std::span<const cell> args) -> cell {
@@ -531,46 +534,45 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         send_zone_all(85,payload);
         return 1;
     };
-    vm.native_functions_["SetPlayerInterior"] = [&host](std::span<const cell> args) -> cell {
-        if (args.size() >= 2) {
-            host.set_player_interior(args[0], args[1]);
-        }
+    // Official: FUN_0047bb00 @ 0x0047bb00 (samp-server.exe)
+    vm.native_functions_["SetPlayerInterior"] = [&host, player_slot](std::span<const cell> args) -> cell {
+        if (args.size() < 2 || !player_slot(args[0])) return 0;
+        host.set_player_interior(static_cast<std::uint16_t>(args[0]), args[1]);
         return 1;
     };
-    vm.native_functions_["SetPlayerPos"] = [&host, as_float](std::span<const cell> args) -> cell {
-        if (args.size() >= 4) {
-            host.set_player_pos(args[0], as_float(args[1]), as_float(args[2]),
-                                as_float(args[3]));
-        }
+    // Official: FUN_0047ae30 @ 0x0047ae30 (samp-server.exe)
+    vm.native_functions_["SetPlayerPos"] = [&host, as_float, player_slot](std::span<const cell> args) -> cell {
+        if (args.size() < 4 || !player_slot(args[0])) return 0;
+        host.set_player_pos(static_cast<std::uint16_t>(args[0]), as_float(args[1]), as_float(args[2]),
+                            as_float(args[3]));
         return 1;
     };
-    vm.native_functions_["SetPlayerFacingAngle"] = [&host, as_float](std::span<const cell> args) -> cell {
-        if (args.size() >= 2) {
-            host.set_player_facing_angle(args[0], as_float(args[1]));
-        }
+    // Official: FUN_0047c920 @ 0x0047c920 (samp-server.exe)
+    vm.native_functions_["SetPlayerFacingAngle"] = [&host, as_float, player_slot](std::span<const cell> args) -> cell {
+        if (args.size() < 2 || !player_slot(args[0])) return 0;
+        host.set_player_facing_angle(static_cast<std::uint16_t>(args[0]), as_float(args[1]));
         return 1;
     };
-    vm.native_functions_["SetPlayerCameraPos"] = [&host, as_float](std::span<const cell> args) -> cell {
-        if (args.size() >= 4) {
-            host.set_camera_pos(args[0], as_float(args[1]), as_float(args[2]),
-                                as_float(args[3]));
-        }
+    // Official: FUN_0047bcc0 @ 0x0047bcc0 (samp-server.exe)
+    vm.native_functions_["SetPlayerCameraPos"] = [&host, as_float, player_slot](std::span<const cell> args) -> cell {
+        if (args.size() < 4 || !player_slot(args[0])) return 0;
+        host.set_camera_pos(static_cast<std::uint16_t>(args[0]), as_float(args[1]), as_float(args[2]),
+                            as_float(args[3]));
         return 1;
     };
-    vm.native_functions_["SetPlayerCameraLookAt"] = [&host, as_float](std::span<const cell> args) -> cell {
-        if (args.size() >= 4) {
-            // The fifth argument is the transition of the camera, CAMERA_CUT
-            // (2) when the script leaves it out.
-            const int cut = args.size() >= 5 ? args[4] : 2;
-            host.set_camera_look_at(args[0], as_float(args[1]), as_float(args[2]),
-                                    as_float(args[3]), cut);
-        }
+    // Official: FUN_0047bde0 @ 0x0047bde0 (samp-server.exe)
+    vm.native_functions_["SetPlayerCameraLookAt"] = [&host, as_float, player_slot](std::span<const cell> args) -> cell {
+        if (args.size() < 4 || !player_slot(args[0])) return 0;
+        // The fifth argument defaults to CAMERA_CUT (2).
+        const int cut = args.size() >= 5 ? args[4] : 2;
+        host.set_camera_look_at(static_cast<std::uint16_t>(args[0]), as_float(args[1]), as_float(args[2]),
+                                as_float(args[3]), cut);
         return 1;
     };
-    vm.native_functions_["TogglePlayerClock"] = [&host](std::span<const cell> args) -> cell {
-        if (args.size() >= 2) {
-            host.toggle_player_clock(args[0], args[1] != 0);
-        }
+    // Official: FUN_00473050 @ 0x00473050 (samp-server.exe)
+    vm.native_functions_["TogglePlayerClock"] = [&host, player_slot](std::span<const cell> args) -> cell {
+        if (args.size() < 2 || !player_slot(args[0])) return 0;
+        host.toggle_player_clock(static_cast<std::uint16_t>(args[0]), static_cast<std::uint8_t>(args[1]));
         return 1;
     };
     vm.native_functions_["TogglePlayerSpectating"] = [](std::span<const cell>) -> cell { return 0; };

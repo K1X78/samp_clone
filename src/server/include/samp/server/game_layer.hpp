@@ -22,10 +22,9 @@
 // Unacceptable NickName, 3 = Bad mod version and 4 = Unable to allocate a
 // player slot.
 //
-// A message that is addressed to ONE player is wrapped by the server in the
-// 0x28 framing marker: [0x28][u32 the target player id][the ordinary
-// message].  The effective message id of a wrapped message is the first byte
-// of the inner message (lane R19).
+// RakNet's optional timestamp wrapper is [0x28][u32 timestamp][message].
+// Official Receive (0x458370) recognizes wrapped RPCs by the inner marker20
+// at byte5; the timestamp is not a target player identifier.
 
 #pragma once
 
@@ -128,6 +127,7 @@ public:
     GameLayer() = default;
 
     void on_user_message(RakNetPeer& peer, const samp::proto::BitStream& message) override;
+    void update_player_pool_size();
     void update_streaming();
     void update_vehicles(std::uint64_t now);
     void process_script_timers(std::uint32_t elapsed_ms);
@@ -181,7 +181,7 @@ public:
     void set_player_facing_angle(int id, float angle) override;
     void set_camera_pos(int id, float x, float y, float z) override;
     void set_camera_look_at(int id, float x, float y, float z, int cut) override;
-    void toggle_player_clock(int id, bool on) override;
+    void toggle_player_clock(int id, std::uint8_t on) override;
 
     // The server main loop and console query commands report the live slots.
     std::vector<std::unique_ptr<samp::pawn::PawnVm>> filterscripts_;
@@ -197,6 +197,7 @@ public:
     std::uint32_t challenge_token_ = 0;
 
 private:
+    void handle_rpc_packet(RakNetPeer& peer, const samp::proto::BitStream& message);
     void relay_sync(const GamePlayer& player, const samp::proto::BitStream& payload);
     void handle_driver_packet(GamePlayer& player, const samp::proto::BitStream& message);
     void handle_passenger_packet(GamePlayer& player, const samp::proto::BitStream& message);

@@ -7,6 +7,11 @@
 
 namespace samp::pawn {
 struct PawnNativeTestAccess {
+    static samp::amx::cell argument(const PawnVm& vm, unsigned index) {
+        samp::amx::cell value;
+        std::memcpy(&value, vm.image_.data() + vm.header_.dat + vm.frm_ + 12 + index * 4, 4);
+        return value;
+    }
     static void callbacks(PawnVm& vm, std::initializer_list<const char*> names,
                           std::function<samp::amx::cell(std::string_view)> callback) {
         std::vector<samp::amx::cell> code{0x78, 0}; // halt 0
@@ -170,5 +175,59 @@ void vehicles() {
     CHECK(client.outgoing_frames_[0].reliability==samp::proto::Reliability::ReliableSequenced);
 }
 
+void callback_live_arguments() {
+    using Access = samp::pawn::PawnNativeTestAccess;
+    samp::server::GameLayer game;
+    samp::server::RakNetPeer peer;
+    game.players_.resize(1);
+    auto& player = game.players_[0];
+    player.in_use = player.joined = true;
+    player.peer = &peer;
+    player.state = 1;
+    player.has_spawn_info = player.spawn_authorized = true;
+    player.spawn_info.model = 7;
+    player.streamed_to.resize(1);
+    int state_calls = 0, key_calls = 0;
+    auto filter = std::make_unique<samp::pawn::PawnVm>();
+    auto* filter_vm = filter.get();
+    Access::callbacks(*filter, {"OnPlayerStateChange", "OnPlayerKeyStateChange"}, [&](auto name) {
+        if (name == "OnPlayerStateChange") {
+            if (state_calls == 0) {
+                CHECK(Access::argument(*filter_vm, 1) == 8);
+                CHECK(Access::argument(*filter_vm, 2) == 1);
+                player.state = 3; // Reentrant script work may change live state.
+            }
+            ++state_calls;
+        } else {
+            CHECK(Access::argument(*filter_vm, 1) == 0x1234);
+            CHECK(Access::argument(*filter_vm, 2) == 0);
+            ++key_calls;
+        }
+        return 1;
+    });
+    game.filterscripts_.push_back(std::move(filter));
+    Access::callbacks(game.vm_, {"OnPlayerStateChange", "OnPlayerKeyStateChange"}, [&](auto name) {
+        if (name == "OnPlayerStateChange" && state_calls == 1) {
+            CHECK(Access::argument(game.vm_, 1) == 3);
+            CHECK(Access::argument(game.vm_, 2) == 1);
+        }
+        if (name == "OnPlayerKeyStateChange") {
+            CHECK(Access::argument(game.vm_, 1) == 1);
+            player.keys = 0x1234;
+        }
+        return 1;
+    });
+    rpc(game, peer, 52);
+    CHECK(state_calls == 1 && player.state == 3);
+    std::array<std::uint8_t, 69> foot{};
+    foot[0] = 207; foot[5] = 1; foot[35] = 100;
+    const float identity = 1;
+    std::memcpy(foot.data() + 19, &identity, 4);
+    samp::proto::BitStream packet;
+    packet.write(foot.data(), foot.size());
+    game.on_user_message(peer, packet);
+    CHECK(key_calls == 1 && state_calls == 2);
 }
-int main(int,char**) {lifecycle();callback_order();vehicles();std::printf("player lifecycle: %d failures\n",failures);return failures!=0;}
+
+}
+int main(int,char**) {lifecycle();callback_order();vehicles();callback_live_arguments();std::printf("player lifecycle: %d failures\n",failures);return failures!=0;}

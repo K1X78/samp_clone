@@ -54,7 +54,7 @@ struct Host : samp::pawn::NativeHost {
     void set_player_facing_angle(int, float) override {}
     void set_camera_pos(int, float, float, float) override {}
     void set_camera_look_at(int, float, float, float, int) override {}
-    void toggle_player_clock(int, bool) override {}
+    void toggle_player_clock(int, std::uint8_t) override {}
 };
 void natives() {
     Host host; host.players_.resize(10);

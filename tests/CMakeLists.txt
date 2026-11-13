@@ -120,6 +120,11 @@ add_test(NAME transport_test COMMAND transport_test)
 
 add_executable(rpc_length_bounds_test rpc_length_bounds_test.cpp)
 target_link_libraries(rpc_length_bounds_test PRIVATE samp_server)
+if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4 AND
+   EXISTS "${PROJECT_SOURCE_DIR}/GTA Sa samp_clone/samp-server.exe.official")
+    target_compile_definitions(rpc_length_bounds_test PRIVATE
+        SAMP_OFFICIAL_SERVER_PATH="${PROJECT_SOURCE_DIR}/GTA Sa samp_clone/samp-server.exe.official")
+endif()
 add_test(NAME rpc_length_bounds_test COMMAND rpc_length_bounds_test)
 set_tests_properties(rpc_length_bounds_test PROPERTIES TIMEOUT 30)
 

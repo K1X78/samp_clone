@@ -179,6 +179,9 @@ JoinResult join(std::string name, std::uint32_t version = samp::server::kSampVer
                 reply.readBits(&code, 8, false), "invalid rejection RPC payload");
         rejection = code;
     }
+    if (game.players_[0].in_use)
+        require(game.player_pool_highest_ == (!existing.empty() && occupied ? 999 : 0),
+                "successful join did not refresh the native highest-slot cache");
     return {game.players_[0].in_use, rejection};
 }
 
@@ -214,6 +217,8 @@ int main(int, char**) {
                 "duplicate name after pool holes must reject ignoring case");
         require(join("Alice", samp::server::kSampVersionNumber, samp::server::kSampVersionNumber, 1, "Alice", false).accepted,
                 "unoccupied old name does not block admission");
+        require(join("Bob", samp::server::kSampVersionNumber, samp::server::kSampVersionNumber, 1, "Alice").accepted,
+                "join with a higher occupied slot must preserve its pool bound");
         require(join("Bad!", 1).rejection == 1, "bad version precedes bad nickname");
         require(join("Bad!", samp::server::kSampVersionNumber, 1, 0).rejection == 1,
                 "bad challenge precedes bad mod and nickname");

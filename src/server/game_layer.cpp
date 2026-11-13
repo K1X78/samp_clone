@@ -8,7 +8,6 @@
 #include <cstring>
 #include <fstream>
 #include <iterator>
-#include <limits>
 #include <random>
 
 #if !defined(_WIN32)
@@ -282,6 +281,13 @@ void GameLayer::set_world_time(int hour) {
 // Official: FUN_00473f20 @ 0x00473f20 (samp-server.exe)
 void GameLayer::set_weather(int id) {
     weather_id_ = id & 0xFF;
+    // 0x473f20 -> 0x496240 -> 0x493960: broadcast the low byte to
+    // every occupied player slot, including players still initializing.
+    BitStream payload;
+    const auto weather = static_cast<std::uint8_t>(weather_id_);
+    payload.write(&weather, 1);
+    for (auto& player : players_)
+        if (player.in_use && player.peer) send_rpc(*player.peer, 152, payload);
     config_->values_["weather"]=std::to_string(weather_id_);
 }
 
@@ -294,7 +300,7 @@ void GameLayer::set_gravity(float gravity) {
     config_->values_["gravity"]=buffer;
     samp::proto::BitStream payload;
     payload.write(&gravity,4);
-    for(auto& player:players_) if(player.in_use && player.joined && player.peer)
+    for(auto& player:players_) if(player.in_use && player.peer)
         send_rpc(*player.peer,146,payload);
 }
 
@@ -328,8 +334,9 @@ void GameLayer::add_player_class(const samp::pawn::PlayerClassSpec& spec) {
 
 // Official: FUN_0047bb00 @ 0x0047bb00 (samp-server.exe)
 void GameLayer::set_player_interior(int id, int interior) {
-    if(id<0 || static_cast<std::size_t>(id)>=players_.size()) return;
-    GamePlayer& player=players_[static_cast<std::size_t>(id)];
+    const auto slot = static_cast<std::uint16_t>(id);
+    if(slot >= 1000 || slot >= players_.size()) return;
+    GamePlayer& player=players_[slot];
     if(!player.in_use || player.peer==nullptr) return;
     BitStream payload;
     payload.write(std::array<std::uint8_t,1>{static_cast<std::uint8_t>(static_cast<std::uint8_t>(interior))}.data(),1);
@@ -338,10 +345,11 @@ void GameLayer::set_player_interior(int id, int interior) {
 
 // Official: FUN_0047ae30 @ 0x0047ae30 (samp-server.exe)
 void GameLayer::set_player_pos(int id, float x, float y, float z) {
-    if(id<0 || static_cast<std::size_t>(id)>=players_.size()) return;
-    GamePlayer& player=players_[static_cast<std::size_t>(id)];
+    const auto slot = static_cast<std::uint16_t>(id);
+    if(slot >= 1000 || slot >= players_.size()) return;
+    GamePlayer& player=players_[slot];
     if(!player.in_use || player.peer==nullptr) return;
-    player.x = x; player.y = y; player.z = z;
+    // Native sends the requested position without fabricating a sync update.
     BitStream payload;
     payload.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<float>(x)).data(),4);
     payload.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<float>(y)).data(),4);
@@ -351,10 +359,11 @@ void GameLayer::set_player_pos(int id, float x, float y, float z) {
 
 // Official: FUN_0047c920 @ 0x0047c920 (samp-server.exe)
 void GameLayer::set_player_facing_angle(int id, float angle) {
-    if(id<0 || static_cast<std::size_t>(id)>=players_.size()) return;
-    GamePlayer& player=players_[static_cast<std::size_t>(id)];
+    const auto slot = static_cast<std::uint16_t>(id);
+    if(slot >= 1000 || slot >= players_.size()) return;
+    GamePlayer& player=players_[slot];
     if(!player.in_use || player.peer==nullptr) return;
-    player.angle = angle;
+    // The reported angle changes when the client supplies its next sync.
     BitStream payload;
     payload.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<float>(angle)).data(),4);
     send_rpc(*player.peer, kRpcSetPlayerFacingAngle, payload);
@@ -362,8 +371,9 @@ void GameLayer::set_player_facing_angle(int id, float angle) {
 
 // Official: FUN_0047bcc0 @ 0x0047bcc0 (samp-server.exe)
 void GameLayer::set_camera_pos(int id, float x, float y, float z) {
-    if(id<0 || static_cast<std::size_t>(id)>=players_.size()) return;
-    GamePlayer& player=players_[static_cast<std::size_t>(id)];
+    const auto slot = static_cast<std::uint16_t>(id);
+    if(slot >= 1000 || slot >= players_.size()) return;
+    GamePlayer& player=players_[slot];
     if(!player.in_use || player.peer==nullptr) return;
     BitStream payload;
     payload.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<float>(x)).data(),4);
@@ -374,25 +384,29 @@ void GameLayer::set_camera_pos(int id, float x, float y, float z) {
 
 // Official: FUN_0047bde0 @ 0x0047bde0 (samp-server.exe)
 void GameLayer::set_camera_look_at(int id, float x, float y, float z, int cut) {
-    if(id<0 || static_cast<std::size_t>(id)>=players_.size()) return;
-    GamePlayer& player=players_[static_cast<std::size_t>(id)];
+    const auto slot = static_cast<std::uint16_t>(id);
+    if(slot >= 1000 || slot >= players_.size()) return;
+    GamePlayer& player=players_[slot];
     if(!player.in_use || player.peer==nullptr) return;
     BitStream payload;
     payload.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<float>(x)).data(),4);
     payload.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<float>(y)).data(),4);
     payload.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<float>(z)).data(),4);
-    payload.write(std::array<std::uint8_t,1>{static_cast<std::uint8_t>(static_cast<std::uint8_t>(cut))}.data(),1);
+    auto mode = static_cast<std::uint8_t>(cut);
+    if (mode < 1 || mode > 2) mode = 2;
+    payload.write(&mode, 1);
     send_rpc(*player.peer, kRpcSetCameraLookAt, payload);
 }
 
 // Official: FUN_00473050 @ 0x00473050 (samp-server.exe)
-void GameLayer::toggle_player_clock(int id, bool on) {
-    if(id<0 || static_cast<std::size_t>(id)>=players_.size()) return;
-    GamePlayer& player=players_[static_cast<std::size_t>(id)];
+void GameLayer::toggle_player_clock(int id, std::uint8_t on) {
+    const auto slot = static_cast<std::uint16_t>(id);
+    if(slot >= 1000 || slot >= players_.size()) return;
+    GamePlayer& player=players_[slot];
     if(!player.in_use || player.peer==nullptr) return;
     player.clock_enabled = on;
     BitStream payload;
-    payload.write(std::array<std::uint8_t,1>{static_cast<std::uint8_t>(on ? 1 : 0)}.data(),1);
+    payload.write(&on, 1);
     send_rpc(*player.peer, kRpcTogglePlayerClock, payload);
 }
 
@@ -402,100 +416,102 @@ void GameLayer::on_user_message(RakNetPeer& peer, const BitStream& message) {
         return;
     }
     const std::uint8_t first = message.data_[0];
-    if (first == samp::proto::kRaknetIdRpc) {
-        BitStream in;
-        in.write(message.data_.data(),(message.numberOfBitsUsed_+7u)>>3);
-        in.numberOfBitsUsed_=message.numberOfBitsUsed_;
-        std::uint8_t message_id=0;
-        std::uint8_t rpc_id=0;
-        std::uint8_t bit_count_bytes[4]{};
-        if(!in.read(&(message_id),1) || message_id!=samp::proto::kRaknetIdRpc ||
-           !in.read(&(rpc_id),1) || !in.readCompressed(bit_count_bytes,32,true)) return;
-        const std::uint32_t payload_bits=static_cast<std::uint32_t>(bit_count_bytes[0]) |
-            (static_cast<std::uint32_t>(bit_count_bytes[1])<<8) |
-            (static_cast<std::uint32_t>(bit_count_bytes[2])<<16) |
-            (static_cast<std::uint32_t>(bit_count_bytes[3])<<24);
-        // Bound the clone's RPC envelope before allocating or narrowing to
-        // BitStream's signed bit count. This parser runs before RPC dispatch.
-        const std::size_t remaining_bits = in.numberOfBitsUsed_ > in.readOffset_
-            ? in.numberOfBitsUsed_ - in.readOffset_ : 0;
-        constexpr auto max_payload_bits =
-            static_cast<std::uint32_t>((std::numeric_limits<int>::max)() / 8) * 8u;
-        if (payload_bits > remaining_bits || payload_bits > max_payload_bits) return;
-        BitStream payload;
-        if(payload_bits>0) {
-            const std::size_t payload_bytes=(static_cast<std::size_t>(payload_bits)+7u)>>3;
-            std::vector<std::uint8_t> buffer(payload_bytes,0);
-            if(!in.readBits(buffer.data(),static_cast<int>(payload_bits),false)) return;
-            payload.write(buffer.data(),buffer.size());
-            payload.numberOfBitsUsed_=payload_bits;
-        }
-        switch (rpc_id) {
-            case kRpcPlayerConnect:
-                handle_player_connect(peer,payload);
-                break;
-            case kRpcPlayerRequestClass:
-                handle_player_request_class(peer,payload);
-                break;
-            case kRpcPlayerRequestSpawn:
-                handle_player_request_spawn(peer);
-                break;
-            case kRpcPlayerInGame:
-                handle_player_in_game(peer);
-                break;
-            // Registered 0.3.DL callbacks49ac60/49ad60 read CRC32 only.
-            case 181:
-            case 182: {
-                std::uint32_t crc=0;if(!payload.read(&crc,4)) break;
-                for(auto& player:players_) if(player.in_use && player.peer==&peer) {
-                    request_model_download(player,rpc_id==181?1:2,crc);break;
-                }
-                break;
-            }
-            case 184: handle_model_finish(peer,payload);break;
-            case 155: handle_score_request(peer);break;
-            // 497a10 ->483770 accepts eight target bytes only while enabled.
-            case 168: {
-                if(gamemode_restarting_) break;
-                std::array<std::uint16_t,4> targets;if(!payload.read(targets.data(),8)) break;
-                for(auto& player:players_) if(player.in_use && player.peer==&peer && player.camera_targeting) {player.camera_targets=targets;break;}
-                break;
-            }
-            // RPC131 registration49d594 ->499b20. The original reports the
-            // slot to GM first, then filterscripts, without inventing a pickup.
-            case 131: {
-                if(gamemode_restarting_) break;
-                std::int32_t pickup=0;if(!payload.read(&pickup,4)) break;
-                for(const auto& player:players_) if(player.in_use && player.peer==&peer) {
-                    const cell args[]{player.id,pickup};cell result=0;
-                    vm_.execute("OnPlayerPickUpPickup",args,result);
-                    for(const auto& script:filterscripts_) script->execute("OnPlayerPickUpPickup",args,result);
-                    break;
-                }
-                break;
-            }
-            case 136: handle_vehicle_death(peer,payload);break;
-            case 26: handle_vehicle_enter(peer,payload);break;
-            case 154: handle_vehicle_exit(peer,payload);break;
-            case 118:
-                handle_player_interior(peer,payload);
-                break;
-            case 53:
-                handle_player_death(peer, payload);
-                break;
-            case kRpcPlayerRequestChat:
-                handle_player_chat(peer,payload);
-                break;
-            case kRpcPlayerRequestCommand:
-                handle_player_command(peer,payload);
-                break;
-            default:
-                break;
-        }
+    // Receive's RPC gate (0x458370) recognizes the timestamp wrapper too.
+    if (first == samp::proto::kRaknetIdRpc ||
+        (first == 40 && message.numberOfBitsUsed_ > 40 && message.data_[5] == samp::proto::kRaknetIdRpc)) {
+        handle_rpc_packet(peer, message);
         return;
     }
     if(first==201) {handle_remote_console(peer,message);return;}
     handle_game_packet(peer, message);
+}
+
+// Official: FUN_00451fd0 @ 0x00451fd0 (samp-server.exe)
+void GameLayer::handle_rpc_packet(RakNetPeer& peer, const BitStream& message) {
+    BitStream in;
+    in.write(message.data_.data(), (message.numberOfBitsUsed_ + 7u) >> 3);
+    // Native HandleRPCPacket receives packet.length (bytes), not bitSize.
+    // Its timestamp prefix is ID_TIMESTAMP + u32 time + ID_RPC.
+    in.readOffset_ = message.data_[0] == 40 ? 48u : 8u;
+    std::uint8_t rpc_id = 0;
+    std::uint8_t bit_count_bytes[4]{};
+    if (!in.read(&rpc_id, 1) || !in.readCompressed(bit_count_bytes, 32, true)) return;
+    const std::uint32_t payload_bits = static_cast<std::uint32_t>(bit_count_bytes[0]) |
+        (static_cast<std::uint32_t>(bit_count_bytes[1]) << 8) |
+        (static_cast<std::uint32_t>(bit_count_bytes[2]) << 16) |
+        (static_cast<std::uint32_t>(bit_count_bytes[3]) << 24);
+    BitStream payload;
+    if (payload_bits > 0) {
+        // 0x4520b1..0x4520e8 sizes storage from unread packet bits, never
+        // from the advertised payload length. ReadBits then validates it.
+        const std::size_t remaining_bits = in.numberOfBitsUsed_ - in.readOffset_;
+        if (remaining_bits == 0) return;
+        std::vector<std::uint8_t> buffer((remaining_bits + 7u) >> 3, 0);
+        if (!in.readBits(buffer.data(), static_cast<int>(payload_bits), false)) return;
+        payload.write(buffer.data(), (static_cast<std::size_t>(payload_bits) + 7u) >> 3);
+        payload.numberOfBitsUsed_ = payload_bits;
+    }
+    switch (rpc_id) {
+        case kRpcPlayerConnect:
+            handle_player_connect(peer, payload);
+            break;
+        case kRpcPlayerRequestClass:
+            handle_player_request_class(peer, payload);
+            break;
+        case kRpcPlayerRequestSpawn:
+            handle_player_request_spawn(peer);
+            break;
+        case kRpcPlayerInGame:
+            handle_player_in_game(peer);
+            break;
+        // Registered 0.3.DL callbacks49ac60/49ad60 read CRC32 only.
+        case 181:
+        case 182: {
+            std::uint32_t crc = 0;
+            if (!payload.read(&crc, 4)) break;
+            for (auto& player : players_) if (player.in_use && player.peer == &peer) {
+                request_model_download(player, rpc_id == 181 ? 1 : 2, crc);
+                break;
+            }
+            break;
+        }
+        case 184: handle_model_finish(peer, payload); break;
+        case 155: handle_score_request(peer); break;
+        // 497a10 ->483770 accepts eight target bytes only while enabled.
+        case 168: {
+            if (gamemode_restarting_) break;
+            std::array<std::uint16_t, 4> targets;
+            if (!payload.read(targets.data(), 8)) break;
+            for (auto& player : players_) if (player.in_use && player.peer == &peer && player.camera_targeting) {
+                player.camera_targets = targets;
+                break;
+            }
+            break;
+        }
+        // RPC131 registration49d594 ->499b20. The original reports the
+        // slot to GM first, then filterscripts, without inventing a pickup.
+        case 131: {
+            if (gamemode_restarting_) break;
+            std::int32_t pickup = 0;
+            if (!payload.read(&pickup, 4)) break;
+            for (const auto& player : players_) if (player.in_use && player.peer == &peer) {
+                const cell args[]{player.id, pickup};
+                cell result = 0;
+                vm_.execute("OnPlayerPickUpPickup", args, result);
+                for (const auto& script : filterscripts_) script->execute("OnPlayerPickUpPickup", args, result);
+                break;
+            }
+            break;
+        }
+        case 136: handle_vehicle_death(peer, payload); break;
+        case 26: handle_vehicle_enter(peer, payload); break;
+        case 154: handle_vehicle_exit(peer, payload); break;
+        case 118: handle_player_interior(peer, payload); break;
+        case 53: handle_player_death(peer, payload); break;
+        case kRpcPlayerRequestChat: handle_player_chat(peer, payload); break;
+        case kRpcPlayerRequestCommand: handle_player_command(peer, payload); break;
+        default: break;
+    }
 }
 
 // The validation of the official server (samp-server.exe 0x4966c0): the
@@ -678,6 +694,8 @@ void GameLayer::handle_player_connect(RakNetPeer& peer, const BitStream& payload
     for(const auto& script:filterscripts_) script->execute("OnPlayerConnect",connect_args,callback_result);
     vm_.execute("OnPlayerConnect",connect_args,callback_result);
     if(!player.in_use || player.peer!=&peer) return;
+    // 0x4661c0 updates the cached highest slot after OnPlayerConnect.
+    update_player_pool_size();
     player.models_ready=!artwork_enabled_ || models_.empty();
     if(artwork_enabled_) send_model_manifest(player);
     initialize_player(player);

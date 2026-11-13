@@ -7,10 +7,14 @@ void GameLayer::set_player_state(GamePlayer& player, std::uint8_t state) {
     if (player.state == state) return;
     const auto old = player.state;
     player.state = state;
-    const samp::amx::cell args[]{player.id, state, old};
+    samp::amx::cell args[]{player.id, state, old};
     samp::amx::cell result = 1;
     for (const auto& script : filterscripts_)
         script->execute("OnPlayerStateChange", args, result);
+    // Native reloads the live state after filterscripts, which may have
+    // changed it through a nested state transition.
+    args[0] = player.id;
+    args[1] = player.state;
     vm_.execute("OnPlayerStateChange", args, result);
 }
 
@@ -54,9 +58,12 @@ void GameLayer::handle_player_interior(RakNetPeer& peer,const samp::proto::BitSt
 // Official: FUN_00484080 @ 0x00484080 (samp-server.exe)
 void GameLayer::notify_key_change(GamePlayer& player,std::uint32_t old_keys) {
     if(old_keys==player.keys) return;
-    const samp::amx::cell args[]{player.id,static_cast<samp::amx::cell>(player.keys),static_cast<samp::amx::cell>(old_keys)};
+    samp::amx::cell args[]{player.id,static_cast<samp::amx::cell>(player.keys),static_cast<samp::amx::cell>(old_keys)};
     samp::amx::cell result=1;
     vm_.execute("OnPlayerKeyStateChange",args,result);
+    // 0x4840ba..0x4840d0 reloads current keys after the game-mode callback.
+    args[0] = player.id;
+    args[1] = static_cast<samp::amx::cell>(player.keys);
     for(const auto& script:filterscripts_) script->execute("OnPlayerKeyStateChange",args,result);
 }
 

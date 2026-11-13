@@ -105,6 +105,8 @@ void GameLayer::disconnect_player(int id, std::uint8_t reason) {
         }
         if (receiver.joined) send_rpc(*receiver.peer, kRpcPlayerQuit, quit);
     }
+    // Native 0x4666f2 refreshes the cache after callbacks and slot release.
+    update_player_pool_size();
 }
 
 } // namespace samp::server
