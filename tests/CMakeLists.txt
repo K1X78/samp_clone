@@ -158,6 +158,16 @@ endif()
 add_test(NAME menu_natives_test COMMAND menu_natives_test)
 set_tests_properties(menu_natives_test PROPERTIES TIMEOUT 30)
 
+add_executable(variable_natives_test variable_natives_test.cpp)
+target_link_libraries(variable_natives_test PRIVATE samp_server)
+if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4 AND
+   EXISTS "${PROJECT_SOURCE_DIR}/GTA Sa samp_clone/samp-server.exe.official")
+    target_compile_definitions(variable_natives_test PRIVATE
+        SAMP_OFFICIAL_SERVER_PATH="${PROJECT_SOURCE_DIR}/GTA Sa samp_clone/samp-server.exe.official")
+endif()
+add_test(NAME variable_natives_test COMMAND variable_natives_test)
+set_tests_properties(variable_natives_test PROPERTIES TIMEOUT 30)
+
 add_executable(connection_test connection_test.cpp)
 target_link_libraries(connection_test PRIVATE samp_server samp_client_core)
 target_compile_features(connection_test PRIVATE cxx_std_20)

@@ -9,6 +9,7 @@
 #include "pawn/time_natives.hpp"
 #include "pawn/format_cells.hpp"
 #include "pawn/file_natives.hpp"
+#include "pawn/variable_natives.hpp"
 #include "pawn/amx_memory_api.hpp"
 #include "pawn/amx_set_string_api.hpp"
 
@@ -272,6 +273,11 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     }
 
     // ------------------------------------------------------------- the server
+    for(const auto& [name,function]:variable_natives::kNatives)
+        vm.native_functions_[std::string(name)]=[&vm,&host,function](std::span<const cell> args) {
+            return function(&vm.amx_,host,args);
+        };
+
     vm.native_functions_["SetGameModeText"] = [&host, read_script_string](std::span<const cell> args) -> cell {
         if (!args.empty()) {
             const char* text = read_script_string(args[0]);

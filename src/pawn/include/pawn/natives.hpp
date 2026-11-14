@@ -32,6 +32,7 @@
 #include "pawn/pawn_vm.hpp"
 #include "pawn/textdraws.hpp"
 #include "pawn/menus.hpp"
+#include "pawn/player_variables.hpp"
 
 namespace samp::server { class RakNetPeer; }
 namespace samp::proto { class BitStream; }
@@ -84,6 +85,7 @@ struct PlayerNativeState {
     bool is_admin = false;
     bool camera_targeting=false;
     PlayerTextDrawPool textdraw_pool;
+    std::shared_ptr<PlayerVariablePool> variables;
     std::array<std::uint16_t,4> camera_targets{0xffff,0xffff,0xffff,0xffff};
     bool joined = false;
     bool models_ready = false,model_finish_reported=false;

@@ -24,6 +24,8 @@ add_library(samp_pawn STATIC
     menu_pool.cpp
     menu_state.cpp
     menu_natives.cpp
+    player_variable_pool.cpp
+    player_variable_natives.cpp
     format_cells.cpp
     file_natives.cpp
     float_natives.cpp
