@@ -28,6 +28,7 @@
 #include <map>
 
 #include "pawn/pawn_vm.hpp"
+#include "pawn/textdraws.hpp"
 
 namespace samp::server { class RakNetPeer; }
 namespace samp::proto { class BitStream; }
@@ -196,6 +197,7 @@ public:
     bool interior_enter_exits_disabled_=false;
     float name_tag_draw_distance_=70.0f;
     std::array<GangZoneNativeState,1024> gang_zones_{};
+    TextDrawPool textdraw_pool_{this};
     std::vector<StaticPickupNativeState> pickups_=std::vector<StaticPickupNativeState>(4096);
     bool artwork_enabled_=false;
     std::string models_directory_="models";
@@ -223,6 +225,29 @@ public:
     int set_player_special_action(int player, int action);
     int set_player_ammo(int player, int weapon, int ammunition);
     int remove_building_for_player(int player, int model, const std::array<float,3>& position, float radius);
+
+    int text_draw_create(std::int32_t x,std::int32_t y,std::string_view text);
+    int text_draw_set_string(int id,std::string_view text);
+    int text_draw_letter_size(int id,std::int32_t x,std::int32_t y);
+    int text_draw_text_size(int id,std::int32_t x,std::int32_t y);
+    int text_draw_alignment(int id,int value);
+    int text_draw_colour(int id,std::uint32_t value);
+    int text_draw_use_box(int id,int value);
+    int text_draw_box_colour(int id,std::uint32_t value);
+    int text_draw_shadow(int id,int value);
+    int text_draw_outline(int id,int value);
+    int text_draw_background_colour(int id,std::uint32_t value);
+    int text_draw_font(int id,int value);
+    int text_draw_proportional(int id,int value);
+    int text_draw_selectable(int id,int value);
+    int text_draw_preview_model(int id,int value);
+    int text_draw_preview_rotation(int id,const std::array<std::int32_t,4>& values);
+    int text_draw_preview_colours(int id,int first,int second);
+    int text_draw_show_for_player(int player,int id);
+    int text_draw_hide_for_player(int player,int id);
+    int text_draw_show_for_all(int id);
+    int text_draw_hide_for_all(int id);
+    int text_draw_destroy(int id);
 
     // The maximum number of players.
     [[nodiscard]] virtual int max_players() const = 0;

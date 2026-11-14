@@ -138,6 +138,16 @@ endif()
 add_test(NAME server_native_parity_test COMMAND server_native_parity_test)
 set_tests_properties(server_native_parity_test PROPERTIES TIMEOUT 30)
 
+add_executable(textdraw_natives_test textdraw_natives_test.cpp)
+target_link_libraries(textdraw_natives_test PRIVATE samp_server)
+if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4 AND
+   EXISTS "${PROJECT_SOURCE_DIR}/GTA Sa samp_clone/samp-server.exe.official")
+    target_compile_definitions(textdraw_natives_test PRIVATE
+        SAMP_OFFICIAL_SERVER_PATH="${PROJECT_SOURCE_DIR}/GTA Sa samp_clone/samp-server.exe.official")
+endif()
+add_test(NAME textdraw_natives_test COMMAND textdraw_natives_test)
+set_tests_properties(textdraw_natives_test PROPERTIES TIMEOUT 30)
+
 add_executable(connection_test connection_test.cpp)
 target_link_libraries(connection_test PRIVATE samp_server samp_client_core)
 target_compile_features(connection_test PRIVATE cxx_std_20)

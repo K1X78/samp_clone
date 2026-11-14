@@ -969,23 +969,76 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     };
 
 
-    // The text draws are not implemented yet; the natives exist so that the
-    // stock scripts load.
-    vm.native_functions_["TextDrawCreate"] = [](std::span<const cell>) -> cell { return -1; };
-    vm.native_functions_["TextDrawSetString"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawLetterSize"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawTextSize"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawAlignment"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawColor"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawUseBox"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawBoxColor"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawSetShadow"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawSetOutline"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawBackgroundColor"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawFont"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawShowForPlayer"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawHideForPlayer"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawDestroy"] = [](std::span<const cell>) -> cell { return 0; };
+    vm.native_functions_["TextDrawCreate"] = [&host,read_script_string](std::span<const cell> args)->cell {
+        if(args.size()<3) return 0xffff;
+        const auto* text=read_script_string(args[2]);
+        return host.text_draw_create(args[0],args[1],text?text:"");
+    };
+    vm.native_functions_["TextDrawSetString"] = [&host,read_script_string](std::span<const cell> args)->cell {
+        if(args.size()<2) return 0;
+        const auto* text=read_script_string(args[1]);
+        return host.text_draw_set_string(args[0],text?text:"");
+    };
+    vm.native_functions_["TextDrawLetterSize"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.text_draw_letter_size(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["TextDrawTextSize"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.text_draw_text_size(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["TextDrawAlignment"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_alignment(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawColor"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_colour(a[0],static_cast<std::uint32_t>(a[1]));
+    };
+    vm.native_functions_["TextDrawUseBox"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_use_box(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawBoxColor"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_box_colour(a[0],static_cast<std::uint32_t>(a[1]));
+    };
+    vm.native_functions_["TextDrawSetShadow"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_shadow(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawSetOutline"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_outline(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawBackgroundColor"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_background_colour(a[0],static_cast<std::uint32_t>(a[1]));
+    };
+    vm.native_functions_["TextDrawFont"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_font(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawSetProportional"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_proportional(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawSetSelectable"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_selectable(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawSetPreviewModel"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_preview_model(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawSetPreviewRot"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<5?0:host.text_draw_preview_rotation(a[0],{a[1],a[2],a[3],a[4]});
+    };
+    vm.native_functions_["TextDrawSetPreviewVehCol"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.text_draw_preview_colours(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["TextDrawShowForPlayer"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_show_for_player(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawHideForPlayer"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_hide_for_player(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawShowForAll"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.text_draw_show_for_all(a[0]);
+    };
+    vm.native_functions_["TextDrawHideForAll"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.text_draw_hide_for_all(a[0]);
+    };
+    vm.native_functions_["TextDrawDestroy"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.text_draw_destroy(a[0]);
+    };
 
     // 00472c50 delegates slot selection to the original 004841a0 table.
     vm.native_functions_["GetPlayerAmmo"]=[player_slot](std::span<const cell> args)->cell {
