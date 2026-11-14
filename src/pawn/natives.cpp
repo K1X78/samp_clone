@@ -372,9 +372,13 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         return true;
     };
     const auto send_zone_all=[&host](std::uint8_t rpc_id,const samp::proto::BitStream& payload) {
-        for(const auto& player:host.players_)
-            if(player.in_use && player.joined && player.peer)
+        // 0x493960 checks occupied slots with a player object, including
+        // initialization callbacks, within the fixed 1000-player domain.
+        for(std::size_t slot=0;slot<1000 && slot<host.players_.size();++slot) {
+            const auto& player=host.players_[slot];
+            if(player.in_use && player.peer)
                 host.send_rpc(*player.peer,rpc_id,payload);
+        }
     };
     // Official: FUN_0047a230 @ 0x0047a230 (samp-server.exe)
     vm.native_functions_["SetPlayerWorldBounds"]=[&host,player_slot](std::span<const cell> args)->cell {
@@ -751,6 +755,7 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     // AddPlayerClass(modelid, Float:x, Float:y, Float:z, Float:angle,
     //                weapon1, weapon1_ammo, weapon2, weapon2_ammo,
     //                weapon3, weapon3_ammo)
+    // Official: FUN_0046ff70 @ 0x0046ff70 (samp-server.exe)
     vm.native_functions_["AddPlayerClass"] = [&host, as_float](std::span<const cell> args) -> cell {
         if (args.size() < 11) {
             return 0;
@@ -765,16 +770,16 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
             spec.weapon[i] = args[5 + i * 2];
             spec.ammunition[i] = args[6 + i * 2];
         }
-        host.add_player_class(spec);
-        return 1;
+        return host.add_player_class(spec);
     };
     // AddPlayerClassEx(teamid, modelid, Float:x, ...): the same with a team.
+    // Official: FUN_0046fff0 @ 0x0046fff0 (samp-server.exe)
     vm.native_functions_["AddPlayerClassEx"] = [&host, as_float](std::span<const cell> args) -> cell {
         if (args.size() < 12) {
             return 0;
         }
         PlayerClassSpec spec;
-        spec.team = args[0];
+        spec.team = static_cast<std::uint8_t>(args[0]);
         spec.model = args[1];
         spec.x = as_float(args[2]);
         spec.y = as_float(args[3]);
@@ -784,8 +789,7 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
             spec.weapon[i] = args[6 + i * 2];
             spec.ammunition[i] = args[7 + i * 2];
         }
-        host.add_player_class(spec);
-        return 1;
+        return host.add_player_class(spec);
     };
     // 00467530: vehicle IDs 1..1999, models 400..611; no slot returns 0xffff.
     const auto vehicle_slot = [&host](cell id) -> VehicleNativeState* {

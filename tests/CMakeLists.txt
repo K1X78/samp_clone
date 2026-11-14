@@ -128,6 +128,16 @@ endif()
 add_test(NAME rpc_length_bounds_test COMMAND rpc_length_bounds_test)
 set_tests_properties(rpc_length_bounds_test PROPERTIES TIMEOUT 30)
 
+add_executable(server_native_parity_test server_native_parity_test.cpp)
+target_link_libraries(server_native_parity_test PRIVATE samp_server)
+if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4 AND
+   EXISTS "${PROJECT_SOURCE_DIR}/GTA Sa samp_clone/samp-server.exe.official")
+    target_compile_definitions(server_native_parity_test PRIVATE
+        SAMP_OFFICIAL_SERVER_PATH="${PROJECT_SOURCE_DIR}/GTA Sa samp_clone/samp-server.exe.official")
+endif()
+add_test(NAME server_native_parity_test COMMAND server_native_parity_test)
+set_tests_properties(server_native_parity_test PROPERTIES TIMEOUT 30)
+
 add_executable(connection_test connection_test.cpp)
 target_link_libraries(connection_test PRIVATE samp_server samp_client_core)
 target_compile_features(connection_test PRIVATE cxx_std_20)

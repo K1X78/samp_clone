@@ -175,7 +175,7 @@ public:
 
     // The class list (AddPlayerClass / AddPlayerClassEx) and the player
     // commands the game mode calls while it handles the callbacks.
-    void add_player_class(const samp::pawn::PlayerClassSpec& spec) override;
+    int add_player_class(const samp::pawn::PlayerClassSpec& spec) override;
     void set_player_interior(int id, int interior) override;
     void set_player_pos(int id, float x, float y, float z) override;
     void set_player_facing_angle(int id, float angle) override;

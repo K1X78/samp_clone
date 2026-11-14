@@ -231,7 +231,7 @@ public:
     // Each of these is one native that the official server turns into an RPC
     // to the player.  There is no default behaviour: the game layer owns the
     // only implementation, exactly like the official server.
-    virtual void add_player_class(const PlayerClassSpec& spec) = 0;
+    virtual int add_player_class(const PlayerClassSpec& spec) = 0;
     virtual void set_player_interior(int id, int interior) = 0;
     virtual void set_player_pos(int id, float x, float y, float z) = 0;
     virtual void set_player_facing_angle(int id, float angle) = 0;

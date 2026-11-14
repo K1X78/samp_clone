@@ -327,9 +327,14 @@ void GameLayer::send_client_message(int id, int type, std::string_view text) {
 
 // ------------------------------------------------------- the player natives
 
-// Official: FUN_0046fff0 @ 0x0046fff0 (samp-server.exe)
-void GameLayer::add_player_class(const samp::pawn::PlayerClassSpec& spec) {
+// Official: FUN_004943d0 @ 0x004943d0 (samp-server.exe)
+int GameLayer::add_player_class(const samp::pawn::PlayerClassSpec& spec) {
+    // Both class natives preserve this owner's EAX, including its 319
+    // full-pool return. Only indices 0..318 are actually installed.
+    if (classes_.size() >= 319) return 319;
+    const auto id = static_cast<int>(classes_.size());
     classes_.push_back(spec);
+    return id;
 }
 
 // Official: FUN_0047bb00 @ 0x0047bb00 (samp-server.exe)
