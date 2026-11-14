@@ -209,6 +209,17 @@ public:
     virtual void send_rpc(samp::server::RakNetPeer& peer, std::uint8_t id,
                           const samp::proto::BitStream& payload) = 0;
 
+    int play_player_sound(int player, int sound, const std::array<float,3>& position);
+    int set_camera_behind_player(int player);
+    int interpolate_camera_pos(int player, const std::array<float,3>& from,
+                               const std::array<float,3>& to, int time, int mode);
+    int interpolate_camera_look_at(int player, const std::array<float,3>& from,
+                                   const std::array<float,3>& to, int time, int mode);
+    int set_player_velocity(int player, const std::array<float,3>& velocity);
+    int play_audio_stream_for_player(int player, std::string_view url,
+                                     const std::array<float,3>& position, float radius, int use_position);
+    int stop_audio_stream_for_player(int player);
+
     // The maximum number of players.
     [[nodiscard]] virtual int max_players() const = 0;
     // Queries actual slot occupancy using the official native's WORD ID.

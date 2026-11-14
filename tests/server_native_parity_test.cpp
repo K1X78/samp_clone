@@ -1,4 +1,5 @@
 #include "samp/server/game_layer.hpp"
+#include "pawn/amx_set_string_api.hpp"
 
 #include <array>
 #include <bit>
@@ -17,6 +18,14 @@ namespace samp::pawn {
 struct PawnNativeTestAccess {
     static samp::amx::cell call(PawnVm& vm, const char* name, std::initializer_list<samp::amx::cell> args) {
         return vm.native_functions_.at(name)({args.begin(), args.size()});
+    }
+    static samp::amx::cell call_span(PawnVm& vm, const char* name, std::span<const samp::amx::cell> args) {
+        return vm.native_functions_.at(name)(args);
+    }
+    static void text(PawnVm& vm, const std::string& text, bool packed=false) {
+        vm.image_.assign(8192,0);vm.header_.dat=0;vm.ok_=true;
+        vm.amx_.stp=8188;vm.amx_.hea=6144;vm.amx_.stk=7168;
+        amx_string::set_string(reinterpret_cast<samp::amx::cell*>(vm.image_.data()),text.c_str(),packed,0,2048);
     }
 };
 }
@@ -304,6 +313,94 @@ void cached_world_broadcasts() {
             config.values_.at("gravity")=="0.012500","world query variables differ");
     }
 }
+
+void player_commands() {
+    using Access=samp::pawn::PawnNativeTestAccess;
+    samp::server::GameLayer game;
+    std::array<samp::server::RakNetPeer,2> peers;
+    game.players_.resize(1001);
+    auto& player=game.players_[0];player.in_use=true;player.peer=&peers[0];
+    player.x=10;player.y=20;player.z=30;player.vx=1;player.vy=2;player.vz=3;
+    game.players_[999].in_use=true;game.players_[999].peer=&peers[1];
+    game.players_[1000].in_use=true;game.players_[1000].peer=&peers[1];
+    game.players_[3].in_use=true; // A valid player still returns success without a transport.
+    samp::pawn::register_server_natives(game.vm_,game);
+    Access::text(game.vm_,"stream");
+    const std::array<std::pair<const char*,std::vector<cell>>,7> commands{{
+        {"PlayerPlaySound",{0,1057,0,0,0}}, {"SetCameraBehindPlayer",{0}},
+        {"InterpolateCameraPos",{0,0,0,0,0,0,0,1000,1}},
+        {"InterpolateCameraLookAt",{0,0,0,0,0,0,0,1000,2}},
+        {"SetPlayerVelocity",{0,0,0,0}},
+        {"PlayAudioStreamForPlayer",{0,0,0,0,0,0,1}}, {"StopAudioStreamForPlayer",{0}}
+    }};
+    const std::array<std::uint8_t,7> ids{16,162,82,82,90,41,42};
+    for(const cell id:{0,65536,-65536,999,1,1000,-1,3}) {
+        const bool valid=id==0 || id==65536 || id==-65536 || id==999 || id==3;
+        for(std::size_t i=0;i<commands.size();++i) {
+            auto args=commands[i].second;args[0]=id;
+            require(Access::call_span(game.vm_,commands[i].first,args)==(valid?1:0),"player command WORD slot/return differs");
+            if(valid && id!=3) {
+                const auto payload=take_rpc(peers[id==999?1:0],ids[i]);
+                if(i==1 || i==6) require(payload.numberOfBitsUsed_==0,"empty player command has extra payload");
+            }
+            require(RakNetTransportTestAccess::messages(peers[0]).empty() && RakNetTransportTestAccess::messages(peers[1]).empty(),
+                "player command reached an unintended recipient");
+        }
+    }
+    const std::array<cell,6> coordinates{0x3f800000,std::bit_cast<cell>(0xc0200000u),std::bit_cast<cell>(0x80000000u),
+        0x7fc12345,0x7f800000,std::bit_cast<cell>(0xff800000u)};
+    require(call(game.vm_,"PlayerPlaySound",{0,-1,coordinates[0],coordinates[1],coordinates[2]})==1,"sound native failed");
+    auto sound=take_rpc(peers[0],16);cell sound_id=0;std::array<cell,3> position{};
+    require(sound.numberOfBitsUsed_==128 && sound.read(&sound_id,4) && sound_id==-1 && sound.read(position.data(),12) &&
+        std::memcmp(position.data(),coordinates.data(),12)==0,"sound payload changed raw cells");
+    require(call(game.vm_,"SetPlayerVelocity",{0,coordinates[3],coordinates[4],coordinates[5]})==1,"velocity native failed");
+    const auto velocity=take_rpc(peers[0],90);
+    require(velocity.numberOfBitsUsed_==96 && std::memcmp(velocity.data_.data(),coordinates.data()+3,12)==0,
+        "velocity command clamped or changed the float bits");
+    require(player.x==10 && player.y==20 && player.z==30 && player.vx==1 && player.vy==2 && player.vz==3,
+        "player command fabricated a synchronization report");
+    for(const bool move:{true,false}) for(const cell mode:{0,1,2,3,256,257,258,-255,-1}) for(const cell time:{0,-1,1000,INT32_MIN}) {
+        require(call(game.vm_,move?"InterpolateCameraPos":"InterpolateCameraLookAt",
+            {0,coordinates[0],coordinates[1],coordinates[2],coordinates[3],coordinates[4],coordinates[5],time,mode})==1,
+            "camera interpolation native failed");
+        auto camera=take_rpc(peers[0],82);
+        require(camera.numberOfBitsUsed_==233 && camera.readBit()==move,"camera selector must occupy one bit");
+        std::array<cell,6> values{};cell duration=0;std::uint8_t actual_mode=0;
+        auto expected_mode=static_cast<std::uint8_t>(mode);if(expected_mode<1 || expected_mode>2) expected_mode=2;
+        require(camera.read(values.data(),24) && values==coordinates && camera.read(&duration,4) && duration==time &&
+            camera.read(&actual_mode,1) && actual_mode==expected_mode,"camera payload/byte normalization differs");
+    }
+}
+
+void audio_stream_commands() {
+    using Access=samp::pawn::PawnNativeTestAccess;
+    samp::server::GameLayer game;samp::server::RakNetPeer peer;
+    game.players_.resize(1);game.players_[0].in_use=true;game.players_[0].peer=&peer;
+    samp::pawn::register_server_natives(game.vm_,game);
+    for(const bool packed:{false,true}) for(const int length:{0,1,254,255,256,257,511,512}) {
+        std::string url(static_cast<std::size_t>(length),'A');
+        for(std::size_t i=0;i<url.size();++i) url[i]=static_cast<char>('A'+i%26);
+        Access::text(game.vm_,url,packed);
+        for(const cell spatial:{0,1,2,255,256,257,-1}) {
+            require(call(game.vm_,"PlayAudioStreamForPlayer",{0,0,0x3f800000,0x40000000,0x40400000,
+                std::bit_cast<cell>(-50.0f),spatial})==1,"audio stream native failed");
+            auto payload=take_rpc(peer,41);
+            const auto expected_length=static_cast<std::uint8_t>(length);
+            std::uint8_t actual_length=0,actual_spatial=0;
+            require(payload.numberOfBitsUsed_==(18u+expected_length)*8u && payload.read(&actual_length,1) &&
+                actual_length==expected_length,"audio URL byte length must wrap rather than clamp");
+            std::string actual(actual_length,'\0');
+            require(actual.empty() || payload.read(actual.data(),actual.size()),"audio URL missing");
+            std::array<float,3> position{};float radius=0;
+            require(actual==url.substr(0,expected_length) && payload.read(position.data(),12) &&
+                position==std::array<float,3>{1,2,3} && payload.read(&radius,4) && radius==-50 &&
+                payload.read(&actual_spatial,1) && actual_spatial==static_cast<std::uint8_t>(spatial),
+                "audio coordinates, radius or raw spatial byte differ");
+        }
+    }
+    require(call(game.vm_,"StopAudioStreamForPlayer",{0})==1 && take_rpc(peer,42).numberOfBitsUsed_==0,
+        "audio stop payload must be empty");
+}
 }
 
 int main(int, char**) {
@@ -313,6 +410,8 @@ int main(int, char**) {
         vehicle_creation();
         vehicle_tick_boundaries();
         cached_world_broadcasts();
+        player_commands();
+        audio_stream_commands();
         std::puts("Server native parity checks passed");
         return 0;
     } catch (const std::exception& error) {

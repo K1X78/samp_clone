@@ -15,6 +15,7 @@ add_library(samp_pawn STATIC
     amx_lookup_api.cpp
     pawn_vm.cpp
     natives.cpp
+    player_commands.cpp
     format_cells.cpp
     file_natives.cpp
     float_natives.cpp

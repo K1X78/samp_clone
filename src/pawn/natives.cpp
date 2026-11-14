@@ -581,7 +581,37 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     };
     vm.native_functions_["TogglePlayerSpectating"] = [](std::span<const cell>) -> cell { return 0; };
     vm.native_functions_["AllowAdminTeleport"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["PlayerPlaySound"] = [](std::span<const cell>) -> cell { return 0; };
+    vm.native_functions_["PlayerPlaySound"] = [&host,as_float](std::span<const cell> args) -> cell {
+        if(args.size()<5) return 0;
+        return host.play_player_sound(args[0],args[1],{as_float(args[2]),as_float(args[3]),as_float(args[4])});
+    };
+    vm.native_functions_["SetCameraBehindPlayer"] = [&host](std::span<const cell> args) -> cell {
+        return args.empty()?0:host.set_camera_behind_player(args[0]);
+    };
+    vm.native_functions_["InterpolateCameraPos"] = [&host,as_float](std::span<const cell> args) -> cell {
+        if(args.size()<9) return 0;
+        return host.interpolate_camera_pos(args[0],{as_float(args[1]),as_float(args[2]),as_float(args[3])},
+            {as_float(args[4]),as_float(args[5]),as_float(args[6])},args[7],args[8]);
+    };
+    vm.native_functions_["InterpolateCameraLookAt"] = [&host,as_float](std::span<const cell> args) -> cell {
+        if(args.size()<9) return 0;
+        return host.interpolate_camera_look_at(args[0],{as_float(args[1]),as_float(args[2]),as_float(args[3])},
+            {as_float(args[4]),as_float(args[5]),as_float(args[6])},args[7],args[8]);
+    };
+    vm.native_functions_["SetPlayerVelocity"] = [&host,as_float](std::span<const cell> args) -> cell {
+        if(args.size()<4) return 0;
+        return host.set_player_velocity(args[0],{as_float(args[1]),as_float(args[2]),as_float(args[3])});
+    };
+    vm.native_functions_["PlayAudioStreamForPlayer"] = [&host,as_float,read_script_string](std::span<const cell> args) -> cell {
+        if(args.size()<7) return 0;
+        const auto* url=read_script_string(args[1]);
+        if(!url) return 0;
+        return host.play_audio_stream_for_player(args[0],url,{as_float(args[2]),as_float(args[3]),as_float(args[4])},
+            as_float(args[5]),args[6]);
+    };
+    vm.native_functions_["StopAudioStreamForPlayer"] = [&host](std::span<const cell> args) -> cell {
+        return args.empty()?0:host.stop_audio_stream_for_player(args[0]);
+    };
     // Official: FUN_0047b970 @ 0x0047b970 (samp-server.exe)
     vm.native_functions_["GameTextForPlayer"] = [&host,player_slot,read_script_string](std::span<const cell> args) -> cell {
         if (args.size() < 4) return 0;
