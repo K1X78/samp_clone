@@ -219,6 +219,7 @@ void weather_broadcast() {
     game.players_[0].in_use = true; // Occupied but still initializing.
     game.players_[1].in_use = game.players_[1].joined = true;
     game.players_[3].in_use = true; // Occupied slot with no transport.
+    game.update_player_pool_size();
     samp::pawn::register_server_natives(game.vm_, game);
     for (const int value : {7, 257, -1}) {
         require(samp::pawn::PawnNativeTestAccess::weather(game.vm_, value) == 1, "SetWeather native failed");

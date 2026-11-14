@@ -247,6 +247,7 @@ void world() {
         p.id = i; p.in_use = p.joined = true; p.name = i ? "Second" : "First";
         p.peer = i ? &two : &one; p.ipv4_address = 0x0100007f; p.streamed_to.resize(2);
     }
+    game.update_player_pool_size();
     Access::init(game.vm_, [&](auto, auto) { return 1; });
     samp::pawn::register_server_natives(game.vm_, game);
     auto& vm = game.vm_;

@@ -267,18 +267,20 @@ void GameLayer::set_game_mode_text(std::string_view text) {
     config_->values_["gamemodetext"]=std::string(text);
 }
 
-// Official: FUN_00472f50 @ 0x00472f50 (samp-server.exe)
+// Official: FUN_00496170 @ 0x00496170 (samp-server.exe)
 void GameLayer::set_world_time(int hour) {
     world_hour_ = hour & 0xFF;
+    const auto byte=static_cast<std::uint8_t>(world_hour_);BitStream payload;payload.write(&byte,1);
+    for(std::size_t slot=0;slot<1000 && slot<players_.size() && static_cast<int>(slot)<=player_pool_highest_;++slot) {
+        const auto& player=players_[slot];
+        if(player.in_use && player.peer) send_rpc(*player.peer,94,payload);
+    }
     char buffer[16];
     std::snprintf(buffer, sizeof(buffer), "%02d:00", world_hour_);
     config_->values_["worldtime"]=buffer;
-    // 472f50 ->496170 broadcasts the low-byte hour throughRPC94.
-    const auto byte=static_cast<std::uint8_t>(world_hour_);BitStream payload;payload.write(&byte,1);
-    for(auto& player:players_) if(player.in_use && player.peer) send_rpc(*player.peer,94,payload);
 }
 
-// Official: FUN_00473f20 @ 0x00473f20 (samp-server.exe)
+// Official: FUN_00496240 @ 0x00496240 (samp-server.exe)
 void GameLayer::set_weather(int id) {
     weather_id_ = id & 0xFF;
     // 0x473f20 -> 0x496240 -> 0x493960: broadcast the low byte to
@@ -286,8 +288,10 @@ void GameLayer::set_weather(int id) {
     BitStream payload;
     const auto weather = static_cast<std::uint8_t>(weather_id_);
     payload.write(&weather, 1);
-    for (auto& player : players_)
+    for(std::size_t slot=0;slot<1000 && slot<players_.size() && static_cast<int>(slot)<=player_pool_highest_;++slot) {
+        const auto& player=players_[slot];
         if (player.in_use && player.peer) send_rpc(*player.peer, 152, payload);
+    }
     config_->values_["weather"]=std::to_string(weather_id_);
 }
 
@@ -300,8 +304,10 @@ void GameLayer::set_gravity(float gravity) {
     config_->values_["gravity"]=buffer;
     samp::proto::BitStream payload;
     payload.write(&gravity,4);
-    for(auto& player:players_) if(player.in_use && player.peer)
-        send_rpc(*player.peer,146,payload);
+    for(std::size_t slot=0;slot<1000 && slot<players_.size() && static_cast<int>(slot)<=player_pool_highest_;++slot) {
+        const auto& player=players_[slot];
+        if(player.in_use && player.peer) send_rpc(*player.peer,146,payload);
+    }
 }
 
 // Official: FUN_004708c0 @ 0x004708c0 (samp-server.exe)

@@ -168,6 +168,7 @@ void gang_zone_broadcasts() {
     game.players_[1].peer = &peers[2]; // empty slot
     game.players_[1000].in_use = game.players_[1000].joined = true; game.players_[1000].peer = &peers[3];
     game.players_[3].in_use = true; // occupied without transport
+    game.update_player_pool_size();
     samp::pawn::register_server_natives(game.vm_, game);
     for (int i = 0; i < 1024; ++i)
         require(call(game.vm_, "GangZoneCreate", {0x3f800000, 0x40000000, 0x40400000, 0x40800000}) == i,
@@ -220,7 +221,7 @@ void vehicle_creation() {
     for (const cell train : {537,538}) {
         require(call(game.vm_, "CreateVehicle", {train,0,0,0,0,1,2,120}) == 0, "dynamic train creation must fail");
         const auto id = call(game.vm_, "AddStaticVehicleEx", {train,0,0,0,0,1,2,120,1});
-        require(game.vehicles_[id].model == train && game.vehicles_[id].siren, "static locomotive creation differs");
+        require(game.vehicles_[id].model == static_cast<std::uint32_t>(train) && game.vehicles_[id].siren, "static locomotive creation differs");
         for (int i=1; i<=3; ++i)
             require(game.vehicles_[id+i].active && game.vehicles_[id+i].model == (train==537?569u:570u) &&
                 game.vehicles_[id+i].respawn_delay_ms == -1 && !game.vehicles_[id+i].siren,
@@ -269,6 +270,40 @@ void vehicle_tick_boundaries() {
     for (int i=0; i<1000 && vehicle.has_been_occupied; ++i) game.update_vehicles(10000);
     require(vehicle.health==1000, "out-of-domain player prevented idle respawn");
 }
+
+void cached_world_broadcasts() {
+    samp::server::Config config;
+    samp::server::GameLayer game;game.config_=&config;
+    game.players_.resize(1001);
+    std::array<samp::server::RakNetPeer,4> peers;
+    game.players_[0].in_use=true;game.players_[0].peer=&peers[0];
+    game.players_[999].in_use=game.players_[999].joined=true;game.players_[999].peer=&peers[1];
+    game.players_[1].peer=&peers[2];
+    game.players_[1000].in_use=game.players_[1000].joined=true;game.players_[1000].peer=&peers[3];
+    samp::pawn::register_server_natives(game.vm_,game);
+    require(call(game.vm_,"GangZoneCreate",{0,0,0,0})==0,"zone fixture allocation failed");
+    for(const bool refreshed:{false,true}) {
+        if(refreshed) game.update_player_pool_size();
+        const auto check=[&](std::uint8_t id,std::span<const std::uint8_t> expected) {
+            for(int i=0;i<4;++i) {
+                if(i==0 || (i==1 && refreshed)) {
+                    const auto payload=take_rpc(peers[i],id);
+                    require(payload.numberOfBitsUsed_==expected.size()*8 &&
+                        std::memcmp(payload.data_.data(),expected.data(),expected.size())==0,"world broadcast payload differs");
+                } else require(RakNetTransportTestAccess::messages(peers[i]).empty(),"broadcast bypassed cached pool or fixed domain");
+            }
+        };
+        const std::array<std::uint8_t,1> time{1},weather{255};
+        const std::array<std::uint8_t,4> gravity{0xcd,0xcc,0x4c,0x3c};
+        const std::array<std::uint8_t,22> zone{};
+        require(call(game.vm_,"SetWorldTime",{257})==1,"time native failed");check(94,time);
+        require(call(game.vm_,"SetWeather",{-1})==1,"weather native failed");check(152,weather);
+        require(call(game.vm_,"SetGravity",{0x3c4ccccd})==1,"gravity native failed");check(146,gravity);
+        require(call(game.vm_,"GangZoneShowForAll",{0,0})==1,"zone native failed");check(108,zone);
+        require(config.values_.at("worldtime")=="01:00" && config.values_.at("weather")=="255" &&
+            config.values_.at("gravity")=="0.012500","world query variables differ");
+    }
+}
 }
 
 int main(int, char**) {
@@ -277,6 +312,7 @@ int main(int, char**) {
         gang_zone_broadcasts();
         vehicle_creation();
         vehicle_tick_boundaries();
+        cached_world_broadcasts();
         std::puts("Server native parity checks passed");
         return 0;
     } catch (const std::exception& error) {

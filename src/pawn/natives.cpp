@@ -374,7 +374,7 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     const auto send_zone_all=[&host](std::uint8_t rpc_id,const samp::proto::BitStream& payload) {
         // 0x493960 checks occupied slots with a player object, including
         // initialization callbacks, within the fixed 1000-player domain.
-        for(std::size_t slot=0;slot<1000 && slot<host.players_.size();++slot) {
+        for(std::size_t slot=0;slot<1000 && slot<host.players_.size() && static_cast<int>(slot)<=host.player_pool_highest_;++slot) {
             const auto& player=host.players_[slot];
             if(player.in_use && player.peer)
                 host.send_rpc(*player.peer,rpc_id,payload);
