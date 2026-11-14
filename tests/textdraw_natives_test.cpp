@@ -25,6 +25,28 @@ struct PawnNativeTestAccess {
         return vm.native_functions_.at(name)(args);
     }
     static void disable(PawnVm& vm) {vm.ok_=false;}
+    static void callbacks(PawnVm& vm,std::function<samp::amx::cell(std::string_view,std::span<const samp::amx::cell>)> hook) {
+        using samp::amx::cell;
+        std::vector<cell> code{0x78,0};
+        for(const char* name:{"OnPlayerClickTextDraw","OnPlayerClickPlayerTextDraw"}) {
+            const auto index=static_cast<cell>(vm.natives_.size());
+            vm.publics_.push_back({name,static_cast<std::uint32_t>(code.size()*4)});vm.natives_.push_back({name});
+            vm.native_functions_[name]=[&vm,hook,name](auto)->cell {
+                std::array<cell,2> args{};cell bytes=0;
+                std::memcpy(&bytes,vm.image_.data()+vm.header_.dat+vm.frm_+8,4);
+                if(bytes!=8) throw std::runtime_error("textdraw callback argument extent differs");
+                std::memcpy(args.data(),vm.image_.data()+vm.header_.dat+vm.frm_+12,8);
+                return hook(name,args);
+            };
+            const cell body[]{0x2e,0x27,0,0x7b,index,0x2c,4,0x30};code.insert(code.end(),std::begin(body),std::end(body));
+        }
+        vm.header_.cod=sizeof(samp::amx::AmxHeader);vm.header_.dat=vm.header_.cod+static_cast<int>(code.size()*4);
+        vm.header_.hea=vm.header_.dat+128;vm.header_.stp=vm.header_.dat+4096;
+        vm.image_.assign(vm.header_.stp,0);std::memcpy(vm.image_.data(),&vm.header_,sizeof(vm.header_));
+        std::memcpy(vm.image_.data()+vm.header_.cod,code.data(),code.size()*4);
+        vm.amx_={};vm.amx_.base=vm.image_.data();vm.amx_.flags=0x8000;
+        vm.stk_=vm.amx_.stk=vm.amx_.stp=4092;vm.hea_=vm.hlw_=vm.amx_.hea=vm.amx_.hlw=128;vm.ok_=true;
+    }
 };
 }
 namespace samp::server {
@@ -317,8 +339,81 @@ void player_wire_and_lifetime() {
     require(std::none_of(game.players_[999].textdraw_pool.entries.begin(),game.players_[999].textdraw_pool.entries.end(),
         [](auto& e){return e.active;}),"gamemode restart retained player textdraws");
 }
+
+void selection_and_callbacks() {
+    samp::server::GameLayer game;std::array<samp::server::RakNetPeer,3> peers;
+    game.players_.resize(1001);
+    game.players_[0].in_use=true;game.players_[0].peer=&peers[0];
+    game.players_[999].in_use=true;game.players_[999].peer=&peers[1];
+    game.players_[1000].in_use=true;game.players_[1000].peer=&peers[2];
+    game.players_[3].in_use=true;
+    std::vector<std::string> trace;int consume=-1;
+    const auto record=[&](std::string tag,std::string_view name,std::span<const cell> args)->cell {
+        trace.push_back(tag+":"+(name=="OnPlayerClickTextDraw"?"G":"P")+":"+std::to_string(args[0])+":"+std::to_string(args[1]));
+        return tag=="fs"+std::to_string(consume)?-1:0;
+    };
+    Access::callbacks(game.vm_,[&](auto name,auto args){return record("gm",name,args);});
+    for(int i=0;i<2;++i) {
+        auto script=std::make_unique<samp::pawn::PawnVm>();
+        Access::callbacks(*script,[&,i](auto name,auto args){return record("fs"+std::to_string(i),name,args);});
+        game.filterscripts_.push_back(std::move(script));
+    }
+    samp::pawn::register_server_natives(game.vm_,game);
+    for(const cell player:{0,65536,-65536,999,3,1,1000,-1}) {
+        const bool valid=player==0 || player==65536 || player==-65536 || player==999 || player==3;
+        require(Access::call(game.vm_,"SelectTextDraw",{player,0x11223344})==(valid?1:0),"selection player WORD/return differs");
+        if(valid && player!=3) {
+            const auto payload=take(peers[player==999?1:0],83);
+            const std::array<std::uint8_t,5> expected{0xa2,0x19,0x91,8,0x80};
+            require(payload.numberOfBitsUsed_==33 && std::memcmp(payload.data_.data(),expected.data(),5)==0,
+                "selection must transmit one flag bit and raw colour cells");
+        }
+        require(Access::call(game.vm_,"CancelSelectTextDraw",{player})==(valid?1:0),"cancel selection native return differs");
+        if(valid && player!=3) {
+            const auto payload=take(peers[player==999?1:0],83);
+            require(payload.numberOfBitsUsed_==33 && std::all_of(payload.data_.begin(),payload.data_.end(),[](auto b){return b==0;}),
+                "cancel selection must send a zero flag/colour");
+        }
+        for(auto& peer:peers) require(Wire::take(peer).empty(),"selection command reached an unintended player");
+    }
+    require(trace.empty(),"selection natives fabricated server click callbacks");
+    const auto click=[&](samp::server::RakNetPeer& peer,std::uint16_t id,std::uint32_t bits=16) {
+        BitStream frame;const std::uint8_t header[]{20,83};frame.write(header,2);
+        frame.writeCompressed(reinterpret_cast<const std::uint8_t*>(&bits),32,true);
+        if(bits) frame.writeBits(reinterpret_cast<const std::uint8_t*>(&id),static_cast<int>(bits),false);
+        game.on_user_message(peer,frame);
+    };
+    for(const std::uint16_t id:std::array<std::uint16_t,7>{0,2047,2048,2303,2304,65000,65535}) {
+        trace.clear();click(peers[1],id);
+        const bool local=id>=2048 && id<2304;
+        const auto suffix=std::string(local?":P:999:":":G:999:")+std::to_string(local?id-2048:id);
+        require(trace==std::vector<std::string>({"fs0"+suffix,"fs1"+suffix,"gm"+suffix}),
+            "textdraw ID classification, callback order or arguments differ");
+    }
+    for(const int filter:{0,1}) for(const std::uint16_t id:std::array<std::uint16_t,2>{12,2048}) {
+        consume=filter;trace.clear();click(peers[0],id);
+        require(trace.size()==static_cast<std::size_t>(filter+1) && trace.back().starts_with("fs"+std::to_string(filter)+":"),
+            "consumed textdraw callback reached a later script");
+    }
+    consume=-1;trace.clear();click(peers[0],0,0);require(trace.empty(),"empty click payload reached scripts");
+    click(peers[0],0,1);
+    require(trace==std::vector<std::string>({"fs0:G:0:65535","fs1:G:0:65535","gm:G:0:65535"}),
+        "native ignored-read failure did not preserve cancellation ID");
+    trace.clear();game.gamemode_restarting_=true;click(peers[0],0);game.gamemode_restarting_=false;
+    click(peers[2],0);samp::server::RakNetPeer unknown;click(unknown,0);
+    require(trace.empty(),"click accepted a restarting, unknown or out-of-domain player");
+    game.filterscripts_.clear();
+    for(int i=0;i<17;++i) {
+        auto script=std::make_unique<samp::pawn::PawnVm>();
+        Access::callbacks(*script,[&,i](auto name,auto args){return record("fs"+std::to_string(i),name,args);});
+        game.filterscripts_.push_back(std::move(script));
+    }
+    consume=16;click(peers[0],7);
+    require(trace.size()==17 && trace.front()=="fs0:G:0:7" && trace[15]=="fs15:G:0:7" && trace.back()=="gm:G:0:7",
+        "textdraw filterscript dispatch exceeded the native 16-slot domain");
+}
 }
 int main(int,char**) {
-    try {allocation_and_style();wire_and_lifetime();player_allocation_and_style();player_wire_and_lifetime();std::puts("textdraw native checks passed");return 0;}
+    try {allocation_and_style();wire_and_lifetime();player_allocation_and_style();player_wire_and_lifetime();selection_and_callbacks();std::puts("textdraw native checks passed");return 0;}
     catch(const std::exception& error) {std::fprintf(stderr,"%s\n",error.what());return 1;}
 }

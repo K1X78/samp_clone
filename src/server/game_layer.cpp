@@ -488,6 +488,7 @@ void GameLayer::handle_rpc_packet(RakNetPeer& peer, const BitStream& message) {
         }
         case 184: handle_model_finish(peer, payload); break;
         case 155: handle_score_request(peer); break;
+        case 83: handle_textdraw_click(peer,payload); break;
         // 497a10 ->483770 accepts eight target bytes only while enabled.
         case 168: {
             if (gamemode_restarting_) break;

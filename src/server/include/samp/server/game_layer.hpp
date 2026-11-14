@@ -198,6 +198,11 @@ public:
 
 private:
     void handle_rpc_packet(RakNetPeer& peer, const samp::proto::BitStream& message);
+    void handle_textdraw_click(RakNetPeer& peer,const samp::proto::BitStream& payload);
+    bool filterscript_textdraw_click(int player,int id);
+    bool filterscript_player_textdraw_click(int player,int id);
+    std::uint32_t gamemode_textdraw_click(int player,int id);
+    std::uint32_t gamemode_player_textdraw_click(int player,int id);
     void relay_sync(const GamePlayer& player, const samp::proto::BitStream& payload);
     void handle_driver_packet(GamePlayer& player, const samp::proto::BitStream& message);
     void handle_passenger_packet(GamePlayer& player, const samp::proto::BitStream& message);

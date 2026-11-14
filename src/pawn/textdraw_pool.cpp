@@ -13,7 +13,7 @@ void TextDrawPool::reset() {
 
 // Official: FUN_00466bb0 @ 0x00466bb0 (samp-server.exe)
 void TextDrawPool::release() {
-    entries.clear();
+    std::vector<TextDrawNativeState>{}.swap(entries);
 }
 
 // Official: FUN_00466c00 @ 0x00466c00 (samp-server.exe)

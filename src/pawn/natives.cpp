@@ -1103,6 +1103,12 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     vm.native_functions_["PlayerTextDrawDestroy"] = [&host](std::span<const cell> a)->cell {
         return a.size()<2?0:host.player_text_draw_destroy(a[0],a[1]);
     };
+    vm.native_functions_["SelectTextDraw"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.select_text_draw(a[0],static_cast<std::uint32_t>(a[1]));
+    };
+    vm.native_functions_["CancelSelectTextDraw"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.cancel_select_text_draw(a[0]);
+    };
 
     // 00472c50 delegates slot selection to the original 004841a0 table.
     vm.native_functions_["GetPlayerAmmo"]=[player_slot](std::span<const cell> args)->cell {

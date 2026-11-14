@@ -45,6 +45,10 @@ struct PlayerTextDrawPool {
 
     PlayerTextDrawPool();
     ~PlayerTextDrawPool();
+    PlayerTextDrawPool(const PlayerTextDrawPool&)=default;
+    PlayerTextDrawPool& operator=(const PlayerTextDrawPool&)=default;
+    PlayerTextDrawPool(PlayerTextDrawPool&&) noexcept=default;
+    PlayerTextDrawPool& operator=(PlayerTextDrawPool&&) noexcept=default;
     std::uint16_t create(std::int32_t x,std::int32_t y,std::string_view text);
     void letter_size(std::uint16_t id,std::int32_t x,std::int32_t y);
     void text_size(std::uint16_t id,std::int32_t x,std::int32_t y);

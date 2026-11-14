@@ -269,6 +269,8 @@ public:
     int player_text_draw_show(int player,int id);
     int player_text_draw_hide(int player,int id);
     int player_text_draw_destroy(int player,int id);
+    int select_text_draw(int player,std::uint32_t colour);
+    int cancel_select_text_draw(int player);
 
     // The maximum number of players.
     [[nodiscard]] virtual int max_players() const = 0;
