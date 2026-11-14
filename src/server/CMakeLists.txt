@@ -12,6 +12,7 @@ add_library(samp_server STATIC
     pickup_stream.cpp
     player_queries.cpp
     textdraw_callbacks.cpp
+    menu_callbacks.cpp
     remote_console.cpp
     gamemode_lifecycle.cpp
     model_registry.cpp

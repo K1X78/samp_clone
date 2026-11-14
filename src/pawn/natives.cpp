@@ -1109,6 +1109,39 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     vm.native_functions_["CancelSelectTextDraw"] = [&host](std::span<const cell> a)->cell {
         return a.empty()?0:host.cancel_select_text_draw(a[0]);
     };
+    vm.native_functions_["CreateMenu"] = [&host,read_script_string](std::span<const cell> a)->cell {
+        if(a.size()<6) return -1;const auto* text=read_script_string(a[0]);
+        return host.create_menu(text?text:"",a[1],{a[2],a[3],a[4],a[5]});
+    };
+    vm.native_functions_["DestroyMenu"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.destroy_menu(a[0]);
+    };
+    vm.native_functions_["AddMenuItem"] = [&host,read_script_string](std::span<const cell> a)->cell {
+        if(a.size()<3) return 0;const auto* text=read_script_string(a[2]);
+        return host.add_menu_item(a[0],a[1],text?text:"");
+    };
+    vm.native_functions_["SetMenuColumnHeader"] = [&host,read_script_string](std::span<const cell> a)->cell {
+        if(a.size()<3) return 0;const auto* text=read_script_string(a[2]);
+        return host.set_menu_header(a[0],a[1],text?text:"");
+    };
+    vm.native_functions_["ShowMenuForPlayer"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.show_menu_for_player(a[0],a[1]);
+    };
+    vm.native_functions_["HideMenuForPlayer"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.hide_menu_for_player(a[0],a[1]);
+    };
+    vm.native_functions_["IsValidMenu"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.is_valid_menu(a[0]);
+    };
+    vm.native_functions_["DisableMenu"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.disable_menu(a[0]);
+    };
+    vm.native_functions_["DisableMenuRow"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.disable_menu_row(a[0],a[1]);
+    };
+    vm.native_functions_["GetPlayerMenu"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?255:host.get_player_menu(a[0]);
+    };
 
     // 00472c50 delegates slot selection to the original 004841a0 table.
     vm.native_functions_["GetPlayerAmmo"]=[player_slot](std::span<const cell> args)->cell {

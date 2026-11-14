@@ -47,6 +47,12 @@ public:
         if(!VirtualProtect(code_,size_,PAGE_EXECUTE_READ,&previous)) throw std::runtime_error("reference protection failed");
         FlushInstructionCache(GetCurrentProcess(),code_,size_);
     }
+    void pointer(std::uint32_t operand,const void* target) {
+        if(operand<address_ || std::uint64_t(operand-address_)+4>size_)
+            throw std::runtime_error("reference pointer outside copy");
+        const auto value=static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(target));
+        std::memcpy(code_+operand-address_,&value,4);
+    }
     void* entry(std::uint32_t address) const {
         if(address<address_ || address-address_>=size_) throw std::runtime_error("reference entry outside copy");
         return code_+address-address_;

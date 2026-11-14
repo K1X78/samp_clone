@@ -53,13 +53,14 @@ void GameLayer::begin_gamemode_restart() {
     samp::amx::cell result=0;vm_.execute("OnGameModeExit",{},result);
     remove_script_timers(&vm_);vm_.ok_=false;
     classes_.clear();objects_.assign(objects_.size(),{});vehicles_.assign(vehicles_.size(),{});pickups_.assign(pickups_.size(),{});
-    textdraw_pool_.release();
+    menu_pool_.reset();textdraw_pool_.release();
     gang_zones_.fill({});gravity_=0.008f;
     world_hour_=12;weather_id_=1;gamemode_restarting_=true;gamemode_restart_elapsed_=0.f;
 }
 
 // Official: FUN_004963f0 @ 0x004963f0 (samp-server.exe)
 void GameLayer::finish_gamemode_restart() {
+    menu_pool_.reset(new(std::nothrow) samp::pawn::MenuPool);
     textdraw_pool_.reset();
     auto& vm=vm_;const auto path=std::filesystem::path(gamemodes_directory_)/(next_gamemode_+".amx");
     std::ifstream input(path,std::ios::binary);std::vector<std::uint8_t> bytes{std::istreambuf_iterator<char>(input),{}};

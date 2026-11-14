@@ -489,6 +489,8 @@ void GameLayer::handle_rpc_packet(RakNetPeer& peer, const BitStream& message) {
         case 184: handle_model_finish(peer, payload); break;
         case 155: handle_score_request(peer); break;
         case 83: handle_textdraw_click(peer,payload); break;
+        case 132: handle_menu_row(peer,payload); break;
+        case 140: handle_menu_exit(peer); break;
         // 497a10 ->483770 accepts eight target bytes only while enabled.
         case 168: {
             if (gamemode_restarting_) break;
@@ -710,6 +712,7 @@ void GameLayer::handle_player_connect(RakNetPeer& peer, const BitStream& payload
     update_player_pool_size();
     player.models_ready=!artwork_enabled_ || models_.empty();
     if(artwork_enabled_) send_model_manifest(player);
+    if(!gamemode_restarting_ && menu_pool_) menu_pool_->reset_player(static_cast<std::uint16_t>(slot));
     initialize_player(player);
 }
 

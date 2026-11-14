@@ -26,9 +26,12 @@
 #include <vector>
 #include <array>
 #include <map>
+#include <memory>
+#include <new>
 
 #include "pawn/pawn_vm.hpp"
 #include "pawn/textdraws.hpp"
+#include "pawn/menus.hpp"
 
 namespace samp::server { class RakNetPeer; }
 namespace samp::proto { class BitStream; }
@@ -199,6 +202,7 @@ public:
     float name_tag_draw_distance_=70.0f;
     std::array<GangZoneNativeState,1024> gang_zones_{};
     TextDrawPool textdraw_pool_{this};
+    std::unique_ptr<MenuPool> menu_pool_{new(std::nothrow) MenuPool};
     std::vector<StaticPickupNativeState> pickups_=std::vector<StaticPickupNativeState>(4096);
     bool artwork_enabled_=false;
     std::string models_directory_="models";
@@ -271,6 +275,16 @@ public:
     int player_text_draw_destroy(int player,int id);
     int select_text_draw(int player,std::uint32_t colour);
     int cancel_select_text_draw(int player);
+    int create_menu(std::string title,int columns,const std::array<std::int32_t,4>& position);
+    int destroy_menu(int id);
+    int add_menu_item(int id,int column,std::string text);
+    int set_menu_header(int id,int column,std::string text);
+    int show_menu_for_player(int id,int player);
+    int hide_menu_for_player(int id,int player);
+    int is_valid_menu(int id);
+    int disable_menu(int id);
+    int disable_menu_row(int id,int row);
+    int get_player_menu(int player);
 
     // The maximum number of players.
     [[nodiscard]] virtual int max_players() const = 0;
