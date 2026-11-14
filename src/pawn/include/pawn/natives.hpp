@@ -33,6 +33,7 @@
 #include "pawn/textdraws.hpp"
 #include "pawn/menus.hpp"
 #include "pawn/player_variables.hpp"
+#include "pawn/server_variables.hpp"
 
 namespace samp::server { class RakNetPeer; }
 namespace samp::proto { class BitStream; }
@@ -205,6 +206,7 @@ public:
     std::array<GangZoneNativeState,1024> gang_zones_{};
     TextDrawPool textdraw_pool_{this};
     std::unique_ptr<MenuPool> menu_pool_{new(std::nothrow) MenuPool};
+    std::shared_ptr<ServerVariablePool> server_variables_;
     std::vector<StaticPickupNativeState> pickups_=std::vector<StaticPickupNativeState>(4096);
     bool artwork_enabled_=false;
     std::string models_directory_="models";

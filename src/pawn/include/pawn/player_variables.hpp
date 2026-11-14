@@ -5,6 +5,8 @@
 
 namespace samp::pawn {
 
+void variable_upper_name(char* name);
+
 struct VariableEntry {
     std::array<char,41> name;
     std::uint32_t read_only,type;

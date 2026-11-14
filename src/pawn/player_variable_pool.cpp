@@ -10,7 +10,7 @@ static int variable_upper_character(char value) {
 }
 
 // Official: FUN_00468d20 @ 0x00468d20 (samp-server.exe)
-static void variable_upper_name(char* name) {
+void variable_upper_name(char* name) {
     for(;*name!=0;++name) *name=static_cast<char>(variable_upper_character(*name));
 }
 
