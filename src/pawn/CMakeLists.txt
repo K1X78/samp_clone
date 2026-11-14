@@ -18,6 +18,8 @@ add_library(samp_pawn STATIC
     player_commands.cpp
     textdraw_pool.cpp
     textdraw_natives.cpp
+    player_textdraw_pool.cpp
+    player_textdraw_natives.cpp
     format_cells.cpp
     file_natives.cpp
     float_natives.cpp

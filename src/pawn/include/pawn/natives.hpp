@@ -80,6 +80,7 @@ struct PlayerNativeState {
     bool is_npc = false;
     bool is_admin = false;
     bool camera_targeting=false;
+    PlayerTextDrawPool textdraw_pool;
     std::array<std::uint16_t,4> camera_targets{0xffff,0xffff,0xffff,0xffff};
     bool joined = false;
     bool models_ready = false,model_finish_reported=false;
@@ -248,6 +249,26 @@ public:
     int text_draw_show_for_all(int id);
     int text_draw_hide_for_all(int id);
     int text_draw_destroy(int id);
+    int player_text_draw_create(int player,std::int32_t x,std::int32_t y,std::string_view text);
+    int player_text_draw_set_string(int player,int id,std::string_view text);
+    int player_text_draw_letter_size(int player,int id,std::int32_t x,std::int32_t y);
+    int player_text_draw_text_size(int player,int id,std::int32_t x,std::int32_t y);
+    int player_text_draw_alignment(int player,int id,int value);
+    int player_text_draw_colour(int player,int id,std::uint32_t value);
+    int player_text_draw_use_box(int player,int id,int value);
+    int player_text_draw_box_colour(int player,int id,std::uint32_t value);
+    int player_text_draw_shadow(int player,int id,int value);
+    int player_text_draw_outline(int player,int id,int value);
+    int player_text_draw_background_colour(int player,int id,std::uint32_t value);
+    int player_text_draw_font(int player,int id,int value);
+    int player_text_draw_proportional(int player,int id,int value);
+    int player_text_draw_selectable(int player,int id,int value);
+    int player_text_draw_preview_model(int player,int id,int value);
+    int player_text_draw_preview_rotation(int player,int id,const std::array<std::int32_t,4>& values);
+    int player_text_draw_preview_colours(int player,int id,int first,int second);
+    int player_text_draw_show(int player,int id);
+    int player_text_draw_hide(int player,int id);
+    int player_text_draw_destroy(int player,int id);
 
     // The maximum number of players.
     [[nodiscard]] virtual int max_players() const = 0;

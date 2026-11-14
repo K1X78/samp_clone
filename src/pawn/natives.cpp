@@ -1039,6 +1039,70 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     vm.native_functions_["TextDrawDestroy"] = [&host](std::span<const cell> a)->cell {
         return a.empty()?0:host.text_draw_destroy(a[0]);
     };
+    vm.native_functions_["CreatePlayerTextDraw"] = [&host,read_script_string](std::span<const cell> a)->cell {
+        if(a.size()<4) return 0;
+        const auto* text=read_script_string(a[3]);
+        return host.player_text_draw_create(a[0],a[1],a[2],text?text:"");
+    };
+    vm.native_functions_["PlayerTextDrawSetString"] = [&host,read_script_string](std::span<const cell> a)->cell {
+        if(a.size()<3) return 0;
+        const auto* text=read_script_string(a[2]);
+        return host.player_text_draw_set_string(a[0],a[1],text?text:"");
+    };
+    vm.native_functions_["PlayerTextDrawLetterSize"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<4?0:host.player_text_draw_letter_size(a[0],a[1],a[2],a[3]);
+    };
+    vm.native_functions_["PlayerTextDrawTextSize"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<4?0:host.player_text_draw_text_size(a[0],a[1],a[2],a[3]);
+    };
+    vm.native_functions_["PlayerTextDrawAlignment"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_alignment(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawColor"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_colour(a[0],a[1],static_cast<std::uint32_t>(a[2]));
+    };
+    vm.native_functions_["PlayerTextDrawUseBox"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_use_box(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawBoxColor"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_box_colour(a[0],a[1],static_cast<std::uint32_t>(a[2]));
+    };
+    vm.native_functions_["PlayerTextDrawSetShadow"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_shadow(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawSetOutline"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_outline(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawBackgroundColor"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_background_colour(a[0],a[1],static_cast<std::uint32_t>(a[2]));
+    };
+    vm.native_functions_["PlayerTextDrawFont"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_font(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawSetProportional"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_proportional(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawSetSelectable"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_selectable(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawSetPreviewModel"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_preview_model(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawSetPreviewRot"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<6?0:host.player_text_draw_preview_rotation(a[0],a[1],{a[2],a[3],a[4],a[5]});
+    };
+    vm.native_functions_["PlayerTextDrawSetPreviewVehCol"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<4?0:host.player_text_draw_preview_colours(a[0],a[1],a[2],a[3]);
+    };
+    vm.native_functions_["PlayerTextDrawShow"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.player_text_draw_show(a[0],a[1]);
+    };
+    vm.native_functions_["PlayerTextDrawHide"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.player_text_draw_hide(a[0],a[1]);
+    };
+    vm.native_functions_["PlayerTextDrawDestroy"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.player_text_draw_destroy(a[0],a[1]);
+    };
 
     // 00472c50 delegates slot selection to the original 004841a0 table.
     vm.native_functions_["GetPlayerAmmo"]=[player_slot](std::span<const cell> args)->cell {

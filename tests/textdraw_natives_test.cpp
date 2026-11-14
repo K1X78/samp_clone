@@ -21,6 +21,9 @@ struct PawnNativeTestAccess {
     static samp::amx::cell call(PawnVm& vm,const char* name,std::initializer_list<samp::amx::cell> args) {
         return vm.native_functions_.at(name)({args.begin(),args.size()});
     }
+    static samp::amx::cell call_span(PawnVm& vm,const char* name,std::span<const samp::amx::cell> args) {
+        return vm.native_functions_.at(name)(args);
+    }
     static void disable(PawnVm& vm) {vm.ok_=false;}
 };
 }
@@ -86,6 +89,47 @@ public:
     void single(std::uint32_t address,unsigned id,cell value) {
         using Single=void(__thiscall*)(void*,std::uint16_t,cell);
         reinterpret_cast<Single>(code_.entry(address))(state_.data(),static_cast<std::uint16_t>(id),value);
+    }
+};
+
+class OfficialPlayerPool {
+    ReferenceCode code_{SAMP_OFFICIAL_SERVER_PATH,0x4886d0,0x346};
+    ReferenceCode rotation_{SAMP_OFFICIAL_SERVER_PATH,0x46fd60,0x33};
+    std::array<std::uint8_t,0xd02> state_{};
+public:
+    OfficialPlayerPool() {
+        code_.redirect(0x48872b,reinterpret_cast<const void*>(&std::free));
+        code_.redirect(0x488744,reinterpret_cast<const void*>(&std::free));
+        code_.redirect(0x4887a6,reinterpret_cast<const void*>(&std::calloc));
+        code_.redirect(0x4887b4,reinterpret_cast<const void*>(&std::calloc));
+        code_.redirect(0x4887d9,reinterpret_cast<const void*>(static_cast<char*(__cdecl*)(char*,const char*,std::size_t)>(&std::strncpy)));
+        code_.executable();rotation_.executable();
+        using Constructor=void(__thiscall*)(void*);
+        reinterpret_cast<Constructor>(code_.entry(0x4886d0))(state_.data());
+    }
+    ~OfficialPlayerPool() {
+        using Destructor=void(__thiscall*)(void*);
+        reinterpret_cast<Destructor>(code_.entry(0x488710))(state_.data());
+    }
+    unsigned create(cell x,cell y,const std::string& text) {
+        using Create=std::uint16_t(__thiscall*)(void*,cell,cell,const char*);
+        return reinterpret_cast<Create>(code_.entry(0x488760))(state_.data(),x,y,text.c_str());
+    }
+    std::array<std::uint8_t,63> data(unsigned id) const {
+        std::uint32_t pointer=0;std::memcpy(&pointer,state_.data()+0x400+id*4,4);
+        std::array<std::uint8_t,63> result{};std::memcpy(result.data(),reinterpret_cast<const void*>(pointer),63);return result;
+    }
+    void pair(std::uint32_t address,unsigned id,cell x,cell y) {
+        using Pair=void(__thiscall*)(void*,std::uint16_t,cell,cell);
+        reinterpret_cast<Pair>(code_.entry(address))(state_.data(),static_cast<std::uint16_t>(id),x,y);
+    }
+    void single(std::uint32_t address,unsigned id,cell value) {
+        using Single=void(__thiscall*)(void*,std::uint16_t,cell);
+        reinterpret_cast<Single>(code_.entry(address))(state_.data(),static_cast<std::uint16_t>(id),value);
+    }
+    void rotation(unsigned id,const std::array<cell,4>& values) {
+        using Rotation=void(__thiscall*)(void*,std::uint16_t,cell,cell,cell,cell);
+        reinterpret_cast<Rotation>(rotation_.entry(0x46fd60))(state_.data(),static_cast<std::uint16_t>(id),values[0],values[1],values[2],values[3]);
     }
 };
 #endif
@@ -179,8 +223,102 @@ void wire_and_lifetime() {
     game.textdraw_pool_.reset();Access::text(game.vm_,"new mode");
     require(Access::call(game.vm_,"TextDrawCreate",{0,0,0})==0 && game.textdraw_pool_.entries[0].data[31]==1,"new textdraw pool retained previous styles");
 }
+
+void player_allocation_and_style() {
+    samp::server::GameLayer game;game.players_.resize(1001);
+    game.players_[0].in_use=game.players_[999].in_use=game.players_[1000].in_use=true;
+    samp::pawn::register_server_natives(game.vm_,game);Access::text(game.vm_,"player");
+    require(game.players_[0].textdraw_pool.owner==65535,"player textdraw constructor owner differs");
+    for(const int player:{1,1000,-1})
+        require(Access::call(game.vm_,"CreatePlayerTextDraw",{player,0,0,0})==0,"invalid player creation sentinel differs");
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(SAMP_OFFICIAL_SERVER_PATH)
+    OfficialPlayerPool official;
+#endif
+    for(int id=0;id<256;++id) {
+        const std::string text(id==0?1025:0,'L');Access::text(game.vm_,text,id%2!=0);
+        require(Access::call(game.vm_,"CreatePlayerTextDraw",{65536,0x3f800000,std::bit_cast<cell>(-2.0f),0})==id,
+            "per-player textdraw allocation differs");
+        require(game.players_[0].textdraw_pool.entries[id].text==text.substr(0,1024),"per-player textdraw string extent differs");
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(SAMP_OFFICIAL_SERVER_PATH)
+        require(official.create(0x3f800000,std::bit_cast<cell>(-2.0f),text)==static_cast<unsigned>(id) &&
+            game.players_[0].textdraw_pool.entries[id].data==official.data(id),"per-player defaults differ from original");
+#endif
+    }
+    require(Access::call(game.vm_,"CreatePlayerTextDraw",{0,0,0,0})==65535,"per-player textdraw full-pool sentinel differs");
+    require(Access::call(game.vm_,"CreatePlayerTextDraw",{999,0,0,0})==0 && game.players_[999].textdraw_pool.owner==999,
+        "player textdraw allocation was not isolated by owner");
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(SAMP_OFFICIAL_SERVER_PATH)
+    require(official.create(0,0,"")==65535,"original per-player full-pool return differs");
+    for(const cell value:{0,1,2,3,255,256,257,-1,INT32_MIN,0x7fc12345}) {
+        const cell other=std::bit_cast<cell>(0xff800000u);
+        auto& data=game.players_[0].textdraw_pool.entries[0].data;
+        require(Access::call(game.vm_,"PlayerTextDrawLetterSize",{-65536,65536,value,other})==1,"player/draw WORD aliases rejected");
+        official.pair(0x488890,0,value,other);require(data==official.data(0),"per-player letter size differs from original");
+        Access::call(game.vm_,"PlayerTextDrawTextSize",{0,0,value,other});official.pair(0x4888c0,0,value,other);
+        require(data==official.data(0),"per-player text size differs from original");
+        for(const auto& [name,address]:std::array<std::pair<const char*,std::uint32_t>,5>{{
+            {"PlayerTextDrawAlignment",0x4888f0},{"PlayerTextDrawColor",0x488940},{"PlayerTextDrawBoxColor",0x488980},
+            {"PlayerTextDrawBackgroundColor",0x4889c0},{"PlayerTextDrawSetSelectable",0x488a00}}}) {
+            require(Access::call(game.vm_,name,{0,0,value})==1,"per-player style native failed");official.single(address,0,value);
+            require(data==official.data(0),"per-player field differs from original instructions");
+        }
+        const std::array<cell,4> values{value,INT32_MIN,0x7fc12345,0x3f800000};
+        Access::call(game.vm_,"PlayerTextDrawSetPreviewRot",{0,0,values[0],values[1],values[2],values[3]});official.rotation(0,values);
+        require(data==official.data(0),"per-player preview rotation differs from original");
+    }
+#endif
+    for(const cell value:{0,1,2,255,256,257,-1}) {
+        auto expected=game.players_[0].textdraw_pool.entries[0].data;
+        Access::call(game.vm_,"PlayerTextDrawUseBox",{0,0,value});expected[0]=static_cast<std::uint8_t>((expected[0]&0xfe)|(static_cast<std::uint8_t>(value)!=0));
+        Access::call(game.vm_,"PlayerTextDrawSetProportional",{0,0,value});expected[0]=static_cast<std::uint8_t>((expected[0]&0xef)|(static_cast<std::uint8_t>(value)!=0?16:0));
+        Access::call(game.vm_,"PlayerTextDrawSetShadow",{0,0,value});expected[25]=static_cast<std::uint8_t>(value);
+        Access::call(game.vm_,"PlayerTextDrawSetOutline",{0,0,value});expected[26]=static_cast<std::uint8_t>(value);
+        Access::call(game.vm_,"PlayerTextDrawFont",{0,0,value});expected[31]=static_cast<std::uint8_t>(value);
+        const auto model=static_cast<std::uint16_t>(value);
+        Access::call(game.vm_,"PlayerTextDrawSetPreviewModel",{0,0,value});std::memcpy(expected.data()+41,&model,2);
+        Access::call(game.vm_,"PlayerTextDrawSetPreviewVehCol",{0,0,value,-1});std::memcpy(expected.data()+59,&model,2);expected[61]=expected[62]=255;
+        require(game.players_[0].textdraw_pool.entries[0].data==expected,"per-player bit/byte/WORD storage differs");
+    }
+    require(Access::call(game.vm_,"PlayerTextDrawFont",{1,0,5})==0 && Access::call(game.vm_,"PlayerTextDrawFont",{0,256,5})==0 &&
+        Access::call(game.vm_,"PlayerTextDrawFont",{0,-1,5})==0,"invalid player/draw slot accepted");
+    require(Access::call(game.vm_,"PlayerTextDrawDestroy",{0,17})==1 && Access::call(game.vm_,"PlayerTextDrawDestroy",{0,17})==0 &&
+        Access::call(game.vm_,"CreatePlayerTextDraw",{0,0,0,0})==17,"per-player textdraw hole reuse differs");
+}
+
+void player_wire_and_lifetime() {
+    samp::server::GameLayer game;samp::server::Config config;game.config_=&config;
+    std::array<samp::server::RakNetPeer,2> peers;game.players_.resize(1000);
+    game.players_[0].in_use=true;game.players_[0].peer=&peers[0];
+    game.players_[999].in_use=true;game.players_[999].peer=&peers[1];
+    samp::pawn::register_server_natives(game.vm_,game);Access::text(game.vm_,"local",true);
+    require(Access::call(game.vm_,"CreatePlayerTextDraw",{0,0,0,0})==0 &&
+        Access::call(game.vm_,"CreatePlayerTextDraw",{999,0,0,0})==0,"separate player pools could not share local ID zero");
+    require(Access::call(game.vm_,"PlayerTextDrawShow",{999,0})==1 && Wire::take(peers[0]).empty(),"local show reached another player");
+    auto shown=take(peers[1],134);std::uint16_t id=0,length=0;std::array<std::uint8_t,63> data{};
+    require(shown.read(&id,2) && id==2048 && shown.read(data.data(),63) &&
+        data==game.players_[999].textdraw_pool.entries[0].data && shown.read(&length,2) && length==5,
+        "player textdraw ID offset/layout differs");
+    Access::text(game.vm_,std::string(1025,'P'));Access::call(game.vm_,"PlayerTextDrawSetString",{0,0,0});
+    require(Wire::take(peers[0]).empty() && Wire::take(peers[1]).empty(),"hidden local string update was sent");
+    Access::call(game.vm_,"PlayerTextDrawSetString",{999,0,0});auto changed=take(peers[1],105);
+    require(changed.numberOfBitsUsed_==1028*8 && changed.read(&id,2) && id==2048 && changed.read(&length,2) && length==1024,
+        "per-player string update wire extent differs");
+    Access::call(game.vm_,"PlayerTextDrawHide",{999,0});auto hidden=take(peers[1],135);
+    require(hidden.numberOfBitsUsed_==16 && hidden.read(&id,2) && id==2048,"per-player hide wire ID differs");
+    Access::call(game.vm_,"PlayerTextDrawHide",{999,0});require(Wire::take(peers[1]).empty(),"duplicate local hide was sent");
+    Access::call(game.vm_,"PlayerTextDrawShow",{0,0});take(peers[0],134);
+    Access::call(game.vm_,"PlayerTextDrawDestroy",{0,0});take(peers[0],135);
+    require(game.players_[999].textdraw_pool.entries[0].active,"local destroy affected another player's draw");
+    Access::text(game.vm_,"recreated");Access::call(game.vm_,"CreatePlayerTextDraw",{0,0,0,0});
+    Access::disable(game.vm_);game.disconnect_player(0,1);Wire::take(peers[1]);
+    require(!game.players_[0].in_use && std::none_of(game.players_[0].textdraw_pool.entries.begin(),
+        game.players_[0].textdraw_pool.entries.end(),[](auto& e){return e.active;}),"disconnect retained local textdraws");
+    game.begin_gamemode_restart();take(peers[1],40);
+    require(std::none_of(game.players_[999].textdraw_pool.entries.begin(),game.players_[999].textdraw_pool.entries.end(),
+        [](auto& e){return e.active;}),"gamemode restart retained player textdraws");
+}
 }
 int main(int,char**) {
-    try {allocation_and_style();wire_and_lifetime();std::puts("textdraw native checks passed");return 0;}
+    try {allocation_and_style();wire_and_lifetime();player_allocation_and_style();player_wire_and_lifetime();std::puts("textdraw native checks passed");return 0;}
     catch(const std::exception& error) {std::fprintf(stderr,"%s\n",error.what());return 1;}
 }

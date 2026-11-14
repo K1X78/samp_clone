@@ -37,4 +37,26 @@ struct TextDrawPool {
     void set_string(std::uint16_t id,std::string_view text);
     void destroy(std::uint16_t id);
 };
+
+struct PlayerTextDrawPool {
+    std::uint16_t owner=0xffff;
+    std::vector<TextDrawNativeState> entries;
+    std::array<std::uint8_t,256> shown{};
+
+    PlayerTextDrawPool();
+    ~PlayerTextDrawPool();
+    std::uint16_t create(std::int32_t x,std::int32_t y,std::string_view text);
+    void letter_size(std::uint16_t id,std::int32_t x,std::int32_t y);
+    void text_size(std::uint16_t id,std::int32_t x,std::int32_t y);
+    void alignment(std::uint16_t id,std::uint8_t value);
+    void colour(std::uint16_t id,std::uint32_t value);
+    void box_colour(std::uint16_t id,std::uint32_t value);
+    void background_colour(std::uint16_t id,std::uint32_t value);
+    void selectable(std::uint16_t id,std::uint8_t value);
+    void preview_rotation(std::uint16_t id,const std::array<std::int32_t,4>& values);
+    void show(NativeHost& host,std::uint16_t id);
+    void hide(NativeHost& host,std::uint16_t id);
+    void set_string(NativeHost& host,std::uint16_t id,std::string_view text);
+    void destroy(NativeHost& host,std::uint16_t id);
+};
 }
