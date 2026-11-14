@@ -142,6 +142,8 @@ void server() {
         CHECK((id>0)==accepted);
         if(id>0) Access::call(vm,"KillTimer",{id});
     }
+    // Original expiry skips the successor, including cancelled timers.
+    game.process_script_timers(0);game.process_script_timers(0);CHECK(game.script_timers_.empty());
     Access::text(vm,700,"ai");
     const cell array[]{10,20,30}, array_length=2;
     for(int i=0;i<3;++i) Access::write_cell(vm,900+i*4,array[i]);
