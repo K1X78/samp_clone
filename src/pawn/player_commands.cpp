@@ -89,4 +89,47 @@ int NativeHost::stop_audio_stream_for_player(int player) {
     return 1;
 }
 
+// Official: FUN_0047af60 @ 0x0047af60 (samp-server.exe)
+int NativeHost::set_player_pos_find_z(int player, const std::array<float,3>& position) {
+    const auto slot=static_cast<std::uint16_t>(player);
+    if(slot>=1000 || slot>=players_.size() || !players_[slot].in_use) return 0;
+    samp::proto::BitStream payload;
+    payload.write(position.data(),12);
+    if(players_[slot].peer) send_rpc(*players_[slot].peer,13,payload);
+    return 1;
+}
+
+// Official: FUN_0047bbe0 @ 0x0047bbe0 (samp-server.exe)
+int NativeHost::set_player_special_action(int player, int action) {
+    const auto slot=static_cast<std::uint16_t>(player);
+    if(slot>=1000 || slot>=players_.size() || !players_[slot].in_use) return 0;
+    const auto byte=static_cast<std::uint8_t>(action);
+    samp::proto::BitStream payload;
+    payload.write(&byte,1);
+    if(players_[slot].peer) send_rpc(*players_[slot].peer,88,payload);
+    return 1;
+}
+
+// Official: FUN_0047c820 @ 0x0047c820 (samp-server.exe)
+int NativeHost::set_player_ammo(int player, int weapon, int ammunition) {
+    const auto slot=static_cast<std::uint16_t>(player);
+    if(slot>=1000 || slot>=players_.size() || !players_[slot].in_use) return 0;
+    const auto byte=static_cast<std::uint8_t>(weapon);
+    const auto count=static_cast<std::uint16_t>(ammunition);
+    samp::proto::BitStream payload;
+    payload.write(&byte,1);payload.write(&count,2);
+    if(players_[slot].peer) send_rpc(*players_[slot].peer,145,payload);
+    return 1;
+}
+
+// Official: FUN_00480d70 @ 0x00480d70 (samp-server.exe)
+int NativeHost::remove_building_for_player(int player, int model, const std::array<float,3>& position, float radius) {
+    const auto slot=static_cast<std::uint16_t>(player);
+    if(slot>=1000 || slot>=players_.size() || !players_[slot].in_use) return 0;
+    samp::proto::BitStream payload;
+    payload.write(&model,4);payload.write(position.data(),12);payload.write(&radius,4);
+    if(players_[slot].peer) send_rpc(*players_[slot].peer,43,payload);
+    return 0; // The official owner returns zero even after sending the RPC.
+}
+
 } // namespace samp::pawn

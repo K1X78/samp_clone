@@ -35,7 +35,11 @@ struct RakNetTransportTestAccess {
     static std::vector<samp::proto::BitStream> messages(RakNetPeer& peer) {
         std::vector<samp::proto::BitStream> result;
         for (const auto& queue : peer.send_state_.unsent)
-            for (const auto& frame : queue) result.push_back(frame.data);
+            for (const auto& frame : queue) {
+                if(frame.reliability!=samp::proto::Reliability::ReliableOrdered || frame.ordering_channel!=2)
+                    throw std::runtime_error("player RPC reliability/channel differs");
+                result.push_back(frame.data);
+            }
         peer.send_state_ = {};
         return result;
     }
@@ -326,19 +330,21 @@ void player_commands() {
     game.players_[3].in_use=true; // A valid player still returns success without a transport.
     samp::pawn::register_server_natives(game.vm_,game);
     Access::text(game.vm_,"stream");
-    const std::array<std::pair<const char*,std::vector<cell>>,7> commands{{
+    const std::array<std::pair<const char*,std::vector<cell>>,11> commands{{
         {"PlayerPlaySound",{0,1057,0,0,0}}, {"SetCameraBehindPlayer",{0}},
         {"InterpolateCameraPos",{0,0,0,0,0,0,0,1000,1}},
         {"InterpolateCameraLookAt",{0,0,0,0,0,0,0,1000,2}},
         {"SetPlayerVelocity",{0,0,0,0}},
-        {"PlayAudioStreamForPlayer",{0,0,0,0,0,0,1}}, {"StopAudioStreamForPlayer",{0}}
+        {"PlayAudioStreamForPlayer",{0,0,0,0,0,0,1}}, {"StopAudioStreamForPlayer",{0}},
+        {"SetPlayerPosFindZ",{0,0,0,0}}, {"SetPlayerSpecialAction",{0,257}},
+        {"SetPlayerAmmo",{0,257,65537}}, {"RemoveBuildingForPlayer",{0,-1,0,0,0,0}}
     }};
-    const std::array<std::uint8_t,7> ids{16,162,82,82,90,41,42};
+    const std::array<std::uint8_t,11> ids{16,162,82,82,90,41,42,13,88,145,43};
     for(const cell id:{0,65536,-65536,999,1,1000,-1,3}) {
         const bool valid=id==0 || id==65536 || id==-65536 || id==999 || id==3;
         for(std::size_t i=0;i<commands.size();++i) {
             auto args=commands[i].second;args[0]=id;
-            require(Access::call_span(game.vm_,commands[i].first,args)==(valid?1:0),"player command WORD slot/return differs");
+            require(Access::call_span(game.vm_,commands[i].first,args)==(valid && i!=10?1:0),"player command WORD slot/return differs");
             if(valid && id!=3) {
                 const auto payload=take_rpc(peers[id==999?1:0],ids[i]);
                 if(i==1 || i==6) require(payload.numberOfBitsUsed_==0,"empty player command has extra payload");
@@ -357,6 +363,10 @@ void player_commands() {
     const auto velocity=take_rpc(peers[0],90);
     require(velocity.numberOfBitsUsed_==96 && std::memcmp(velocity.data_.data(),coordinates.data()+3,12)==0,
         "velocity command clamped or changed the float bits");
+    require(call(game.vm_,"SetPlayerPosFindZ",{0,coordinates[0],coordinates[1],coordinates[2]})==1,"ground-position native failed");
+    const auto ground=take_rpc(peers[0],13);
+    require(ground.numberOfBitsUsed_==96 && std::memcmp(ground.data_.data(),coordinates.data(),12)==0,
+        "ground-position command changed raw coordinates");
     require(player.x==10 && player.y==20 && player.z==30 && player.vx==1 && player.vy==2 && player.vz==3,
         "player command fabricated a synchronization report");
     for(const bool move:{true,false}) for(const cell mode:{0,1,2,3,256,257,258,-255,-1}) for(const cell time:{0,-1,1000,INT32_MIN}) {
@@ -369,6 +379,30 @@ void player_commands() {
         auto expected_mode=static_cast<std::uint8_t>(mode);if(expected_mode<1 || expected_mode>2) expected_mode=2;
         require(camera.read(values.data(),24) && values==coordinates && camera.read(&duration,4) && duration==time &&
             camera.read(&actual_mode,1) && actual_mode==expected_mode,"camera payload/byte normalization differs");
+    }
+    for(const cell action:{0,1,2,255,256,257,-1,INT32_MIN}) {
+        require(call(game.vm_,"SetPlayerSpecialAction",{0,action})==1,"special action native failed");
+        const auto payload=take_rpc(peers[0],88);
+        require(payload.numberOfBitsUsed_==8 && payload.data_[0]==static_cast<std::uint8_t>(action),
+            "special action must preserve the low byte without validation");
+    }
+    player.ammunition[2]=123;player.weapons[2]=24;
+    for(const cell weapon:{0,46,255,256,257,-1}) for(const cell ammunition:{0,1,65535,65536,65537,-1,INT32_MIN}) {
+        require(call(game.vm_,"SetPlayerAmmo",{0,weapon,ammunition})==1,"ammunition native failed");
+        const auto payload=take_rpc(peers[0],145);
+        const std::array<std::uint8_t,3> expected{static_cast<std::uint8_t>(weapon),
+            static_cast<std::uint8_t>(ammunition),static_cast<std::uint8_t>(static_cast<std::uint32_t>(ammunition)>>8)};
+        require(payload.numberOfBitsUsed_==24 && std::memcmp(payload.data_.data(),expected.data(),3)==0,
+            "ammunition command BYTE/WORD conversion differs");
+    }
+    require(player.ammunition[2]==123 && player.weapons[2]==24,"ammunition command changed client-reported weapons");
+    for(const cell model:{-1,20000,INT32_MIN}) {
+        const std::array<cell,5> expected{model,coordinates[3],coordinates[4],coordinates[5],std::bit_cast<cell>(-50.0f)};
+        require(call(game.vm_,"RemoveBuildingForPlayer",{0,model,expected[1],expected[2],expected[3],expected[4]})==0,
+            "building removal must retain the official zero success return");
+        const auto payload=take_rpc(peers[0],43);
+        require(payload.numberOfBitsUsed_==160 && std::memcmp(payload.data_.data(),expected.data(),20)==0,
+            "building removal filtered or changed model/position/radius cells");
     }
 }
 

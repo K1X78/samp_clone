@@ -602,6 +602,20 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         if(args.size()<4) return 0;
         return host.set_player_velocity(args[0],{as_float(args[1]),as_float(args[2]),as_float(args[3])});
     };
+    vm.native_functions_["SetPlayerPosFindZ"] = [&host,as_float](std::span<const cell> args) -> cell {
+        if(args.size()<4) return 0;
+        return host.set_player_pos_find_z(args[0],{as_float(args[1]),as_float(args[2]),as_float(args[3])});
+    };
+    vm.native_functions_["SetPlayerSpecialAction"] = [&host](std::span<const cell> args) -> cell {
+        return args.size()<2?0:host.set_player_special_action(args[0],args[1]);
+    };
+    vm.native_functions_["SetPlayerAmmo"] = [&host](std::span<const cell> args) -> cell {
+        return args.size()<3?0:host.set_player_ammo(args[0],args[1],args[2]);
+    };
+    vm.native_functions_["RemoveBuildingForPlayer"] = [&host,as_float](std::span<const cell> args) -> cell {
+        if(args.size()<6) return 0;
+        return host.remove_building_for_player(args[0],args[1],{as_float(args[2]),as_float(args[3]),as_float(args[4])},as_float(args[5]));
+    };
     vm.native_functions_["PlayAudioStreamForPlayer"] = [&host,as_float,read_script_string](std::span<const cell> args) -> cell {
         if(args.size()<7) return 0;
         const auto* url=read_script_string(args[1]);

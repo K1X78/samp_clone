@@ -219,6 +219,10 @@ public:
     int play_audio_stream_for_player(int player, std::string_view url,
                                      const std::array<float,3>& position, float radius, int use_position);
     int stop_audio_stream_for_player(int player);
+    int set_player_pos_find_z(int player, const std::array<float,3>& position);
+    int set_player_special_action(int player, int action);
+    int set_player_ammo(int player, int weapon, int ammunition);
+    int remove_building_for_player(int player, int model, const std::array<float,3>& position, float radius);
 
     // The maximum number of players.
     [[nodiscard]] virtual int max_players() const = 0;
