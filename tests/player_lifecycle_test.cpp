@@ -138,7 +138,7 @@ void vehicles() {
     auto& p=game.players_[0];p.in_use=p.joined=true;p.peer=&peer;p.streamed_to.resize(1);
     p.streamed_vehicles.resize(2000);p.streamed_vehicles[1]=1;p.streamed_vehicle_count=1;
     auto& v=game.vehicles_[1];v.active=true;v.id=1;v.model=411;v.health=400;
-    v.x=v.spawn_x=20;v.respawn_x=10;v.respawn_delay=1;v.has_been_occupied=true;
+    v.x=v.spawn_x=20;v.respawn_x=10;v.respawn_delay_ms=1000;v.has_been_occupied=true;
     std::vector<std::string> trace;
     auto callback=[&](std::string_view prefix,std::string_view name) {
         trace.push_back(std::string(prefix)+std::string(name));
@@ -159,7 +159,7 @@ void vehicles() {
     trace.clear();v.model=537;v.health=400;v.has_been_occupied=true;
     for(int i=0;i<100;++i) game.update_vehicles(100000);
     CHECK(v.health==400 && trace.empty()); // trains do not use idle respawn
-    v.model=411;v.respawn_delay=-1;p.streamed_vehicles[1]=1;p.streamed_vehicle_count=1;
+    v.model=411;v.respawn_delay_ms=-1;p.streamed_vehicles[1]=1;p.streamed_vehicle_count=1;
     samp::proto::BitStream death;const std::uint16_t id=1;death.write(&id,2);rpc(game,peer,136,death);
     CHECK(v.dead && !v.death_notified && trace.empty());
     game.update_vehicles(20000);
@@ -229,5 +229,26 @@ void callback_live_arguments() {
     CHECK(key_calls == 1 && state_calls == 2);
 }
 
+void vehicle_callback_live_arguments() {
+    using Access=samp::pawn::PawnNativeTestAccess;
+    samp::server::GameLayer game;
+    auto& vehicle=game.vehicles_[1];
+    vehicle.active=vehicle.dead=true; vehicle.id=1; vehicle.killer=7;
+    int calls=0;
+    auto filter=std::make_unique<samp::pawn::PawnVm>();
+    auto* filter_vm=filter.get();
+    Access::callbacks(*filter,{"OnVehicleDeath"},[&](auto) {
+        CHECK(Access::argument(*filter_vm,0)==1 && Access::argument(*filter_vm,1)==7);
+        vehicle.killer=8; ++calls; return 1;
+    });
+    game.filterscripts_.push_back(std::move(filter));
+    Access::callbacks(game.vm_,{"OnVehicleDeath"},[&](auto) {
+        CHECK(calls==1 && Access::argument(game.vm_,0)==1 && Access::argument(game.vm_,1)==8);
+        ++calls; return 1;
+    });
+    game.update_vehicles(10000);
+    CHECK(calls==2 && vehicle.death_notified);
 }
-int main(int,char**) {lifecycle();callback_order();vehicles();callback_live_arguments();std::printf("player lifecycle: %d failures\n",failures);return failures!=0;}
+
+}
+int main(int,char**) {lifecycle();callback_order();vehicles();callback_live_arguments();vehicle_callback_live_arguments();std::printf("player lifecycle: %d failures\n",failures);return failures!=0;}

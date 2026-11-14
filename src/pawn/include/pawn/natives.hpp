@@ -165,7 +165,7 @@ struct VehicleNativeState {
     float health = 1000;
     std::int32_t virtual_world = 0;
     std::uint8_t interior = 0;
-    std::int32_t respawn_delay = -1;
+    std::int32_t respawn_delay_ms = -1;
     std::uint64_t empty_since_ms = 0;
     bool siren = false;
     int driver = -1;

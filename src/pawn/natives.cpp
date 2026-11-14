@@ -796,18 +796,22 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         const auto index=static_cast<std::uint16_t>(id);
         return index<host.vehicles_.size() && host.vehicles_[index].active?&host.vehicles_[index]:nullptr;
     };
-    const auto create_vehicle = [&host,as_float](std::span<const cell> args, bool dynamic) -> cell {
-        if(args.size()<7) return 0xffff;
-        if(dynamic && (args[0]==537 || args[0]==538)) return 0;
+    const auto create_vehicle = [&host,as_float](std::span<const cell> args, bool dynamic, bool extended) -> cell {
+        if(args.size()<(extended?8u:7u)) return 0xffff;
+        if(dynamic && (args[0]==537 || args[0]==538)) {
+            constexpr auto message="Only create trains with AddStaticVehicle/Ex";
+            if(host.log_message_) host.log_message_(message);else std::puts(message);
+            return 0;
+        }
         if(args[0]<400 || args[0]>611) return 0xffff;
         auto make=[&](int model,cell delay,bool siren) -> cell {
-            for(std::size_t id=1;id<host.vehicles_.size();++id) {
+            for(std::size_t id=1;id<2000 && id<host.vehicles_.size();++id) {
                 if(host.vehicles_[id].active) continue;
                 auto& v=host.vehicles_[id];v=VehicleNativeState{};
                 v.active=true;v.id=static_cast<std::uint16_t>(id);v.model=model;
                 v.x=v.spawn_x=as_float(args[1]);v.y=v.spawn_y=as_float(args[2]);v.z=v.spawn_z=as_float(args[3]);
                 v.angle=v.spawn_angle=as_float(args[4]);v.colour1=args[5];v.colour2=args[6];
-                v.respawn_delay=delay;v.siren=siren;
+                v.respawn_delay_ms=delay;v.siren=siren;
                 v.respawn_x=v.x;v.respawn_y=v.y;v.respawn_z=v.z;v.respawn_angle=v.angle;
                 v.created_ms=v.last_occupied_ms=static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
                     std::chrono::steady_clock::now().time_since_epoch()).count());
@@ -815,16 +819,21 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
             }
             return 0xffff;
         };
-        const cell delay=args.size()>7?args[7]:120;
-        const auto first=make(args[0],delay,args.size()>8 && args[8]!=0);
+        // 0x4717e0 / 0x4701c0 use IMUL in the 32-bit cell domain;
+        // AddStaticVehicle always supplies 120000 ms and has no siren argument.
+        const cell seconds=extended?args[7]:120;
+        const cell delay=seconds==-1?-1:std::bit_cast<cell>(static_cast<std::uint32_t>(seconds)*1000u);
+        const auto first=make(args[0],delay,extended && args.size()>8 && args[8]!=0);
         if(!dynamic && (args[0]==537 || args[0]==538))
             for(int i=0;i<3;++i) make(args[0]==537?569:570,-1,false);
         return first;
     };
-    // Native owners: 004717e0, 00470070 and 004701c0.
-    vm.native_functions_["CreateVehicle"]=[create_vehicle](auto args)->cell{return create_vehicle(args,true);};
-    vm.native_functions_["AddStaticVehicle"]=[create_vehicle](auto args)->cell{return create_vehicle(args,false);};
-    vm.native_functions_["AddStaticVehicleEx"]=[create_vehicle](auto args)->cell{return create_vehicle(args,false);};
+    // Official: FUN_004717e0 @ 0x004717e0 (samp-server.exe)
+    vm.native_functions_["CreateVehicle"]=[create_vehicle](auto args)->cell{return create_vehicle(args,true,true);};
+    // Official: FUN_00470070 @ 0x00470070 (samp-server.exe)
+    vm.native_functions_["AddStaticVehicle"]=[create_vehicle](auto args)->cell{return create_vehicle(args,false,false);};
+    // Official: FUN_004701c0 @ 0x004701c0 (samp-server.exe)
+    vm.native_functions_["AddStaticVehicleEx"]=[create_vehicle](auto args)->cell{return create_vehicle(args,false,true);};
     // 004718b0 -> 004677d0 broadcasts removal and frees all per-player holds.
     vm.native_functions_["DestroyVehicle"]=[&host,vehicle_slot](std::span<const cell> args)->cell {
         auto* v=args.empty()?nullptr:vehicle_slot(args[0]);if(!v) return 0;

@@ -1,5 +1,6 @@
 #include "samp/server/game_layer.hpp"
 #include <algorithm>
+#include <bit>
 #include <cstdlib>
 
 namespace samp::server {
@@ -12,13 +13,22 @@ void GameLayer::update_vehicles(std::uint64_t now) {
 // Official: FUN_00489b60 @ 0x00489b60 (samp-server.exe)
 void GameLayer::process_vehicle(GameVehicle& vehicle,std::uint64_t now) {
     // The native checks expensive idle/death expiry on rand()%20==0.
-    if(!vehicle.death_notified && vehicle.respawn_delay>0 && std::rand()%20==0) {
+    const auto elapsed=[](std::uint64_t end,std::uint64_t start) {
+        return std::bit_cast<std::int32_t>(static_cast<std::uint32_t>(end)-static_cast<std::uint32_t>(start));
+    };
+    if(!vehicle.death_notified && vehicle.respawn_delay_ms>0 && std::rand()%20==0) {
         const bool train=vehicle.model==537 || vehicle.model==538 || vehicle.model==569 || vehicle.model==570 || vehicle.model==449;
-        const bool occupied=std::any_of(players_.begin(),players_.end(),[&](const auto& player) {
-            return player.in_use && player.vehicle_id==vehicle.id && (player.state==2 || player.state==3);
-        });
-        if(!train && !occupied && vehicle.has_been_occupied && now>=vehicle.created_ms && now-vehicle.created_ms>=10000 &&
-            now>=vehicle.last_occupied_ms && now-vehicle.last_occupied_ms>=static_cast<std::uint64_t>(vehicle.respawn_delay)*1000)
+        bool occupied=false;
+        // 0x489660 scans only the cached live player-pool domain.
+        for(std::size_t slot=0;slot<1000 && slot<players_.size() && static_cast<int>(slot)<=player_pool_highest_;++slot) {
+            const auto& player=players_[slot];
+            if(player.in_use && player.vehicle_id==vehicle.id && (player.state==2 || player.state==3)) {
+                occupied=true;break;
+            }
+        }
+        // 0x489b00 uses signed, wrapping DWORD tick differences.
+        if(!train && !occupied && vehicle.has_been_occupied && elapsed(now,vehicle.created_ms)>=10000 &&
+            elapsed(now,vehicle.last_occupied_ms)>=vehicle.respawn_delay_ms)
             respawn_vehicle(vehicle,now);
         return;
     }
@@ -27,9 +37,10 @@ void GameLayer::process_vehicle(GameVehicle& vehicle,std::uint64_t now) {
         vehicle.death_notified=true;vehicle.death_ms=now;
         const samp::amx::cell args[]{vehicle.id,vehicle.killer};samp::amx::cell result=1;
         for(const auto& script:filterscripts_) script->execute("OnVehicleDeath",args,result);
-        vm_.execute("OnVehicleDeath",args,result);
+        const samp::amx::cell live_args[]{vehicle.id,vehicle.killer};
+        vm_.execute("OnVehicleDeath",live_args,result);
     }
-    if(std::rand()%20==0 && now>vehicle.death_ms && now-vehicle.death_ms>10000)
+    if(std::rand()%20==0 && elapsed(now,vehicle.death_ms)>10000)
         respawn_vehicle(vehicle,now);
 }
 

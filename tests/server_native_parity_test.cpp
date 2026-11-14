@@ -4,6 +4,7 @@
 #include <bit>
 #include <cstdio>
 #include <cstring>
+#include <cstdlib>
 #include <fstream>
 #include <iterator>
 #include <stdexcept>
@@ -148,7 +149,7 @@ void class_registration() {
         }
         auto answer = take_rpc(peer, 128);
         require(answer.numberOfBitsUsed_ == 51u * 8u, "class selection wire extent differs");
-        require(player.has_spawn_info && player.spawn_info.model == 265 + id &&
+        require(player.has_spawn_info && player.spawn_info.model == 265 + static_cast<int>(id) &&
             player.spawn_info.team == (id % 2 == 0 ? 255 : 1) && player.spawn_info.custom_model == 0 &&
             player.spawn_info.x == 1.25f && player.spawn_info.y == -2.5f && player.spawn_info.z == 3.75f &&
             player.spawn_info.angle == 90 && player.spawn_info.weapon[0] == 22 && player.spawn_info.weapon[1] == 24 &&
@@ -196,12 +197,86 @@ void gang_zone_broadcasts() {
         "invalid zone native returned success");
     require(call(game.vm_, "GangZoneCreate", {0, 0, 0, 0}) == 7, "destroyed zone slot was not reused");
 }
+
+void vehicle_creation() {
+    samp::server::GameLayer game;
+    samp::pawn::register_server_natives(game.vm_, game);
+    const std::array<std::pair<cell, cell>, 8> delays{{
+        {120,120000}, {-1,-1}, {0,0}, {-2,-2000}, {2147483,2147483000},
+        {2147484,-2147483296}, {4294968,704}, {INT32_MIN,0}}};
+    for (const auto [seconds, milliseconds] : delays) {
+        const auto id = call(game.vm_, "CreateVehicle", {411,0,0,0,0,1,2,seconds,1});
+        require(id > 0 && id < 2000 && game.vehicles_[id].respawn_delay_ms == milliseconds &&
+            game.vehicles_[id].siren, "vehicle native millisecond conversion differs from original IMUL");
+        const auto extended = call(game.vm_, "AddStaticVehicleEx", {411,0,0,0,0,1,2,seconds});
+        require(extended > 0 && extended < 2000 && game.vehicles_[extended].respawn_delay_ms == milliseconds &&
+            !game.vehicles_[extended].siren, "extended static vehicle conversion/default siren differs");
+    }
+    const auto standard = call(game.vm_, "AddStaticVehicle", {411,0,0,0,0,1,2,5,1});
+    require(game.vehicles_[standard].respawn_delay_ms == 120000 && !game.vehicles_[standard].siren,
+        "standard static vehicle interpreted nonexistent delay/siren parameters");
+    std::vector<std::string> warnings;
+    game.log_message_ = [&](std::string_view text) { warnings.emplace_back(text); };
+    for (const cell train : {537,538}) {
+        require(call(game.vm_, "CreateVehicle", {train,0,0,0,0,1,2,120}) == 0, "dynamic train creation must fail");
+        const auto id = call(game.vm_, "AddStaticVehicleEx", {train,0,0,0,0,1,2,120,1});
+        require(game.vehicles_[id].model == train && game.vehicles_[id].siren, "static locomotive creation differs");
+        for (int i=1; i<=3; ++i)
+            require(game.vehicles_[id+i].active && game.vehicles_[id+i].model == (train==537?569u:570u) &&
+                game.vehicles_[id+i].respawn_delay_ms == -1 && !game.vehicles_[id+i].siren,
+                "static train carriage creation differs");
+    }
+    require(warnings == std::vector<std::string>(2,"Only create trains with AddStaticVehicle/Ex"), "dynamic train warning differs");
+    require(call(game.vm_, "CreateVehicle", {399,0,0,0,0,0,0,120}) == 65535 &&
+        call(game.vm_, "AddStaticVehicle", {612,0,0,0,0,0,0}) == 65535, "invalid vehicle model sentinel differs");
+    game.vehicles_.resize(2001);
+    for (int i=1; i<2000; ++i) game.vehicles_[i].active=true;
+    require(call(game.vm_, "CreateVehicle", {411,0,0,0,0,0,0,120}) == 65535 && !game.vehicles_[2000].active,
+        "vehicle allocation exceeded the official 1999-slot domain");
+}
+
+void vehicle_tick_boundaries() {
+    samp::server::GameLayer game;
+    auto& vehicle=game.vehicles_[1];
+    vehicle.id=1; vehicle.active=true; vehicle.model=411;
+    vehicle.respawn_delay_ms=1000; vehicle.has_been_occupied=true;
+    vehicle.health=400; vehicle.x=20; vehicle.respawn_x=10;
+    vehicle.created_ms=vehicle.last_occupied_ms=0xfffff000u;
+    std::srand(0);
+    for (int i=0; i<1000; ++i) game.update_vehicles(5903); // 9999 ms after DWORD rollover
+    require(vehicle.health==400, "vehicle respawned before minimum age across tick rollover");
+    for (int i=0; i<1000 && vehicle.has_been_occupied; ++i) game.update_vehicles(5904);
+    require(vehicle.health==1000 && vehicle.x==10 && !vehicle.has_been_occupied,
+        "idle respawn failed at minimum age across DWORD rollover");
+    vehicle.created_ms=vehicle.last_occupied_ms=0; vehicle.has_been_occupied=true; vehicle.health=400;
+    for (int i=0; i<1000; ++i) game.update_vehicles(0x80000000u);
+    require(vehicle.health==400, "vehicle tick comparison lost original signed DWORD semantics");
+    vehicle.dead=vehicle.death_notified=true; vehicle.respawn_delay_ms=-1; vehicle.death_ms=0xfffff000u;
+    for (int i=0; i<1000; ++i) game.update_vehicles(5904);
+    require(vehicle.dead, "death expiry must remain strict at ten seconds across rollover");
+    for (int i=0; i<1000 && vehicle.dead; ++i) game.update_vehicles(5905);
+    require(!vehicle.dead && vehicle.health==1000, "death respawn failed across tick rollover");
+    game.players_.resize(1001);
+    game.players_[999].in_use=true; game.players_[999].state=3; game.players_[999].vehicle_id=1;
+    game.update_player_pool_size();
+    vehicle.created_ms=vehicle.last_occupied_ms=0; vehicle.respawn_delay_ms=1000;
+    vehicle.has_been_occupied=true; vehicle.health=400;
+    for (int i=0; i<1000; ++i) game.update_vehicles(10000);
+    require(vehicle.health==400, "last-slot passenger did not prevent idle respawn");
+    game.players_[999].in_use=false;
+    game.players_[1000].in_use=true; game.players_[1000].state=2; game.players_[1000].vehicle_id=1;
+    game.update_player_pool_size();
+    for (int i=0; i<1000 && vehicle.has_been_occupied; ++i) game.update_vehicles(10000);
+    require(vehicle.health==1000, "out-of-domain player prevented idle respawn");
+}
 }
 
 int main(int, char**) {
     try {
         class_registration();
         gang_zone_broadcasts();
+        vehicle_creation();
+        vehicle_tick_boundaries();
         std::puts("Server native parity checks passed");
         return 0;
     } catch (const std::exception& error) {
