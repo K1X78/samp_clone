@@ -435,6 +435,210 @@ cell enable_vehicle_friendly_fire(NativeHost& host, std::span<const cell>) {
     return 1;
 }
 
+constexpr auto active_gang_zone = [](NativeHost& host, std::uint16_t id) {
+    return id < host.gang_zones_.size() && host.gang_zones_[id].active;
+};
+
+constexpr auto zone_wire_colour = [](std::uint32_t colour) {
+    return (colour >> 24) | ((colour >> 8) & 0x0000ff00u) |
+           ((colour << 8) & 0x00ff0000u) | (colour << 24);
+};
+
+constexpr auto broadcast_zone_rpc = [](NativeHost& host, std::uint8_t rpc, const samp::proto::BitStream& payload) {
+    for (std::size_t slot = 0;
+         slot < 1000 && slot < host.players_.size() && static_cast<int>(slot) <= host.player_pool_highest_;
+         ++slot) {
+        const auto& player = host.players_[slot];
+        if (player.in_use && player.peer) host.send_rpc(*player.peer, rpc, payload);
+    }
+};
+
+// Official: FUN_00464970 @ 0x00464970 (samp-server.exe)
+std::uint16_t allocate_gang_zone(NativeHost& host, const std::array<float, 4>& bounds) {
+    for (std::uint16_t id = 0; id < host.gang_zones_.size(); ++id) {
+        auto& zone = host.gang_zones_[id];
+        if (!zone.active) {
+            zone.bounds = bounds;
+            zone.active = true;
+            return id;
+        }
+    }
+    return 0xffff;
+}
+
+// Official: FUN_004649d0 @ 0x004649d0 (samp-server.exe)
+void release_gang_zone(NativeHost& host, std::uint16_t id) {
+    host.gang_zones_[id].active = false;
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    broadcast_zone_rpc(host, 120, payload);
+}
+
+// Official: FUN_00464a80 @ 0x00464a80 (samp-server.exe)
+void show_gang_zone(NativeHost& host, const PlayerNativeState& player,
+                    std::uint16_t id, std::uint32_t colour) {
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    const auto& bounds = host.gang_zones_[id].bounds;
+    payload.write(bounds.data(), sizeof(bounds));
+    const auto encoded_colour = zone_wire_colour(colour);
+    payload.write(&encoded_colour, sizeof(encoded_colour));
+    if (player.peer) host.send_rpc(*player.peer, 108, payload);
+}
+
+// Official: FUN_00464bd0 @ 0x00464bd0 (samp-server.exe)
+void show_gang_zone_to_all(NativeHost& host, std::uint16_t id, std::uint32_t colour) {
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    const auto& bounds = host.gang_zones_[id].bounds;
+    payload.write(bounds.data(), sizeof(bounds));
+    const auto encoded_colour = zone_wire_colour(colour);
+    payload.write(&encoded_colour, sizeof(encoded_colour));
+    broadcast_zone_rpc(host, 108, payload);
+}
+
+// Official: FUN_00464d20 @ 0x00464d20 (samp-server.exe)
+void hide_gang_zone(NativeHost& host, const PlayerNativeState& player, std::uint16_t id) {
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    if (player.peer) host.send_rpc(*player.peer, 120, payload);
+}
+
+// Official: FUN_00464dc0 @ 0x00464dc0 (samp-server.exe)
+void hide_gang_zone_from_all(NativeHost& host, std::uint16_t id) {
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    broadcast_zone_rpc(host, 120, payload);
+}
+
+// Official: FUN_00464e60 @ 0x00464e60 (samp-server.exe)
+void flash_gang_zone(NativeHost& host, const PlayerNativeState& player,
+                     std::uint16_t id, std::uint32_t colour) {
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    const auto encoded_colour = zone_wire_colour(colour);
+    payload.write(&encoded_colour, sizeof(encoded_colour));
+    if (player.peer) host.send_rpc(*player.peer, 121, payload);
+}
+
+// Official: FUN_00464f40 @ 0x00464f40 (samp-server.exe)
+void flash_gang_zone_for_all(NativeHost& host, std::uint16_t id, std::uint32_t colour) {
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    const auto encoded_colour = zone_wire_colour(colour);
+    payload.write(&encoded_colour, sizeof(encoded_colour));
+    broadcast_zone_rpc(host, 121, payload);
+}
+
+// Official: FUN_00465020 @ 0x00465020 (samp-server.exe)
+void stop_flashing_gang_zone(NativeHost& host, const PlayerNativeState& player, std::uint16_t id) {
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    if (player.peer) host.send_rpc(*player.peer, 85, payload);
+}
+
+// Official: FUN_004650c0 @ 0x004650c0 (samp-server.exe)
+void stop_flashing_gang_zone_for_all(NativeHost& host, std::uint16_t id) {
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    broadcast_zone_rpc(host, 85, payload);
+}
+
+// Official: FUN_004771a0 @ 0x004771a0 (samp-server.exe)
+cell gang_zone_create(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 4) return -1;
+    const auto id = allocate_gang_zone(host, {
+        std::bit_cast<float>(args[0]), std::bit_cast<float>(args[1]),
+        std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]),
+    });
+    return id == 0xffff ? -1 : id;
+}
+
+// Official: FUN_004771e0 @ 0x004771e0 (samp-server.exe)
+cell gang_zone_destroy(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    const auto id = static_cast<std::uint16_t>(args.front());
+    if (!active_gang_zone(host, id)) return 0;
+    release_gang_zone(host, id);
+    return 1;
+}
+
+// Official: FUN_00477220 @ 0x00477220 (samp-server.exe)
+cell gang_zone_show_for_player(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 3) return 0;
+    const auto* player = find_player(host, args);
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    if (!player || !active_gang_zone(host, id)) return 0;
+    show_gang_zone(host, *player, id, static_cast<std::uint32_t>(args[2]));
+    return 1;
+}
+
+// Official: FUN_00477290 @ 0x00477290 (samp-server.exe)
+cell gang_zone_show_for_all(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto id = static_cast<std::uint16_t>(args.front());
+    if (!active_gang_zone(host, id)) return 0;
+    show_gang_zone_to_all(host, id, static_cast<std::uint32_t>(args[1]));
+    return 1;
+}
+
+// Official: FUN_004772d0 @ 0x004772d0 (samp-server.exe)
+cell gang_zone_hide_for_player(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    if (!player || !active_gang_zone(host, id)) return 0;
+    hide_gang_zone(host, *player, id);
+    return 1;
+}
+
+// Official: FUN_00477330 @ 0x00477330 (samp-server.exe)
+cell gang_zone_hide_for_all(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    const auto id = static_cast<std::uint16_t>(args.front());
+    if (!active_gang_zone(host, id)) return 0;
+    hide_gang_zone_from_all(host, id);
+    return 1;
+}
+
+// Official: FUN_00477370 @ 0x00477370 (samp-server.exe)
+cell gang_zone_flash_for_player(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 3) return 0;
+    const auto* player = find_player(host, args);
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    if (!player || !active_gang_zone(host, id)) return 0;
+    flash_gang_zone(host, *player, id, static_cast<std::uint32_t>(args[2]));
+    return 1;
+}
+
+// Official: FUN_004773e0 @ 0x004773e0 (samp-server.exe)
+cell gang_zone_flash_for_all(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto id = static_cast<std::uint16_t>(args.front());
+    if (!active_gang_zone(host, id)) return 0;
+    flash_gang_zone_for_all(host, id, static_cast<std::uint32_t>(args[1]));
+    return 1;
+}
+
+// Official: FUN_00477420 @ 0x00477420 (samp-server.exe)
+cell gang_zone_stop_flash_for_player(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    if (!player || !active_gang_zone(host, id)) return 0;
+    stop_flashing_gang_zone(host, *player, id);
+    return 1;
+}
+
+// Official: FUN_00477480 @ 0x00477480 (samp-server.exe)
+cell gang_zone_stop_flash_for_all(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    const auto id = static_cast<std::uint16_t>(args.front());
+    if (!active_gang_zone(host, id)) return 0;
+    stop_flashing_gang_zone_for_all(host, id);
+    return 1;
+}
+
 using ServerNative = cell (*)(NativeHost&, std::span<const cell>);
 constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"AllowInteriorWeapons", allow_interior_weapons},
@@ -445,6 +649,16 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"EnableTirePopping", enable_tire_popping},
     {"EnableVehicleFriendlyFire", enable_vehicle_friendly_fire},
     {"EnableZoneNames", enable_zone_names},
+    {"GangZoneCreate", gang_zone_create},
+    {"GangZoneDestroy", gang_zone_destroy},
+    {"GangZoneFlashForAll", gang_zone_flash_for_all},
+    {"GangZoneFlashForPlayer", gang_zone_flash_for_player},
+    {"GangZoneHideForAll", gang_zone_hide_for_all},
+    {"GangZoneHideForPlayer", gang_zone_hide_for_player},
+    {"GangZoneShowForAll", gang_zone_show_for_all},
+    {"GangZoneShowForPlayer", gang_zone_show_for_player},
+    {"GangZoneStopFlashForAll", gang_zone_stop_flash_for_all},
+    {"GangZoneStopFlashForPlayer", gang_zone_stop_flash_for_player},
     {"GetGravity", get_gravity},
     {"GetPlayerCameraMode", get_player_camera_mode},
     {"GetPlayerCameraTargetActor", get_player_camera_target_actor},
@@ -758,30 +972,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         for(const auto& player:host.players_) if(player.in_use && player.peer) host.send_rpc(*player.peer,104,payload);
         return 1;
     };
-    const auto zone_valid=[&host](cell id) -> GangZoneNativeState* {
-        const auto index=static_cast<std::uint16_t>(id);
-        return index<host.gang_zones_.size() && host.gang_zones_[index].active
-            ? &host.gang_zones_[index] : nullptr;
-    };
-    const auto bswap32=[](std::uint32_t value) -> std::uint32_t {
-        return (value>>24)|((value>>8)&0x0000ff00u)|((value<<8)&0x00ff0000u)|(value<<24);
-    };
-    const auto send_zone_to=[&host](int player,std::uint8_t rpc_id,const samp::proto::BitStream& payload) -> bool {
-        if(player<0 || static_cast<std::size_t>(player)>=host.players_.size()) return false;
-        auto& p=host.players_[static_cast<std::size_t>(player)];
-        if(!p.in_use || !p.peer) return false;
-        host.send_rpc(*p.peer,rpc_id,payload);
-        return true;
-    };
-    const auto send_zone_all=[&host](std::uint8_t rpc_id,const samp::proto::BitStream& payload) {
-        // 0x493960 checks occupied slots with a player object, including
-        // initialization callbacks, within the fixed 1000-player domain.
-        for(std::size_t slot=0;slot<1000 && slot<host.players_.size() && static_cast<int>(slot)<=host.player_pool_highest_;++slot) {
-            const auto& player=host.players_[slot];
-            if(player.in_use && player.peer)
-                host.send_rpc(*player.peer,rpc_id,payload);
-        }
-    };
     // Official: FUN_0047a230 @ 0x0047a230 (samp-server.exe)
     vm.native_functions_["SetPlayerWorldBounds"]=[&host,player_slot](std::span<const cell> args)->cell {
         if(args.size()<5) return 0;
@@ -820,124 +1010,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         samp::proto::BitStream payload;
         payload.write(&icon,1);
         host.send_rpc(*p->peer,144,payload);
-        return 1;
-    };
-    // Official: FUN_004771a0 @ 0x004771a0 (samp-server.exe)
-    vm.native_functions_["GangZoneCreate"]=[&host,as_float](std::span<const cell> args)->cell {
-        if(args.size()<4) return -1;
-        for(std::size_t id=0;id<host.gang_zones_.size();++id) {
-            if(!host.gang_zones_[id].active) {
-                auto& z=host.gang_zones_[id];
-                z.active=true;
-                for(int i=0;i<4;++i) z.bounds[i]=as_float(args[i]);
-                return static_cast<cell>(id);
-            }
-        }
-        return -1; // 0xffffffff: no free slot
-    };
-    // Official: FUN_004771e0 @ 0x004771e0 (samp-server.exe)
-    vm.native_functions_["GangZoneDestroy"]=[&host,zone_valid,send_zone_all](std::span<const cell> args)->cell {
-        if(args.empty()) return 0;
-        auto* z=zone_valid(args[0]);if(!z) return 0;
-        z->active=false;
-        samp::proto::BitStream payload;
-        const std::uint16_t id=static_cast<std::uint16_t>(args[0]);
-        payload.write(&id,2);
-        send_zone_all(120,payload); // hide-for-all
-        return 1;
-    };
-    // Official: FUN_00477220 @ 0x00477220 (samp-server.exe)
-    vm.native_functions_["GangZoneShowForPlayer"]=[&host,player_slot,zone_valid,bswap32](std::span<const cell> args)->cell {
-        if(args.size()<3) return 0;
-        auto* p=player_slot(args[0]);auto* z=zone_valid(args[1]);
-        if(!p || !p->peer || !z) return 0;
-        samp::proto::BitStream payload;
-        const std::uint16_t id=static_cast<std::uint16_t>(args[1]);
-        payload.write(&id,2);
-        for(float value:z->bounds) payload.write(&value,4);
-        const std::uint32_t colour=bswap32(static_cast<std::uint32_t>(args[2]));
-        payload.write(&colour,4);
-        host.send_rpc(*p->peer,108,payload);
-        return 1;
-    };
-    // Official: FUN_00477290 @ 0x00477290 (samp-server.exe)
-    vm.native_functions_["GangZoneShowForAll"]=[&host,zone_valid,bswap32,send_zone_all](std::span<const cell> args)->cell {
-        if(args.size()<2) return 0;
-        auto* z=zone_valid(args[0]);if(!z) return 0;
-        samp::proto::BitStream payload;
-        const std::uint16_t id=static_cast<std::uint16_t>(args[0]);
-        payload.write(&id,2);
-        for(float value:z->bounds) payload.write(&value,4);
-        const std::uint32_t colour=bswap32(static_cast<std::uint32_t>(args[1]));
-        payload.write(&colour,4);
-        send_zone_all(108,payload);
-        return 1;
-    };
-    // Official: FUN_004772d0 @ 0x004772d0 (samp-server.exe)
-    vm.native_functions_["GangZoneHideForPlayer"]=[&host,player_slot,zone_valid](std::span<const cell> args)->cell {
-        if(args.size()<2) return 0;
-        auto* p=player_slot(args[0]);auto* z=zone_valid(args[1]);
-        if(!p || !p->peer || !z) return 0;
-        samp::proto::BitStream payload;
-        const std::uint16_t id=static_cast<std::uint16_t>(args[1]);
-        payload.write(&id,2);
-        host.send_rpc(*p->peer,120,payload);
-        return 1;
-    };
-    // Official: FUN_00477330 @ 0x00477330 (samp-server.exe)
-    vm.native_functions_["GangZoneHideForAll"]=[&host,zone_valid,send_zone_all](std::span<const cell> args)->cell {
-        if(args.empty()) return 0;
-        auto* z=zone_valid(args[0]);if(!z) return 0;
-        samp::proto::BitStream payload;
-        const std::uint16_t id=static_cast<std::uint16_t>(args[0]);
-        payload.write(&id,2);
-        send_zone_all(120,payload);
-        return 1;
-    };
-    // Official: FUN_00477370 @ 0x00477370 (samp-server.exe)
-    vm.native_functions_["GangZoneFlashForPlayer"]=[&host,player_slot,zone_valid,bswap32](std::span<const cell> args)->cell {
-        if(args.size()<3) return 0;
-        auto* p=player_slot(args[0]);auto* z=zone_valid(args[1]);
-        if(!p || !p->peer || !z) return 0;
-        samp::proto::BitStream payload;
-        const std::uint16_t id=static_cast<std::uint16_t>(args[1]);
-        payload.write(&id,2);
-        const std::uint32_t colour=bswap32(static_cast<std::uint32_t>(args[2]));
-        payload.write(&colour,4);
-        host.send_rpc(*p->peer,121,payload);
-        return 1;
-    };
-    // Official: FUN_004773e0 @ 0x004773e0 (samp-server.exe)
-    vm.native_functions_["GangZoneFlashForAll"]=[&host,zone_valid,bswap32,send_zone_all](std::span<const cell> args)->cell {
-        if(args.size()<2) return 0;
-        auto* z=zone_valid(args[0]);if(!z) return 0;
-        samp::proto::BitStream payload;
-        const std::uint16_t id=static_cast<std::uint16_t>(args[0]);
-        payload.write(&id,2);
-        const std::uint32_t colour=bswap32(static_cast<std::uint32_t>(args[1]));
-        payload.write(&colour,4);
-        send_zone_all(121,payload);
-        return 1;
-    };
-    // Official: FUN_00477420 @ 0x00477420 (samp-server.exe)
-    vm.native_functions_["GangZoneStopFlashForPlayer"]=[&host,player_slot,zone_valid](std::span<const cell> args)->cell {
-        if(args.size()<2) return 0;
-        auto* p=player_slot(args[0]);auto* z=zone_valid(args[1]);
-        if(!p || !p->peer || !z) return 0;
-        samp::proto::BitStream payload;
-        const std::uint16_t id=static_cast<std::uint16_t>(args[1]);
-        payload.write(&id,2);
-        host.send_rpc(*p->peer,85,payload);
-        return 1;
-    };
-    // Official: FUN_00477480 @ 0x00477480 (samp-server.exe)
-    vm.native_functions_["GangZoneStopFlashForAll"]=[&host,zone_valid,send_zone_all](std::span<const cell> args)->cell {
-        if(args.empty()) return 0;
-        auto* z=zone_valid(args[0]);if(!z) return 0;
-        samp::proto::BitStream payload;
-        const std::uint16_t id=static_cast<std::uint16_t>(args[0]);
-        payload.write(&id,2);
-        send_zone_all(85,payload);
         return 1;
     };
     // Official: FUN_0047bb00 @ 0x0047bb00 (samp-server.exe)

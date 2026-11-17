@@ -13874,32 +13874,92 @@
     {
       "address": "0x00476770",
       "assembly_name": "FUN_00476770",
-      "assembly_size": 2736,
-      "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+      "assembly_size": 2608,
+      "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
+    },
+    {
+      "address": "0x004771a0",
+      "assembly_name": "FUN_004771a0",
+      "assembly_size": 64,
+      "assembly_sha1": "e39b0dd9d2bbe32817fac2d5c698cf74ae268958",
+      "native_registration": {
+        "name": "GangZoneCreate",
+        "table_entry": "0x004cf0e8"
+      }
+    },
+    {
+      "address": "0x004771e0",
+      "assembly_name": "FUN_004771e0",
+      "assembly_size": 64,
+      "assembly_sha1": "fa7f5dcab2b8aef5a25b1ad8de38ff64f758b28f",
+      "native_registration": {
+        "name": "GangZoneDestroy",
+        "table_entry": "0x004cf0f0"
+      }
     },
     {
       "address": "0x00477220",
       "assembly_name": "FUN_00477220",
-      "assembly_size": 176,
-      "assembly_sha1": "430ea14cb304fc799c6dcb6ad94220861f98024f"
+      "assembly_size": 112,
+      "assembly_sha1": "345e317ff5c98ed91b409c1314b77387981aa0c8"
+    },
+    {
+      "address": "0x00477290",
+      "assembly_name": "FUN_00477290",
+      "assembly_size": 64,
+      "assembly_sha1": "5419ed97d0676e6ee85eced2ede4885efb6b7496",
+      "native_registration": {
+        "name": "GangZoneShowForAll",
+        "table_entry": "0x004cf100"
+      }
     },
     {
       "address": "0x004772d0",
       "assembly_name": "FUN_004772d0",
-      "assembly_size": 160,
-      "assembly_sha1": "3bd8653aa1b4b5daf994fc727c4a7454ab2cabab"
+      "assembly_size": 96,
+      "assembly_sha1": "4fb43c715a89a791a60dabced1f4908c7819404d"
+    },
+    {
+      "address": "0x00477330",
+      "assembly_name": "FUN_00477330",
+      "assembly_size": 64,
+      "assembly_sha1": "87c1f5d9adda570dc2a59e45d130f352f1f00fe3",
+      "native_registration": {
+        "name": "GangZoneHideForAll",
+        "table_entry": "0x004cf110"
+      }
     },
     {
       "address": "0x00477370",
       "assembly_name": "FUN_00477370",
-      "assembly_size": 176,
-      "assembly_sha1": "dee79624e3180a104d4a00f9cedcf74fa756e66a"
+      "assembly_size": 112,
+      "assembly_sha1": "0911f0a38fb5cb90a044341f96e1c95e7cee1fed"
+    },
+    {
+      "address": "0x004773e0",
+      "assembly_name": "FUN_004773e0",
+      "assembly_size": 64,
+      "assembly_sha1": "00d6b65242595f5caa5c16ac69ad4d6b2cf56aed",
+      "native_registration": {
+        "name": "GangZoneFlashForAll",
+        "table_entry": "0x004cf120"
+      }
     },
     {
       "address": "0x00477420",
       "assembly_name": "FUN_00477420",
-      "assembly_size": 160,
-      "assembly_sha1": "6d4b23109d9ec4873ca13504a573a6445ba8a083"
+      "assembly_size": 96,
+      "assembly_sha1": "ff3df89c861dabdd5fa0929d11fc120fb8d6393e"
+    },
+    {
+      "address": "0x00477480",
+      "assembly_name": "FUN_00477480",
+      "assembly_size": 64,
+      "assembly_sha1": "cc6bd67f2d805a8eb1f9dd96f7bdce43ad4314dd",
+      "native_registration": {
+        "name": "GangZoneStopFlashForAll",
+        "table_entry": "0x004cf130"
+      }
     },
     {
       "address": "0x004774c0",
@@ -32799,6 +32859,24 @@
     ],
     "FUN_00479070": [
       "0x00479070"
+    ],
+    "FUN_004771a0": [
+      "0x004771a0"
+    ],
+    "FUN_004771e0": [
+      "0x004771e0"
+    ],
+    "FUN_00477290": [
+      "0x00477290"
+    ],
+    "FUN_00477330": [
+      "0x00477330"
+    ],
+    "FUN_004773e0": [
+      "0x004773e0"
+    ],
+    "FUN_00477480": [
+      "0x00477480"
     ]
   },
   "client_rpc_registrations": []

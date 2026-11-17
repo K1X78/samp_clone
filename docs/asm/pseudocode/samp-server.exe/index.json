@@ -210828,16 +210828,16 @@
       "status": "ok",
       "diagnostic": "",
       "assembly_name": "FUN_00476770",
-      "assembly_size": 2736,
-      "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315",
+      "assembly_size": 2608,
+      "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24",
       "aliases": [
         "samp:PlayerTextDrawSetString"
       ],
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "b48b33ba521987992e634ff993d7eca3616cd8e5cf91d67595cb331a2908016c"
     },
@@ -210873,8 +210873,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "efe985b291b9199c6067d39a40357d0eb7d4ddd083d683332af99342ad1ad8e0"
     },
@@ -210910,8 +210910,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "53078839b42b96cfa8eb90a701106c4d248c76222fdc47f884bb6b6774f58f43"
     },
@@ -210947,8 +210947,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "00202c3bfe1838ddc258db7aaca6d4b972c313f8c6f72c4430f2b813beae2f80"
     },
@@ -210984,8 +210984,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "6e2e37fb3c6fc3c09660c4b06c51c61ff672db36264fa5838d6b6830c1f1dcd6"
     },
@@ -211015,8 +211015,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "662c9deb853f4363d2746af5e1584ee905bc2cd443d177c7a4ea832c047cc39b"
     },
@@ -211052,8 +211052,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "1d98d3ebf76d63c74399e1f67b67a25cae383114b11ea95503d118721757d7c8"
     },
@@ -211083,8 +211083,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "b29d4846dad1edf91cb5bd7472835038c0538953e683dcb3783adf47502ffc09"
     },
@@ -211114,8 +211114,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "14174a911eecd01789c8a228a2af173fab1302dda824c8be05e0eb8ef08cd730"
     },
@@ -211151,8 +211151,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "671ce1bc89cc96637fa8e54778e751480623e93d5c2bcd9e7742f7048693883f"
     },
@@ -211182,8 +211182,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "a2b72b02748c0e7702bfc806a0dab2e9c2a2b296dd10875a4dfe8de23853ed37"
     },
@@ -211213,8 +211213,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "b444eef5c601951588b029af3782be3e9604567f7d1c29f89629a850da8cf48b"
     },
@@ -211250,8 +211250,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "599fa94d8d6376f025b2e25e4e56232486b1852ccf3b3eb3011738b1c3482890"
     },
@@ -211281,8 +211281,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "64905a1d41ee398b48c28453458c4cc7d5fba94b8fe63c5170d940aac119090a"
     },
@@ -211318,8 +211318,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "e12a4eddcc443ed0777381a4dccbac89342868a7ce08a1c7b106e8aa3728e059"
     },
@@ -211349,8 +211349,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "7824c3560ae1725280ee2e532586924b8b96fa61dcdc042b13d33ba744695ac5"
     },
@@ -211386,8 +211386,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "ef06964999e9c81a4696814780ba61588a268cbcbd03098613f22e2e81bfb57b"
     },
@@ -211423,8 +211423,8 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "e363aa293f96cb3bd053684f93c84cf7e544b076f18682f804f85a84e7dbdea3"
     },
@@ -211460,15 +211460,15 @@
       "assembly_region": {
         "address": "0x00476770",
         "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "assembly_size": 2608,
+        "assembly_sha1": "f88a7e7f6c6cfe2a13c82d8960a36295a4dfea24"
       },
       "pseudocode_sha256": "ff1450f0756e3905bb27a188baefa70573f6fc538674562396d6ab8a797dd1c2"
     },
     {
       "address": "0x004771a0",
       "name": "FUN_004771a0",
-      "assembly_entry": false,
+      "assembly_entry": true,
       "seed_source": "native_catalog",
       "file": "functions/004771a0.c",
       "signature": "uint __cdecl FUN_004771a0(undefined4 param_1, int param_2)",
@@ -211495,17 +211495,28 @@
         "samp:GangZoneCreate"
       ],
       "assembly_region": {
-        "address": "0x00476770",
-        "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "address": "0x004771a0",
+        "assembly_name": "FUN_004771a0",
+        "assembly_size": 64,
+        "assembly_sha1": "e39b0dd9d2bbe32817fac2d5c698cf74ae268958",
+        "native_registration": {
+          "name": "GangZoneCreate",
+          "table_entry": "0x004cf0e8"
+        }
       },
-      "pseudocode_sha256": "638d8d6acdddbd2387d7c72f492d0f3f9cac5a9484ae5eb54db5e5534cdbc2ff"
+      "pseudocode_sha256": "638d8d6acdddbd2387d7c72f492d0f3f9cac5a9484ae5eb54db5e5534cdbc2ff",
+      "assembly_name": "FUN_004771a0",
+      "assembly_size": 64,
+      "assembly_sha1": "e39b0dd9d2bbe32817fac2d5c698cf74ae268958",
+      "native_registration": {
+        "name": "GangZoneCreate",
+        "table_entry": "0x004cf0e8"
+      }
     },
     {
       "address": "0x004771e0",
       "name": "FUN_004771e0",
-      "assembly_entry": false,
+      "assembly_entry": true,
       "seed_source": "native_catalog",
       "file": "functions/004771e0.c",
       "signature": "undefined4 __cdecl FUN_004771e0(undefined4 param_1, int param_2)",
@@ -211532,12 +211543,23 @@
         "samp:GangZoneDestroy"
       ],
       "assembly_region": {
-        "address": "0x00476770",
-        "assembly_name": "FUN_00476770",
-        "assembly_size": 2736,
-        "assembly_sha1": "9d8fb683d5f2c12708e8b77cd6dead5114490315"
+        "address": "0x004771e0",
+        "assembly_name": "FUN_004771e0",
+        "assembly_size": 64,
+        "assembly_sha1": "fa7f5dcab2b8aef5a25b1ad8de38ff64f758b28f",
+        "native_registration": {
+          "name": "GangZoneDestroy",
+          "table_entry": "0x004cf0f0"
+        }
       },
-      "pseudocode_sha256": "19ea54b53e6ea5be3abd38ed5037b152fbacd5e7074db7a4fbf6074ed0fe21d5"
+      "pseudocode_sha256": "19ea54b53e6ea5be3abd38ed5037b152fbacd5e7074db7a4fbf6074ed0fe21d5",
+      "assembly_name": "FUN_004771e0",
+      "assembly_size": 64,
+      "assembly_sha1": "fa7f5dcab2b8aef5a25b1ad8de38ff64f758b28f",
+      "native_registration": {
+        "name": "GangZoneDestroy",
+        "table_entry": "0x004cf0f0"
+      }
     },
     {
       "address": "0x00477220",
@@ -211566,23 +211588,23 @@
       "status": "ok",
       "diagnostic": "",
       "assembly_name": "FUN_00477220",
-      "assembly_size": 176,
-      "assembly_sha1": "430ea14cb304fc799c6dcb6ad94220861f98024f",
+      "assembly_size": 112,
+      "assembly_sha1": "345e317ff5c98ed91b409c1314b77387981aa0c8",
       "aliases": [
         "samp:GangZoneShowForPlayer"
       ],
       "assembly_region": {
         "address": "0x00477220",
         "assembly_name": "FUN_00477220",
-        "assembly_size": 176,
-        "assembly_sha1": "430ea14cb304fc799c6dcb6ad94220861f98024f"
+        "assembly_size": 112,
+        "assembly_sha1": "345e317ff5c98ed91b409c1314b77387981aa0c8"
       },
       "pseudocode_sha256": "7bbd830861ec8e979c83bd9eb112b6af9f76a5963b7fa5503c5e0fb0f881b7fd"
     },
     {
       "address": "0x00477290",
       "name": "FUN_00477290",
-      "assembly_entry": false,
+      "assembly_entry": true,
       "seed_source": "native_catalog",
       "file": "functions/00477290.c",
       "signature": "undefined4 __cdecl FUN_00477290(undefined4 param_1, int param_2)",
@@ -211609,12 +211631,23 @@
         "samp:GangZoneShowForAll"
       ],
       "assembly_region": {
-        "address": "0x00477220",
-        "assembly_name": "FUN_00477220",
-        "assembly_size": 176,
-        "assembly_sha1": "430ea14cb304fc799c6dcb6ad94220861f98024f"
+        "address": "0x00477290",
+        "assembly_name": "FUN_00477290",
+        "assembly_size": 64,
+        "assembly_sha1": "5419ed97d0676e6ee85eced2ede4885efb6b7496",
+        "native_registration": {
+          "name": "GangZoneShowForAll",
+          "table_entry": "0x004cf100"
+        }
       },
-      "pseudocode_sha256": "0152fe240f1e59987da3ca0d10407601e094554c02937a3f19fcd1d3d0b26e22"
+      "pseudocode_sha256": "0152fe240f1e59987da3ca0d10407601e094554c02937a3f19fcd1d3d0b26e22",
+      "assembly_name": "FUN_00477290",
+      "assembly_size": 64,
+      "assembly_sha1": "5419ed97d0676e6ee85eced2ede4885efb6b7496",
+      "native_registration": {
+        "name": "GangZoneShowForAll",
+        "table_entry": "0x004cf100"
+      }
     },
     {
       "address": "0x004772d0",
@@ -211643,23 +211676,23 @@
       "status": "ok",
       "diagnostic": "",
       "assembly_name": "FUN_004772d0",
-      "assembly_size": 160,
-      "assembly_sha1": "3bd8653aa1b4b5daf994fc727c4a7454ab2cabab",
+      "assembly_size": 96,
+      "assembly_sha1": "4fb43c715a89a791a60dabced1f4908c7819404d",
       "aliases": [
         "samp:GangZoneHideForPlayer"
       ],
       "assembly_region": {
         "address": "0x004772d0",
         "assembly_name": "FUN_004772d0",
-        "assembly_size": 160,
-        "assembly_sha1": "3bd8653aa1b4b5daf994fc727c4a7454ab2cabab"
+        "assembly_size": 96,
+        "assembly_sha1": "4fb43c715a89a791a60dabced1f4908c7819404d"
       },
       "pseudocode_sha256": "ac56dd4339abe23ffb4f83c2e734ea839a17288d76b062a0d4cade7ae84b79a6"
     },
     {
       "address": "0x00477330",
       "name": "FUN_00477330",
-      "assembly_entry": false,
+      "assembly_entry": true,
       "seed_source": "native_catalog",
       "file": "functions/00477330.c",
       "signature": "undefined4 __cdecl FUN_00477330(undefined4 param_1, int param_2)",
@@ -211686,12 +211719,23 @@
         "samp:GangZoneHideForAll"
       ],
       "assembly_region": {
-        "address": "0x004772d0",
-        "assembly_name": "FUN_004772d0",
-        "assembly_size": 160,
-        "assembly_sha1": "3bd8653aa1b4b5daf994fc727c4a7454ab2cabab"
+        "address": "0x00477330",
+        "assembly_name": "FUN_00477330",
+        "assembly_size": 64,
+        "assembly_sha1": "87c1f5d9adda570dc2a59e45d130f352f1f00fe3",
+        "native_registration": {
+          "name": "GangZoneHideForAll",
+          "table_entry": "0x004cf110"
+        }
       },
-      "pseudocode_sha256": "f601ae0e8b8b29f69d4b3f84dbae6d47896e69b05ce8e5e0865473109814884d"
+      "pseudocode_sha256": "f601ae0e8b8b29f69d4b3f84dbae6d47896e69b05ce8e5e0865473109814884d",
+      "assembly_name": "FUN_00477330",
+      "assembly_size": 64,
+      "assembly_sha1": "87c1f5d9adda570dc2a59e45d130f352f1f00fe3",
+      "native_registration": {
+        "name": "GangZoneHideForAll",
+        "table_entry": "0x004cf110"
+      }
     },
     {
       "address": "0x00477370",
@@ -211720,23 +211764,23 @@
       "status": "ok",
       "diagnostic": "",
       "assembly_name": "FUN_00477370",
-      "assembly_size": 176,
-      "assembly_sha1": "dee79624e3180a104d4a00f9cedcf74fa756e66a",
+      "assembly_size": 112,
+      "assembly_sha1": "0911f0a38fb5cb90a044341f96e1c95e7cee1fed",
       "aliases": [
         "samp:GangZoneFlashForPlayer"
       ],
       "assembly_region": {
         "address": "0x00477370",
         "assembly_name": "FUN_00477370",
-        "assembly_size": 176,
-        "assembly_sha1": "dee79624e3180a104d4a00f9cedcf74fa756e66a"
+        "assembly_size": 112,
+        "assembly_sha1": "0911f0a38fb5cb90a044341f96e1c95e7cee1fed"
       },
       "pseudocode_sha256": "12faba49eae6dbcb203a0d85dcf502789761c517ce215c15693dd710642a3185"
     },
     {
       "address": "0x004773e0",
       "name": "FUN_004773e0",
-      "assembly_entry": false,
+      "assembly_entry": true,
       "seed_source": "native_catalog",
       "file": "functions/004773e0.c",
       "signature": "undefined4 __cdecl FUN_004773e0(undefined4 param_1, int param_2)",
@@ -211763,12 +211807,23 @@
         "samp:GangZoneFlashForAll"
       ],
       "assembly_region": {
-        "address": "0x00477370",
-        "assembly_name": "FUN_00477370",
-        "assembly_size": 176,
-        "assembly_sha1": "dee79624e3180a104d4a00f9cedcf74fa756e66a"
+        "address": "0x004773e0",
+        "assembly_name": "FUN_004773e0",
+        "assembly_size": 64,
+        "assembly_sha1": "00d6b65242595f5caa5c16ac69ad4d6b2cf56aed",
+        "native_registration": {
+          "name": "GangZoneFlashForAll",
+          "table_entry": "0x004cf120"
+        }
       },
-      "pseudocode_sha256": "6d81ff7ea57224cd85d23b940c8145d4dbc3a76dd7cadc7121a9f2f0b214a957"
+      "pseudocode_sha256": "6d81ff7ea57224cd85d23b940c8145d4dbc3a76dd7cadc7121a9f2f0b214a957",
+      "assembly_name": "FUN_004773e0",
+      "assembly_size": 64,
+      "assembly_sha1": "00d6b65242595f5caa5c16ac69ad4d6b2cf56aed",
+      "native_registration": {
+        "name": "GangZoneFlashForAll",
+        "table_entry": "0x004cf120"
+      }
     },
     {
       "address": "0x00477420",
@@ -211797,23 +211852,23 @@
       "status": "ok",
       "diagnostic": "",
       "assembly_name": "FUN_00477420",
-      "assembly_size": 160,
-      "assembly_sha1": "6d4b23109d9ec4873ca13504a573a6445ba8a083",
+      "assembly_size": 96,
+      "assembly_sha1": "ff3df89c861dabdd5fa0929d11fc120fb8d6393e",
       "aliases": [
         "samp:GangZoneStopFlashForPlayer"
       ],
       "assembly_region": {
         "address": "0x00477420",
         "assembly_name": "FUN_00477420",
-        "assembly_size": 160,
-        "assembly_sha1": "6d4b23109d9ec4873ca13504a573a6445ba8a083"
+        "assembly_size": 96,
+        "assembly_sha1": "ff3df89c861dabdd5fa0929d11fc120fb8d6393e"
       },
       "pseudocode_sha256": "884d4081f4b11590900d054643b897fbe74efd04716a92add1f7094fc9c4f176"
     },
     {
       "address": "0x00477480",
       "name": "FUN_00477480",
-      "assembly_entry": false,
+      "assembly_entry": true,
       "seed_source": "native_catalog",
       "file": "functions/00477480.c",
       "signature": "undefined4 __cdecl FUN_00477480(undefined4 param_1, int param_2)",
@@ -211840,12 +211895,23 @@
         "samp:GangZoneStopFlashForAll"
       ],
       "assembly_region": {
-        "address": "0x00477420",
-        "assembly_name": "FUN_00477420",
-        "assembly_size": 160,
-        "assembly_sha1": "6d4b23109d9ec4873ca13504a573a6445ba8a083"
+        "address": "0x00477480",
+        "assembly_name": "FUN_00477480",
+        "assembly_size": 64,
+        "assembly_sha1": "cc6bd67f2d805a8eb1f9dd96f7bdce43ad4314dd",
+        "native_registration": {
+          "name": "GangZoneStopFlashForAll",
+          "table_entry": "0x004cf130"
+        }
       },
-      "pseudocode_sha256": "3bf56f94ea141f21a32e72dc1d070eecb1941b139f3c72a20b2a5fd20d1d6bd5"
+      "pseudocode_sha256": "3bf56f94ea141f21a32e72dc1d070eecb1941b139f3c72a20b2a5fd20d1d6bd5",
+      "assembly_name": "FUN_00477480",
+      "assembly_size": 64,
+      "assembly_sha1": "cc6bd67f2d805a8eb1f9dd96f7bdce43ad4314dd",
+      "native_registration": {
+        "name": "GangZoneStopFlashForAll",
+        "table_entry": "0x004cf130"
+      }
     },
     {
       "address": "0x004774c0",
@@ -308083,7 +308149,7 @@
     "ok": 3805,
     "decompile_failed": 1
   },
-  "assembly_entries": 3543,
+  "assembly_entries": 3549,
   "alias_source": "Native catalog hints only; no types or semantic names forced into Ghidra.",
   "generation": {
     "manifest_sha256": "e06e93a94f9350a01cb37b170d66efbbf2cd9f9324a1869cec9ce38c28b23df7",
@@ -308096,5 +308162,5 @@
     "heap": "768M"
   },
   "enrichment_script_sha256": "eb637371d561f95b868ab69f137becdba6543cfb13462c63decee3854dbb1454",
-  "reference_metadata_sha256": "ea658dca98ee6a350f8cb747d83702164c831b70a5e14d3a5aebd521ec920878"
+  "reference_metadata_sha256": "ef3cafd351e8a7122c4aed27fced3ec4fa5af6e50ad0874cadf696d2e0b44a6e"
 }
