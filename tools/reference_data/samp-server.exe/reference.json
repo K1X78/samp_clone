@@ -13306,11 +13306,21 @@
     {
       "address": "0x00470ff0",
       "assembly_name": "FUN_00470ff0",
-      "assembly_size": 448,
-      "assembly_sha1": "5466671f52e280e9c5c023f7b3083c66f4868600",
+      "assembly_size": 176,
+      "assembly_sha1": "4be0959faddaa664d7230987df71c75a4636826c",
       "native_registration": {
         "name": "GetPlayerPos",
         "table_entry": "0x004cf240"
+      }
+    },
+    {
+      "address": "0x004710a0",
+      "assembly_name": "FUN_004710a0",
+      "assembly_size": 272,
+      "assembly_sha1": "6d7c58cc60b9a7f7f137853f1a2f6fc442b95312",
+      "native_registration": {
+        "name": "GetPlayerLastShotVectors",
+        "table_entry": "0x004cf258"
       }
     },
     {
@@ -13352,11 +13362,31 @@
     {
       "address": "0x00471460",
       "assembly_name": "FUN_00471460",
-      "assembly_size": 368,
-      "assembly_sha1": "4f376874c74c4eabb06787f90068c30e92b1a0f7",
+      "assembly_size": 96,
+      "assembly_sha1": "043fda2834dd65d89e691b95e142440eb07cf024",
       "native_registration": {
         "name": "GetPlayerPoolSize",
         "table_entry": "0x004cee98"
+      }
+    },
+    {
+      "address": "0x004714c0",
+      "assembly_name": "FUN_004714c0",
+      "assembly_size": 144,
+      "assembly_sha1": "e6e8049bba9c882d9006252ca52aa9a33285fc4a",
+      "native_registration": {
+        "name": "IsPlayerInRangeOfPoint",
+        "table_entry": "0x004cf4e8"
+      }
+    },
+    {
+      "address": "0x00471550",
+      "assembly_name": "FUN_00471550",
+      "assembly_size": 128,
+      "assembly_sha1": "6eba6a41c2b746b7d413e294847cbb007dc1ee86",
+      "native_registration": {
+        "name": "GetPlayerDistanceFromPoint",
+        "table_entry": "0x004cf4f0"
       }
     },
     {
@@ -13448,11 +13478,31 @@
     {
       "address": "0x00472010",
       "assembly_name": "FUN_00472010",
-      "assembly_size": 544,
-      "assembly_sha1": "79070745b75c631253fcfcab38817586acec32c8",
+      "assembly_size": 128,
+      "assembly_sha1": "7b873c5c18dfc97f6fd98e551683c67b50a1027c",
       "native_registration": {
         "name": "GetPlayerInterior",
         "table_entry": "0x004cf300"
+      }
+    },
+    {
+      "address": "0x00472090",
+      "assembly_name": "FUN_00472090",
+      "assembly_size": 208,
+      "assembly_sha1": "d8b0ef9ff6b86f56f57a428c06cfe263fe3af85c",
+      "native_registration": {
+        "name": "GetPlayerCameraPos",
+        "table_entry": "0x004cf368"
+      }
+    },
+    {
+      "address": "0x00472160",
+      "assembly_name": "FUN_00472160",
+      "assembly_size": 208,
+      "assembly_sha1": "6ff4a4d086bcb1a403f19c216c441d8916690686",
+      "native_registration": {
+        "name": "GetPlayerCameraFrontVector",
+        "table_entry": "0x004cf370"
       }
     },
     {
@@ -13508,11 +13558,31 @@
     {
       "address": "0x004724a0",
       "assembly_name": "FUN_004724a0",
-      "assembly_size": 304,
-      "assembly_sha1": "9f86989659d8fb025a8d41cdcc82e738bee4f67b",
+      "assembly_size": 80,
+      "assembly_sha1": "431093d7eb328e1e23cd26d8d6f332913c1cc0c3",
       "native_registration": {
         "name": "GetPlayerCameraMode",
         "table_entry": "0x004cf350"
+      }
+    },
+    {
+      "address": "0x004724f0",
+      "assembly_name": "FUN_004724f0",
+      "assembly_size": 112,
+      "assembly_sha1": "021bf5787891f927861e2a5dc7bd0c50e3ffdce2",
+      "native_registration": {
+        "name": "GetPlayerCameraAspectRatio",
+        "table_entry": "0x004cf358"
+      }
+    },
+    {
+      "address": "0x00472560",
+      "assembly_name": "FUN_00472560",
+      "assembly_size": 112,
+      "assembly_sha1": "0398b798095fbddfb77716e638ca3f9c9e2c8492",
+      "native_registration": {
+        "name": "GetPlayerCameraZoom",
+        "table_entry": "0x004cf360"
       }
     },
     {
@@ -14398,8 +14468,18 @@
     {
       "address": "0x0047a490",
       "assembly_name": "FUN_0047a490",
-      "assembly_size": 2464,
-      "assembly_sha1": "39cc17aab6ae39b47a7b86d4eb9610bfdb57823f"
+      "assembly_size": 2160,
+      "assembly_sha1": "dd58f8e9845aca9dda76cdcb80182daaab48b2c0"
+    },
+    {
+      "address": "0x0047ad00",
+      "assembly_name": "FUN_0047ad00",
+      "assembly_size": 304,
+      "assembly_sha1": "94a4e33eee8d4a08ab33f89518c609acf9a9d1d8",
+      "native_registration": {
+        "name": "SetPlayerTeam",
+        "table_entry": "0x004cf218"
+      }
     },
     {
       "address": "0x0047ae30",
@@ -14592,8 +14672,18 @@
     {
       "address": "0x0047f6d0",
       "assembly_name": "FUN_0047f6d0",
-      "assembly_size": 3077,
-      "assembly_sha1": "7acafbe5e15e591f39241f6cb37717e19823167b"
+      "assembly_size": 2832,
+      "assembly_sha1": "eb8279da472ffe1cd807255c5c3abe3584f7f1cb"
+    },
+    {
+      "address": "0x004801e0",
+      "assembly_name": "FUN_004801e0",
+      "assembly_size": 245,
+      "assembly_sha1": "2d635e62d8dfb95e3de1f18db096d5f71a869d22",
+      "native_registration": {
+        "name": "SetPlayerDrunkLevel",
+        "table_entry": "0x004cf548"
+      }
     },
     {
       "address": "0x004802d5",
@@ -33176,6 +33266,33 @@
     ],
     "FUN_004708a0": [
       "0x004708a0"
+    ],
+    "FUN_004724f0": [
+      "0x004724f0"
+    ],
+    "FUN_00472560": [
+      "0x00472560"
+    ],
+    "FUN_00472090": [
+      "0x00472090"
+    ],
+    "FUN_00472160": [
+      "0x00472160"
+    ],
+    "FUN_004710a0": [
+      "0x004710a0"
+    ],
+    "FUN_0047ad00": [
+      "0x0047ad00"
+    ],
+    "FUN_004801e0": [
+      "0x004801e0"
+    ],
+    "FUN_004714c0": [
+      "0x004714c0"
+    ],
+    "FUN_00471550": [
+      "0x00471550"
     ]
   },
   "client_rpc_registrations": []

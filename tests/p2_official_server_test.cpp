@@ -204,6 +204,46 @@ void server() {
     CHECK(Access::call(vm,"GetPlayerCameraTargetObject",{0})==4 && Access::call(vm,"GetPlayerCameraTargetVehicle",{0})==5);
     CHECK(Access::call(vm,"GetPlayerCameraTargetPlayer",{0})==6 && Access::call(vm,"GetPlayerCameraTargetActor",{0})==7);
     Access::call(vm,"EnablePlayerCameraTarget",{0,0});rpc(game,one,168,report);CHECK(Access::call(vm,"GetPlayerCameraTargetObject",{0})==65535);
+
+    game.players_[0].spawned=true;
+    const std::uint8_t aim_message[]{203,4};
+    const std::array<float,7> aim_values{0.f,1.f,0.f,3.f,4.f,12.f,0.f};
+    const std::uint8_t aim_flags[]{0xff,0xff};
+    BitStream aim;
+    aim.write(aim_message,sizeof(aim_message));
+    aim.write(aim_values.data(),sizeof(aim_values));
+    aim.write(aim_flags,sizeof(aim_flags));
+    game.on_user_message(one,aim);
+    CHECK(Access::call(vm,"GetPlayerCameraMode",{0})==4);
+    CHECK(Access::call(vm,"GetPlayerCameraZoom",{0})==std::bit_cast<cell>(70.f));
+    CHECK(Access::call(vm,"GetPlayerCameraAspectRatio",{0})==std::bit_cast<cell>(2.f));
+    CHECK(Access::call(vm,"GetPlayerCameraPos",{65536,128,132,136})==1);
+    CHECK(Access::read_cell(vm,128)==std::bit_cast<cell>(3.f) && Access::read_cell(vm,136)==std::bit_cast<cell>(12.f));
+    CHECK(Access::call(vm,"GetPlayerCameraFrontVector",{0,128,132,136})==1);
+    CHECK(Access::read_cell(vm,128)==0 && Access::read_cell(vm,132)==std::bit_cast<cell>(1.f));
+    CHECK(Access::call(vm,"GetPlayerCameraPos",{2,128,132,136})==0);
+    game.players_[0].spawned=false;
+
+    const auto three=std::bit_cast<cell>(3.f);
+    const auto four=std::bit_cast<cell>(4.f);
+    const auto five=std::bit_cast<cell>(5.f);
+    CHECK(Access::call(vm,"GetPlayerDistanceFromPoint",{0,three,four,0})==five);
+    CHECK(Access::call(vm,"IsPlayerInRangeOfPoint",{0,five,three,four,0})==1);
+    CHECK(Access::call(vm,"IsPlayerInRangeOfPoint",{0,four,three,four,0})==0);
+    game.player_pool_highest_=1;
+    Wire::clear(one);Wire::clear(two);
+    CHECK(Access::call(vm,"SetPlayerTeam",{65536,258})==1 && Access::call(vm,"GetPlayerTeam",{0})==2);
+    for (auto* peer : {&one,&two}) {
+        const auto frames=Wire::messages(*peer);
+        CHECK(frames.size()==1);
+        if (frames.size()==1) {
+            auto applied_team=payload(frames.front(),69);
+            std::array<std::uint8_t,3> team{};
+            CHECK(applied_team.read(team.data(),team.size()));
+            CHECK((team==std::array<std::uint8_t,3>{0,0,2}));
+        }
+    }
+
     BitStream picked;const int pickup=3;picked.write(&pickup,4);trace.clear();rpc(game,one,131,picked);
     CHECK((trace==std::vector<std::string>{"gm:OnPlayerPickUpPickup","fs:OnPlayerPickUpPickup"}));
     Wire::clear(one);Wire::pings(one);game.players_[0].score=-123;game.players_[1].score=456;rpc(game,one,155);

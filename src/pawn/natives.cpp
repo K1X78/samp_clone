@@ -880,6 +880,128 @@ cell enable_player_camera_target(NativeHost& host, std::span<const cell> args) {
     return 1;
 }
 
+// Official: FUN_004724f0 @ 0x004724f0 (samp-server.exe)
+cell get_player_camera_aspect_ratio(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    return std::bit_cast<cell>(static_cast<float>(1.0 + double(player->aim[30]) * (1.0f / 255.0f)));
+}
+
+// Official: FUN_00472560 @ 0x00472560 (samp-server.exe)
+cell get_player_camera_zoom(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    const auto zoom = player->aim[29] & 0x3f;
+    return std::bit_cast<cell>(static_cast<float>(double(zoom) * (1.0f / 63.0f) * 35.0 + 35.0));
+}
+
+constexpr auto write_sync_cells = [](std::span<const cell> destinations, const std::uint8_t* source,
+                                    const CellWriter& write) {
+    for (const auto address : destinations) {
+        cell value;
+        std::memcpy(&value, source, sizeof(value));
+        if (!write(address, value)) return false;
+        source += sizeof(value);
+    }
+    return true;
+};
+
+// Official: FUN_00472090 @ 0x00472090 (samp-server.exe)
+cell get_player_camera_pos(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 4) return 0;
+    const auto* player = find_player(host, args);
+    return player && write_sync_cells(args.subspan(1, 3), player->aim.data() + 13, write);
+}
+
+// Official: FUN_00472160 @ 0x00472160 (samp-server.exe)
+cell get_player_camera_front_vector(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 4) return 0;
+    const auto* player = find_player(host, args);
+    return player && write_sync_cells(args.subspan(1, 3), player->aim.data() + 1, write);
+}
+
+// Official: FUN_004710a0 @ 0x004710a0 (samp-server.exe)
+cell get_player_last_shot_vectors(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 7) return 0;
+    const auto* player = find_player(host, args);
+    return player && write_sync_cells(args.subspan(1, 6), player->bullet.data() + 3, write);
+}
+
+// Official: FUN_0047ad00 @ 0x0047ad00 (samp-server.exe)
+cell set_player_team(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    const auto id = static_cast<std::uint16_t>(args[0]);
+    player->team = static_cast<std::uint8_t>(args[1]);
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    payload.write(&player->team, sizeof(player->team));
+    for (std::size_t i = 0; i < host.players_.size() && i < 1000 && static_cast<int>(i) <= host.player_pool_highest_; ++i) {
+        const auto& receiver = host.players_[i];
+        if (receiver.in_use && receiver.peer) {
+            host.send_rpc(*receiver.peer, static_cast<std::uint8_t>(samp::proto::RpcId::SetPlayerTeam), payload);
+        }
+    }
+    return 1;
+}
+
+// Official: FUN_004801e0 @ 0x004801e0 (samp-server.exe)
+cell set_player_drunk_level(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    constexpr auto set_drunk_level = static_cast<samp::proto::RpcId>(35);
+    send_player_command(host, *player, set_drunk_level, args.subspan(1, 1));
+    return 1;
+}
+
+// Official: FUN_004840f0 @ 0x004840f0 (samp-server.exe)
+double player_distance_from_point(const PlayerNativeState& player, float x, float y, float z) {
+    const double dx = double(player.x) - x;
+    const double dy = double(player.y) - y;
+    const double dz = double(player.z) - z;
+    return std::sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+// Official: FUN_00471550 @ 0x00471550 (samp-server.exe)
+cell get_player_distance_from_point(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 4) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    return std::bit_cast<cell>(static_cast<float>(player_distance_from_point(
+        *player, std::bit_cast<float>(args[1]), std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]))));
+}
+
+// Official: FUN_00489970 @ 0x00489970 (samp-server.exe)
+double vehicle_distance_from_point(const VehicleNativeState& vehicle, float x, float y, float z) {
+    const double dx = double(vehicle.x) - x;
+    const double dy = double(vehicle.y) - y;
+    const double dz = double(vehicle.z) - z;
+    return std::sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+// Official: FUN_004715d0 @ 0x004715d0 (samp-server.exe)
+cell get_vehicle_distance_from_point(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 4) return 0;
+    const auto* vehicle = find_vehicle(host, args[0]);
+    if (!vehicle) return 0;
+    return std::bit_cast<cell>(static_cast<float>(vehicle_distance_from_point(
+        *vehicle, std::bit_cast<float>(args[1]), std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]))));
+}
+
+// Official: FUN_004714c0 @ 0x004714c0 (samp-server.exe)
+cell is_player_in_range_of_point(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 5) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    const double radius = std::bit_cast<float>(args[1]);
+    const double dx = double(player->x) - std::bit_cast<float>(args[2]);
+    const double dy = double(player->y) - std::bit_cast<float>(args[3]);
+    const float dz = player->z - std::bit_cast<float>(args[4]);
+    return dx * dx + dy * dy + double(dz) * dz <= radius * radius;
+}
+
 // Official: FUN_00472b70 @ 0x00472b70 (samp-server.exe)
 cell reset_player_money(NativeHost& host, std::span<const cell> args) {
     auto* player = find_player(host, args);
@@ -1006,9 +1128,12 @@ cell get_player_keys(NativeHost& host, std::span<const cell> args, const CellWri
 using OutputNative = cell (*)(NativeHost&, std::span<const cell>, const CellWriter&);
 constexpr std::pair<const char*, OutputNative> output_natives[] = {
     {"GetPlayerArmour", get_player_armour},
+    {"GetPlayerCameraFrontVector", get_player_camera_front_vector},
+    {"GetPlayerCameraPos", get_player_camera_pos},
     {"GetPlayerFacingAngle", get_player_facing_angle},
     {"GetPlayerHealth", get_player_health},
     {"GetPlayerKeys", get_player_keys},
+    {"GetPlayerLastShotVectors", get_player_last_shot_vectors},
     {"GetPlayerPos", get_player_position},
     {"GetPlayerVelocity", get_player_velocity},
     {"GetPlayerWeaponData", get_player_weapon_data},
@@ -1038,13 +1163,16 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GangZoneStopFlashForAll", gang_zone_stop_flash_for_all},
     {"GangZoneStopFlashForPlayer", gang_zone_stop_flash_for_player},
     {"GetGravity", get_gravity},
+    {"GetPlayerCameraAspectRatio", get_player_camera_aspect_ratio},
     {"GetPlayerCameraMode", get_player_camera_mode},
     {"GetPlayerCameraTargetActor", get_player_camera_target_actor},
     {"GetPlayerCameraTargetObject", get_player_camera_target_object},
     {"GetPlayerCameraTargetPlayer", get_player_camera_target_player},
     {"GetPlayerCameraTargetVehicle", get_player_camera_target_vehicle},
+    {"GetPlayerCameraZoom", get_player_camera_zoom},
     {"GetPlayerColor", get_player_color},
     {"GetPlayerCustomSkin", get_player_custom_skin},
+    {"GetPlayerDistanceFromPoint", get_player_distance_from_point},
     {"GetPlayerDrunkLevel", get_player_drunk_level},
     {"GetPlayerInterior", get_player_interior},
     {"GetPlayerMoney", get_player_money},
@@ -1066,12 +1194,14 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GetPlayerAmmo", get_player_ammo},
     {"GetPlayerWeapon", get_player_weapon},
     {"GetTickCount", get_tick_count},
+    {"GetVehicleDistanceFromPoint", get_vehicle_distance_from_point},
     {"GetVehicleModel", get_vehicle_model},
     {"GetVehicleVirtualWorld", get_vehicle_virtual_world},
     {"GivePlayerMoney", give_player_money},
     {"GivePlayerWeapon", give_player_weapon},
     {"IsPlayerAdmin", is_player_admin},
     {"IsPlayerInAnyVehicle", is_player_in_any_vehicle},
+    {"IsPlayerInRangeOfPoint", is_player_in_range_of_point},
     {"IsPlayerInVehicle", is_player_in_vehicle},
     {"IsPlayerNPC", is_player_npc},
     {"IsValidVehicle", is_valid_vehicle},
@@ -1086,9 +1216,11 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetPlayerArmour", set_player_armour},
     {"SetPlayerArmedWeapon", set_player_armed_weapon},
     {"SetPlayerColor", set_player_color},
+    {"SetPlayerDrunkLevel", set_player_drunk_level},
     {"SetPlayerHealth", set_player_health},
     {"SetPlayerMapIcon", set_player_map_icon},
     {"SetPlayerScore", set_player_score},
+    {"SetPlayerTeam", set_player_team},
     {"SetPlayerWeather", set_player_weather},
     {"SetPlayerWorldBounds", set_player_world_bounds},
     {"SetVehicleVirtualWorld", set_vehicle_virtual_world},
