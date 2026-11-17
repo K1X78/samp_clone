@@ -13266,11 +13266,31 @@
     {
       "address": "0x00470f30",
       "assembly_name": "FUN_00470f30",
-      "assembly_size": 192,
-      "assembly_sha1": "d85b52dd130a7c24526542ee4bff274b6be8c829",
+      "assembly_size": 64,
+      "assembly_sha1": "a4575e860e22f2be6c56893250682056293a00c7",
       "native_registration": {
         "name": "GetPlayerVirtualWorld",
         "table_entry": "0x004cf518"
+      }
+    },
+    {
+      "address": "0x00470f70",
+      "assembly_name": "FUN_00470f70",
+      "assembly_size": 64,
+      "assembly_sha1": "3a87b2f30b3c29386b648a6d81472f8a4da6e6c2",
+      "native_registration": {
+        "name": "SetVehicleVirtualWorld",
+        "table_entry": "0x004cf828"
+      }
+    },
+    {
+      "address": "0x00470fb0",
+      "assembly_name": "FUN_00470fb0",
+      "assembly_size": 64,
+      "assembly_sha1": "ad8e998bfd3a027f800446406f60cc01c8bd3f28",
+      "native_registration": {
+        "name": "GetVehicleVirtualWorld",
+        "table_entry": "0x004cf830"
       }
     },
     {
@@ -13344,8 +13364,18 @@
     {
       "address": "0x004717e0",
       "assembly_name": "FUN_004717e0",
-      "assembly_size": 672,
-      "assembly_sha1": "7be0ab6563bfc1ee4e32db93af1f019bd2a6179a"
+      "assembly_size": 272,
+      "assembly_sha1": "8ee81dcb822c695560d85fb1306bfc3dc25db886"
+    },
+    {
+      "address": "0x004718f0",
+      "assembly_name": "FUN_004718f0",
+      "assembly_size": 400,
+      "assembly_sha1": "781275421c0ade7c36ec712189cff826dee6879c",
+      "native_registration": {
+        "name": "GetVehiclePos",
+        "table_entry": "0x004cf6f8"
+      }
     },
     {
       "address": "0x00471a80",
@@ -13524,11 +13554,21 @@
     {
       "address": "0x00472cf0",
       "assembly_name": "FUN_00472cf0",
-      "assembly_size": 224,
-      "assembly_sha1": "9bc10603068ec305162f36469b13e7a8f7a0564d",
+      "assembly_size": 64,
+      "assembly_sha1": "d92e919d641590cdc7bb231250f2cfad1d7fda16",
       "native_registration": {
         "name": "GetPlayerTargetActor",
         "table_entry": "0x004cf490"
+      }
+    },
+    {
+      "address": "0x00472d30",
+      "assembly_name": "FUN_00472d30",
+      "assembly_size": 160,
+      "assembly_sha1": "d252cb77567deeaf26495f1a39396a137e30d258",
+      "native_registration": {
+        "name": "GetPlayerWeaponData",
+        "table_entry": "0x004cf498"
       }
     },
     {
@@ -13546,11 +13586,21 @@
     {
       "address": "0x00472e30",
       "assembly_name": "FUN_00472e30",
-      "assembly_size": 288,
-      "assembly_sha1": "8f5cd1e4ef4f6d612a14b6f44d942d1ec626ff7c",
+      "assembly_size": 96,
+      "assembly_sha1": "465d85a4cf344df7f22a49aea2403e513e7c1c7b",
       "native_registration": {
         "name": "GetPlayerFacingAngle",
         "table_entry": "0x004cf3e8"
+      }
+    },
+    {
+      "address": "0x00472e90",
+      "assembly_name": "FUN_00472e90",
+      "assembly_size": 192,
+      "assembly_sha1": "f7e94e8a3e8af472c2036e29e35198368a161243",
+      "native_registration": {
+        "name": "ResetPlayerWeapons",
+        "table_entry": "0x004cf418"
       }
     },
     {
@@ -13776,11 +13826,21 @@
     {
       "address": "0x00474150",
       "assembly_name": "FUN_00474150",
-      "assembly_size": 240,
-      "assembly_sha1": "f6244b4d03730616ad9399d80d7a984aea87ea2d",
+      "assembly_size": 48,
+      "assembly_sha1": "b99880042e256c6789c0cb9abe25266085bf2104",
       "native_registration": {
         "name": "IsValidVehicle",
         "table_entry": "0x004cf6e0"
+      }
+    },
+    {
+      "address": "0x00474180",
+      "assembly_name": "FUN_00474180",
+      "assembly_size": 192,
+      "assembly_sha1": "66e59e29fd96a6721f7018484ae6b6c013a06e9f",
+      "native_registration": {
+        "name": "GetVehicleHealth",
+        "table_entry": "0x004cf7b0"
       }
     },
     {
@@ -14062,11 +14122,21 @@
     {
       "address": "0x00477830",
       "assembly_name": "FUN_00477830",
-      "assembly_size": 400,
-      "assembly_sha1": "5b40fa555a06fe5a794562c9a96da27151223361",
+      "assembly_size": 256,
+      "assembly_sha1": "74f3f456ca472af7f791721405190ee5fa15ab73",
       "native_registration": {
         "name": "GetPlayerVelocity",
         "table_entry": "0x004cf4d8"
+      }
+    },
+    {
+      "address": "0x00477930",
+      "assembly_name": "FUN_00477930",
+      "assembly_size": 144,
+      "assembly_sha1": "6a7730a5e9edd51a8f585fb9034cb5f4a226f780",
+      "native_registration": {
+        "name": "GetVehicleVelocity",
+        "table_entry": "0x004cf800"
       }
     },
     {
@@ -14294,8 +14364,18 @@
     {
       "address": "0x0047ae30",
       "assembly_name": "FUN_0047ae30",
-      "assembly_size": 1344,
-      "assembly_sha1": "2a3cd716cd4c8594f32cd314942cebcf5d65f5bf"
+      "assembly_size": 608,
+      "assembly_sha1": "2e56c98a0914f115e69de136396a63bfa1728c4f"
+    },
+    {
+      "address": "0x0047b090",
+      "assembly_name": "FUN_0047b090",
+      "assembly_size": 736,
+      "assembly_sha1": "a18e41faa9747ed85705316c1c5d792daf312689",
+      "native_registration": {
+        "name": "SetPlayerHealth",
+        "table_entry": "0x004cf268"
+      }
     },
     {
       "address": "0x0047b370",
@@ -14360,17 +14440,47 @@
     {
       "address": "0x0047c920",
       "assembly_name": "FUN_0047c920",
-      "assembly_size": 976,
-      "assembly_sha1": "7d25381e6b934b064c622a60fed8ad2b6bff71e6"
+      "assembly_size": 224,
+      "assembly_sha1": "fad101fc5cb4c7feaee112af6039cc1b304e44f1"
+    },
+    {
+      "address": "0x0047ca00",
+      "assembly_name": "FUN_0047ca00",
+      "assembly_size": 240,
+      "assembly_sha1": "2b68bd2800dc84f43c0226ae70169598243204a0",
+      "native_registration": {
+        "name": "GivePlayerWeapon",
+        "table_entry": "0x004cf420"
+      }
+    },
+    {
+      "address": "0x0047caf0",
+      "assembly_name": "FUN_0047caf0",
+      "assembly_size": 512,
+      "assembly_sha1": "e258f141bf8846b39f974324cc2f90e748fd802d",
+      "native_registration": {
+        "name": "SetPlayerArmedWeapon",
+        "table_entry": "0x004cf428"
+      }
     },
     {
       "address": "0x0047ccf0",
       "assembly_name": "FUN_0047ccf0",
-      "assembly_size": 1728,
-      "assembly_sha1": "134c7fa073d14b5f352bbd74c5593a62ee255097",
+      "assembly_size": 576,
+      "assembly_sha1": "af07bbc9322a961ba402ef8c74bcbb7094b6f901",
       "native_registration": {
         "name": "PlayerPlaySound",
         "table_entry": "0x004cf3c8"
+      }
+    },
+    {
+      "address": "0x0047cf30",
+      "assembly_name": "FUN_0047cf30",
+      "assembly_size": 1152,
+      "assembly_sha1": "54951cbfdd71194ade45019b84a10b515c5d1656",
+      "native_registration": {
+        "name": "SetPlayerArmour",
+        "table_entry": "0x004cf448"
       }
     },
     {
@@ -32955,6 +33065,39 @@
     ],
     "FUN_00477830": [
       "0x00477830"
+    ],
+    "FUN_0047ca00": [
+      "0x0047ca00"
+    ],
+    "FUN_0047caf0": [
+      "0x0047caf0"
+    ],
+    "FUN_00472e90": [
+      "0x00472e90"
+    ],
+    "FUN_0047b090": [
+      "0x0047b090"
+    ],
+    "FUN_0047cf30": [
+      "0x0047cf30"
+    ],
+    "FUN_00472d30": [
+      "0x00472d30"
+    ],
+    "FUN_004718f0": [
+      "0x004718f0"
+    ],
+    "FUN_00474180": [
+      "0x00474180"
+    ],
+    "FUN_00477930": [
+      "0x00477930"
+    ],
+    "FUN_00470f70": [
+      "0x00470f70"
+    ],
+    "FUN_00470fb0": [
+      "0x00470fb0"
     ]
   },
   "client_rpc_registrations": []

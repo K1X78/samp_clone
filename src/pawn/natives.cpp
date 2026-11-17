@@ -642,6 +642,139 @@ cell gang_zone_stop_flash_for_all(NativeHost& host, std::span<const cell> args) 
 
 using CellWriter = std::function<bool(cell, cell)>;
 
+constexpr auto find_vehicle = [](NativeHost& host, cell id) -> VehicleNativeState* {
+    const auto index = static_cast<std::uint16_t>(id);
+    if (index >= 2000 || index >= host.vehicles_.size() || !host.vehicles_[index].active) return nullptr;
+    return &host.vehicles_[index];
+};
+
+// Official: FUN_004676b0 @ 0x004676b0 (samp-server.exe)
+void set_vehicle_pool_world(NativeHost& host, std::uint16_t id, cell world) {
+    if (auto* vehicle = find_vehicle(host, id)) vehicle->virtual_world = world;
+}
+
+// Official: FUN_00470f70 @ 0x00470f70 (samp-server.exe)
+cell set_vehicle_virtual_world(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2 || !find_vehicle(host, args[0])) return 0;
+    set_vehicle_pool_world(host, static_cast<std::uint16_t>(args[0]), args[1]);
+    return 1;
+}
+
+// Official: FUN_00470fb0 @ 0x00470fb0 (samp-server.exe)
+cell get_vehicle_virtual_world(NativeHost& host, std::span<const cell> args) {
+    const auto* vehicle = args.empty() ? nullptr : find_vehicle(host, args[0]);
+    return vehicle ? vehicle->virtual_world : 0;
+}
+
+// Official: FUN_004718f0 @ 0x004718f0 (samp-server.exe)
+cell get_vehicle_position(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 4) return 0;
+    const auto* vehicle = find_vehicle(host, args[0]);
+    if (!vehicle) return 0;
+    return write(args[1], std::bit_cast<cell>(vehicle->x)) &&
+           write(args[2], std::bit_cast<cell>(vehicle->y)) &&
+           write(args[3], std::bit_cast<cell>(vehicle->z));
+}
+
+// Official: FUN_00474180 @ 0x00474180 (samp-server.exe)
+cell get_vehicle_health(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 2) return 0;
+    const auto* vehicle = find_vehicle(host, args[0]);
+    return vehicle && write(args[1], std::bit_cast<cell>(vehicle->health));
+}
+
+// Official: FUN_00477930 @ 0x00477930 (samp-server.exe)
+cell get_vehicle_velocity(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 4) return 0;
+    const auto* vehicle = find_vehicle(host, args[0]);
+    if (!vehicle) return 0;
+    return write(args[1], std::bit_cast<cell>(vehicle->velocity[0])) &&
+           write(args[2], std::bit_cast<cell>(vehicle->velocity[1])) &&
+           write(args[3], std::bit_cast<cell>(vehicle->velocity[2]));
+}
+
+// Official: FUN_00472d30 @ 0x00472d30 (samp-server.exe)
+cell get_player_weapon_data(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 4) return 0;
+    const auto slot = static_cast<std::uint8_t>(args[1]);
+    const auto* player = find_player(host, args);
+    if (!player || slot >= player->weapons.size()) return 0;
+    return write(args[2], player->weapons[slot]) &&
+           write(args[3], std::bit_cast<std::int16_t>(player->ammunition[slot]));
+}
+
+constexpr auto send_player_command = [](NativeHost& host, const PlayerNativeState& player,
+                                         samp::proto::RpcId rpc, std::span<const cell> cells) {
+    if (!player.peer) return;
+    samp::proto::BitStream payload;
+    if (!cells.empty()) payload.write(cells.data(), cells.size_bytes());
+    host.send_rpc(*player.peer, static_cast<std::uint8_t>(rpc), payload);
+};
+
+// Official: FUN_00472b70 @ 0x00472b70 (samp-server.exe)
+cell reset_player_money(NativeHost& host, std::span<const cell> args) {
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    player->money = 0;
+    send_player_command(host, *player, samp::proto::RpcId::ResetPlayerMoney, {});
+    return 1;
+}
+
+// Official: FUN_0047c710 @ 0x0047c710 (samp-server.exe)
+cell give_player_money(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    player->money = std::bit_cast<cell>(
+        static_cast<std::uint32_t>(player->money) + static_cast<std::uint32_t>(args[1]));
+    send_player_command(host, *player, samp::proto::RpcId::GivePlayerMoney, args.subspan(1, 1));
+    return 1;
+}
+
+// Official: FUN_0047ca00 @ 0x0047ca00 (samp-server.exe)
+cell give_player_weapon(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 3) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    send_player_command(host, *player, samp::proto::RpcId::GivePlayerWeapon, args.subspan(1, 2));
+    return 1;
+}
+
+// Official: FUN_0047caf0 @ 0x0047caf0 (samp-server.exe)
+cell set_player_armed_weapon(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    send_player_command(host, *player, samp::proto::RpcId::SetPlayerArmedWeapon, args.subspan(1, 1));
+    return 1;
+}
+
+// Official: FUN_00472e90 @ 0x00472e90 (samp-server.exe)
+cell reset_player_weapons(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    send_player_command(host, *player, samp::proto::RpcId::ResetPlayerWeapons, {});
+    return 1;
+}
+
+// Official: FUN_0047b090 @ 0x0047b090 (samp-server.exe)
+cell set_player_health(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    send_player_command(host, *player, samp::proto::RpcId::SetPlayerHealth, args.subspan(1, 1));
+    return 1;
+}
+
+// Official: FUN_0047cf30 @ 0x0047cf30 (samp-server.exe)
+cell set_player_armour(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    send_player_command(host, *player, samp::proto::RpcId::SetPlayerArmour, args.subspan(1, 1));
+    return 1;
+}
+
 // Official: FUN_00470ff0 @ 0x00470ff0 (samp-server.exe)
 cell get_player_position(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
     if (args.size() < 4) return 0;
@@ -709,6 +842,10 @@ constexpr std::pair<const char*, OutputNative> output_natives[] = {
     {"GetPlayerKeys", get_player_keys},
     {"GetPlayerPos", get_player_position},
     {"GetPlayerVelocity", get_player_velocity},
+    {"GetPlayerWeaponData", get_player_weapon_data},
+    {"GetVehicleHealth", get_vehicle_health},
+    {"GetVehiclePos", get_vehicle_position},
+    {"GetVehicleVelocity", get_vehicle_velocity},
 };
 
 using ServerNative = cell (*)(NativeHost&, std::span<const cell>);
@@ -755,18 +892,27 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GetPlayerWeapon", get_player_weapon},
     {"GetTickCount", get_tick_count},
     {"GetVehicleModel", get_vehicle_model},
+    {"GetVehicleVirtualWorld", get_vehicle_virtual_world},
+    {"GivePlayerMoney", give_player_money},
+    {"GivePlayerWeapon", give_player_weapon},
     {"IsPlayerAdmin", is_player_admin},
     {"IsPlayerInAnyVehicle", is_player_in_any_vehicle},
     {"IsPlayerInVehicle", is_player_in_vehicle},
     {"IsPlayerNPC", is_player_npc},
     {"IsValidVehicle", is_valid_vehicle},
     {"ManualVehicleEngineAndLights", manual_vehicle_engine_and_lights},
+    {"ResetPlayerMoney", reset_player_money},
+    {"ResetPlayerWeapons", reset_player_weapons},
     {"SetDeathDropAmount", set_death_drop_amount},
     {"SetGravity", set_gravity},
     {"SetNameTagDrawDistance", set_name_tag_draw_distance},
+    {"SetPlayerArmour", set_player_armour},
+    {"SetPlayerArmedWeapon", set_player_armed_weapon},
     {"SetPlayerColor", set_player_color},
+    {"SetPlayerHealth", set_player_health},
     {"SetPlayerScore", set_player_score},
     {"SetPlayerWeather", set_player_weather},
+    {"SetVehicleVirtualWorld", set_vehicle_virtual_world},
     {"ShowNameTags", show_name_tags},
     {"ShowPlayerMarkers", show_player_markers},
     {"UsePlayerPedAnims", use_player_ped_anims},
@@ -1205,42 +1351,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         }
         return static_cast<cell>(count);
     };
-    // Native owners: ResetPlayerMoney 0x00472b70, GivePlayerMoney 0x0047c710.
-    vm.native_functions_["ResetPlayerMoney"] = [&host, player_slot](std::span<const cell> args) -> cell {
-        auto* p = args.empty() ? nullptr : player_slot(args[0]); if (!p || !p->peer) return 0;
-        p->money = 0; samp::proto::BitStream payload; host.send_rpc(*p->peer, 20, payload); return 1;
-    };
-    vm.native_functions_["GivePlayerMoney"] = [&host, player_slot](std::span<const cell> args) -> cell {
-        auto* p = args.size() < 2 ? nullptr : player_slot(args[0]); if (!p || !p->peer) return 0;
-        p->money = std::bit_cast<cell>(static_cast<std::uint32_t>(p->money) + static_cast<std::uint32_t>(args[1]));
-        samp::proto::BitStream payload; payload.write(&args[1], 4); host.send_rpc(*p->peer, 18, payload); return 1;
-    };
-    // Native owners: GivePlayerWeapon 0x0047ca00, SetPlayerArmedWeapon
-    // 0x0047caf0 and ResetPlayerWeapons 0x00472e90. These send commands; cached
-    // weapon state remains the last synchronization reported by the client.
-    vm.native_functions_["GivePlayerWeapon"] = [&host, player_slot](std::span<const cell> args) -> cell {
-        auto* p = args.size() < 3 ? nullptr : player_slot(args[0]); if (!p || !p->peer) return 0;
-        samp::proto::BitStream payload; payload.write(&args[1], 4); payload.write(&args[2], 4);
-        host.send_rpc(*p->peer, 22, payload); return 1;
-    };
-    vm.native_functions_["SetPlayerArmedWeapon"] = [&host, player_slot](std::span<const cell> args) -> cell {
-        auto* p = args.size() < 2 ? nullptr : player_slot(args[0]); if (!p || !p->peer) return 0;
-        samp::proto::BitStream payload; payload.write(&args[1], 4); host.send_rpc(*p->peer, 67, payload); return 1;
-    };
-    vm.native_functions_["ResetPlayerWeapons"] = [&host, player_slot](std::span<const cell> args) -> cell {
-        auto* p = args.empty() ? nullptr : player_slot(args[0]); if (!p || !p->peer) return 0;
-        samp::proto::BitStream payload; host.send_rpc(*p->peer, 21, payload); return 1;
-    };
-    // Native owner: SetPlayerHealth 0x0047b090.
-    vm.native_functions_["SetPlayerHealth"] = [&host, player_slot](std::span<const cell> args) -> cell {
-        auto* p = args.size() < 2 ? nullptr : player_slot(args[0]); if (!p || !p->peer) return 0;
-        samp::proto::BitStream payload; payload.write(&args[1], 4); host.send_rpc(*p->peer, 14, payload); return 1;
-    };
-    // Native owner: SetPlayerArmour 0x0047cf30.
-    vm.native_functions_["SetPlayerArmour"] = [&host, player_slot](std::span<const cell> args) -> cell {
-        auto* p = args.size() < 2 ? nullptr : player_slot(args[0]); if (!p || !p->peer) return 0;
-        samp::proto::BitStream payload; payload.write(&args[1], 4); host.send_rpc(*p->peer, 66, payload); return 1;
-    };
     vm.native_functions_["IsPlayerConnected"] = [&host](std::span<const cell> args) -> cell {
         return !args.empty() && host.is_player_connected(args[0]);
     };
@@ -1381,20 +1491,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         }
         *v=VehicleNativeState{};return 1;
     };
-    // Native owners: 004718f0, 00474180 and 00470fb0.
-    vm.native_functions_["GetVehiclePos"]=[vehicle_slot,store_cell,as_cell](std::span<const cell> args)->cell {
-        const auto* v=args.size()<4?nullptr:vehicle_slot(args[0]);if(!v) return 0;
-        return store_cell(args[1],as_cell(v->x)) && store_cell(args[2],as_cell(v->y)) && store_cell(args[3],as_cell(v->z));
-    };
-    vm.native_functions_["GetVehicleHealth"]=[vehicle_slot,store_cell,as_cell](std::span<const cell> args)->cell {
-        const auto* v=args.size()<2?nullptr:vehicle_slot(args[0]);return v && store_cell(args[1],as_cell(v->health));
-    };
-    vm.native_functions_["GetVehicleVirtualWorld"]=[vehicle_slot](std::span<const cell> args)->cell {
-        const auto* v=args.empty()?nullptr:vehicle_slot(args[0]);return v?v->virtual_world:0;
-    };
-    vm.native_functions_["SetVehicleVirtualWorld"]=[vehicle_slot](std::span<const cell> args)->cell {
-        auto* v=args.size()<2?nullptr:vehicle_slot(args[0]);if(!v) return 0;v->virtual_world=args[1];return 1;
-    };
     // 00474110 -> 00489c40: update observed vehicle health and streamed clients.
     vm.native_functions_["SetVehicleHealth"]=[&host,vehicle_slot,as_float](std::span<const cell> args)->cell {
         auto* v=args.size()<2?nullptr:vehicle_slot(args[0]);if(!v) return 0;
@@ -1445,11 +1541,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
             p->virtual_world=args[1];samp::proto::BitStream payload;payload.write(&args[1],4);host.send_rpc(*p->peer,48,payload);
         }
         return 1;
-    };
-    // 00472d30 returns the signed low 16 bits of ammunition.
-    vm.native_functions_["GetPlayerWeaponData"]=[player_slot,store_cell](std::span<const cell> args)->cell {
-        auto* p=args.size()<4?nullptr:player_slot(args[0]);const auto slot=args.size()<2?255:static_cast<std::uint8_t>(args[1]);
-        return p && slot<13 && store_cell(args[2],p->weapons[slot]) && store_cell(args[3],static_cast<std::int16_t>(p->ammunition[slot]));
     };
 
 
