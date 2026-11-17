@@ -204850,8 +204850,8 @@
       "assembly_region": {
         "address": "0x004724a0",
         "assembly_name": "FUN_004724a0",
-        "assembly_size": 1584,
-        "assembly_sha1": "28d1cfe698db67095ba6de2c4bff4fba026c5caa",
+        "assembly_size": 304,
+        "assembly_sha1": "9f86989659d8fb025a8d41cdcc82e738bee4f67b",
         "native_registration": {
           "name": "GetPlayerCameraMode",
           "table_entry": "0x004cf350"
@@ -204859,8 +204859,8 @@
       },
       "pseudocode_sha256": "f2eb2b05a969e879c47b9807f0b1a18cfd2a825ea8a1b933d39ba3744636a372",
       "assembly_name": "FUN_004724a0",
-      "assembly_size": 1584,
-      "assembly_sha1": "28d1cfe698db67095ba6de2c4bff4fba026c5caa",
+      "assembly_size": 304,
+      "assembly_sha1": "9f86989659d8fb025a8d41cdcc82e738bee4f67b",
       "native_registration": {
         "name": "GetPlayerCameraMode",
         "table_entry": "0x004cf350"
@@ -204892,8 +204892,8 @@
       "assembly_region": {
         "address": "0x004724a0",
         "assembly_name": "FUN_004724a0",
-        "assembly_size": 1584,
-        "assembly_sha1": "28d1cfe698db67095ba6de2c4bff4fba026c5caa",
+        "assembly_size": 304,
+        "assembly_sha1": "9f86989659d8fb025a8d41cdcc82e738bee4f67b",
         "native_registration": {
           "name": "GetPlayerCameraMode",
           "table_entry": "0x004cf350"
@@ -204927,8 +204927,8 @@
       "assembly_region": {
         "address": "0x004724a0",
         "assembly_name": "FUN_004724a0",
-        "assembly_size": 1584,
-        "assembly_sha1": "28d1cfe698db67095ba6de2c4bff4fba026c5caa",
+        "assembly_size": 304,
+        "assembly_sha1": "9f86989659d8fb025a8d41cdcc82e738bee4f67b",
         "native_registration": {
           "name": "GetPlayerCameraMode",
           "table_entry": "0x004cf350"
@@ -204939,7 +204939,7 @@
     {
       "address": "0x004725d0",
       "name": "FUN_004725d0",
-      "assembly_entry": false,
+      "assembly_entry": true,
       "seed_source": "native_catalog",
       "file": "functions/004725d0.c",
       "signature": "undefined4 __stdcall FUN_004725d0(void)",
@@ -204960,16 +204960,23 @@
         "samp:ManualVehicleEngineAndLights"
       ],
       "assembly_region": {
-        "address": "0x004724a0",
-        "assembly_name": "FUN_004724a0",
-        "assembly_size": 1584,
-        "assembly_sha1": "28d1cfe698db67095ba6de2c4bff4fba026c5caa",
+        "address": "0x004725d0",
+        "assembly_name": "FUN_004725d0",
+        "assembly_size": 1280,
+        "assembly_sha1": "b53edd0468e0b117a09f7686c291d0ff7e59e225",
         "native_registration": {
-          "name": "GetPlayerCameraMode",
-          "table_entry": "0x004cf350"
+          "name": "ManualVehicleEngineAndLights",
+          "table_entry": "0x004cf730"
         }
       },
-      "pseudocode_sha256": "01f3300ac1b32c479a804cf35c6e718c9e759d870e2fc7125eb11a1ca6f05f3a"
+      "pseudocode_sha256": "01f3300ac1b32c479a804cf35c6e718c9e759d870e2fc7125eb11a1ca6f05f3a",
+      "assembly_name": "FUN_004725d0",
+      "assembly_size": 1280,
+      "assembly_sha1": "b53edd0468e0b117a09f7686c291d0ff7e59e225",
+      "native_registration": {
+        "name": "ManualVehicleEngineAndLights",
+        "table_entry": "0x004cf730"
+      }
     },
     {
       "address": "0x004725f0",
@@ -205006,13 +205013,13 @@
         "samp:SetVehicleParamsEx"
       ],
       "assembly_region": {
-        "address": "0x004724a0",
-        "assembly_name": "FUN_004724a0",
-        "assembly_size": 1584,
-        "assembly_sha1": "28d1cfe698db67095ba6de2c4bff4fba026c5caa",
+        "address": "0x004725d0",
+        "assembly_name": "FUN_004725d0",
+        "assembly_size": 1280,
+        "assembly_sha1": "b53edd0468e0b117a09f7686c291d0ff7e59e225",
         "native_registration": {
-          "name": "GetPlayerCameraMode",
-          "table_entry": "0x004cf350"
+          "name": "ManualVehicleEngineAndLights",
+          "table_entry": "0x004cf730"
         }
       },
       "pseudocode_sha256": "8cceeed8d446b1d69c88033baaf4683c2b0e9d30cf694c624349643e1d170d8b"
@@ -205052,13 +205059,13 @@
         "samp:GetVehicleParamsEx"
       ],
       "assembly_region": {
-        "address": "0x004724a0",
-        "assembly_name": "FUN_004724a0",
-        "assembly_size": 1584,
-        "assembly_sha1": "28d1cfe698db67095ba6de2c4bff4fba026c5caa",
+        "address": "0x004725d0",
+        "assembly_name": "FUN_004725d0",
+        "assembly_size": 1280,
+        "assembly_sha1": "b53edd0468e0b117a09f7686c291d0ff7e59e225",
         "native_registration": {
-          "name": "GetPlayerCameraMode",
-          "table_entry": "0x004cf350"
+          "name": "ManualVehicleEngineAndLights",
+          "table_entry": "0x004cf730"
         }
       },
       "pseudocode_sha256": "8977e18437ff6b06c14cc71639c7290967e50d63d376dcbbf980fda9e68cbe65"
@@ -205098,13 +205105,13 @@
         "samp:SetVehicleParamsCarDoors"
       ],
       "assembly_region": {
-        "address": "0x004724a0",
-        "assembly_name": "FUN_004724a0",
-        "assembly_size": 1584,
-        "assembly_sha1": "28d1cfe698db67095ba6de2c4bff4fba026c5caa",
+        "address": "0x004725d0",
+        "assembly_name": "FUN_004725d0",
+        "assembly_size": 1280,
+        "assembly_sha1": "b53edd0468e0b117a09f7686c291d0ff7e59e225",
         "native_registration": {
-          "name": "GetPlayerCameraMode",
-          "table_entry": "0x004cf350"
+          "name": "ManualVehicleEngineAndLights",
+          "table_entry": "0x004cf730"
         }
       },
       "pseudocode_sha256": "38c1f4f526a18eb70f3a429fbc58ea71b56dfdfe0e6399cd33618a6b02aca11a"
@@ -205144,13 +205151,13 @@
         "samp:GetVehicleParamsCarDoors"
       ],
       "assembly_region": {
-        "address": "0x004724a0",
-        "assembly_name": "FUN_004724a0",
-        "assembly_size": 1584,
-        "assembly_sha1": "28d1cfe698db67095ba6de2c4bff4fba026c5caa",
+        "address": "0x004725d0",
+        "assembly_name": "FUN_004725d0",
+        "assembly_size": 1280,
+        "assembly_sha1": "b53edd0468e0b117a09f7686c291d0ff7e59e225",
         "native_registration": {
-          "name": "GetPlayerCameraMode",
-          "table_entry": "0x004cf350"
+          "name": "ManualVehicleEngineAndLights",
+          "table_entry": "0x004cf730"
         }
       },
       "pseudocode_sha256": "74deca01df580dda27e1460661bc39c170e4ff178ae82ef9a0703f15cc0a1a2c"
@@ -205190,13 +205197,13 @@
         "samp:SetVehicleParamsCarWindows"
       ],
       "assembly_region": {
-        "address": "0x004724a0",
-        "assembly_name": "FUN_004724a0",
-        "assembly_size": 1584,
-        "assembly_sha1": "28d1cfe698db67095ba6de2c4bff4fba026c5caa",
+        "address": "0x004725d0",
+        "assembly_name": "FUN_004725d0",
+        "assembly_size": 1280,
+        "assembly_sha1": "b53edd0468e0b117a09f7686c291d0ff7e59e225",
         "native_registration": {
-          "name": "GetPlayerCameraMode",
-          "table_entry": "0x004cf350"
+          "name": "ManualVehicleEngineAndLights",
+          "table_entry": "0x004cf730"
         }
       },
       "pseudocode_sha256": "8f2e9c94ebecbd1934325e88aff7636e92ed774a000dc077032a66b7090a4fbd"
@@ -205236,13 +205243,13 @@
         "samp:GetVehicleParamsCarWindows"
       ],
       "assembly_region": {
-        "address": "0x004724a0",
-        "assembly_name": "FUN_004724a0",
-        "assembly_size": 1584,
-        "assembly_sha1": "28d1cfe698db67095ba6de2c4bff4fba026c5caa",
+        "address": "0x004725d0",
+        "assembly_name": "FUN_004725d0",
+        "assembly_size": 1280,
+        "assembly_sha1": "b53edd0468e0b117a09f7686c291d0ff7e59e225",
         "native_registration": {
-          "name": "GetPlayerCameraMode",
-          "table_entry": "0x004cf350"
+          "name": "ManualVehicleEngineAndLights",
+          "table_entry": "0x004cf730"
         }
       },
       "pseudocode_sha256": "c3ecb809b0782bd0dcae0649e07fe88bab20361cc3b289909e7e59de2a15a6e1"
@@ -206445,8 +206452,8 @@
       "assembly_region": {
         "address": "0x00473480",
         "assembly_name": "FUN_00473480",
-        "assembly_size": 304,
-        "assembly_sha1": "fbc15ae13049676fba790d4d3901a758ab6c87bd",
+        "assembly_size": 32,
+        "assembly_sha1": "de6fe5e1c2319f60ed946d4f2444d4882cef8ac9",
         "native_registration": {
           "name": "ShowPlayerMarkers",
           "table_entry": "0x004cf000"
@@ -206454,8 +206461,8 @@
       },
       "pseudocode_sha256": "1953a159fc5b6f4e327d90d53af9408d38cde3703197c52b0587582f3c666443",
       "assembly_name": "FUN_00473480",
-      "assembly_size": 304,
-      "assembly_sha1": "fbc15ae13049676fba790d4d3901a758ab6c87bd",
+      "assembly_size": 32,
+      "assembly_sha1": "de6fe5e1c2319f60ed946d4f2444d4882cef8ac9",
       "native_registration": {
         "name": "ShowPlayerMarkers",
         "table_entry": "0x004cf000"
@@ -206464,7 +206471,7 @@
     {
       "address": "0x004734a0",
       "name": "FUN_004734a0",
-      "assembly_entry": false,
+      "assembly_entry": true,
       "seed_source": "native_catalog",
       "file": "functions/004734a0.c",
       "signature": "undefined4 __cdecl FUN_004734a0(undefined4 param_1, int param_2)",
@@ -206485,21 +206492,28 @@
         "samp:AllowInteriorWeapons"
       ],
       "assembly_region": {
-        "address": "0x00473480",
-        "assembly_name": "FUN_00473480",
-        "assembly_size": 304,
-        "assembly_sha1": "fbc15ae13049676fba790d4d3901a758ab6c87bd",
+        "address": "0x004734a0",
+        "assembly_name": "FUN_004734a0",
+        "assembly_size": 32,
+        "assembly_sha1": "54d70965b773b01eb58ede19dfa6ae98efad2b20",
         "native_registration": {
-          "name": "ShowPlayerMarkers",
-          "table_entry": "0x004cf000"
+          "name": "AllowInteriorWeapons",
+          "table_entry": "0x004cf028"
         }
       },
-      "pseudocode_sha256": "f1d069ddbebf7f8ec739a5a1b80d32e0fde6c7605bb6e03455ae31f0fec3cb75"
+      "pseudocode_sha256": "f1d069ddbebf7f8ec739a5a1b80d32e0fde6c7605bb6e03455ae31f0fec3cb75",
+      "assembly_name": "FUN_004734a0",
+      "assembly_size": 32,
+      "assembly_sha1": "54d70965b773b01eb58ede19dfa6ae98efad2b20",
+      "native_registration": {
+        "name": "AllowInteriorWeapons",
+        "table_entry": "0x004cf028"
+      }
     },
     {
       "address": "0x004734c0",
       "name": "FUN_004734c0",
-      "assembly_entry": false,
+      "assembly_entry": true,
       "seed_source": "native_catalog",
       "file": "functions/004734c0.c",
       "signature": "undefined __stdcall FUN_004734c0(void)",
@@ -206520,16 +206534,23 @@
         "samp:UsePlayerPedAnims"
       ],
       "assembly_region": {
-        "address": "0x00473480",
-        "assembly_name": "FUN_00473480",
-        "assembly_size": 304,
-        "assembly_sha1": "fbc15ae13049676fba790d4d3901a758ab6c87bd",
+        "address": "0x004734c0",
+        "assembly_name": "FUN_004734c0",
+        "assembly_size": 240,
+        "assembly_sha1": "ec4ac326d393f2ae7d122c970aef9435b52eb2fd",
         "native_registration": {
-          "name": "ShowPlayerMarkers",
-          "table_entry": "0x004cf000"
+          "name": "UsePlayerPedAnims",
+          "table_entry": "0x004cf068"
         }
       },
-      "pseudocode_sha256": "e85629b5ddcc4b4ca48d75717fdc22855501af607d7cee370ab23b22683bd91a"
+      "pseudocode_sha256": "e85629b5ddcc4b4ca48d75717fdc22855501af607d7cee370ab23b22683bd91a",
+      "assembly_name": "FUN_004734c0",
+      "assembly_size": 240,
+      "assembly_sha1": "ec4ac326d393f2ae7d122c970aef9435b52eb2fd",
+      "native_registration": {
+        "name": "UsePlayerPedAnims",
+        "table_entry": "0x004cf068"
+      }
     },
     {
       "address": "0x004734d0",
@@ -206566,13 +206587,13 @@
         "samp:GetPlayerIp"
       ],
       "assembly_region": {
-        "address": "0x00473480",
-        "assembly_name": "FUN_00473480",
-        "assembly_size": 304,
-        "assembly_sha1": "fbc15ae13049676fba790d4d3901a758ab6c87bd",
+        "address": "0x004734c0",
+        "assembly_name": "FUN_004734c0",
+        "assembly_size": 240,
+        "assembly_sha1": "ec4ac326d393f2ae7d122c970aef9435b52eb2fd",
         "native_registration": {
-          "name": "ShowPlayerMarkers",
-          "table_entry": "0x004cf000"
+          "name": "UsePlayerPedAnims",
+          "table_entry": "0x004cf068"
         }
       },
       "pseudocode_sha256": "4ba84124540242b9ffbe2cc28be7203ac25b6b7598da72427cc937856f3abd51"
@@ -206601,13 +206622,13 @@
         "samp:GetPlayerPing"
       ],
       "assembly_region": {
-        "address": "0x00473480",
-        "assembly_name": "FUN_00473480",
-        "assembly_size": 304,
-        "assembly_sha1": "fbc15ae13049676fba790d4d3901a758ab6c87bd",
+        "address": "0x004734c0",
+        "assembly_name": "FUN_004734c0",
+        "assembly_size": 240,
+        "assembly_sha1": "ec4ac326d393f2ae7d122c970aef9435b52eb2fd",
         "native_registration": {
-          "name": "ShowPlayerMarkers",
-          "table_entry": "0x004cf000"
+          "name": "UsePlayerPedAnims",
+          "table_entry": "0x004cf068"
         }
       },
       "pseudocode_sha256": "33ac5e1dcda462fbc638bceceea7d28595a117bb5cab9fcc69ea21e2d004f1c1"
@@ -207335,8 +207356,8 @@
       "assembly_region": {
         "address": "0x00473ef0",
         "assembly_name": "FUN_00473ef0",
-        "assembly_size": 48,
-        "assembly_sha1": "aa23eb836dfe848b208860dac32ce58ef521d2e4",
+        "assembly_size": 32,
+        "assembly_sha1": "a4bd4064e2356737a97a35742974b3ee7a197ac5",
         "native_registration": {
           "name": "EnableTirePopping",
           "table_entry": "0x004cf018"
@@ -207344,8 +207365,8 @@
       },
       "pseudocode_sha256": "dbf7ef8564944eea37c886beebe3b174896250fe67d9b42d8687c5bf8d587c15",
       "assembly_name": "FUN_00473ef0",
-      "assembly_size": 48,
-      "assembly_sha1": "aa23eb836dfe848b208860dac32ce58ef521d2e4",
+      "assembly_size": 32,
+      "assembly_sha1": "a4bd4064e2356737a97a35742974b3ee7a197ac5",
       "native_registration": {
         "name": "EnableTirePopping",
         "table_entry": "0x004cf018"
@@ -207354,7 +207375,7 @@
     {
       "address": "0x00473f10",
       "name": "FUN_00473f10",
-      "assembly_entry": false,
+      "assembly_entry": true,
       "seed_source": "native_catalog",
       "file": "functions/00473f10.c",
       "signature": "undefined __stdcall FUN_00473f10(void)",
@@ -207375,16 +207396,23 @@
         "samp:EnableVehicleFriendlyFire"
       ],
       "assembly_region": {
-        "address": "0x00473ef0",
-        "assembly_name": "FUN_00473ef0",
-        "assembly_size": 48,
-        "assembly_sha1": "aa23eb836dfe848b208860dac32ce58ef521d2e4",
+        "address": "0x00473f10",
+        "assembly_name": "FUN_00473f10",
+        "assembly_size": 16,
+        "assembly_sha1": "ee295ae99ae2ff5484bb375b006d160ef03403db",
         "native_registration": {
-          "name": "EnableTirePopping",
-          "table_entry": "0x004cf018"
+          "name": "EnableVehicleFriendlyFire",
+          "table_entry": "0x004cf020"
         }
       },
-      "pseudocode_sha256": "01ade08bb3dc6b953eb409d127663b18f2cad72dc598b67c32e0b9b0baa7fdf2"
+      "pseudocode_sha256": "01ade08bb3dc6b953eb409d127663b18f2cad72dc598b67c32e0b9b0baa7fdf2",
+      "assembly_name": "FUN_00473f10",
+      "assembly_size": 16,
+      "assembly_sha1": "ee295ae99ae2ff5484bb375b006d160ef03403db",
+      "native_registration": {
+        "name": "EnableVehicleFriendlyFire",
+        "table_entry": "0x004cf020"
+      }
     },
     {
       "address": "0x00473f20",
@@ -208264,23 +208292,23 @@
       "status": "ok",
       "diagnostic": "",
       "assembly_name": "FUN_004747d0",
-      "assembly_size": 864,
-      "assembly_sha1": "dc5448a3613d2cdc06ebb5f63cdaa7732c01a0dd",
+      "assembly_size": 832,
+      "assembly_sha1": "5e4cdf94d6fb53f8d30b9ce8779804874b27edb3",
       "aliases": [
         "samp:CallLocalFunction"
       ],
       "assembly_region": {
         "address": "0x004747d0",
         "assembly_name": "FUN_004747d0",
-        "assembly_size": 864,
-        "assembly_sha1": "dc5448a3613d2cdc06ebb5f63cdaa7732c01a0dd"
+        "assembly_size": 832,
+        "assembly_sha1": "5e4cdf94d6fb53f8d30b9ce8779804874b27edb3"
       },
       "pseudocode_sha256": "81f8344e4aaba1cd14373c9c6834ec1b1bd2e3d262f5b966907ac3af11a59579"
     },
     {
       "address": "0x00474b10",
       "name": "FUN_00474b10",
-      "assembly_entry": false,
+      "assembly_entry": true,
       "seed_source": "native_catalog",
       "file": "functions/00474b10.c",
       "signature": "undefined4 __cdecl FUN_00474b10(undefined4 param_1, int param_2)",
@@ -208301,12 +208329,23 @@
         "samp:SetDeathDropAmount"
       ],
       "assembly_region": {
-        "address": "0x004747d0",
-        "assembly_name": "FUN_004747d0",
-        "assembly_size": 864,
-        "assembly_sha1": "dc5448a3613d2cdc06ebb5f63cdaa7732c01a0dd"
+        "address": "0x00474b10",
+        "assembly_name": "FUN_00474b10",
+        "assembly_size": 32,
+        "assembly_sha1": "72fc34b4ea325e27145487f6d6f4ecce5f30acc9",
+        "native_registration": {
+          "name": "SetDeathDropAmount",
+          "table_entry": "0x004cf048"
+        }
       },
-      "pseudocode_sha256": "f8c234f8a686ce0c2c3d7d706304b1e716bb67827cdcbe2d8b26bd73ae6d69e5"
+      "pseudocode_sha256": "f8c234f8a686ce0c2c3d7d706304b1e716bb67827cdcbe2d8b26bd73ae6d69e5",
+      "assembly_name": "FUN_00474b10",
+      "assembly_size": 32,
+      "assembly_sha1": "72fc34b4ea325e27145487f6d6f4ecce5f30acc9",
+      "native_registration": {
+        "name": "SetDeathDropAmount",
+        "table_entry": "0x004cf048"
+      }
     },
     {
       "address": "0x00474b30",
@@ -212190,8 +212229,8 @@
       "assembly_region": {
         "address": "0x00477800",
         "assembly_name": "FUN_00477800",
-        "assembly_size": 448,
-        "assembly_sha1": "9d47c5f6547e646705d888c88642167e15edfeb6",
+        "assembly_size": 32,
+        "assembly_sha1": "f86e72969bdf0ad5373c9d85a6342ee92037894d",
         "native_registration": {
           "name": "SetNameTagDrawDistance",
           "table_entry": "0x004cf078"
@@ -212199,8 +212238,8 @@
       },
       "pseudocode_sha256": "4ca01b95da3339f718ac39d2f82bacc3ec476bd3af561cb9b92f29a7d47065a5",
       "assembly_name": "FUN_00477800",
-      "assembly_size": 448,
-      "assembly_sha1": "9d47c5f6547e646705d888c88642167e15edfeb6",
+      "assembly_size": 32,
+      "assembly_sha1": "f86e72969bdf0ad5373c9d85a6342ee92037894d",
       "native_registration": {
         "name": "SetNameTagDrawDistance",
         "table_entry": "0x004cf078"
@@ -212209,7 +212248,7 @@
     {
       "address": "0x00477820",
       "name": "FUN_00477820",
-      "assembly_entry": false,
+      "assembly_entry": true,
       "seed_source": "native_catalog",
       "file": "functions/00477820.c",
       "signature": "undefined4 __stdcall FUN_00477820(void)",
@@ -212230,16 +212269,23 @@
         "samp:DisableNameTagLOS"
       ],
       "assembly_region": {
-        "address": "0x00477800",
-        "assembly_name": "FUN_00477800",
-        "assembly_size": 448,
-        "assembly_sha1": "9d47c5f6547e646705d888c88642167e15edfeb6",
+        "address": "0x00477820",
+        "assembly_name": "FUN_00477820",
+        "assembly_size": 416,
+        "assembly_sha1": "84e089a1468ab78666dbd22ff4e6bf2c3681ca55",
         "native_registration": {
-          "name": "SetNameTagDrawDistance",
-          "table_entry": "0x004cf078"
+          "name": "DisableNameTagLOS",
+          "table_entry": "0x004cf080"
         }
       },
-      "pseudocode_sha256": "bdace04882ad8a7a82cb0a912599d495ac7151c426a36f61a7a656363a4c5cb8"
+      "pseudocode_sha256": "bdace04882ad8a7a82cb0a912599d495ac7151c426a36f61a7a656363a4c5cb8",
+      "assembly_name": "FUN_00477820",
+      "assembly_size": 416,
+      "assembly_sha1": "84e089a1468ab78666dbd22ff4e6bf2c3681ca55",
+      "native_registration": {
+        "name": "DisableNameTagLOS",
+        "table_entry": "0x004cf080"
+      }
     },
     {
       "address": "0x00477830",
@@ -212271,13 +212317,13 @@
         "samp:GetPlayerVelocity"
       ],
       "assembly_region": {
-        "address": "0x00477800",
-        "assembly_name": "FUN_00477800",
-        "assembly_size": 448,
-        "assembly_sha1": "9d47c5f6547e646705d888c88642167e15edfeb6",
+        "address": "0x00477820",
+        "assembly_name": "FUN_00477820",
+        "assembly_size": 416,
+        "assembly_sha1": "84e089a1468ab78666dbd22ff4e6bf2c3681ca55",
         "native_registration": {
-          "name": "SetNameTagDrawDistance",
-          "table_entry": "0x004cf078"
+          "name": "DisableNameTagLOS",
+          "table_entry": "0x004cf080"
         }
       },
       "pseudocode_sha256": "9908b5cf62240836d5fe53a7dea659a20f0729832639ca7e948af35bba795737"
@@ -212312,13 +212358,13 @@
         "samp:GetVehicleVelocity"
       ],
       "assembly_region": {
-        "address": "0x00477800",
-        "assembly_name": "FUN_00477800",
-        "assembly_size": 448,
-        "assembly_sha1": "9d47c5f6547e646705d888c88642167e15edfeb6",
+        "address": "0x00477820",
+        "assembly_name": "FUN_00477820",
+        "assembly_size": 416,
+        "assembly_sha1": "84e089a1468ab78666dbd22ff4e6bf2c3681ca55",
         "native_registration": {
-          "name": "SetNameTagDrawDistance",
-          "table_entry": "0x004cf078"
+          "name": "DisableNameTagLOS",
+          "table_entry": "0x004cf080"
         }
       },
       "pseudocode_sha256": "c223a6ac7d68f2c061ea5c9d2c12c42825189640e336d34f1363e5affe6f8b96"
@@ -308037,7 +308083,7 @@
     "ok": 3805,
     "decompile_failed": 1
   },
-  "assembly_entries": 3537,
+  "assembly_entries": 3543,
   "alias_source": "Native catalog hints only; no types or semantic names forced into Ghidra.",
   "generation": {
     "manifest_sha256": "e06e93a94f9350a01cb37b170d66efbbf2cd9f9324a1869cec9ce38c28b23df7",
@@ -308050,5 +308096,5 @@
     "heap": "768M"
   },
   "enrichment_script_sha256": "eb637371d561f95b868ab69f137becdba6543cfb13462c63decee3854dbb1454",
-  "reference_metadata_sha256": "e888274cde7749b2fe0a6f0f374b47c5fb250a57e5ca38ca0df266693c446341"
+  "reference_metadata_sha256": "a12a69cebc90798ce697ff198ad3193eaf4dc1f48e9df7e09a85de692f601863"
 }

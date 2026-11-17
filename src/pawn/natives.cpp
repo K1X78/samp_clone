@@ -409,12 +409,53 @@ cell arc_tangent_two(NativeHost&, std::span<const cell> args) {
     return std::bit_cast<cell>(result);
 }
 
+// Official: FUN_004734c0 @ 0x004734c0 (samp-server.exe)
+cell use_player_ped_anims(NativeHost& host, std::span<const cell>) {
+    host.use_player_ped_anims_ = true;
+    return 1;
+}
+
+// Official: FUN_004734a0 @ 0x004734a0 (samp-server.exe)
+cell allow_interior_weapons(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    host.allow_interior_weapons_ = args.front() != 0;
+    return 1;
+}
+
+// Official: FUN_00477820 @ 0x00477820 (samp-server.exe)
+cell disable_name_tag_los(NativeHost& host, std::span<const cell>) {
+    host.name_tag_line_of_sight_ = false;
+    return 1;
+}
+
+// Official: FUN_004725d0 @ 0x004725d0 (samp-server.exe)
+cell manual_vehicle_engine_and_lights(NativeHost& host, std::span<const cell>) {
+    host.manual_vehicle_control_ = true;
+    return 1;
+}
+
+// Official: FUN_00474b10 @ 0x00474b10 (samp-server.exe)
+cell set_death_drop_amount(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    host.death_drop_amount_ = args.front();
+    return 1;
+}
+
+// Official: FUN_00473f10 @ 0x00473f10 (samp-server.exe)
+cell enable_vehicle_friendly_fire(NativeHost& host, std::span<const cell>) {
+    host.vehicle_friendly_fire_ = 1;
+    return 1;
+}
+
 using ServerNative = cell (*)(NativeHost&, std::span<const cell>);
 constexpr std::pair<const char*, ServerNative> server_natives[] = {
+    {"AllowInteriorWeapons", allow_interior_weapons},
     {"atan", arc_tangent},
     {"atan2", arc_tangent_two},
     {"DisableInteriorEnterExits", disable_interior_enter_exits},
+    {"DisableNameTagLOS", disable_name_tag_los},
     {"EnableTirePopping", enable_tire_popping},
+    {"EnableVehicleFriendlyFire", enable_vehicle_friendly_fire},
     {"EnableZoneNames", enable_zone_names},
     {"GetGravity", get_gravity},
     {"GetPlayerCameraMode", get_player_camera_mode},
@@ -445,7 +486,9 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"IsPlayerInVehicle", is_player_in_vehicle},
     {"IsPlayerNPC", is_player_npc},
     {"IsValidVehicle", is_valid_vehicle},
+    {"ManualVehicleEngineAndLights", manual_vehicle_engine_and_lights},
     {"PlayerPlaySound", player_play_sound},
+    {"SetDeathDropAmount", set_death_drop_amount},
     {"SetGravity", set_gravity},
     {"SetNameTagDrawDistance", set_name_tag_draw_distance},
     {"SetPlayerColor", set_player_color},
@@ -453,6 +496,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetPlayerWeather", set_player_weather},
     {"ShowNameTags", show_name_tags},
     {"ShowPlayerMarkers", show_player_markers},
+    {"UsePlayerPedAnims", use_player_ped_anims},
     {"VectorSize", vector_size},
 };
 

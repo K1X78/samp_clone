@@ -252,11 +252,29 @@ void world() {
     CHECK(Access::call(vm,"EnableZoneNames",{1})==1 && !game.zone_names_enabled_);
     CHECK(Access::call(vm,"DisableInteriorEnterExits",{})==1 && game.interior_enter_exits_disabled_);
     CHECK(Access::call(vm,"SetNameTagDrawDistance",{std::bit_cast<cell>(123.5f)})==1 && game.name_tag_draw_distance_==123.5f);
+    CHECK(game.name_tag_line_of_sight_);
+    CHECK(Access::call(vm, "UsePlayerPedAnims", {}) == 1);
+    CHECK(Access::call(vm, "AllowInteriorWeapons", {-1}) == 1);
+    CHECK(Access::call(vm, "DisableNameTagLOS", {}) == 1);
+    CHECK(Access::call(vm, "ManualVehicleEngineAndLights", {}) == 1);
+    CHECK(Access::call(vm, "SetDeathDropAmount", {250}) == 1);
+    CHECK(Access::call(vm, "EnableVehicleFriendlyFire", {}) == 1);
     game.initialize_player(game.players_[0]);
     auto init=payload(Wire::messages(one).back(),139);
-    for(int i=0;i<4;++i) init.readBit();
+    CHECK(!init.readBit()); // Zone names
+    CHECK(init.readBit());  // Ped animations
+    CHECK(init.readBit());  // Interior weapons
+    CHECK(!init.readBit()); // Global chat radius enabled
     float init_number=0;CHECK(init.read(&init_number,4));init.readBit();
     CHECK(init.read(&init_number,4) && init_number==123.5f && init.readBit());
+    CHECK(!init.readBit()); // Name tag line of sight
+    CHECK(init.readBit());  // Manual vehicle control
+    init.readOffset_ += 32 + 16 + 1 + 32 + 8 + 8 + 32 + 1; // Classes through LAN mode
+    cell drop_amount = 0;
+    CHECK(init.read(&drop_amount, sizeof(drop_amount)) && drop_amount == 250);
+    init.readOffset_ = init.numberOfBitsUsed_ - 32;
+    std::uint32_t friendly_fire = 0;
+    CHECK(init.read(&friendly_fire, sizeof(friendly_fire)) && friendly_fire == 1);
     CHECK(Access::call(vm, "GetGravity", {}) == std::bit_cast<cell>(0.008f));
     CHECK(Access::call(vm, "SetWorldTime", {14}) == 1);
     CHECK(Access::call(vm, "SetWeather", {7}) == 1);

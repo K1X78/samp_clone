@@ -195,6 +195,12 @@ public:
     bool zone_names_enabled_=false;
     bool interior_enter_exits_disabled_=false;
     float name_tag_draw_distance_=70.0f;
+    bool use_player_ped_anims_ = false;
+    bool allow_interior_weapons_ = false;
+    bool name_tag_line_of_sight_ = true;
+    bool manual_vehicle_control_ = false;
+    std::int32_t death_drop_amount_ = 0;
+    std::uint32_t vehicle_friendly_fire_ = 0;
     std::array<GangZoneNativeState,1024> gang_zones_{};
     std::vector<StaticPickupNativeState> pickups_=std::vector<StaticPickupNativeState>(4096);
     bool artwork_enabled_=false;

@@ -13438,11 +13438,21 @@
     {
       "address": "0x004724a0",
       "assembly_name": "FUN_004724a0",
-      "assembly_size": 1584,
-      "assembly_sha1": "28d1cfe698db67095ba6de2c4bff4fba026c5caa",
+      "assembly_size": 304,
+      "assembly_sha1": "9f86989659d8fb025a8d41cdcc82e738bee4f67b",
       "native_registration": {
         "name": "GetPlayerCameraMode",
         "table_entry": "0x004cf350"
+      }
+    },
+    {
+      "address": "0x004725d0",
+      "assembly_name": "FUN_004725d0",
+      "assembly_size": 1280,
+      "assembly_sha1": "b53edd0468e0b117a09f7686c291d0ff7e59e225",
+      "native_registration": {
+        "name": "ManualVehicleEngineAndLights",
+        "table_entry": "0x004cf730"
       }
     },
     {
@@ -13578,11 +13588,31 @@
     {
       "address": "0x00473480",
       "assembly_name": "FUN_00473480",
-      "assembly_size": 304,
-      "assembly_sha1": "fbc15ae13049676fba790d4d3901a758ab6c87bd",
+      "assembly_size": 32,
+      "assembly_sha1": "de6fe5e1c2319f60ed946d4f2444d4882cef8ac9",
       "native_registration": {
         "name": "ShowPlayerMarkers",
         "table_entry": "0x004cf000"
+      }
+    },
+    {
+      "address": "0x004734a0",
+      "assembly_name": "FUN_004734a0",
+      "assembly_size": 32,
+      "assembly_sha1": "54d70965b773b01eb58ede19dfa6ae98efad2b20",
+      "native_registration": {
+        "name": "AllowInteriorWeapons",
+        "table_entry": "0x004cf028"
+      }
+    },
+    {
+      "address": "0x004734c0",
+      "assembly_name": "FUN_004734c0",
+      "assembly_size": 240,
+      "assembly_sha1": "ec4ac326d393f2ae7d122c970aef9435b52eb2fd",
+      "native_registration": {
+        "name": "UsePlayerPedAnims",
+        "table_entry": "0x004cf068"
       }
     },
     {
@@ -13628,11 +13658,21 @@
     {
       "address": "0x00473ef0",
       "assembly_name": "FUN_00473ef0",
-      "assembly_size": 48,
-      "assembly_sha1": "aa23eb836dfe848b208860dac32ce58ef521d2e4",
+      "assembly_size": 32,
+      "assembly_sha1": "a4bd4064e2356737a97a35742974b3ee7a197ac5",
       "native_registration": {
         "name": "EnableTirePopping",
         "table_entry": "0x004cf018"
+      }
+    },
+    {
+      "address": "0x00473f10",
+      "assembly_name": "FUN_00473f10",
+      "assembly_size": 16,
+      "assembly_sha1": "ee295ae99ae2ff5484bb375b006d160ef03403db",
+      "native_registration": {
+        "name": "EnableVehicleFriendlyFire",
+        "table_entry": "0x004cf020"
       }
     },
     {
@@ -13708,8 +13748,18 @@
     {
       "address": "0x004747d0",
       "assembly_name": "FUN_004747d0",
-      "assembly_size": 864,
-      "assembly_sha1": "dc5448a3613d2cdc06ebb5f63cdaa7732c01a0dd"
+      "assembly_size": 832,
+      "assembly_sha1": "5e4cdf94d6fb53f8d30b9ce8779804874b27edb3"
+    },
+    {
+      "address": "0x00474b10",
+      "assembly_name": "FUN_00474b10",
+      "assembly_size": 32,
+      "assembly_sha1": "72fc34b4ea325e27145487f6d6f4ecce5f30acc9",
+      "native_registration": {
+        "name": "SetDeathDropAmount",
+        "table_entry": "0x004cf048"
+      }
     },
     {
       "address": "0x00474b30",
@@ -13882,11 +13932,21 @@
     {
       "address": "0x00477800",
       "assembly_name": "FUN_00477800",
-      "assembly_size": 448,
-      "assembly_sha1": "9d47c5f6547e646705d888c88642167e15edfeb6",
+      "assembly_size": 32,
+      "assembly_sha1": "f86e72969bdf0ad5373c9d85a6342ee92037894d",
       "native_registration": {
         "name": "SetNameTagDrawDistance",
         "table_entry": "0x004cf078"
+      }
+    },
+    {
+      "address": "0x00477820",
+      "assembly_name": "FUN_00477820",
+      "assembly_size": 416,
+      "assembly_sha1": "84e089a1468ab78666dbd22ff4e6bf2c3681ca55",
+      "native_registration": {
+        "name": "DisableNameTagLOS",
+        "table_entry": "0x004cf080"
       }
     },
     {
@@ -28129,6 +28189,9 @@
     "FUN_004724a0": [
       "0x004724a0"
     ],
+    "FUN_004725d0": [
+      "0x004725d0"
+    ],
     "FUN_00472ad0": [
       "0x00472ad0"
     ],
@@ -28183,6 +28246,12 @@
     "FUN_00473480": [
       "0x00473480"
     ],
+    "FUN_004734a0": [
+      "0x004734a0"
+    ],
+    "FUN_004734c0": [
+      "0x004734c0"
+    ],
     "FUN_004735b0": [
       "0x004735b0"
     ],
@@ -28203,6 +28272,9 @@
     ],
     "FUN_00473ef0": [
       "0x00473ef0"
+    ],
+    "FUN_00473f10": [
+      "0x00473f10"
     ],
     "FUN_00473f20": [
       "0x00473f20"
@@ -28233,6 +28305,9 @@
     ],
     "FUN_004747d0": [
       "0x004747d0"
+    ],
+    "FUN_00474b10": [
+      "0x00474b10"
     ],
     "FUN_00474b30": [
       "0x00474b30"
@@ -28314,6 +28389,9 @@
     ],
     "FUN_00477800": [
       "0x00477800"
+    ],
+    "FUN_00477820": [
+      "0x00477820"
     ],
     "FUN_004779c0": [
       "0x004779c0"

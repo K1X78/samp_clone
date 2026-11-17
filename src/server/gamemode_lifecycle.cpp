@@ -74,6 +74,9 @@ void GameLayer::finish_gamemode_restart() {
     // New-game initializer4935f0 restores these defaults before script init.
     show_name_tags_=true;player_marker_mode_=1;zone_names_enabled_=false;
     interior_enter_exits_disabled_=false;name_tag_draw_distance_=70.0f;
+    use_player_ped_anims_ = false;
+    name_tag_line_of_sight_ = true;
+    manual_vehicle_control_ = false;
     samp::pawn::register_server_natives(vm,*this);start_gamemode();
     gamemode_restarting_=false;
     for(auto& player:players_) if(player.in_use && player.peer) {
@@ -92,15 +95,15 @@ void GameLayer::initialize_player(GamePlayer& player) {
     const int slot=player.id;auto& peer=*player.peer;
     BitStream init;
     if(zone_names_enabled_) init.write1();else init.write0(); // EnableZoneNames
-    init.write0();          // UsePlayerPedAnims
-    init.write0();          // AllowInteriorWeapons
+    if (use_player_ped_anims_) init.write1(); else init.write0();
+    if (allow_interior_weapons_) init.write1(); else init.write0();
     init.write0();          // UseLimitGlobalChatRadius
     init.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<float>(10000.0f)).data(),4);  // LimitGlobalChatRadius
     if(stunt_bonus_enabled_) init.write1();else init.write0();
     init.write(std::bit_cast<std::array<std::uint8_t,4>>(name_tag_draw_distance_).data(),4); // SetNameTagDrawDistance
     if(interior_enter_exits_disabled_) init.write1();else init.write0(); // DisableInteriorEnterExits
-    init.write0();          // DisableNameTagLOS
-    init.write0();          // ManualVehicleEngineAndLights
+    if (name_tag_line_of_sight_) init.write1(); else init.write0();
+    if (manual_vehicle_control_) init.write1(); else init.write0();
     // The number of classes is what the client reads as its class count; the
     // field is called SetSpawnInfoCount because the same slot carries the
     // spawn info of the older protocol.
@@ -112,7 +115,7 @@ void GameLayer::initialize_player(GamePlayer& player) {
     init.write(std::array<std::uint8_t,1>{static_cast<std::uint8_t>(static_cast<std::uint8_t>(weather_id_))}.data(),1);  // SetWeather
     init.write(std::bit_cast<std::array<std::uint8_t,4>>(gravity_).data(),4);  // SetGravity
     init.write0();          // LanMode
-    init.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<std::uint32_t>(0)).data(),4);    // SetDeathDropAmount
+    init.write(&death_drop_amount_, sizeof(death_drop_amount_));
     init.write0();          // Instagib
     init.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<std::uint32_t>(config_->getInt("onfoot_rate", 80))).data(),4);   // OnFootRate
     init.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<std::uint32_t>(config_->getInt("incar_rate", 80))).data(),4);    // InCarRate
@@ -129,7 +132,7 @@ void GameLayer::initialize_player(GamePlayer& player) {
     for (const std::uint8_t model : vehicle_models_) {
         init.write(std::array<std::uint8_t,1>{static_cast<std::uint8_t>(model)}.data(),1);
     }
-    init.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<std::uint32_t>(0)).data(),4);    // EnableVehicleFriendlyFire
+    init.write(&vehicle_friendly_fire_, sizeof(vehicle_friendly_fire_));
     // 496740 sends the model manifest before normal player initialization.
     send_rpc(peer, kRpcPlayerInit, init);
 
