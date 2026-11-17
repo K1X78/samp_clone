@@ -641,6 +641,7 @@ cell gang_zone_stop_flash_for_all(NativeHost& host, std::span<const cell> args) 
 }
 
 using CellWriter = std::function<bool(cell, cell)>;
+using StringReader = std::function<const char*(cell)>;
 
 constexpr auto find_vehicle = [](NativeHost& host, cell id) -> VehicleNativeState* {
     const auto index = static_cast<std::uint16_t>(id);
@@ -710,6 +711,153 @@ constexpr auto send_player_command = [](NativeHost& host, const PlayerNativeStat
     if (!cells.empty()) payload.write(cells.data(), cells.size_bytes());
     host.send_rpc(*player.peer, static_cast<std::uint8_t>(rpc), payload);
 };
+
+// Official: FUN_00472f50 @ 0x00472f50 (samp-server.exe)
+cell set_world_time(NativeHost& host, std::span<const cell> args) {
+    if (!args.empty()) host.set_world_time(static_cast<std::uint8_t>(args[0]));
+    return 1;
+}
+
+// Official: FUN_00473f20 @ 0x00473f20 (samp-server.exe)
+cell set_world_weather(NativeHost& host, std::span<const cell> args) {
+    if (!args.empty()) host.set_weather(static_cast<std::uint8_t>(args[0]));
+    return 1;
+}
+
+// Official: FUN_00477640 @ 0x00477640 (samp-server.exe)
+cell enable_stunt_bonus_for_all(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    host.stunt_bonus_enabled_ = args[0] == 1;
+    // The native also normalizes the live argument cell.
+    const_cast<cell&>(args[0]) = host.stunt_bonus_enabled_ ? 1 : 0;
+    samp::proto::BitStream payload;
+    if (host.stunt_bonus_enabled_) payload.write1();
+    else payload.write0();
+    for (const auto& player : host.players_) {
+        if (player.in_use && player.peer) {
+            host.send_rpc(*player.peer, static_cast<std::uint8_t>(samp::proto::RpcId::EnableStuntBonusForPlayer), payload);
+        }
+    }
+    return 1;
+}
+
+// Official: FUN_0047a230 @ 0x0047a230 (samp-server.exe)
+cell set_player_world_bounds(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 5) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    send_player_command(host, *player, samp::proto::RpcId::SetWorldBounds, args.subspan(1, 4));
+    return 1;
+}
+
+// Official: FUN_0047d130 @ 0x0047d130 (samp-server.exe)
+cell set_player_map_icon(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 8) return 0;
+    const auto icon = static_cast<std::uint8_t>(args[1]);
+    const auto* player = find_player(host, args);
+    if (icon >= 100 || !player) return 0;
+    if (player->peer) {
+        const auto type = static_cast<std::uint8_t>(args[5]);
+        const auto style = static_cast<std::uint8_t>(args[7]);
+        samp::proto::BitStream payload;
+        payload.write(&icon, sizeof(icon));
+        payload.write(args.data() + 2, 3 * sizeof(cell));
+        payload.write(&type, sizeof(type));
+        payload.write(&args[6], sizeof(cell));
+        payload.write(&style, sizeof(style));
+        host.send_rpc(*player->peer, static_cast<std::uint8_t>(samp::proto::RpcId::SetPlayerMapIcon), payload);
+    }
+    return 1;
+}
+
+// Official: FUN_0047d2c0 @ 0x0047d2c0 (samp-server.exe)
+cell remove_player_map_icon(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto icon = static_cast<std::uint8_t>(args[1]);
+    const auto* player = find_player(host, args);
+    if (icon >= 100 || !player) return 0;
+    if (player->peer) {
+        samp::proto::BitStream payload;
+        payload.write(&icon, sizeof(icon));
+        host.send_rpc(*player->peer, static_cast<std::uint8_t>(samp::proto::RpcId::RemovePlayerMapIcon), payload);
+    }
+    return 1;
+}
+
+// Official: FUN_0047b650 @ 0x0047b650 (samp-server.exe)
+cell send_death_message(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 3) return 0;
+    const auto killer = static_cast<std::uint16_t>(args[0]);
+    const auto victim = static_cast<std::uint16_t>(args[1]);
+    const auto reason = static_cast<std::uint8_t>(args[2]);
+    samp::proto::BitStream payload;
+    payload.write(&killer, sizeof(killer));
+    payload.write(&victim, sizeof(victim));
+    payload.write(&reason, sizeof(reason));
+    for (const auto& player : host.players_) {
+        if (player.in_use && player.peer) {
+            host.send_rpc(*player.peer, static_cast<std::uint8_t>(samp::proto::RpcId::SendDeathMessage), payload);
+        }
+    }
+    return 1;
+}
+
+// Official: FUN_0047b970 @ 0x0047b970 (samp-server.exe)
+cell game_text_for_player(NativeHost& host, std::span<const cell> args, const StringReader& read) {
+    if (args.size() < 4) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    const auto* text = read(args[1]);
+    if (!text || !*text) return 0;
+    if (player->peer) {
+        const auto length = static_cast<std::uint32_t>(std::strlen(text));
+        samp::proto::BitStream payload;
+        payload.write(&args[3], sizeof(cell));
+        payload.write(&args[2], sizeof(cell));
+        payload.write(&length, sizeof(length));
+        payload.write(text, length);
+        host.send_rpc(*player->peer, static_cast<std::uint8_t>(samp::proto::RpcId::SendGameText), payload);
+    }
+    return 1;
+}
+
+// Official: FUN_004841a0 @ 0x004841a0 (samp-server.exe)
+int get_weapon_slot(std::uint8_t weapon) {
+    constexpr int slots[]{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 10, 10, 10,
+                          8, 8, 8, -1, -1, -1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5,
+                          4, 6, 6, 7, 7, 7, 7, 8, 12, 9, 9, 9, 11, 11, 11};
+    return weapon < std::size(slots) ? slots[weapon] : -1;
+}
+
+// Official: FUN_00472c50 @ 0x00472c50 (samp-server.exe)
+cell get_player_ammo(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    const auto slot = get_weapon_slot(player->weapon);
+    return slot < 0 ? 0 : std::bit_cast<std::int16_t>(player->ammunition[slot]);
+}
+
+// Official: FUN_00483790 @ 0x00483790 (samp-server.exe)
+void set_camera_targeting(NativeHost& host, PlayerNativeState& player, bool enabled) {
+    if (player.camera_targeting == enabled) return;
+    player.camera_targeting = enabled;
+    if (!enabled) player.camera_targets.fill(0xffff);
+    if (player.peer) {
+        samp::proto::BitStream payload;
+        if (enabled) payload.write1();
+        else payload.write0();
+        host.send_rpc(*player.peer, 170, payload);
+    }
+}
+
+// Official: FUN_00472230 @ 0x00472230 (samp-server.exe)
+cell enable_player_camera_target(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    set_camera_targeting(host, *player, args[1] != 0);
+    return 1;
+}
 
 // Official: FUN_00472b70 @ 0x00472b70 (samp-server.exe)
 cell reset_player_money(NativeHost& host, std::span<const cell> args) {
@@ -889,6 +1037,9 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GetPlayerVehicleID", get_player_vehicle_id},
     {"GetPlayerVehicleSeat", get_player_vehicle_seat},
     {"GetPlayerVirtualWorld", get_player_virtual_world},
+    {"EnablePlayerCameraTarget", enable_player_camera_target},
+    {"EnableStuntBonusForAll", enable_stunt_bonus_for_all},
+    {"GetPlayerAmmo", get_player_ammo},
     {"GetPlayerWeapon", get_player_weapon},
     {"GetTickCount", get_tick_count},
     {"GetVehicleModel", get_vehicle_model},
@@ -901,8 +1052,10 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"IsPlayerNPC", is_player_npc},
     {"IsValidVehicle", is_valid_vehicle},
     {"ManualVehicleEngineAndLights", manual_vehicle_engine_and_lights},
+    {"RemovePlayerMapIcon", remove_player_map_icon},
     {"ResetPlayerMoney", reset_player_money},
     {"ResetPlayerWeapons", reset_player_weapons},
+    {"SendDeathMessage", send_death_message},
     {"SetDeathDropAmount", set_death_drop_amount},
     {"SetGravity", set_gravity},
     {"SetNameTagDrawDistance", set_name_tag_draw_distance},
@@ -910,9 +1063,13 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetPlayerArmedWeapon", set_player_armed_weapon},
     {"SetPlayerColor", set_player_color},
     {"SetPlayerHealth", set_player_health},
+    {"SetPlayerMapIcon", set_player_map_icon},
     {"SetPlayerScore", set_player_score},
     {"SetPlayerWeather", set_player_weather},
+    {"SetPlayerWorldBounds", set_player_world_bounds},
     {"SetVehicleVirtualWorld", set_vehicle_virtual_world},
+    {"SetWeather", set_world_weather},
+    {"SetWorldTime", set_world_time},
     {"ShowNameTags", show_name_tags},
     {"ShowPlayerMarkers", show_player_markers},
     {"UsePlayerPedAnims", use_player_ped_anims},
@@ -929,7 +1086,7 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
             return function(host, args);
         };
     }
-    const auto read_script_string = [&vm](std::int32_t address) -> const char* {
+    const StringReader read_script_string = [&vm](std::int32_t address) -> const char* {
         const std::uint8_t* start = nullptr;
         if (vm.ok_ && address >= 0 && static_cast<std::int64_t>(address) < vm.amx_.stp &&
             !(address >= vm.amx_.hea && address < vm.amx_.stk)) {
@@ -997,17 +1154,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
             return function(host, args, store_cell);
         };
     }
-    // Official: FUN_00472230 @ 0x00472230 (samp-server.exe)
-    vm.native_functions_["EnablePlayerCameraTarget"]=[&host,player_slot](std::span<const cell> args)->cell {
-        if(args.size()<2) return 0;auto* player=player_slot(args[0]);if(!player || !player->peer) return 0;
-        const bool enabled=args[1]!=0;
-        if(enabled!=player->camera_targeting) {
-            player->camera_targeting=enabled;if(!enabled) player->camera_targets.fill(0xffff);
-            samp::proto::BitStream payload;if(enabled) payload.write1();else payload.write0();
-            host.send_rpc(*player->peer,170,payload);
-        }
-        return 1;
-    };
     // ------------------------------------------------------------- the core
     vm.native_functions_["print"] = [&vm, read_script_string](std::span<const cell> args) -> cell {
         if (!args.empty()) {
@@ -1172,69 +1318,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     vm.native_functions_["GetMaxPlayers"] = [&host](std::span<const cell>) -> cell {
         return host.max_players();
     };
-    // Official: FUN_00472f50 @ 0x00472f50 (samp-server.exe)
-    vm.native_functions_["SetWorldTime"] = [&host](std::span<const cell> args) -> cell {
-        if (!args.empty()) {
-            host.set_world_time(args[0]);
-        }
-        return 1;
-    };
-    // Official: FUN_00473f20 @ 0x00473f20 (samp-server.exe)
-    vm.native_functions_["SetWeather"] = [&host](std::span<const cell> args) -> cell {
-        if (!args.empty()) {
-            host.set_weather(args[0]);
-        }
-        return 1;
-    };
-    // Official: FUN_00477640 @ 0x00477640 (samp-server.exe)
-    vm.native_functions_["EnableStuntBonusForAll"] = [&host](std::span<const cell> args) -> cell {
-        if(args.empty()) return 0;host.stunt_bonus_enabled_=args[0]==1;
-        // The original normalizes the live argument cell as well.
-        const_cast<cell&>(args[0])=host.stunt_bonus_enabled_?1:0;
-        samp::proto::BitStream payload;if(host.stunt_bonus_enabled_) payload.write1();else payload.write0();
-        for(const auto& player:host.players_) if(player.in_use && player.peer) host.send_rpc(*player.peer,104,payload);
-        return 1;
-    };
-    // Official: FUN_0047a230 @ 0x0047a230 (samp-server.exe)
-    vm.native_functions_["SetPlayerWorldBounds"]=[&host,player_slot](std::span<const cell> args)->cell {
-        if(args.size()<5) return 0;
-        auto* p=player_slot(args[0]);if(!p || !p->peer) return 0;
-        samp::proto::BitStream payload;
-        payload.write(&args[1],4); // x_max
-        payload.write(&args[2],4); // x_min
-        payload.write(&args[3],4); // y_max
-        payload.write(&args[4],4); // y_min
-        host.send_rpc(*p->peer,17,payload);
-        return 1;
-    };
-    // Official: FUN_0047d130 @ 0x0047d130 (samp-server.exe)
-    vm.native_functions_["SetPlayerMapIcon"]=[&host,player_slot](std::span<const cell> args)->cell {
-        if(args.size()<8) return 0;
-        const std::uint8_t icon=static_cast<std::uint8_t>(args[1]);
-        if(icon>=100) return 0;
-        auto* p=player_slot(args[0]);if(!p || !p->peer) return 0;
-        samp::proto::BitStream payload;
-        payload.write(&icon,1);
-        payload.write(&args[2],12); // x,y,z
-        const std::uint8_t type=static_cast<std::uint8_t>(args[5]);
-        payload.write(&type,1);
-        payload.write(&args[6],4); // colour raw
-        const std::uint8_t style=static_cast<std::uint8_t>(args[7]);
-        payload.write(&style,1);
-        host.send_rpc(*p->peer,56,payload);
-        return 1;
-    };
-    // Official: FUN_0047d2c0 @ 0x0047d2c0 (samp-server.exe)
-    vm.native_functions_["RemovePlayerMapIcon"]=[&host,player_slot](std::span<const cell> args)->cell {
-        if(args.size()<2) return 0;
-        const std::uint8_t icon=static_cast<std::uint8_t>(args[1]);
-        if(icon>=100) return 0;
-        auto* p=player_slot(args[0]);if(!p || !p->peer) return 0;
-        samp::proto::BitStream payload;
-        payload.write(&icon,1);
-        host.send_rpc(*p->peer,144,payload);
-        return 1;
-    };
     // Official: FUN_0047bb00 @ 0x0047bb00 (samp-server.exe)
     vm.native_functions_["SetPlayerInterior"] = [&host, player_slot](std::span<const cell> args) -> cell {
         if (args.size() < 2 || !player_slot(args[0])) return 0;
@@ -1323,21 +1406,8 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     vm.native_functions_["StopAudioStreamForPlayer"] = [&host](std::span<const cell> args) -> cell {
         return args.empty()?0:host.stop_audio_stream_for_player(args[0]);
     };
-    // Official: FUN_0047b970 @ 0x0047b970 (samp-server.exe)
-    vm.native_functions_["GameTextForPlayer"] = [&host,player_slot,read_script_string](std::span<const cell> args) -> cell {
-        if (args.size() < 4) return 0;
-        auto* player = player_slot(args[0]);
-        if (!player || !player->peer) return 0;
-        const auto* text = read_script_string(args[1]);
-        if (!text || !*text) return 0;
-        const auto length = static_cast<std::uint32_t>(std::strlen(text));
-        samp::proto::BitStream payload;
-        payload.write(&args[3],4);
-        payload.write(&args[2],4);
-        payload.write(&length,4);
-        payload.write(text,length);
-        host.send_rpc(*player->peer,73,payload);
-        return 1;
+    vm.native_functions_["GameTextForPlayer"] = [&host, read_script_string](std::span<const cell> args) {
+        return game_text_for_player(host, args, read_script_string);
     };
     // Official: FUN_00471370 @ 0x00471370 (samp-server.exe)
     vm.native_functions_["GetPlayerName"]=[player_slot,store_cell](std::span<const cell> args)->cell {
@@ -1373,15 +1443,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         const char* text=read_script_string(args[1]);
         for(const auto& player:host.players_) if(player.in_use && player.peer)
             host.send_client_message(player.id,args[0],text?text:"");
-        return 1;
-    };
-    // Official: FUN_0047b650 @ 0x0047b650 (samp-server.exe)
-    vm.native_functions_["SendDeathMessage"]=[&host](std::span<const cell> args)->cell {
-        if(args.size()<3) return 0;
-        const auto killer=static_cast<std::uint16_t>(args[0]),victim=static_cast<std::uint16_t>(args[1]);
-        const auto weapon=static_cast<std::uint8_t>(args[2]);samp::proto::BitStream payload;
-        payload.write(&killer,2);payload.write(&victim,2);payload.write(&weapon,1);
-        for(const auto& player:host.players_) if(player.in_use && player.peer) host.send_rpc(*player.peer,55,payload);
         return 1;
     };
     // Official: FUN_004707e0 @ 0x004707e0 (samp-server.exe)
@@ -1718,15 +1779,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         return a.empty()?255:host.get_player_menu(a[0]);
     };
 
-    // 00472c50 delegates slot selection to the original 004841a0 table.
-    vm.native_functions_["GetPlayerAmmo"]=[player_slot](std::span<const cell> args)->cell {
-        const auto* p=args.empty()?nullptr:player_slot(args[0]);if(!p) return 0;
-        constexpr int slots[]{0,0,1,1,1,1,1,1,1,1,10,10,10,10,10,10,8,8,8,-1,-1,-1,
-            2,2,2,3,3,3,4,4,5,5,4,6,6,7,7,7,7,8,12,9,9,9,11,11,11};
-        const auto weapon=p->weapon&0x3f;
-        if(weapon>=std::size(slots) || slots[weapon]<0) return 0;
-        return static_cast<std::int16_t>(p->ammunition[slots[weapon]]);
-    };
     // 00470c00 stores spawn info, authorizes the spawn, then sends RPC 68.
     vm.native_functions_["SetSpawnInfo"]=[&host,player_slot,as_float](std::span<const cell> args)->cell {
         auto* p=args.size()<13?nullptr:player_slot(args[0]);if(!p || !p->peer) return 0;
