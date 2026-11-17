@@ -135,7 +135,7 @@ void GameLayer::update_streaming() {
         }
         if(receiver.streamed_vehicles.size()!=vehicles_.size()) receiver.streamed_vehicles.resize(vehicles_.size());
         if(receiver.streamed_pickups.size()!=pickups_.size()) receiver.streamed_pickups.resize(pickups_.size());
-        for(std::uint32_t id=0;id<pickups_.size();++id) {
+        for(std::uint32_t id=0;id<pickups_.size() && id<=pickup_pool_highest_;++id) {
             const auto& pickup=pickups_[id];
             const double dx=double(receiver.x)-pickup.position[0],dy=double(receiver.y)-pickup.position[1];
             const bool visible=pickup.active && (pickup.world==-1 || pickup.world==receiver.virtual_world) &&

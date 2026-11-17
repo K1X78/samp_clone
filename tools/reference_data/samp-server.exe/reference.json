@@ -13194,8 +13194,18 @@
     {
       "address": "0x00470840",
       "assembly_name": "FUN_00470840",
-      "assembly_size": 128,
-      "assembly_sha1": "1e7a5505d508079b1bc5c2466ac30dd93664a35b"
+      "assembly_size": 96,
+      "assembly_sha1": "1f2723018d575c1697eb856861c041dadf2df0ed"
+    },
+    {
+      "address": "0x004708a0",
+      "assembly_name": "FUN_004708a0",
+      "assembly_size": 32,
+      "assembly_sha1": "73cc1323c47f365db0430d8662e31c6c58e8c321",
+      "native_registration": {
+        "name": "DestroyPickup",
+        "table_entry": "0x004cefe8"
+      }
     },
     {
       "address": "0x004708c0",
@@ -33163,6 +33173,9 @@
     ],
     "FUN_00472230": [
       "0x00472230"
+    ],
+    "FUN_004708a0": [
+      "0x004708a0"
     ]
   },
   "client_rpc_registrations": []

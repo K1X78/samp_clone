@@ -53,6 +53,7 @@ void GameLayer::begin_gamemode_restart() {
     samp::amx::cell result=0;vm_.execute("OnGameModeExit",{},result);
     remove_script_timers(&vm_);vm_.ok_=false;
     classes_.clear();objects_.assign(objects_.size(),{});vehicles_.assign(vehicles_.size(),{});pickups_.assign(pickups_.size(),{});
+    pickup_pool_highest_ = 0;
     menu_pool_.reset();textdraw_pool_.release();
     gang_zones_.fill({});gravity_=0.008f;
     world_hour_=12;weather_id_=1;gamemode_restarting_=true;gamemode_restart_elapsed_=0.f;

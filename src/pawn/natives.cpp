@@ -694,6 +694,27 @@ cell get_vehicle_velocity(NativeHost& host, std::span<const cell> args, const Ce
            write(args[3], std::bit_cast<cell>(vehicle->velocity[2]));
 }
 
+// Official: FUN_00470840 @ 0x00470840 (samp-server.exe)
+cell create_pickup(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 5 || host.pickups_.empty()) return 0;
+    const std::array<float, 3> position{
+        std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]), std::bit_cast<float>(args[4])};
+    return host.create_pickup(args[0], args[1], position, args.size() > 5 ? args[5] : 0);
+}
+
+// Official: FUN_004707e0 @ 0x004707e0 (samp-server.exe)
+cell add_static_pickup(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 5 || host.pickups_.empty()) return 0;
+    const std::array<float, 3> position{
+        std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]), std::bit_cast<float>(args[4])};
+    return host.create_pickup(args[0], args[1], position, args.size() > 5 ? args[5] : 0) != -1;
+}
+
+// Official: FUN_004708a0 @ 0x004708a0 (samp-server.exe)
+cell destroy_pickup(NativeHost& host, std::span<const cell> args) {
+    return !args.empty() && host.destroy_pickup(static_cast<std::uint32_t>(args[0]));
+}
+
 // Official: FUN_00472d30 @ 0x00472d30 (samp-server.exe)
 cell get_player_weapon_data(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
     if (args.size() < 4) return 0;
@@ -1039,6 +1060,9 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GetPlayerVirtualWorld", get_player_virtual_world},
     {"EnablePlayerCameraTarget", enable_player_camera_target},
     {"EnableStuntBonusForAll", enable_stunt_bonus_for_all},
+    {"AddStaticPickup", add_static_pickup},
+    {"CreatePickup", create_pickup},
+    {"DestroyPickup", destroy_pickup},
     {"GetPlayerAmmo", get_player_ammo},
     {"GetPlayerWeapon", get_player_weapon},
     {"GetTickCount", get_tick_count},
@@ -1444,16 +1468,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         for(const auto& player:host.players_) if(player.in_use && player.peer)
             host.send_client_message(player.id,args[0],text?text:"");
         return 1;
-    };
-    // Official: FUN_004707e0 @ 0x004707e0 (samp-server.exe)
-    vm.native_functions_["AddStaticPickup"]=[&host,as_float](std::span<const cell> args)->cell {
-        if(args.size()<5) return 0;
-        for(auto& pickup:host.pickups_) if(!pickup.active) {
-            pickup.active=true;pickup.model=args[0];pickup.type=args[1];pickup.world=args.size()>5?args[5]:0;
-            for(unsigned i=0;i<3;++i) pickup.position[i]=as_float(args[2+i]);
-            return 1; // AddStaticPickup exposes success, not the allocated slot.
-        }
-        return 0;
     };
     // ------------------------------------------------------- the class list
     //

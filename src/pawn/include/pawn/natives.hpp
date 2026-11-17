@@ -214,6 +214,14 @@ public:
     std::unique_ptr<MenuPool> menu_pool_{new(std::nothrow) MenuPool};
     std::shared_ptr<ServerVariablePool> server_variables_;
     std::vector<StaticPickupNativeState> pickups_=std::vector<StaticPickupNativeState>(4096);
+    std::uint32_t pickup_pool_highest_ = 0;
+    void update_pickup_pool_size();
+    int create_pickup(int model, int type, const std::array<float, 3>& position, int world);
+    bool destroy_pickup(std::uint32_t id);
+    void send_pickup_create_rpc(PlayerNativeState& player, std::uint32_t id);
+    void send_pickup_destroy_rpc(PlayerNativeState& player, std::uint32_t id);
+    void send_pickup_in(PlayerNativeState& player, std::uint32_t id);
+    void send_pickup_out(PlayerNativeState& player, std::uint32_t id);
     bool artwork_enabled_=false;
     std::string models_directory_="models";
     std::vector<CustomModelRecord> models_;

@@ -122,6 +122,22 @@ void server() {
     Wire::clear(one);game.players_[0].x=201;game.players_[0].y=2;game.update_streaming();
     auto removed=payload(Wire::messages(one).back(),63);CHECK(removed.read(&pickup_slot,4) && pickup_slot==0);
     game.players_[0].x=game.players_[0].y=0;
+    CHECK(Access::call(vm,"CreatePickup",{371,15,0,0,0,-1})==1);
+    game.update_streaming();
+    Wire::clear(one);Wire::clear(two);
+    CHECK(Access::call(vm,"DestroyPickup",{1})==1);
+    for (auto* peer : {&one,&two}) {
+        const auto frames=Wire::messages(*peer);
+        CHECK(frames.size()==1);
+        if (frames.size()==1) {
+            auto destroy=payload(frames.front(),63);
+            CHECK(destroy.read(&pickup_slot,4) && pickup_slot==1);
+        }
+    }
+    CHECK(Access::call(vm,"DestroyPickup",{1})==0);
+    CHECK(Access::call(vm,"CreatePickup",{371,15,0,0,0,2})==1);
+    CHECK(Access::call(vm,"DestroyPickup",{1})==1);
+    CHECK(Wire::messages(one).size()==1 && Wire::messages(two).size()==1);
     Access::text(vm,512,"Tick");const auto timer=Access::call(vm,"SetTimer",{512,10,1});CHECK(timer>0);
     game.process_script_timers(9);CHECK(ticks==0);game.process_script_timers(1);CHECK(ticks==1);
     game.process_script_timers(35);CHECK(ticks==2); // one callback per server tick
