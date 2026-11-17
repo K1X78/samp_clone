@@ -54,7 +54,7 @@ void GameLayer::respawn_vehicle(GameVehicle& vehicle,std::uint64_t now) {
     vehicle.mods={};vehicle.paintjob=0;vehicle.dead=vehicle.death_notified=vehicle.has_been_occupied=false;
     vehicle.created_ms=vehicle.last_occupied_ms=now;vehicle.death_ms=0;vehicle.killer=0xffff;
     vehicle.driver=-1;vehicle.passengers.fill(-1);
-    for(auto& player:players_) if(player.in_use && player.peer) send_vehicle_stream_out(player,id);
+    clear_vehicle_streaming(id);
     const samp::amx::cell args[]{id};samp::amx::cell result=1;
     for(const auto& script:filterscripts_) script->execute("OnVehicleSpawn",args,result);
     vm_.execute("OnVehicleSpawn",args,result);

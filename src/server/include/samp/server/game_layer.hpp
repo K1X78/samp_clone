@@ -156,7 +156,7 @@ public:
     void disconnect_player(int id, std::uint8_t reason);
     void send_object(GamePlayer& player,const samp::pawn::ObjectNativeState& object) override;
     void send_vehicle_stream_in(GamePlayer& player, const GameVehicle& vehicle) override;
-    void send_vehicle_stream_out(GamePlayer& player, std::uint16_t vehicle);
+    void send_vehicle_stream_out(GamePlayer& player, std::uint16_t vehicle) override;
     void send_rpc(RakNetPeer& peer, std::uint8_t rpc_id, const samp::proto::BitStream& payload) override;
 
 

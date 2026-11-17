@@ -32,6 +32,7 @@ struct Host : samp::pawn::NativeHost {
     struct Sent { std::uint8_t id; samp::proto::BitStream payload; };
     std::vector<Sent> sent;
     void send_vehicle_stream_in(samp::pawn::PlayerNativeState&, const samp::pawn::VehicleNativeState&) override {}
+    void send_vehicle_stream_out(samp::pawn::PlayerNativeState&, std::uint16_t) override { CHECK(false); }
     void send_object(samp::pawn::PlayerNativeState&,const samp::pawn::ObjectNativeState&) override {CHECK(false);}
     int max_players() const override { return 10; }
     bool is_player_connected(int id) const override {

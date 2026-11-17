@@ -158,6 +158,7 @@ struct ObjectNativeState {
     std::int32_t model=0;
     std::array<float,3> position{},rotation{};
     float draw_distance=0;
+    bool no_camera_collision = false;
 };
 
 struct ScriptTimer {
@@ -181,6 +182,7 @@ struct StaticPickupNativeState {
 
 struct VehicleNativeState {
     bool active = false;
+    bool destroying = false;
     std::uint16_t id = 0;
     std::uint32_t model = 0;
     float x = 0, y = 0, z = 0, angle = 0;
@@ -248,9 +250,14 @@ public:
     virtual int add_custom_model(const CustomModelSpec& spec)=0;
     virtual bool redirect_download(int player,std::string_view url)=0;
     std::vector<ObjectNativeState> objects_=std::vector<ObjectNativeState>(2000);
+    bool objects_disable_camera_collision_ = false;
     virtual void send_object(PlayerNativeState& player,const ObjectNativeState& object)=0;
     std::vector<VehicleNativeState> vehicles_ = std::vector<VehicleNativeState>(2000);
+    int vehicle_pool_highest_ = 0;
+    void update_vehicle_pool_size();
+    void clear_vehicle_streaming(std::uint16_t vehicle);
     virtual void send_vehicle_stream_in(PlayerNativeState& player, const VehicleNativeState& vehicle) = 0;
+    virtual void send_vehicle_stream_out(PlayerNativeState& player, std::uint16_t vehicle) = 0;
     virtual void send_rpc(samp::server::RakNetPeer& peer, std::uint8_t id,
                           const samp::proto::BitStream& payload) = 0;
     virtual void update_player_position(PlayerNativeState& player, float x, float y, float z, bool force_stream) = 0;
