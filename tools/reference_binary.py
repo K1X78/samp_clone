@@ -9,10 +9,15 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+REFERENCE_DATA = Path("tools/reference_data")
+
+
+def reference_path(binary: str, root: Path = ROOT) -> Path:
+    return root / REFERENCE_DATA / binary / "reference.json"
 
 
 def load_reference(binary: str, root: Path = ROOT) -> dict:
-    path = root / "docs/asm/pseudocode" / binary / "reference.json"
+    path = reference_path(binary, root)
     data = json.loads(path.read_text(encoding="utf-8"))
     if data.get("schema") != 1 or data.get("binary") != binary:
         raise ValueError(f"Invalid reference identity: {path}")

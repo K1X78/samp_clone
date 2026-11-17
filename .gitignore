@@ -35,11 +35,18 @@ desktop.ini
 *.backup
 *.tmp
 
-# Retired bulk assembly listings; use pseudocode and binary-backed --asm output.
-/docs/asm/*.s
-
-# Local comparison inventory is excluded along with the installation.
-/docs/asm/pseudocode/out_of_region_source_address_inventory.json
+# Local workflow, notes and generated reference exports.
+/docs/
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+*[Hh][Aa][Nn][Dd][Oo][Ff][Ff]*.md
+*[Hh][Aa][Nn][Dd][Oo][Ff][Ff]*.txt
+*[Hh][Aa][Nn][Dd][Oo][Ff][Ff]*.json
+/.agents/
+/.codex/
+/PLAN.md
+/RE_FINDINGS.md
 
 # Local comparison checkout and obsolete unused RakNet 4.x archive.
 /third_party/RakNet-master.zip

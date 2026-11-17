@@ -7,6 +7,7 @@ import unittest
 from unittest.mock import patch
 
 import official_function_count as counter
+from reference_binary import reference_path
 
 
 class CounterTest(unittest.TestCase):
@@ -81,22 +82,22 @@ FUN_10001000:
 
     def test_reference_metadata_preserves_denominator_and_callback_aliases(self):
         for binary, address in [('samp.dll', '0x10001000'), ('samp-server.exe', '0x00401000')]:
-            directory = self.root / 'docs/asm/pseudocode' / binary
-            directory.mkdir(parents=True)
+            path = reference_path(binary, self.root)
+            path.parent.mkdir(parents=True)
             name = f'FUN_{int(address, 16):08x}'
             data = {'schema': 1, 'binary': binary,
                     'regions': [{'address': address, 'assembly_name': name}],
                     'mapping_labels': {name: [address], 'FUN_10001010': ['0x10001010']}}
-            (directory / 'reference.json').write_text(json.dumps(data))
+            path.write_text(json.dumps(data))
         labels, total = counter.official_labels()
         self.assertEqual(total, 2)  # Callback aliases do not inflate the total.
         self.assertEqual(labels['samp.dll']['FUN_10001010'], {0x10001010})
         self.assertFalse(list(self.root.rglob('*.s')))
 
     def test_reference_metadata_rejects_a_missing_official_label(self):
-        directory = self.root / 'docs/asm/pseudocode/samp.dll'
-        directory.mkdir(parents=True)
-        (directory / 'reference.json').write_text(json.dumps({
+        path = reference_path('samp.dll', self.root)
+        path.parent.mkdir(parents=True)
+        path.write_text(json.dumps({
             'schema': 1, 'binary': 'samp.dll',
             'regions': [{'address': '0x10001000', 'assembly_name': 'FUN_10001000'}],
             'mapping_labels': {}}))

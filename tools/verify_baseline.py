@@ -23,7 +23,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--cmake', default='cmake')
     parser.add_argument('--preset', choices=['win32-vs2022', 'win32-vs2026'], required=True)
-    parser.add_argument('--output', type=Path, default=ROOT / 'docs/baseline',
+    parser.add_argument('--output', type=Path, default=ROOT / 'build/audit/baseline',
                         help='evidence directory; use a new directory to preserve a historical baseline')
     args = parser.parse_args()
     evidence = args.output.resolve()

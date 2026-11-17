@@ -11,6 +11,7 @@ import struct
 
 from build_reference_pseudocode import BINARIES, ROOT, assembly_entries
 from read_reference_function import find_functions
+from reference_binary import load_reference, reference_path
 
 
 def check_assembly_bytes(binary: str, entries: list[dict]) -> str:
@@ -47,10 +48,17 @@ def check_assembly_bytes(binary: str, entries: list[dict]) -> str:
 def check(binary: str, root: Path) -> None:
     entries = assembly_entries(binary)
     digest = check_assembly_bytes(binary, entries)
+    assert digest == load_reference(binary)["sha256"].lower(), "Binary SHA-256 mismatch"
     directory = root / binary
-    index = json.loads((directory / "index.json").read_text(encoding="utf-8"))
+    path = directory / "index.json"
+    if not path.is_file():
+        if (directory / "functions").exists():
+            raise ValueError(f"Generated function directory is missing its index: {directory}")
+        print(f"{binary}: {len(entries)} reference regions match official PE bytes. Generate the pseudocode cache to check its C files.")
+        return
+    index = json.loads(path.read_text(encoding="utf-8"))
     assert digest == index["sha256"].lower(), "Binary SHA-256 mismatch"
-    assert index["reference_metadata_sha256"] == hashlib.sha256((ROOT / "docs/asm/pseudocode" / binary / "reference.json").read_bytes()).hexdigest(), "Stale reference metadata"
+    assert index["reference_metadata_sha256"] == hashlib.sha256(reference_path(binary).read_bytes()).hexdigest(), "Stale reference metadata"
     records = index["functions"]
     addresses = {row["address"] for row in records}
     assert len(addresses) == len(records), "Duplicate function address"

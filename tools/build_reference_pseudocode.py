@@ -17,7 +17,7 @@ import re
 import shutil
 import subprocess
 import time
-from reference_binary import ReferenceImage, load_reference
+from reference_binary import ReferenceImage, load_reference, reference_path
 
 ROOT = Path(__file__).resolve().parents[1]
 BINARIES = {"server": "samp-server.exe", "client": "samp.dll"}
@@ -104,7 +104,7 @@ def enrich_index(output: Path, binary: str, entries: list[dict], digest: str) ->
         raise ValueError(f"Assembly entries missing from export: {sorted(missing)}")
     index["reference_binary"] = f"GTA Sa samp_clone/{binary}.official"
     index.pop("assembly_sha256", None)
-    index["reference_metadata_sha256"] = hashlib.sha256((ROOT / "docs/asm/pseudocode" / binary / "reference.json").read_bytes()).hexdigest()
+    index["reference_metadata_sha256"] = hashlib.sha256(reference_path(binary).read_bytes()).hexdigest()
     index["status_counts"] = dict(Counter(row["status"] for row in index["functions"]))
     index["assembly_entries"] = len(entries)
     index["alias_source"] = "Native catalog hints only; no types or semantic names forced into Ghidra."

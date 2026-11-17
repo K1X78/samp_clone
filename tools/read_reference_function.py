@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 import re
 import sys
-from reference_binary import ReferenceImage, disassemble
+from reference_binary import ReferenceImage, disassemble, load_reference
 
 ROOT = Path(__file__).resolve().parents[1]
 BINARIES = {"server": "samp-server.exe", "client": "samp.dll"}
@@ -30,6 +30,28 @@ def find_functions(index: dict, query: str) -> list[dict]:
     return exact or partial
 
 
+def print_reference_region(binary: str, query: str) -> bool:
+    match = re.fullmatch(r"(?:0x|FUN_)?([0-9a-f]{6,8})", query, re.IGNORECASE)
+    if match is None:
+        return False
+    address = int(match[1], 16)
+    reference = load_reference(binary)
+    region = next((row for row in reference["regions"]
+                   if int(row["address"], 16) == address and
+                   not row["assembly_name"].startswith("gap_")), None)
+    if region is None:
+        return False
+    image = ReferenceImage(binary, expected_sha256=reference["sha256"])
+    size = region["assembly_size"]
+    if hashlib.sha1(image.read(address, size)).hexdigest() != region["assembly_sha1"]:
+        raise ValueError("Reference region bytes differ from the recorded official binary.")
+    print(f"{binary} | SHA-256 {image.sha256}")
+    print(f"/* Official region {region['address']} + {size:#x}. It may contain padding or other entries. */")
+    print("\n".join(disassemble(image, address, size)))
+    print(f"/* END DISASSEMBLY {region['address']} */")
+    return True
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("binary", choices=BINARIES)
@@ -42,6 +64,8 @@ def main() -> None:
     directory = args.root / binary
     path = directory / "index.json"
     if not path.is_file():
+        if args.asm and not args.list and print_reference_region(binary, args.query):
+            return
         parser.error(f"No generated index at {path}; run tools/build_reference_pseudocode.py first.")
     index = json.loads(path.read_text(encoding="utf-8"))
     matches = find_functions(index, args.query)

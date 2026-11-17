@@ -15,8 +15,9 @@ vendored code, inline or platform-only helpers, lambdas, generated macro bodies,
 diagnostic stubs, and game assets are excluded.
 
 Project files live under `src/`, tests under `tests/`, dependencies under
-`third_party/`, and developer tools under `tools/`. Reference pseudocode and
-assembly guidance are under `docs/asm/pseudocode/`.
+`third_party/`, and developer tools under `tools/`. The verified reference
+inventories are under `tools/reference_data/`. Generate the optional local
+pseudocode cache with `tools/build_reference_pseudocode.py`.
 
 `Official entries remaining` is the address inventory total minus unique mapped
 entries. `Unmapped local source bodies` counts C++ functions in `src` without a
@@ -55,8 +56,7 @@ The presets do not deploy into a game installation. They write the client DLL
 to `build/msvc/p0-win32/src/client/RelWithDebInfo/samp.dll` and the server to
 `build/msvc/p0-win32/src/server/RelWithDebInfo/samp-server.exe`. Copy the
 outputs into your local installation, or set `SAMP_CLONE_DIR` when configuring
-to deploy there. Client dependencies and integration details are in
-[client source integration](docs/CLIENT_SOURCE_MERGE.md).
+to deploy there.
 
 ## Tests
 
@@ -70,7 +70,7 @@ are ignored by Git.
 
 `server.cfg` is a local settings file read by `samp-server.exe`. It controls
 settings such as the port, gamemode and server name; it is not included in this
-repository. Copy `docs/server.cfg.example` into the server's working directory
+repository. Copy `server.cfg.example` into the server's working directory
 to create one. The example's `REPLACE_WITH_RANDOM_VALUE` is a placeholder, not
 a project credential. RCON means Remote Console and controls remote server
 administration. This server refuses its built-in default RCON password, so
