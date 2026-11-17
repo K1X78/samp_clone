@@ -956,21 +956,13 @@ cell set_player_drunk_level(NativeHost& host, std::span<const cell> args) {
     return 1;
 }
 
-// Official: FUN_004840f0 @ 0x004840f0 (samp-server.exe)
-double player_distance_from_point(const PlayerNativeState& player, float x, float y, float z) {
-    const double dx = double(player.x) - x;
-    const double dy = double(player.y) - y;
-    const double dz = double(player.z) - z;
-    return std::sqrt(dx * dx + dy * dy + dz * dz);
-}
-
 // Official: FUN_00471550 @ 0x00471550 (samp-server.exe)
 cell get_player_distance_from_point(NativeHost& host, std::span<const cell> args) {
     if (args.size() < 4) return 0;
     const auto* player = find_player(host, args);
     if (!player) return 0;
-    return std::bit_cast<cell>(static_cast<float>(player_distance_from_point(
-        *player, std::bit_cast<float>(args[1]), std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]))));
+    return std::bit_cast<cell>(static_cast<float>(player->distance_from_point(
+        std::bit_cast<float>(args[1]), std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]))));
 }
 
 // Official: FUN_00489970 @ 0x00489970 (samp-server.exe)
@@ -1000,6 +992,161 @@ cell is_player_in_range_of_point(NativeHost& host, std::span<const cell> args) {
     const double dy = double(player->y) - std::bit_cast<float>(args[3]);
     const float dz = player->z - std::bit_cast<float>(args[4]);
     return dx * dx + dy * dy + double(dz) * dz <= radius * radius;
+}
+
+// Official: FUN_00485950 @ 0x00485950 (samp-server.exe)
+void toggle_checkpoint(NativeHost& host, PlayerNativeState& player, bool enabled) {
+    auto& checkpoint = player.checkpoint;
+    checkpoint.enabled = enabled;
+    checkpoint.inside = false;
+    if (!player.peer) return;
+    samp::proto::BitStream payload;
+    if (enabled) {
+        payload.write(checkpoint.position.data(), sizeof(checkpoint.position));
+        payload.write(&checkpoint.radius, sizeof(checkpoint.radius));
+    }
+    host.send_rpc(*player.peer, enabled ? 107 : 37, payload);
+}
+
+// Official: FUN_00485a80 @ 0x00485a80 (samp-server.exe)
+void toggle_race_checkpoint(NativeHost& host, PlayerNativeState& player, bool enabled) {
+    auto& checkpoint = player.race_checkpoint;
+    checkpoint.enabled = enabled;
+    checkpoint.inside = false;
+    if (!player.peer) return;
+    samp::proto::BitStream payload;
+    if (enabled) {
+        payload.write(&player.race_checkpoint_type, sizeof(player.race_checkpoint_type));
+        payload.write(checkpoint.position.data(), sizeof(checkpoint.position));
+        payload.write(player.race_checkpoint_next.data(), sizeof(player.race_checkpoint_next));
+        payload.write(&checkpoint.radius, sizeof(checkpoint.radius));
+    }
+    host.send_rpc(*player.peer, enabled ? 38 : 39, payload);
+}
+
+// Official: FUN_004879b0 @ 0x004879b0 (samp-server.exe)
+void configure_checkpoint(NativeHost& host, PlayerNativeState& player, std::span<const cell, 4> values) {
+    auto& checkpoint = player.checkpoint;
+    for (std::size_t i = 0; i < 3; ++i) checkpoint.position[i] = std::bit_cast<float>(values[i]);
+    checkpoint.radius = std::bit_cast<float>(values[3]);
+    toggle_checkpoint(host, player, true);
+}
+
+// Official: FUN_004879f0 @ 0x004879f0 (samp-server.exe)
+void configure_race_checkpoint(NativeHost& host, PlayerNativeState& player, std::uint8_t type,
+                               std::span<const cell, 7> values) {
+    auto& checkpoint = player.race_checkpoint;
+    for (std::size_t i = 0; i < 3; ++i) {
+        checkpoint.position[i] = std::bit_cast<float>(values[i]);
+        player.race_checkpoint_next[i] = std::bit_cast<float>(values[i + 3]);
+    }
+    player.race_checkpoint_type = type;
+    checkpoint.radius = std::bit_cast<float>(values[6]);
+    toggle_race_checkpoint(host, player, true);
+}
+
+// Official: FUN_00471e80 @ 0x00471e80 (samp-server.exe)
+cell set_player_checkpoint(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 5) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    configure_checkpoint(host, *player, args.subspan<1, 4>());
+    return 1;
+}
+
+// Official: FUN_00471ed0 @ 0x00471ed0 (samp-server.exe)
+cell disable_player_checkpoint(NativeHost& host, std::span<const cell> args) {
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    toggle_checkpoint(host, *player, false);
+    return 1;
+}
+
+// Official: FUN_00471f10 @ 0x00471f10 (samp-server.exe)
+cell is_player_in_checkpoint(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player && player->checkpoint.inside;
+}
+
+// Official: FUN_00471f40 @ 0x00471f40 (samp-server.exe)
+cell set_player_race_checkpoint(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 9) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    configure_race_checkpoint(host, *player, static_cast<std::uint8_t>(args[1]), args.subspan<2, 7>());
+    return 1;
+}
+
+// Official: FUN_00471fa0 @ 0x00471fa0 (samp-server.exe)
+cell disable_player_race_checkpoint(NativeHost& host, std::span<const cell> args) {
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    toggle_race_checkpoint(host, *player, false);
+    return 1;
+}
+
+// Official: FUN_00471fe0 @ 0x00471fe0 (samp-server.exe)
+cell is_player_in_race_checkpoint(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player && player->race_checkpoint.inside;
+}
+
+// Official: FUN_0047a8a0 @ 0x0047a8a0 (samp-server.exe)
+cell toggle_player_spectating(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    player->spectating = args[1] != 0;
+    player->spectate_target = 0xffffffffu;
+    player->spectate_target_type = 0;
+    send_player_command(host, *player, samp::proto::RpcId::TogglePlayerSpectating, args.subspan(1, 1));
+    return 1;
+}
+
+// Official: FUN_0047a9b0 @ 0x0047a9b0 (samp-server.exe)
+cell player_spectate_vehicle(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    auto* player = find_player(host, args);
+    const auto* vehicle = find_vehicle(host, args[1]);
+    if (!player || !vehicle) return 0;
+    player->spectate_target = static_cast<std::uint16_t>(args[1]);
+    player->spectate_target_type = 2;
+    const std::array position{vehicle->x, vehicle->y, vehicle->z};
+    host.update_player_position(*player, position[0], position[1], position[2], true);
+    player->expect_position(position[0], position[1], position[2]);
+    host.set_player_state(*player, 9);
+    if (player->peer) {
+        const auto id = static_cast<std::uint16_t>(args[1]);
+        const auto mode = static_cast<std::uint8_t>(args.size() > 2 ? args[2] : 1);
+        samp::proto::BitStream payload;
+        payload.write(&id, sizeof(id));
+        payload.write(&mode, sizeof(mode));
+        host.send_rpc(*player->peer, static_cast<std::uint8_t>(samp::proto::RpcId::PlayerSpectateVehicle), payload);
+    }
+    return 1;
+}
+
+// Official: FUN_0047ab50 @ 0x0047ab50 (samp-server.exe)
+cell player_spectate_player(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    auto* player = find_player(host, args);
+    const auto* target = find_player(host, args.subspan(1));
+    if (!player || !target) return 0;
+    player->spectate_target = static_cast<std::uint16_t>(args[1]);
+    player->spectate_target_type = 1;
+    const std::array position{target->x, target->y, target->z};
+    host.update_player_position(*player, position[0], position[1], position[2], true);
+    player->expect_position(position[0], position[1], position[2]);
+    host.set_player_state(*player, 9);
+    if (player->peer) {
+        const auto id = static_cast<std::uint16_t>(args[1]);
+        const auto mode = static_cast<std::uint8_t>(args.size() > 2 ? args[2] : 1);
+        samp::proto::BitStream payload;
+        payload.write(&id, sizeof(id));
+        payload.write(&mode, sizeof(mode));
+        host.send_rpc(*player->peer, static_cast<std::uint8_t>(samp::proto::RpcId::PlayerSpectatePlayer), payload);
+    }
+    return 1;
 }
 
 // Official: FUN_00472b70 @ 0x00472b70 (samp-server.exe)
@@ -1149,6 +1296,8 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"atan2", arc_tangent_two},
     {"DisableInteriorEnterExits", disable_interior_enter_exits},
     {"DisableNameTagLOS", disable_name_tag_los},
+    {"DisablePlayerCheckpoint", disable_player_checkpoint},
+    {"DisablePlayerRaceCheckpoint", disable_player_race_checkpoint},
     {"EnableTirePopping", enable_tire_popping},
     {"EnableVehicleFriendlyFire", enable_vehicle_friendly_fire},
     {"EnableZoneNames", enable_zone_names},
@@ -1201,11 +1350,15 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GivePlayerWeapon", give_player_weapon},
     {"IsPlayerAdmin", is_player_admin},
     {"IsPlayerInAnyVehicle", is_player_in_any_vehicle},
+    {"IsPlayerInCheckpoint", is_player_in_checkpoint},
+    {"IsPlayerInRaceCheckpoint", is_player_in_race_checkpoint},
     {"IsPlayerInRangeOfPoint", is_player_in_range_of_point},
     {"IsPlayerInVehicle", is_player_in_vehicle},
     {"IsPlayerNPC", is_player_npc},
     {"IsValidVehicle", is_valid_vehicle},
     {"ManualVehicleEngineAndLights", manual_vehicle_engine_and_lights},
+    {"PlayerSpectatePlayer", player_spectate_player},
+    {"PlayerSpectateVehicle", player_spectate_vehicle},
     {"RemovePlayerMapIcon", remove_player_map_icon},
     {"ResetPlayerMoney", reset_player_money},
     {"ResetPlayerWeapons", reset_player_weapons},
@@ -1215,10 +1368,12 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetNameTagDrawDistance", set_name_tag_draw_distance},
     {"SetPlayerArmour", set_player_armour},
     {"SetPlayerArmedWeapon", set_player_armed_weapon},
+    {"SetPlayerCheckpoint", set_player_checkpoint},
     {"SetPlayerColor", set_player_color},
     {"SetPlayerDrunkLevel", set_player_drunk_level},
     {"SetPlayerHealth", set_player_health},
     {"SetPlayerMapIcon", set_player_map_icon},
+    {"SetPlayerRaceCheckpoint", set_player_race_checkpoint},
     {"SetPlayerScore", set_player_score},
     {"SetPlayerTeam", set_player_team},
     {"SetPlayerWeather", set_player_weather},
@@ -1228,11 +1383,28 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetWorldTime", set_world_time},
     {"ShowNameTags", show_name_tags},
     {"ShowPlayerMarkers", show_player_markers},
+    {"TogglePlayerSpectating", toggle_player_spectating},
     {"UsePlayerPedAnims", use_player_ped_anims},
     {"VectorSize", vector_size},
 };
 
 }  // namespace
+
+// Official: FUN_004840f0 @ 0x004840f0 (samp-server.exe)
+double PlayerNativeState::distance_from_point(float point_x, float point_y, float point_z) const {
+    const double dx = double(x) - point_x;
+    const double dy = double(y) - point_y;
+    const double dz = double(z) - point_z;
+    return std::sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+// Official: FUN_00483ee0 @ 0x00483ee0 (samp-server.exe)
+void PlayerNativeState::expect_position(float target_x, float target_y, float target_z) {
+    position_correction_pending = true;
+    position_correction_ms = static_cast<std::uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now().time_since_epoch()).count());
+    position_correction_target = {target_x, target_y, target_z};
+}
 
 // Official: FUN_0047a100 @ 0x0047a100 (samp-server.exe)
 // This is the SA-MP native-table registration wrapper for the server AMX host.
@@ -1515,7 +1687,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         host.toggle_player_clock(static_cast<std::uint16_t>(args[0]), static_cast<std::uint8_t>(args[1]));
         return 1;
     };
-    vm.native_functions_["TogglePlayerSpectating"] = [](std::span<const cell>) -> cell { return 0; };
     vm.native_functions_["AllowAdminTeleport"] = [](std::span<const cell>) -> cell { return 0; };
     vm.native_functions_["PlayerPlaySound"] = [&host,as_float](std::span<const cell> args) -> cell {
         if(args.size()<5) return 0;

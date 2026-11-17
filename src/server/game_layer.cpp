@@ -731,10 +731,16 @@ void GameLayer::handle_game_packet(RakNetPeer& peer, const BitStream& message) {
             break;
         }
     }
-    if (player == nullptr || !player->spawned || player->state == 7) {
+    if (player == nullptr || player->state == 7) {
         return;
     }
     const std::uint8_t id = message.data_[0];
+    if (id == 212) {
+        handle_spectator_packet(*player, message);
+        return;
+    }
+    const bool spectator_aim = id == 203 && (player->spectating || player->spectate_target_type != 0);
+    if (!player->spawned && !spectator_aim) return;
     switch (id) {
     case 200: handle_driver_packet(*player,message); return;
     case 211: handle_passenger_packet(*player,message); return;
@@ -795,6 +801,8 @@ void GameLayer::handle_game_packet(RakNetPeer& peer, const BitStream& message) {
     // samp-server.exe 0x487040: every foot sync also moves the live state of
     // the sender (the position the stream-in RPC reports and the distance
     // checks of the streaming pass 0x4851d0 use it).
+    update_player_position(*player, state.x, state.y, state.z, false);
+    if (!player->in_use || player->peer != &peer) return;
     const auto previous_keys = player->keys;
     player->health = state.health;
     player->armour = state.armour;
@@ -812,9 +820,6 @@ void GameLayer::handle_game_packet(RakNetPeer& peer, const BitStream& message) {
     player->vehicle_seat = 0;
     notify_key_change(*player,previous_keys);
     set_player_state(*player,1);
-    player->x = state.x;
-    player->y = state.y;
-    player->z = state.z;
     {
         const float qw = state.qw;
         const float qx = state.qx;
@@ -903,7 +908,6 @@ void GameLayer::handle_game_packet(RakNetPeer& peer, const BitStream& message) {
     const bool animated = state.animation_id != 0;
     if (animated) payload.write1(); else payload.write0();
     if (animated) payload.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<std::uint32_t>(state.animation_id)).data(),4);
-    update_streaming();
     relay_sync(*player, payload);
 }
 

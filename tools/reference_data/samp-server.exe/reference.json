@@ -13468,11 +13468,71 @@
     {
       "address": "0x00471e30",
       "assembly_name": "FUN_00471e30",
-      "assembly_size": 480,
-      "assembly_sha1": "d6b18515f5bd203726eff671ecbda9855753be7b",
+      "assembly_size": 80,
+      "assembly_sha1": "208698098da419b1e6cf2cea853f198a19e94ffa",
       "native_registration": {
         "name": "GetPlayerVehicleSeat",
         "table_entry": "0x004cf288"
+      }
+    },
+    {
+      "address": "0x00471e80",
+      "assembly_name": "FUN_00471e80",
+      "assembly_size": 80,
+      "assembly_sha1": "361a722e19fdb688029c021f46f4815dc77627a4",
+      "native_registration": {
+        "name": "SetPlayerCheckpoint",
+        "table_entry": "0x004cf2c8"
+      }
+    },
+    {
+      "address": "0x00471ed0",
+      "assembly_name": "FUN_00471ed0",
+      "assembly_size": 64,
+      "assembly_sha1": "94f7929fa7431e4bdb037c8ac2e520e82ebf91e7",
+      "native_registration": {
+        "name": "DisablePlayerCheckpoint",
+        "table_entry": "0x004cf2d0"
+      }
+    },
+    {
+      "address": "0x00471f10",
+      "assembly_name": "FUN_00471f10",
+      "assembly_size": 48,
+      "assembly_sha1": "3d30003ad3c372a99086abb62a0beb29556f2fb5",
+      "native_registration": {
+        "name": "IsPlayerInCheckpoint",
+        "table_entry": "0x004cf2d8"
+      }
+    },
+    {
+      "address": "0x00471f40",
+      "assembly_name": "FUN_00471f40",
+      "assembly_size": 96,
+      "assembly_sha1": "82412ed95f9b3bcb6d5166eacb25b37a6b02280c",
+      "native_registration": {
+        "name": "SetPlayerRaceCheckpoint",
+        "table_entry": "0x004cf2e0"
+      }
+    },
+    {
+      "address": "0x00471fa0",
+      "assembly_name": "FUN_00471fa0",
+      "assembly_size": 64,
+      "assembly_sha1": "27af6b736d2a9b393f21c72d97b3572d577d18d3",
+      "native_registration": {
+        "name": "DisablePlayerRaceCheckpoint",
+        "table_entry": "0x004cf2e8"
+      }
+    },
+    {
+      "address": "0x00471fe0",
+      "assembly_name": "FUN_00471fe0",
+      "assembly_size": 48,
+      "assembly_sha1": "4bd8ed2441ad2d5564c3367fc0130b707bc7a3b4",
+      "native_registration": {
+        "name": "IsPlayerInRaceCheckpoint",
+        "table_entry": "0x004cf2f0"
       }
     },
     {
@@ -14468,8 +14528,38 @@
     {
       "address": "0x0047a490",
       "assembly_name": "FUN_0047a490",
-      "assembly_size": 2160,
-      "assembly_sha1": "dd58f8e9845aca9dda76cdcb80182daaab48b2c0"
+      "assembly_size": 1040,
+      "assembly_sha1": "02c04e1cfb9f37c931b2ae85fe76c6a22c3e621d"
+    },
+    {
+      "address": "0x0047a8a0",
+      "assembly_name": "FUN_0047a8a0",
+      "assembly_size": 272,
+      "assembly_sha1": "dad959f08d03819339e8ffcf6fc9d5048678ef3a",
+      "native_registration": {
+        "name": "TogglePlayerSpectating",
+        "table_entry": "0x004cf538"
+      }
+    },
+    {
+      "address": "0x0047a9b0",
+      "assembly_name": "FUN_0047a9b0",
+      "assembly_size": 416,
+      "assembly_sha1": "7fbeeccb5815416aef0bfef41e0d87aadd1391ba",
+      "native_registration": {
+        "name": "PlayerSpectateVehicle",
+        "table_entry": "0x004cf550"
+      }
+    },
+    {
+      "address": "0x0047ab50",
+      "assembly_name": "FUN_0047ab50",
+      "assembly_size": 432,
+      "assembly_sha1": "d935b6a2dd001a44871100453354c69817727f75",
+      "native_registration": {
+        "name": "PlayerSpectatePlayer",
+        "table_entry": "0x004cf558"
+      }
     },
     {
       "address": "0x0047ad00",
@@ -33293,6 +33383,33 @@
     ],
     "FUN_00471550": [
       "0x00471550"
+    ],
+    "FUN_00471e80": [
+      "0x00471e80"
+    ],
+    "FUN_00471ed0": [
+      "0x00471ed0"
+    ],
+    "FUN_00471f10": [
+      "0x00471f10"
+    ],
+    "FUN_00471f40": [
+      "0x00471f40"
+    ],
+    "FUN_00471fa0": [
+      "0x00471fa0"
+    ],
+    "FUN_00471fe0": [
+      "0x00471fe0"
+    ],
+    "FUN_0047a8a0": [
+      "0x0047a8a0"
+    ],
+    "FUN_0047a9b0": [
+      "0x0047a9b0"
+    ],
+    "FUN_0047ab50": [
+      "0x0047ab50"
     ]
   },
   "client_rpc_registrations": []

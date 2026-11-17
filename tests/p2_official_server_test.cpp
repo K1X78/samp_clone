@@ -14,7 +14,9 @@ namespace samp::pawn {
 struct PawnNativeTestAccess {
     static void init(PawnVm& vm,std::function<cell(std::string_view,std::span<const cell>)> hook={}) {
         std::vector<cell> code{0x78,0};
-        for(const char* name:{"OnRconLoginAttempt","OnPlayerPickUpPickup","Tick","TimerEx"}) {
+        for(const char* name:{"OnRconLoginAttempt","OnPlayerPickUpPickup","Tick","TimerEx",
+                              "OnPlayerEnterCheckpoint","OnPlayerLeaveCheckpoint",
+                              "OnPlayerEnterRaceCheckpoint","OnPlayerLeaveRaceCheckpoint"}) {
             const auto native=static_cast<cell>(vm.natives_.size());
             vm.publics_.push_back({name,static_cast<unsigned>(code.size()*4)});vm.natives_.push_back({name});
             vm.native_functions_[name]=[&vm,hook,name](auto)->cell {
@@ -251,6 +253,75 @@ void server() {
     for(unsigned short i=0;i<2;++i) {unsigned short player=9;int score=0;unsigned ping=0;CHECK(scores.read(&player,2) && scores.read(&score,4) && scores.read(&ping,4));CHECK(player==i && score==(i?456:-123) && ping==(i?0xffffffffu:5));}
     unsigned short addresses=0;CHECK(scores.read(&addresses,2) && addresses==1);
     const auto count=Wire::messages(one).size();rpc(game,one,155);CHECK(Wire::messages(one).size()==count);
+
+    Wire::clear(one);Wire::clear(two);
+    CHECK(Access::call(vm,"SetPlayerCheckpoint",{0,0,0,0,five})==1);
+    CHECK(Access::call(vm,"SetPlayerRaceCheckpoint",{0,258,0,0,0,three,four,0,five})==1);
+    auto checkpoint_frames=Wire::messages(one);
+    CHECK(checkpoint_frames.size()==2 && Wire::messages(two).empty());
+    if (checkpoint_frames.size()==2) {
+        auto normal=payload(checkpoint_frames[0],107);
+        CHECK(normal.numberOfBitsUsed_==128);
+        auto race=payload(checkpoint_frames[1],38);
+        std::uint8_t race_type=0;
+        CHECK(race.numberOfBitsUsed_==232 && race.read(&race_type,1) && race_type==2);
+    }
+    game.players_[0].spawned=true;
+    const auto walk_to=[&](float x) {
+        std::array<std::uint8_t,69> foot_bytes{};
+        foot_bytes[0]=207;
+        const float identity=1.f;
+        std::memcpy(foot_bytes.data()+7,&x,sizeof(x));
+        std::memcpy(foot_bytes.data()+19,&identity,sizeof(identity));
+        BitStream foot;
+        foot.write(foot_bytes.data(),foot_bytes.size());
+        game.on_user_message(one,foot);
+    };
+    trace.clear();
+    walk_to(4.f);
+    CHECK(Access::call(vm,"IsPlayerInCheckpoint",{0})==1);
+    CHECK(Access::call(vm,"IsPlayerInRaceCheckpoint",{0})==1);
+    CHECK((trace==std::vector<std::string>{"fs:OnPlayerEnterCheckpoint","gm:OnPlayerEnterCheckpoint",
+                                          "fs:OnPlayerEnterRaceCheckpoint","gm:OnPlayerEnterRaceCheckpoint"}));
+    trace.clear();
+    walk_to(4.f);
+    CHECK(trace.empty());
+    walk_to(5.f);
+    CHECK(Access::call(vm,"IsPlayerInCheckpoint",{0})==0 && Access::call(vm,"IsPlayerInRaceCheckpoint",{0})==0);
+    CHECK((trace==std::vector<std::string>{"fs:OnPlayerLeaveCheckpoint","gm:OnPlayerLeaveCheckpoint",
+                                          "fs:OnPlayerLeaveRaceCheckpoint","gm:OnPlayerLeaveRaceCheckpoint"}));
+    CHECK(Access::call(vm,"DisablePlayerCheckpoint",{0})==1 && Access::call(vm,"DisablePlayerRaceCheckpoint",{0})==1);
+
+    Wire::clear(one);Wire::clear(two);
+    CHECK(Access::call(vm,"TogglePlayerSpectating",{0,1})==1);
+    game.players_[1].x=12.f;
+    CHECK(Access::call(vm,"PlayerSpectatePlayer",{0,1,2})==1);
+    CHECK(game.players_[0].state==9 && game.players_[0].x==12.f);
+    auto spectate_frames=Wire::messages(one);
+    CHECK(spectate_frames.size()==2);
+    if (spectate_frames.size()==2) {
+        auto toggle=payload(spectate_frames[0],124);
+        cell enabled=0;
+        CHECK(toggle.read(&enabled,4) && enabled==1);
+        auto target=payload(spectate_frames[1],126);
+        std::uint16_t target_id=0;
+        std::uint8_t mode=0;
+        CHECK(target.read(&target_id,2) && target.read(&mode,1) && target_id==1 && mode==2);
+    }
+    const std::array<std::uint16_t,3> controls{1,2,4};
+    const std::array camera_position{15.f,3.f,2.f};
+    const std::uint8_t spectator_id=212;
+    BitStream spectator;
+    spectator.write(&spectator_id,1);
+    spectator.write(controls.data(),sizeof(controls));
+    spectator.write(camera_position.data(),sizeof(camera_position));
+    game.on_user_message(one,spectator);
+    CHECK(game.players_[0].x==15.f && game.players_[0].keys==4);
+    CHECK(Access::call(vm,"TogglePlayerSpectating",{0,0})==1);
+    walk_to(7.f);
+    CHECK(game.players_[0].state==1 && game.players_[0].x==7.f);
+    game.on_user_message(one,spectator);
+    CHECK(game.players_[0].x==7.f);
 }
 void labels() {
     using namespace samp::client::render;WorldLabelHost host;std::array<float,3> point{};

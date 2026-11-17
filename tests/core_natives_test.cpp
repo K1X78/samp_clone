@@ -42,6 +42,8 @@ struct Host : samp::pawn::NativeHost {
     int add_custom_model(const samp::pawn::CustomModelSpec&) override { CHECK(false);return 0; }
     bool redirect_download(int,std::string_view) override { CHECK(false);return false; }
     void send_rpc(samp::server::RakNetPeer&, std::uint8_t id, const samp::proto::BitStream& payload) override { sent.push_back({id, payload}); }
+    void update_player_position(samp::pawn::PlayerNativeState&, float, float, float, bool) override { CHECK(false); }
+    void set_player_state(samp::pawn::PlayerNativeState&, std::uint8_t) override { CHECK(false); }
     void set_game_mode_text(std::string_view) override {}
     void set_world_time(int) override {}
     void set_weather(int) override {}

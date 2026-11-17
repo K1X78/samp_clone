@@ -73,6 +73,13 @@ struct ModelTransfer {
     bool active=false,redirected=false,final_block=false;
 };
 
+struct CheckpointState {
+    std::array<float, 3> position{};
+    float radius = 0;
+    bool enabled = false;
+    bool inside = false;
+};
+
 // Shared host records let Pawn natives and the networking/game layer refer to
 // the same slots. Observed health/weapons/keys are updated by synchronization;
 // sending a command does not fabricate a client acknowledgement.
@@ -98,6 +105,19 @@ struct PlayerNativeState {
     std::uint32_t skin = 0;
     std::uint32_t custom_model = 0;
     float x = 0, y = 0, z = 0, angle = 0;
+    double distance_from_point(float x, float y, float z) const;
+    CheckpointState checkpoint;
+    CheckpointState race_checkpoint;
+    std::array<float, 3> race_checkpoint_next{};
+    std::uint8_t race_checkpoint_type = 0;
+    std::uint32_t last_stream_position_ms = 0;
+    std::uint32_t position_correction_ms = 0;
+    std::array<float, 3> position_correction_target{};
+    bool position_correction_pending = false;
+    void expect_position(float x, float y, float z);
+    bool spectating = false;
+    std::uint8_t spectate_target_type = 0;
+    std::uint32_t spectate_target = 0xffffffffu;
     std::uint8_t clock_enabled = 0;
     PlayerClassSpec spawn_info{};
     bool has_spawn_info = false;
@@ -233,6 +253,8 @@ public:
     virtual void send_vehicle_stream_in(PlayerNativeState& player, const VehicleNativeState& vehicle) = 0;
     virtual void send_rpc(samp::server::RakNetPeer& peer, std::uint8_t id,
                           const samp::proto::BitStream& payload) = 0;
+    virtual void update_player_position(PlayerNativeState& player, float x, float y, float z, bool force_stream) = 0;
+    virtual void set_player_state(PlayerNativeState& player, std::uint8_t state) = 0;
 
     int play_player_sound(int player, int sound, const std::array<float,3>& position);
     int set_camera_behind_player(int player);

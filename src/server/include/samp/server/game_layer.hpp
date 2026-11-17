@@ -210,6 +210,9 @@ private:
     void relay_sync(const GamePlayer& player, const samp::proto::BitStream& payload);
     void handle_driver_packet(GamePlayer& player, const samp::proto::BitStream& message);
     void handle_passenger_packet(GamePlayer& player, const samp::proto::BitStream& message);
+    void handle_spectator_packet(GamePlayer& player, const samp::proto::BitStream& message);
+    void apply_spectator_sync(GamePlayer& player, std::int16_t left_right, std::int16_t up_down,
+                              std::uint16_t keys, const std::array<float, 3>& position);
     void handle_aim_packet(GamePlayer& player, const samp::proto::BitStream& message);
     void handle_bullet_packet(GamePlayer& player, const samp::proto::BitStream& message);
     void handle_stats_packet(GamePlayer& player, const samp::proto::BitStream& message);
@@ -226,7 +229,18 @@ private:
     void handle_vehicle_exit(RakNetPeer& peer, const samp::proto::BitStream& payload);
     void handle_player_interior(RakNetPeer& peer, const samp::proto::BitStream& payload);
     void handle_player_death(RakNetPeer& peer, const samp::proto::BitStream& payload);
-    void set_player_state(GamePlayer& player, std::uint8_t state);
+    void update_player_position(GamePlayer& player, float x, float y, float z, bool force_stream) override;
+    void set_player_state(GamePlayer& player, std::uint8_t state) override;
+    samp::amx::cell filterscript_enter_checkpoint(int player);
+    samp::amx::cell filterscript_leave_checkpoint(int player);
+    samp::amx::cell filterscript_enter_race_checkpoint(int player);
+    samp::amx::cell filterscript_leave_race_checkpoint(int player);
+    samp::amx::cell gamemode_enter_checkpoint(int player);
+    samp::amx::cell gamemode_leave_checkpoint(int player);
+    samp::amx::cell gamemode_enter_race_checkpoint(int player);
+    samp::amx::cell gamemode_leave_race_checkpoint(int player);
+    samp::amx::cell filterscript_player_update(int player);
+    samp::amx::cell gamemode_player_update(int player);
     void notify_key_change(GamePlayer& player, std::uint32_t old_keys);
     void handle_player_chat(RakNetPeer& peer, const samp::proto::BitStream& payload);
     void handle_player_command(RakNetPeer& peer, const samp::proto::BitStream& payload);

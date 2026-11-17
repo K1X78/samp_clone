@@ -22,6 +22,8 @@ void GameLayer::handle_driver_packet(GamePlayer& player,const samp::proto::BitSt
         const auto old=static_cast<std::size_t>(vehicle.driver);
         if(old<players_.size() && players_[old].in_use && players_[old].state==2 && players_[old].vehicle_id==id) return;
     }
+    update_player_position(player, f32(24), f32(28), f32(32), false);
+    if (!player.in_use || !vehicle.active) return;
     for(auto& old:vehicles_) {
         if(old.driver==player.id && old.id!=id) old.driver=-1;
         for(auto& passenger:old.passengers) if(passenger==player.id) passenger=-1;
@@ -29,7 +31,7 @@ void GameLayer::handle_driver_packet(GamePlayer& player,const samp::proto::BitSt
     const auto old_keys=player.keys;
     player.vehicle_id=id;player.vehicle_seat=0;
     player.left_right=static_cast<std::int16_t>(u16(2));player.up_down=static_cast<std::int16_t>(u16(4));player.keys=u16(6);
-    player.x=vehicle.x=f32(24);player.y=vehicle.y=f32(28);player.z=vehicle.z=f32(32);
+    vehicle.x=f32(24);vehicle.y=f32(28);vehicle.z=f32(32);
     for(int i=0;i<4;++i) vehicle.rotation[i]=f32(8+i*4);
     for(int i=0;i<3;++i) vehicle.velocity[i]=f32(36+i*4);
     vehicle.health=f32(48);vehicle.driver=player.id;vehicle.has_been_occupied=true;
@@ -46,7 +48,6 @@ void GameLayer::handle_driver_packet(GamePlayer& player,const samp::proto::BitSt
     };
     for(const auto& script:filterscripts_) if(!allow(*script)) return;
     if(!allow(vm_)) return;
-    update_streaming();
     samp::proto::BitStream relay;
     const std::uint8_t kind=200;const auto sender=static_cast<std::uint16_t>(player.id);
     relay.write(&kind,1);relay.write(&sender,2);relay.write(raw,8);
@@ -85,11 +86,14 @@ void GameLayer::handle_passenger_packet(GamePlayer& player,const samp::proto::Bi
         !player.streamed_vehicles[id]) return;
     float position[3];std::memcpy(position,raw+12,12);
     if(!std::all_of(std::begin(position),std::end(position),[](float x){return std::isfinite(x);})) return;
-    for(auto& vehicle:vehicles_) {
-        if(vehicle.driver==player.id) vehicle.driver=-1;
-        for(auto& occupant:vehicle.passengers) if(occupant==player.id) occupant=-1;
+    auto& vehicle=vehicles_[id];
+    update_player_position(player, vehicle.x, vehicle.y, vehicle.z, false);
+    if (!player.in_use || !vehicle.active) return;
+    for(auto& other_vehicle:vehicles_) {
+        if(other_vehicle.driver==player.id) other_vehicle.driver=-1;
+        for(auto& occupant:other_vehicle.passengers) if(occupant==player.id) occupant=-1;
     }
-    auto& vehicle=vehicles_[id];vehicle.passengers[seat-1]=player.id;
+    vehicle.passengers[seat-1]=player.id;
     const auto old_keys=player.keys;
     player.vehicle_id=id;player.vehicle_seat=seat;player.weapon=raw[3]&0x3f;
     player.health=raw[4];player.armour=raw[5];
@@ -97,8 +101,7 @@ void GameLayer::handle_passenger_packet(GamePlayer& player,const samp::proto::Bi
     std::uint16_t keys=0;std::memcpy(&keys,raw+10,2);player.keys=keys;
     if(raw[3]>>6) player.keys |= 1u<<(15+(raw[3]>>6));
     notify_key_change(player,old_keys);
-    player.x=position[0];player.y=position[1];player.z=position[2];set_player_state(player,3);
-    update_streaming();
+    set_player_state(player,3);
     samp::proto::BitStream relay;const std::uint8_t kind=211;const auto sender=static_cast<std::uint16_t>(player.id);
     relay.write(&kind,1);relay.write(&sender,2);relay.write(raw,24);relay_sync(player,relay);
 }
