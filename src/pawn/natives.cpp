@@ -23,6 +23,7 @@
 #include <bit>
 #include <cmath>
 #include <cstdlib>
+#include <functional>
 #include <utility>
 
 namespace samp::pawn {
@@ -639,6 +640,77 @@ cell gang_zone_stop_flash_for_all(NativeHost& host, std::span<const cell> args) 
     return 1;
 }
 
+using CellWriter = std::function<bool(cell, cell)>;
+
+// Official: FUN_00470ff0 @ 0x00470ff0 (samp-server.exe)
+cell get_player_position(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 4) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    return write(args[1], std::bit_cast<cell>(player->x)) &&
+           write(args[2], std::bit_cast<cell>(player->y)) &&
+           write(args[3], std::bit_cast<cell>(player->z));
+}
+
+// Official: FUN_00472e30 @ 0x00472e30 (samp-server.exe)
+cell get_player_facing_angle(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    return player && write(args[1], std::bit_cast<cell>(player->angle));
+}
+
+// Official: FUN_004711b0 @ 0x004711b0 (samp-server.exe)
+cell get_player_health(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    return player && write(args[1], std::bit_cast<cell>(player->health));
+}
+
+// Official: FUN_00473dd0 @ 0x00473dd0 (samp-server.exe)
+cell get_player_armour(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    return player && write(args[1], std::bit_cast<cell>(player->armour));
+}
+
+// Official: FUN_00477830 @ 0x00477830 (samp-server.exe)
+cell get_player_velocity(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 4) return 0;
+    const auto* player = find_player(host, args);
+    const bool on_foot = player && player->state == 1;
+    const bool stored = write(args[1], std::bit_cast<cell>(on_foot ? player->vx : 0.0f)) &&
+                        write(args[2], std::bit_cast<cell>(on_foot ? player->vy : 0.0f)) &&
+                        write(args[3], std::bit_cast<cell>(on_foot ? player->vz : 0.0f));
+    return on_foot && stored;
+}
+
+// Official: FUN_00473e30 @ 0x00473e30 (samp-server.exe)
+cell get_player_keys(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 4) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    switch (player->state) {
+    case 1:
+    case 2:
+    case 3:
+    case 9:
+        return write(args[1], std::bit_cast<cell>(player->keys)) &&
+               write(args[2], player->up_down) && write(args[3], player->left_right);
+    default:
+        return 0;
+    }
+}
+
+using OutputNative = cell (*)(NativeHost&, std::span<const cell>, const CellWriter&);
+constexpr std::pair<const char*, OutputNative> output_natives[] = {
+    {"GetPlayerArmour", get_player_armour},
+    {"GetPlayerFacingAngle", get_player_facing_angle},
+    {"GetPlayerHealth", get_player_health},
+    {"GetPlayerKeys", get_player_keys},
+    {"GetPlayerPos", get_player_position},
+    {"GetPlayerVelocity", get_player_velocity},
+};
+
 using ServerNative = cell (*)(NativeHost&, std::span<const cell>);
 constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"AllowInteriorWeapons", allow_interior_weapons},
@@ -768,12 +840,17 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     const auto player_slot = [&host](cell id) -> PlayerNativeState* {
         return find_player(host, {&id, 1});
     };
-    const auto store_cell = [&vm, data_pointer](cell address, cell value) {
+    const CellWriter store_cell = [&vm, data_pointer](cell address, cell value) {
         if (address < 0 || std::int64_t(address) + 4 > vm.amx_.stp) return false;
         auto* destination = const_cast<std::uint8_t*>(data_pointer(address));
         if (!destination || std::uint64_t(vm.header_.dat) + address + 4 > vm.image_.size()) return false;
         std::memcpy(destination, &value, 4); return true;
     };
+    for (const auto& [name, function] : output_natives) {
+        vm.native_functions_[name] = [&host, function, store_cell](std::span<const cell> args) {
+            return function(host, args, store_cell);
+        };
+    }
     // Official: FUN_00472230 @ 0x00472230 (samp-server.exe)
     vm.native_functions_["EnablePlayerCameraTarget"]=[&host,player_slot](std::span<const cell> args)->cell {
         if(args.size()<2) return 0;auto* player=player_slot(args[0]);if(!player || !player->peer) return 0;
@@ -1128,13 +1205,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         }
         return static_cast<cell>(count);
     };
-    // Native owner: GetPlayerKeys 0x00473e30, valid only in states 1/2/3/9.
-    vm.native_functions_["GetPlayerKeys"] = [player_slot, store_cell](std::span<const cell> args) -> cell {
-        auto* p = args.size() < 4 ? nullptr : player_slot(args[0]);
-        if (!p || (p->state != 1 && p->state != 2 && p->state != 3 && p->state != 9)) return 0;
-        return store_cell(args[1], std::bit_cast<cell>(p->keys)) &&
-               store_cell(args[2], p->up_down) && store_cell(args[3], p->left_right);
-    };
     // Native owners: ResetPlayerMoney 0x00472b70, GivePlayerMoney 0x0047c710.
     vm.native_functions_["ResetPlayerMoney"] = [&host, player_slot](std::span<const cell> args) -> cell {
         auto* p = args.empty() ? nullptr : player_slot(args[0]); if (!p || !p->peer) return 0;
@@ -1161,40 +1231,15 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         auto* p = args.empty() ? nullptr : player_slot(args[0]); if (!p || !p->peer) return 0;
         samp::proto::BitStream payload; host.send_rpc(*p->peer, 21, payload); return 1;
     };
-    // Native owners: SetPlayerHealth 0x0047b090 / GetPlayerHealth 0x004711b0.
+    // Native owner: SetPlayerHealth 0x0047b090.
     vm.native_functions_["SetPlayerHealth"] = [&host, player_slot](std::span<const cell> args) -> cell {
         auto* p = args.size() < 2 ? nullptr : player_slot(args[0]); if (!p || !p->peer) return 0;
         samp::proto::BitStream payload; payload.write(&args[1], 4); host.send_rpc(*p->peer, 14, payload); return 1;
     };
-    vm.native_functions_["GetPlayerHealth"] = [player_slot, store_cell, as_cell](std::span<const cell> args) -> cell {
-        const auto* p = args.size() < 2 ? nullptr : player_slot(args[0]);
-        return p && store_cell(args[1], as_cell(p->health));
-    };
-    // Native owners: SetPlayerArmour 0x0047cf30 / GetPlayerArmour 0x00473dd0.
+    // Native owner: SetPlayerArmour 0x0047cf30.
     vm.native_functions_["SetPlayerArmour"] = [&host, player_slot](std::span<const cell> args) -> cell {
         auto* p = args.size() < 2 ? nullptr : player_slot(args[0]); if (!p || !p->peer) return 0;
         samp::proto::BitStream payload; payload.write(&args[1], 4); host.send_rpc(*p->peer, 66, payload); return 1;
-    };
-    vm.native_functions_["GetPlayerArmour"] = [player_slot, store_cell, as_cell](std::span<const cell> args) -> cell {
-        const auto* p = args.size() < 2 ? nullptr : player_slot(args[0]);
-        return p && store_cell(args[1], as_cell(p->armour));
-    };
-    // Native owners: GetPlayerPos 0x00470ff0 / GetPlayerFacingAngle 0x00472e30.
-    vm.native_functions_["GetPlayerPos"] = [player_slot, store_cell, as_cell](std::span<const cell> args) -> cell {
-        const auto* p = args.size() < 4 ? nullptr : player_slot(args[0]); if (!p) return 0;
-        return store_cell(args[1], as_cell(p->x)) && store_cell(args[2], as_cell(p->y)) && store_cell(args[3], as_cell(p->z));
-    };
-    vm.native_functions_["GetPlayerFacingAngle"] = [player_slot, store_cell, as_cell](std::span<const cell> args) -> cell {
-        const auto* p = args.size() < 2 ? nullptr : player_slot(args[0]); return p && store_cell(args[1], as_cell(p->angle));
-    };
-    // Native owner: GetPlayerVelocity 0x00477830 writes zeroes and returns 0
-    // outside the on-foot state (including invalid players).
-    vm.native_functions_["GetPlayerVelocity"] = [player_slot, store_cell, as_cell](std::span<const cell> args) -> cell {
-        if (args.size() < 4) return 0;
-        const auto* p = player_slot(args[0]); const bool valid = p && p->state == 1;
-        const bool stored = store_cell(args[1], as_cell(valid ? p->vx : 0)) &&
-            store_cell(args[2], as_cell(valid ? p->vy : 0)) && store_cell(args[3], as_cell(valid ? p->vz : 0));
-        return valid && stored;
     };
     vm.native_functions_["IsPlayerConnected"] = [&host](std::span<const cell> args) -> cell {
         return !args.empty() && host.is_player_connected(args[0]);

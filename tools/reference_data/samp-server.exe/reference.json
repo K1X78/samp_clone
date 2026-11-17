@@ -13266,11 +13266,31 @@
     {
       "address": "0x00470f30",
       "assembly_name": "FUN_00470f30",
-      "assembly_size": 736,
-      "assembly_sha1": "25ec6488cd193c04dfeda4e155921161b57ddf01",
+      "assembly_size": 192,
+      "assembly_sha1": "d85b52dd130a7c24526542ee4bff274b6be8c829",
       "native_registration": {
         "name": "GetPlayerVirtualWorld",
         "table_entry": "0x004cf518"
+      }
+    },
+    {
+      "address": "0x00470ff0",
+      "assembly_name": "FUN_00470ff0",
+      "assembly_size": 448,
+      "assembly_sha1": "5466671f52e280e9c5c023f7b3083c66f4868600",
+      "native_registration": {
+        "name": "GetPlayerPos",
+        "table_entry": "0x004cf240"
+      }
+    },
+    {
+      "address": "0x004711b0",
+      "assembly_name": "FUN_004711b0",
+      "assembly_size": 96,
+      "assembly_sha1": "c4c56da8e5db0034db7218b70417e0da9abba291",
+      "native_registration": {
+        "name": "GetPlayerHealth",
+        "table_entry": "0x004cf260"
       }
     },
     {
@@ -13520,8 +13540,18 @@
     {
       "address": "0x00472e00",
       "assembly_name": "FUN_00472e00",
-      "assembly_size": 336,
-      "assembly_sha1": "37ee7314a7097b9a4975b77a7d64f46236dae547"
+      "assembly_size": 48,
+      "assembly_sha1": "cde66ed9132ba164d0027467606654011d839e93"
+    },
+    {
+      "address": "0x00472e30",
+      "assembly_name": "FUN_00472e30",
+      "assembly_size": 288,
+      "assembly_sha1": "8f5cd1e4ef4f6d612a14b6f44d942d1ec626ff7c",
+      "native_registration": {
+        "name": "GetPlayerFacingAngle",
+        "table_entry": "0x004cf3e8"
+      }
     },
     {
       "address": "0x00472f50",
@@ -13652,8 +13682,28 @@
     {
       "address": "0x00473d50",
       "assembly_name": "FUN_00473d50",
-      "assembly_size": 416,
-      "assembly_sha1": "f7521acff8d6faf3ba9fbe1336f3b4865f1c2199"
+      "assembly_size": 128,
+      "assembly_sha1": "9c03fbf00617415386d52247d599498bb9b25bb6"
+    },
+    {
+      "address": "0x00473dd0",
+      "assembly_name": "FUN_00473dd0",
+      "assembly_size": 96,
+      "assembly_sha1": "34d6bc1795ad0e9694094b7a6a611944cd38d6f7",
+      "native_registration": {
+        "name": "GetPlayerArmour",
+        "table_entry": "0x004cf450"
+      }
+    },
+    {
+      "address": "0x00473e30",
+      "assembly_name": "FUN_00473e30",
+      "assembly_size": 192,
+      "assembly_sha1": "7662f8b0463ba19aca8980cddef0588329f7c36a",
+      "native_registration": {
+        "name": "GetPlayerKeys",
+        "table_entry": "0x004cf468"
+      }
     },
     {
       "address": "0x00473ef0",
@@ -14002,11 +14052,21 @@
     {
       "address": "0x00477820",
       "assembly_name": "FUN_00477820",
-      "assembly_size": 416,
-      "assembly_sha1": "84e089a1468ab78666dbd22ff4e6bf2c3681ca55",
+      "assembly_size": 16,
+      "assembly_sha1": "0289a43cf4b36e9cf3230b687445a388f6c413c0",
       "native_registration": {
         "name": "DisableNameTagLOS",
         "table_entry": "0x004cf080"
+      }
+    },
+    {
+      "address": "0x00477830",
+      "assembly_name": "FUN_00477830",
+      "assembly_size": 400,
+      "assembly_sha1": "5b40fa555a06fe5a794562c9a96da27151223361",
+      "native_registration": {
+        "name": "GetPlayerVelocity",
+        "table_entry": "0x004cf4d8"
       }
     },
     {
@@ -32877,6 +32937,24 @@
     ],
     "FUN_00477480": [
       "0x00477480"
+    ],
+    "FUN_00470ff0": [
+      "0x00470ff0"
+    ],
+    "FUN_004711b0": [
+      "0x004711b0"
+    ],
+    "FUN_00472e30": [
+      "0x00472e30"
+    ],
+    "FUN_00473dd0": [
+      "0x00473dd0"
+    ],
+    "FUN_00473e30": [
+      "0x00473e30"
+    ],
+    "FUN_00477830": [
+      "0x00477830"
     ]
   },
   "client_rpc_registrations": []
