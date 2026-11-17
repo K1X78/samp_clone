@@ -13172,8 +13172,18 @@
     {
       "address": "0x00470570",
       "assembly_name": "FUN_00470570",
-      "assembly_size": 624,
-      "assembly_sha1": "d2c6d35b8658f20a1d18f8d32a271acb73385786"
+      "assembly_size": 288,
+      "assembly_sha1": "56ff9eb990ca2ee7c7ac679488c07b9d14c15b55"
+    },
+    {
+      "address": "0x00470690",
+      "assembly_name": "FUN_00470690",
+      "assembly_size": 336,
+      "assembly_sha1": "c770dd989222ab66d4140a4b816728322081213a",
+      "native_registration": {
+        "name": "GetVehicleModel",
+        "table_entry": "0x004cf7e0"
+      }
     },
     {
       "address": "0x004707e0",
@@ -13230,8 +13240,18 @@
     {
       "address": "0x00470c00",
       "assembly_name": "FUN_00470c00",
-      "assembly_size": 672,
-      "assembly_sha1": "0b4a90a1866765b9aa3f243520851fac4843e2b6"
+      "assembly_size": 592,
+      "assembly_sha1": "4f51084c0b72a95b6d7cafddce2cb3b8eef3ae17"
+    },
+    {
+      "address": "0x00470e50",
+      "assembly_name": "FUN_00470e50",
+      "assembly_size": 80,
+      "assembly_sha1": "8ff4448a60db2d6ed581026e27e7cc72ca9444ad",
+      "native_registration": {
+        "name": "GetPlayerTeam",
+        "table_entry": "0x004cf220"
+      }
     },
     {
       "address": "0x00470ea0",
@@ -13256,8 +13276,28 @@
     {
       "address": "0x00471210",
       "assembly_name": "FUN_00471210",
-      "assembly_size": 592,
-      "assembly_sha1": "6d9c11ab82d326a9c3fce43b5bbdf6e30e1faac8"
+      "assembly_size": 208,
+      "assembly_sha1": "88a7ee26be91be9bcba56e936ac3feb503676e9c"
+    },
+    {
+      "address": "0x004712e0",
+      "assembly_name": "FUN_004712e0",
+      "assembly_size": 80,
+      "assembly_sha1": "0db32acff6dad1e1cf00e8c68e9da7b17a8b34e5",
+      "native_registration": {
+        "name": "IsPlayerInVehicle",
+        "table_entry": "0x004cf2b0"
+      }
+    },
+    {
+      "address": "0x00471330",
+      "assembly_name": "FUN_00471330",
+      "assembly_size": 304,
+      "assembly_sha1": "57d03cdc0d0445c07460e7381fadcc0763112ebc",
+      "native_registration": {
+        "name": "IsPlayerInAnyVehicle",
+        "table_entry": "0x004cf2b8"
+      }
     },
     {
       "address": "0x00471460",
@@ -13302,8 +13342,28 @@
     {
       "address": "0x00471c40",
       "assembly_name": "FUN_00471c40",
-      "assembly_size": 256,
-      "assembly_sha1": "63ed0df7093389a29fa20e3a049a902c94023f56"
+      "assembly_size": 144,
+      "assembly_sha1": "e32b8b5284687a0a664eb41d20b7f6e3ceaaab14"
+    },
+    {
+      "address": "0x00471cd0",
+      "assembly_name": "FUN_00471cd0",
+      "assembly_size": 64,
+      "assembly_sha1": "79f498480f2ef7752f08eb75e58e0893c70b3482",
+      "native_registration": {
+        "name": "SetPlayerColor",
+        "table_entry": "0x004cf270"
+      }
+    },
+    {
+      "address": "0x00471d10",
+      "assembly_name": "FUN_00471d10",
+      "assembly_size": 48,
+      "assembly_sha1": "9cde06c1b935e44b0519c573a1c87c88d6765197",
+      "native_registration": {
+        "name": "GetPlayerColor",
+        "table_entry": "0x004cf278"
+      }
     },
     {
       "address": "0x00471d40",
@@ -13550,8 +13610,18 @@
     {
       "address": "0x00473ff0",
       "assembly_name": "FUN_00473ff0",
-      "assembly_size": 592,
-      "assembly_sha1": "fa83e8014cecdc28f706f034a512f1c5467d6f9d"
+      "assembly_size": 352,
+      "assembly_sha1": "2f72c61fec87c8a9d2920940c59bb2ff310b4fae"
+    },
+    {
+      "address": "0x00474150",
+      "assembly_name": "FUN_00474150",
+      "assembly_size": 240,
+      "assembly_sha1": "f6244b4d03730616ad9399d80d7a984aea87ea2d",
+      "native_registration": {
+        "name": "IsValidVehicle",
+        "table_entry": "0x004cf6e0"
+      }
     },
     {
       "address": "0x00474240",
@@ -13742,11 +13812,21 @@
     {
       "address": "0x00477800",
       "assembly_name": "FUN_00477800",
-      "assembly_size": 512,
-      "assembly_sha1": "df8f8e04aa6173779a74eab37c56dd9541f7b75d",
+      "assembly_size": 448,
+      "assembly_sha1": "9d47c5f6547e646705d888c88642167e15edfeb6",
       "native_registration": {
         "name": "SetNameTagDrawDistance",
         "table_entry": "0x004cf078"
+      }
+    },
+    {
+      "address": "0x004779c0",
+      "assembly_name": "FUN_004779c0",
+      "assembly_size": 64,
+      "assembly_sha1": "9be5346e11fa9ee7fe397c07245938aeac5cfc46",
+      "native_registration": {
+        "name": "GetPlayerDrunkLevel",
+        "table_entry": "0x004cf540"
       }
     },
     {
@@ -14030,8 +14110,18 @@
     {
       "address": "0x0047c920",
       "assembly_name": "FUN_0047c920",
-      "assembly_size": 2933,
-      "assembly_sha1": "003f5002e478f54f4dfc2b6a45237250e8a566d3"
+      "assembly_size": 976,
+      "assembly_sha1": "7d25381e6b934b064c622a60fed8ad2b6bff71e6"
+    },
+    {
+      "address": "0x0047ccf0",
+      "assembly_name": "FUN_0047ccf0",
+      "assembly_size": 1957,
+      "assembly_sha1": "2850c39c14f15e4e0b467c64f0dec4d6492f9129",
+      "native_registration": {
+        "name": "PlayerPlaySound",
+        "table_entry": "0x004cf3c8"
+      }
     },
     {
       "address": "0x0047d495",
@@ -27860,6 +27950,9 @@
     "FUN_00470570": [
       "0x00470570"
     ],
+    "FUN_00470690": [
+      "0x00470690"
+    ],
     "FUN_004707e0": [
       "0x004707e0"
     ],
@@ -27887,6 +27980,9 @@
     "FUN_00470c00": [
       "0x00470c00"
     ],
+    "FUN_00470e50": [
+      "0x00470e50"
+    ],
     "FUN_00470ea0": [
       "0x00470ea0"
     ],
@@ -27895,6 +27991,12 @@
     ],
     "FUN_00471210": [
       "0x00471210"
+    ],
+    "FUN_004712e0": [
+      "0x004712e0"
+    ],
+    "FUN_00471330": [
+      "0x00471330"
     ],
     "FUN_00471460": [
       "0x00471460"
@@ -27916,6 +28018,12 @@
     ],
     "FUN_00471c40": [
       "0x00471c40"
+    ],
+    "FUN_00471cd0": [
+      "0x00471cd0"
+    ],
+    "FUN_00471d10": [
+      "0x00471d10"
     ],
     "FUN_00471d40": [
       "0x00471d40"
@@ -28013,6 +28121,9 @@
     "FUN_00473ff0": [
       "0x00473ff0"
     ],
+    "FUN_00474150": [
+      "0x00474150"
+    ],
     "FUN_00474240": [
       "0x00474240"
     ],
@@ -28102,6 +28213,9 @@
     ],
     "FUN_00477800": [
       "0x00477800"
+    ],
+    "FUN_004779c0": [
+      "0x004779c0"
     ],
     "FUN_00477a00": [
       "0x00477a00"
@@ -28240,6 +28354,9 @@
     ],
     "FUN_0047c920": [
       "0x0047c920"
+    ],
+    "FUN_0047ccf0": [
+      "0x0047ccf0"
     ],
     "FUN_0047d495": [
       "0x0047d495"

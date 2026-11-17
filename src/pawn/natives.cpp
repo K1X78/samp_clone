@@ -2,6 +2,7 @@
 
 #include "pawn/db_natives.hpp"
 #include "samp/proto/bitstream.hpp"
+#include "samp/proto/rpc_ids.hpp"
 #include "pawn/core_natives.hpp"
 #include "pawn/float_natives.hpp"
 #include "pawn/property_natives.hpp"
@@ -20,6 +21,7 @@
 #include <algorithm>
 #include <bit>
 #include <cstdlib>
+#include <utility>
 
 namespace samp::pawn {
 
@@ -198,6 +200,91 @@ cell get_player_skin(NativeHost& host, std::span<const cell> args) {
     return player ? std::bit_cast<cell>(player->skin) : 0;
 }
 
+// Official: FUN_00470e50 @ 0x00470e50 (samp-server.exe)
+cell get_player_team(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->team : -1;
+}
+
+// Official: FUN_00471d10 @ 0x00471d10 (samp-server.exe)
+cell get_player_color(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? std::bit_cast<cell>(player->colour) : 0;
+}
+
+// Official: FUN_00485890 @ 0x00485890 (samp-server.exe)
+void apply_player_color(NativeHost& host, PlayerNativeState& player, std::uint32_t colour) {
+    player.colour = colour;
+
+    const auto id = static_cast<std::uint16_t>(player.id);
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    payload.write(&colour, sizeof(colour));
+    const auto num_slots = std::min<std::size_t>(
+        host.players_.size(), static_cast<std::size_t>(std::clamp(host.player_pool_highest_, -1, 999) + 1));
+    for (auto& recipient : std::span(host.players_).first(num_slots)) {
+        if (recipient.in_use && recipient.peer) {
+            host.send_rpc(*recipient.peer, static_cast<std::uint8_t>(samp::proto::RpcId::SetPlayerColor), payload);
+        }
+    }
+}
+
+// Official: FUN_00471cd0 @ 0x00471cd0 (samp-server.exe)
+cell set_player_color(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    apply_player_color(host, *player, std::bit_cast<std::uint32_t>(args[1]));
+    return 1;
+}
+
+// Official: FUN_004779c0 @ 0x004779c0 (samp-server.exe)
+cell get_player_drunk_level(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->drunk_level : 0;
+}
+
+// Official: FUN_004712e0 @ 0x004712e0 (samp-server.exe)
+cell is_player_in_vehicle(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    return player && (player->state == 2 || player->state == 3) && player->vehicle_id == args[1];
+}
+
+// Official: FUN_00471330 @ 0x00471330 (samp-server.exe)
+cell is_player_in_any_vehicle(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player && (player->state == 2 || player->state == 3);
+}
+
+// Official: FUN_00470690 @ 0x00470690 (samp-server.exe)
+cell get_vehicle_model(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    const auto id = static_cast<std::uint16_t>(args.front());
+    if (id >= 2000 || id >= host.vehicles_.size() || !host.vehicles_[id].active) return 0;
+    return host.vehicles_[id].model;
+}
+
+// Official: FUN_00474150 @ 0x00474150 (samp-server.exe)
+cell is_valid_vehicle(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    const auto id = static_cast<std::uint16_t>(args.front());
+    return id < 2000 && id < host.vehicles_.size() && host.vehicles_[id].active;
+}
+
+// Official: FUN_0047ccf0 @ 0x0047ccf0 (samp-server.exe)
+cell player_play_sound(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 5) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    if (player->peer) {
+        samp::proto::BitStream payload;
+        payload.write(args.subspan(1, 4).data(), 4 * sizeof(cell));
+        host.send_rpc(*player->peer, static_cast<std::uint8_t>(samp::proto::RpcId::PlayerPlaySound), payload);
+    }
+    return 1;
+}
+
 using ServerNative = cell (*)(NativeHost&, std::span<const cell>);
 constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"DisableInteriorEnterExits", disable_interior_enter_exits},
@@ -207,21 +294,30 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GetPlayerCameraTargetObject", get_player_camera_target_object},
     {"GetPlayerCameraTargetPlayer", get_player_camera_target_player},
     {"GetPlayerCameraTargetVehicle", get_player_camera_target_vehicle},
+    {"GetPlayerColor", get_player_color},
     {"GetPlayerCustomSkin", get_player_custom_skin},
+    {"GetPlayerDrunkLevel", get_player_drunk_level},
     {"GetPlayerInterior", get_player_interior},
     {"GetPlayerMoney", get_player_money},
     {"GetPlayerPoolSize", get_player_pool_size},
     {"GetPlayerScore", get_player_score},
     {"GetPlayerSkin", get_player_skin},
     {"GetPlayerState", get_player_state},
+    {"GetPlayerTeam", get_player_team},
     {"GetPlayerVehicleID", get_player_vehicle_id},
     {"GetPlayerVehicleSeat", get_player_vehicle_seat},
     {"GetPlayerVirtualWorld", get_player_virtual_world},
     {"GetPlayerWeapon", get_player_weapon},
     {"GetTickCount", get_tick_count},
+    {"GetVehicleModel", get_vehicle_model},
     {"IsPlayerAdmin", is_player_admin},
+    {"IsPlayerInAnyVehicle", is_player_in_any_vehicle},
+    {"IsPlayerInVehicle", is_player_in_vehicle},
     {"IsPlayerNPC", is_player_npc},
+    {"IsValidVehicle", is_valid_vehicle},
+    {"PlayerPlaySound", player_play_sound},
     {"SetNameTagDrawDistance", set_name_tag_draw_distance},
+    {"SetPlayerColor", set_player_color},
     {"SetPlayerScore", set_player_score},
     {"ShowNameTags", show_name_tags},
     {"ShowPlayerMarkers", show_player_markers},
@@ -720,7 +816,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     };
     vm.native_functions_["TogglePlayerSpectating"] = [](std::span<const cell>) -> cell { return 0; };
     vm.native_functions_["AllowAdminTeleport"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["PlayerPlaySound"] = [](std::span<const cell>) -> cell { return 0; };
     // Official: FUN_0047b970 @ 0x0047b970 (samp-server.exe)
     vm.native_functions_["GameTextForPlayer"] = [&host,player_slot,read_script_string](std::span<const cell> args) -> cell {
         if (args.size() < 4) return 0;

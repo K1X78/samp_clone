@@ -356,6 +356,59 @@ void player_command_semantics() {
         require(player.clock_enabled == static_cast<std::uint8_t>(value), "raw clock state was normalized");
     }
 }
+
+void player_color_and_sound() {
+    using Access = samp::pawn::PawnNativeTestAccess;
+    using Transport = samp::server::RakNetTransportTestAccess;
+    using samp::amx::cell;
+    samp::server::GameLayer game;
+    samp::server::RakNetPeer target_peer, observer_peer, outside_peer;
+    game.players_.resize(3);
+    auto& target = game.players_[0];
+    target.in_use = true;
+    target.peer = &target_peer;
+    game.players_[1].id = 1;
+    game.players_[1].in_use = true;
+    game.players_[1].peer = &observer_peer;
+    game.update_player_pool_size();
+    game.players_[2].id = 2;
+    game.players_[2].in_use = true;
+    game.players_[2].peer = &outside_peer;
+    samp::pawn::register_server_natives(game.vm_, game);
+
+    constexpr auto colour = std::bit_cast<cell>(0x98765432u);
+    require(Access::call(game.vm_, "SetPlayerColor", {65536, colour}) == 1 &&
+            Access::call(game.vm_, "GetPlayerColor", {0}) == colour, "color was not stored");
+    require(Access::call(game.vm_, "SetPlayerColor", {1000, colour}) == 0, "color accepted invalid player");
+    require(Transport::messages(outside_peer).empty(), "color broadcast exceeded cached pool bound");
+    for (auto* peer : {&target_peer, &observer_peer}) {
+        auto messages = Transport::messages(*peer);
+        require(messages.size() == 1, "color broadcast missed a connected player");
+        auto& message = messages.front();
+        std::uint8_t marker = 0, rpc = 0;
+        std::uint32_t bits = 0;
+        std::uint16_t id = 1;
+        cell received_colour = 0;
+        require(message.read(&marker, 1) && marker == 20 && message.read(&rpc, 1) && rpc == 72 &&
+                message.readCompressed(reinterpret_cast<std::uint8_t*>(&bits), 32, true) && bits == 48 &&
+                message.read(&id, 2) && id == 0 && message.read(&received_colour, 4) &&
+                received_colour == colour, "color payload differs from the official wire format");
+    }
+
+    const std::array<cell, 4> sound{1052, std::bit_cast<cell>(20.5f), std::bit_cast<cell>(-19.0f), 0};
+    require(Access::call(game.vm_, "PlayerPlaySound", {65536, sound[0], sound[1], sound[2], sound[3]}) == 1 &&
+            Access::call(game.vm_, "PlayerPlaySound", {-1, sound[0], 0, 0, 0}) == 0, "sound native player check failed");
+    auto messages = Transport::messages(target_peer);
+    require(messages.size() == 1 && Transport::messages(observer_peer).empty(), "sound was not sent only to its target");
+    auto& message = messages.front();
+    std::uint8_t marker = 0, rpc = 0;
+    std::uint32_t bits = 0;
+    std::array<cell, 4> received{};
+    require(message.read(&marker, 1) && marker == 20 && message.read(&rpc, 1) && rpc == 16 &&
+            message.readCompressed(reinterpret_cast<std::uint8_t*>(&bits), 32, true) && bits == 128 &&
+            message.read(received.data(), sizeof(received)) && received == sound,
+            "sound payload differs from the official wire format");
+}
 }
 
 int main(int, char**) {
@@ -363,6 +416,7 @@ int main(int, char**) {
         rpc_length_bounds();
         weather_broadcast();
         player_command_semantics();
+        player_color_and_sound();
         std::puts("Production RPC length checks passed");
         return 0;
     } catch (const std::exception& error) {
