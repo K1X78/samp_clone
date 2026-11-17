@@ -27,11 +27,216 @@ namespace {
 
 using samp::amx::cell;
 
+constexpr auto find_player = [](NativeHost& host, std::span<const cell> args) -> PlayerNativeState* {
+    if (args.empty()) return nullptr;
+    const auto index = static_cast<std::uint16_t>(args.front());
+    if (index >= 1000 || index >= host.players_.size() || !host.players_[index].in_use) {
+        return nullptr;
+    }
+    return &host.players_[index];
+};
+
+// Official: FUN_00470bc0 @ 0x00470bc0 (samp-server.exe)
+cell is_player_admin(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player && player->is_admin;
+}
+
+// Official: FUN_004722a0 @ 0x004722a0 (samp-server.exe)
+cell get_player_camera_target_object(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->camera_targets[0] : 0xffff;
+}
+
+// Official: FUN_004722f0 @ 0x004722f0 (samp-server.exe)
+cell get_player_camera_target_vehicle(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->camera_targets[1] : 0xffff;
+}
+
+// Official: FUN_00472340 @ 0x00472340 (samp-server.exe)
+cell get_player_camera_target_player(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->camera_targets[2] : 0xffff;
+}
+
+// Official: FUN_00472390 @ 0x00472390 (samp-server.exe)
+cell get_player_camera_target_actor(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->camera_targets[3] : 0xffff;
+}
+
+// Official: FUN_00471460 @ 0x00471460 (samp-server.exe)
+cell get_player_pool_size(NativeHost& host, std::span<const cell>) {
+    // The pool updates this value after its join and quit callbacks.
+    return host.player_pool_highest_;
+}
+
+// Official: FUN_00473230 @ 0x00473230 (samp-server.exe)
+cell get_tick_count(NativeHost&, std::span<const cell>) {
+    using namespace std::chrono;
+    const auto ticks = duration_cast<milliseconds>(steady_clock::now().time_since_epoch());
+    return std::bit_cast<cell>(static_cast<std::uint32_t>(ticks.count()));
+}
+
+// Official: FUN_00474b30 @ 0x00474b30 (samp-server.exe)
+cell get_gravity(NativeHost& host, std::span<const cell>) {
+    return std::bit_cast<cell>(host.gravity_);
+}
+
+// Official: FUN_00473460 @ 0x00473460 (samp-server.exe)
+cell show_name_tags(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    host.show_name_tags_ = args.front() != 0;
+    return 1;
+}
+
+// Official: FUN_00473480 @ 0x00473480 (samp-server.exe)
+cell show_player_markers(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    host.player_marker_mode_ = args.front();
+    return 1;
+}
+
+// Official: FUN_00475eb0 @ 0x00475eb0 (samp-server.exe)
+cell enable_zone_names(NativeHost& host, std::span<const cell>) {
+    constexpr auto warning = "[warning] EnableZoneNames() is removed since 0.3";
+    if (host.log_message_) {
+        host.log_message_(warning);
+    } else {
+        std::puts(warning);
+    }
+    return 1;
+}
+
+// Official: FUN_004777f0 @ 0x004777f0 (samp-server.exe)
+cell disable_interior_enter_exits(NativeHost& host, std::span<const cell>) {
+    host.interior_enter_exits_disabled_ = true;
+    return 1;
+}
+
+// Official: FUN_00477800 @ 0x00477800 (samp-server.exe)
+cell set_name_tag_draw_distance(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    host.name_tag_draw_distance_ = std::bit_cast<float>(args.front());
+    return 1;
+}
+
+// Official: FUN_00472e00 @ 0x00472e00 (samp-server.exe)
+cell get_player_state(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->state : 0;
+}
+
+// Official: FUN_00473c40 @ 0x00473c40 (samp-server.exe)
+cell get_player_weapon(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? (player->weapon & 0x3f) : -1;
+}
+
+// Official: FUN_00472b40 @ 0x00472b40 (samp-server.exe)
+cell get_player_money(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->money : 0;
+}
+
+// Official: FUN_00472ad0 @ 0x00472ad0 (samp-server.exe)
+cell set_player_score(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    player->score = args[1];
+    return 1;
+}
+
+// Official: FUN_00472b10 @ 0x00472b10 (samp-server.exe)
+cell get_player_score(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->score : 0;
+}
+
+// Official: FUN_00478120 @ 0x00478120 (samp-server.exe)
+cell is_player_npc(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player && player->is_npc;
+}
+
+// Official: FUN_00472010 @ 0x00472010 (samp-server.exe)
+cell get_player_interior(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->interior : 0;
+}
+
+// Official: FUN_00470f30 @ 0x00470f30 (samp-server.exe)
+cell get_player_virtual_world(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->virtual_world : 0;
+}
+
+// Official: FUN_00471d40 @ 0x00471d40 (samp-server.exe)
+cell get_player_vehicle_id(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->vehicle_id : 0;
+}
+
+// Official: FUN_00471e30 @ 0x00471e30 (samp-server.exe)
+cell get_player_vehicle_seat(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    if (!player || (player->state != 2 && player->state != 3)) return -1;
+    return player->vehicle_seat;
+}
+
+// Official: FUN_0047a0c0 @ 0x0047a0c0 (samp-server.exe)
+cell get_player_custom_skin(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? std::bit_cast<cell>(player->custom_model) : 0;
+}
+
+// Official: FUN_00470ea0 @ 0x00470ea0 (samp-server.exe)
+cell get_player_skin(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? std::bit_cast<cell>(player->skin) : 0;
+}
+
+using ServerNative = cell (*)(NativeHost&, std::span<const cell>);
+constexpr std::pair<const char*, ServerNative> server_natives[] = {
+    {"DisableInteriorEnterExits", disable_interior_enter_exits},
+    {"EnableZoneNames", enable_zone_names},
+    {"GetGravity", get_gravity},
+    {"GetPlayerCameraTargetActor", get_player_camera_target_actor},
+    {"GetPlayerCameraTargetObject", get_player_camera_target_object},
+    {"GetPlayerCameraTargetPlayer", get_player_camera_target_player},
+    {"GetPlayerCameraTargetVehicle", get_player_camera_target_vehicle},
+    {"GetPlayerCustomSkin", get_player_custom_skin},
+    {"GetPlayerInterior", get_player_interior},
+    {"GetPlayerMoney", get_player_money},
+    {"GetPlayerPoolSize", get_player_pool_size},
+    {"GetPlayerScore", get_player_score},
+    {"GetPlayerSkin", get_player_skin},
+    {"GetPlayerState", get_player_state},
+    {"GetPlayerVehicleID", get_player_vehicle_id},
+    {"GetPlayerVehicleSeat", get_player_vehicle_seat},
+    {"GetPlayerVirtualWorld", get_player_virtual_world},
+    {"GetPlayerWeapon", get_player_weapon},
+    {"GetTickCount", get_tick_count},
+    {"IsPlayerAdmin", is_player_admin},
+    {"IsPlayerNPC", is_player_npc},
+    {"SetNameTagDrawDistance", set_name_tag_draw_distance},
+    {"SetPlayerScore", set_player_score},
+    {"ShowNameTags", show_name_tags},
+    {"ShowPlayerMarkers", show_player_markers},
+};
+
 }  // namespace
 
 // Official: FUN_0047a100 @ 0x0047a100 (samp-server.exe)
 // This is the SA-MP native-table registration wrapper for the server AMX host.
 void register_server_natives(PawnVm& vm, NativeHost& host) {
+    for (const auto& [name, function] : server_natives) {
+        vm.native_functions_[name] = [&host, function](std::span<const cell> args) {
+            return function(host, args);
+        };
+    }
     const auto read_script_string = [&vm](std::int32_t address) -> const char* {
         const std::uint8_t* start = nullptr;
         if (vm.ok_ && address >= 0 && static_cast<std::int64_t>(address) < vm.amx_.stp &&
@@ -87,19 +292,13 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         return result;
     };
     const auto player_slot = [&host](cell id) -> PlayerNativeState* {
-        const auto index = static_cast<std::uint16_t>(id);
-        return index < 1000 && index < host.players_.size() && host.players_[index].in_use
-            ? &host.players_[index] : nullptr;
+        return find_player(host, {&id, 1});
     };
     const auto store_cell = [&vm, data_pointer](cell address, cell value) {
         if (address < 0 || std::int64_t(address) + 4 > vm.amx_.stp) return false;
         auto* destination = const_cast<std::uint8_t*>(data_pointer(address));
         if (!destination || std::uint64_t(vm.header_.dat) + address + 4 > vm.image_.size()) return false;
         std::memcpy(destination, &value, 4); return true;
-    };
-    // Official: FUN_00470bc0 @ 0x00470bc0 (samp-server.exe)
-    vm.native_functions_["IsPlayerAdmin"]=[player_slot](std::span<const cell> args)->cell {
-        const auto* player=args.empty()?nullptr:player_slot(args[0]);return player && player->is_admin?1:0;
     };
     // Official: FUN_00472230 @ 0x00472230 (samp-server.exe)
     vm.native_functions_["EnablePlayerCameraTarget"]=[&host,player_slot](std::span<const cell> args)->cell {
@@ -111,22 +310,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
             host.send_rpc(*player->peer,170,payload);
         }
         return 1;
-    };
-    // Official: FUN_004722a0 @ 0x004722a0 (samp-server.exe)
-    vm.native_functions_["GetPlayerCameraTargetObject"]=[player_slot](std::span<const cell> args)->cell {
-        const auto* player=args.empty()?nullptr:player_slot(args[0]);return player?player->camera_targets[0]:0xffff;
-    };
-    // Official: FUN_004722f0 @ 0x004722f0 (samp-server.exe)
-    vm.native_functions_["GetPlayerCameraTargetVehicle"]=[player_slot](std::span<const cell> args)->cell {
-        const auto* player=args.empty()?nullptr:player_slot(args[0]);return player?player->camera_targets[1]:0xffff;
-    };
-    // Official: FUN_00472340 @ 0x00472340 (samp-server.exe)
-    vm.native_functions_["GetPlayerCameraTargetPlayer"]=[player_slot](std::span<const cell> args)->cell {
-        const auto* player=args.empty()?nullptr:player_slot(args[0]);return player?player->camera_targets[2]:0xffff;
-    };
-    // Official: FUN_00472390 @ 0x00472390 (samp-server.exe)
-    vm.native_functions_["GetPlayerCameraTargetActor"]=[player_slot](std::span<const cell> args)->cell {
-        const auto* player=args.empty()?nullptr:player_slot(args[0]);return player?player->camera_targets[3]:0xffff;
     };
     // ------------------------------------------------------------- the core
     vm.native_functions_["print"] = [&vm, read_script_string](std::span<const cell> args) -> cell {
@@ -246,11 +429,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
             return function(&vm.amx_, args);
         };
     }
-    vm.native_functions_["GetTickCount"] = [](std::span<const cell>) -> cell {
-        using namespace std::chrono;
-        return static_cast<cell>(
-            duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count());
-    };
     for (const auto& [name, function] : string_natives::kNatives) {
         vm.native_functions_[std::string(name)] = [&vm, function](std::span<const cell> args) {
             return function(&vm.amx_, args);
@@ -292,12 +470,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     vm.native_functions_["GetMaxPlayers"] = [&host](std::span<const cell>) -> cell {
         return host.max_players();
     };
-    // Official: FUN_00471460 @ 0x00471460 (samp-server.exe)
-    vm.native_functions_["GetPlayerPoolSize"] = [&host](std::span<const cell>) -> cell {
-        // Native reads the cached pool value, updated after join/quit
-        // callbacks, rather than recalculating during those callbacks.
-        return host.player_pool_highest_;
-    };
     // Official: FUN_00472f50 @ 0x00472f50 (samp-server.exe)
     vm.native_functions_["SetWorldTime"] = [&host](std::span<const cell> args) -> cell {
         if (!args.empty()) {
@@ -316,35 +488,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     vm.native_functions_["SetGravity"] = [&host,as_float](std::span<const cell> args) -> cell {
         if(args.empty()) return 0;
         host.set_gravity(as_float(args[0]));
-        return 1;
-    };
-    // Official: FUN_00474b30 @ 0x00474b30 (samp-server.exe)
-    vm.native_functions_["GetGravity"] = [&host,as_cell](std::span<const cell>) -> cell {
-        return as_cell(host.gravity_);
-    };
-    // Official: FUN_00473460 @ 0x00473460 (samp-server.exe)
-    vm.native_functions_["ShowNameTags"] = [&host](std::span<const cell> args) -> cell {
-        if(args.empty()) return 0;host.show_name_tags_=args[0]!=0;return 1;
-    };
-    // Official: FUN_00473480 @ 0x00473480 (samp-server.exe)
-    vm.native_functions_["ShowPlayerMarkers"] = [&host](std::span<const cell> args) -> cell {
-        if(args.empty()) return 0;host.player_marker_mode_=args[0];return 1;
-    };
-    // Official: FUN_00475eb0 @ 0x00475eb0 (samp-server.exe)
-    vm.native_functions_["EnableZoneNames"] = [&host](std::span<const cell>) -> cell {
-        constexpr std::string_view warning="[warning] EnableZoneNames() is removed since 0.3";
-        if(host.log_message_) host.log_message_(warning);else std::puts(std::string(warning).c_str());
-        return 1;
-    };
-    // Official: FUN_004777f0 @ 0x004777f0 (samp-server.exe)
-    vm.native_functions_["DisableInteriorEnterExits"] = [&host](std::span<const cell>) -> cell {
-        host.interior_enter_exits_disabled_=true;
-        return 1;
-    };
-    // Official: FUN_00477800 @ 0x00477800 (samp-server.exe)
-    vm.native_functions_["SetNameTagDrawDistance"] = [&host,as_float](std::span<const cell> args) -> cell {
-        if(args.empty()) return 0;
-        host.name_tag_draw_distance_=as_float(args[0]);
         return 1;
     };
     // Official: FUN_00477640 @ 0x00477640 (samp-server.exe)
@@ -594,17 +737,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         host.send_rpc(*player->peer,73,payload);
         return 1;
     };
-    // Native owners: GetPlayerState 0x00472e00, GetPlayerWeapon 0x00473c40.
-    vm.native_functions_["GetPlayerState"] = [player_slot](std::span<const cell> args) -> cell {
-        const auto* p = args.empty() ? nullptr : player_slot(args[0]); return p ? p->state : 0;
-    };
-    vm.native_functions_["GetPlayerWeapon"] = [player_slot](std::span<const cell> args) -> cell {
-        const auto* p = args.empty() ? nullptr : player_slot(args[0]); return p ? p->weapon & 0x3f : -1;
-    };
-    // Native owner: GetPlayerMoney 0x00472b40; money arithmetic wraps cells.
-    vm.native_functions_["GetPlayerMoney"] = [player_slot](std::span<const cell> args) -> cell {
-        const auto* p = args.empty() ? nullptr : player_slot(args[0]); return p ? p->money : 0;
-    };
     // Official: FUN_00471370 @ 0x00471370 (samp-server.exe)
     vm.native_functions_["GetPlayerName"]=[player_slot,store_cell](std::span<const cell> args)->cell {
         const auto* player=args.size()<3?nullptr:player_slot(args[0]);if(!player) return 0;
@@ -616,15 +748,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
                 i<count?static_cast<signed char>(player->name[i]):0)) return 0;
         }
         return static_cast<cell>(count);
-    };
-    // Official: FUN_00472ad0 @ 0x00472ad0 (samp-server.exe)
-    vm.native_functions_["SetPlayerScore"]=[player_slot](std::span<const cell> args)->cell {
-        auto* player=args.size()<2?nullptr:player_slot(args[0]);if(!player) return 0;
-        player->score=args[1];return 1;
-    };
-    // Official: FUN_00472b10 @ 0x00472b10 (samp-server.exe)
-    vm.native_functions_["GetPlayerScore"]=[player_slot](std::span<const cell> args)->cell {
-        const auto* player=args.empty()?nullptr:player_slot(args[0]);return player?player->score:0;
     };
     // Native owner: GetPlayerKeys 0x00473e30, valid only in states 1/2/3/9.
     vm.native_functions_["GetPlayerKeys"] = [player_slot, store_cell](std::span<const cell> args) -> cell {
@@ -694,17 +817,8 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
             store_cell(args[2], as_cell(valid ? p->vy : 0)) && store_cell(args[3], as_cell(valid ? p->vz : 0));
         return valid && stored;
     };
-    vm.native_functions_["IsPlayerNPC"] = [player_slot](std::span<const cell> args) -> cell {
-        const auto* p = args.empty() ? nullptr : player_slot(args[0]); return p && p->is_npc;
-    };
     vm.native_functions_["IsPlayerConnected"] = [&host](std::span<const cell> args) -> cell {
         return !args.empty() && host.is_player_connected(args[0]);
-    };
-    vm.native_functions_["GetPlayerInterior"] = [player_slot](std::span<const cell> args) -> cell {
-        const auto* p = args.empty() ? nullptr : player_slot(args[0]); return p ? p->interior : 0;
-    };
-    vm.native_functions_["GetPlayerVirtualWorld"] = [player_slot](std::span<const cell> args) -> cell {
-        const auto* p = args.empty() ? nullptr : player_slot(args[0]); return p ? p->virtual_world : 0;
     };
     vm.native_functions_["Kick"] = [&host](std::span<const cell> args) -> cell {
         if (!args.empty()) {
@@ -890,12 +1004,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         auto* p=args.empty()?nullptr:player_slot(args[0]);if(!p || !p->peer) return 0;
         samp::proto::BitStream payload;host.send_rpc(*p->peer,71,payload);return 1;
     };
-    vm.native_functions_["GetPlayerVehicleID"]=[player_slot](std::span<const cell> args)->cell {
-        const auto* p=args.empty()?nullptr:player_slot(args[0]);return p?p->vehicle_id:0;
-    };
-    vm.native_functions_["GetPlayerVehicleSeat"]=[player_slot](std::span<const cell> args)->cell {
-        const auto* p=args.empty()?nullptr:player_slot(args[0]);return p && (p->state==2 || p->state==3)?p->vehicle_seat:-1;
-    };
     // 00470ee0 -> 00466a20: the RPC is sent only for a changed virtual world.
     vm.native_functions_["SetPlayerVirtualWorld"]=[&host,player_slot](std::span<const cell> args)->cell {
         auto* p=args.size()<2?nullptr:player_slot(args[0]);if(!p || !p->peer) return 0;
@@ -1012,13 +1120,10 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     // 00479f10 / 00479f70 find the first CRC match and write unpacked cells.
     vm.native_functions_["FindModelFileNameFromCRC"]=[filename_from_crc](auto args)->cell{return filename_from_crc(args,false);};
     vm.native_functions_["FindTextureFileNameFromCRC"]=[filename_from_crc](auto args)->cell{return filename_from_crc(args,true);};
-    // 00479fe0 / 0047a0c0: live player checks, URL redirect and custom-skin query.
+    // 00479fe0: live player checks and URL redirect.
     vm.native_functions_["RedirectDownload"]=[&host,read_script_string](std::span<const cell> args)->cell {
         if(args.size()<2) return 0;const auto* url=read_script_string(args[1]);
         return url && *url && host.redirect_download(static_cast<std::uint16_t>(args[0]),url);
-    };
-    vm.native_functions_["GetPlayerCustomSkin"]=[player_slot](std::span<const cell> args)->cell {
-        const auto* player=args.empty()?nullptr:player_slot(args[0]);return player?static_cast<cell>(player->custom_model):0;
     };
 
     // 0047a6b0 resolves the skin, updates the authoritative spawn slot,
@@ -1043,10 +1148,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
             info.write(spec.weapon,12);info.write(spec.ammunition,12);host.send_rpc(*p->peer,68,info);
         }
         return 1;
-    };
-    // 00470ea0 reads the stock/base model from the authoritative spawn slot.
-    vm.native_functions_["GetPlayerSkin"]=[player_slot](std::span<const cell> args)->cell {
-        const auto* p=args.empty()?nullptr:player_slot(args[0]);return p?static_cast<cell>(p->skin):0;
     };
 
     // Essential global objects are needed to exercise AddSimpleModel through
