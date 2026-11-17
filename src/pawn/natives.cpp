@@ -20,6 +20,7 @@
 #include <map>
 #include <algorithm>
 #include <bit>
+#include <cmath>
 #include <cstdlib>
 #include <utility>
 
@@ -285,11 +286,138 @@ cell player_play_sound(NativeHost& host, std::span<const cell> args) {
     return 1;
 }
 
+// Official: FUN_004724a0 @ 0x004724a0 (samp-server.exe)
+cell get_player_camera_mode(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->aim.front() : -1;
+}
+
+// Official: FUN_00472cb0 @ 0x00472cb0 (samp-server.exe)
+cell get_player_target_player(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->target_player : 0xffff;
+}
+
+// Official: FUN_00472cf0 @ 0x00472cf0 (samp-server.exe)
+cell get_player_target_actor(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->target_actor : 0xffff;
+}
+
+// Official: FUN_0047d3b0 @ 0x0047d3b0 (samp-server.exe)
+cell set_player_weather(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    if (player->peer) {
+        const auto weather = static_cast<std::uint8_t>(args[1]);
+        samp::proto::BitStream payload;
+        payload.write(&weather, sizeof(weather));
+        host.send_rpc(*player->peer, 152, payload);
+    }
+    return 1;
+}
+
+// Official: FUN_004740f0 @ 0x004740f0 (samp-server.exe)
+cell set_gravity(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    host.set_gravity(std::bit_cast<float>(args.front()));
+    return 1;
+}
+
+// Official: FUN_00473ef0 @ 0x00473ef0 (samp-server.exe)
+cell enable_tire_popping(NativeHost& host, std::span<const cell>) {
+    constexpr auto warning = "EnableTirePopping() function is removed.";
+    if (host.log_message_) {
+        host.log_message_(warning);
+    } else {
+        std::puts(warning);
+    }
+    return 1;
+}
+
+// Official: FUN_0048ee30 @ 0x0048ee30 (samp-server.exe)
+float vector_length(float x, float y, float z) {
+#if defined(_MSC_VER) && defined(_M_IX86)
+    float result;
+    __asm {
+        fld x
+        fmul x
+        fld y
+        fmul y
+        faddp st(1), st(0)
+        fld z
+        fmul z
+        faddp st(1), st(0)
+        fsqrt
+        fstp result
+    }
+    return result;
+#else
+    return static_cast<float>(std::sqrt(static_cast<double>(x) * x +
+                                       static_cast<double>(y) * y +
+                                       static_cast<double>(z) * z));
+#endif
+}
+
+// Official: FUN_00473f40 @ 0x00473f40 (samp-server.exe)
+cell vector_size(NativeHost&, std::span<const cell> args) {
+    if (args.size() < 3) return 0;
+    return std::bit_cast<cell>(vector_length(
+        std::bit_cast<float>(args[0]), std::bit_cast<float>(args[1]), std::bit_cast<float>(args[2])));
+}
+
+constexpr float radians_to_degrees = std::bit_cast<float>(0x42652ee0u);
+
+// Official: FUN_00473fb0 @ 0x00473fb0 (samp-server.exe)
+cell arc_tangent(NativeHost&, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    const float value = std::bit_cast<float>(args.front());
+#if defined(_MSC_VER) && defined(_M_IX86)
+    float result;
+    __asm {
+        fld value
+        fld1
+        fpatan
+        fmul radians_to_degrees
+        fstp result
+    }
+#else
+    const auto result = static_cast<float>(std::atan(static_cast<double>(value)) * radians_to_degrees);
+#endif
+    return std::bit_cast<cell>(result);
+}
+
+// Official: FUN_00473fd0 @ 0x00473fd0 (samp-server.exe)
+cell arc_tangent_two(NativeHost&, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const float y = std::bit_cast<float>(args[0]);
+    const float x = std::bit_cast<float>(args[1]);
+#if defined(_MSC_VER) && defined(_M_IX86)
+    float result;
+    __asm {
+        fld y
+        fld x
+        fpatan
+        fmul radians_to_degrees
+        fstp result
+    }
+#else
+    const auto result = static_cast<float>(
+        std::atan2(static_cast<double>(y), static_cast<double>(x)) * radians_to_degrees);
+#endif
+    return std::bit_cast<cell>(result);
+}
+
 using ServerNative = cell (*)(NativeHost&, std::span<const cell>);
 constexpr std::pair<const char*, ServerNative> server_natives[] = {
+    {"atan", arc_tangent},
+    {"atan2", arc_tangent_two},
     {"DisableInteriorEnterExits", disable_interior_enter_exits},
+    {"EnableTirePopping", enable_tire_popping},
     {"EnableZoneNames", enable_zone_names},
     {"GetGravity", get_gravity},
+    {"GetPlayerCameraMode", get_player_camera_mode},
     {"GetPlayerCameraTargetActor", get_player_camera_target_actor},
     {"GetPlayerCameraTargetObject", get_player_camera_target_object},
     {"GetPlayerCameraTargetPlayer", get_player_camera_target_player},
@@ -303,6 +431,8 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GetPlayerScore", get_player_score},
     {"GetPlayerSkin", get_player_skin},
     {"GetPlayerState", get_player_state},
+    {"GetPlayerTargetActor", get_player_target_actor},
+    {"GetPlayerTargetPlayer", get_player_target_player},
     {"GetPlayerTeam", get_player_team},
     {"GetPlayerVehicleID", get_player_vehicle_id},
     {"GetPlayerVehicleSeat", get_player_vehicle_seat},
@@ -316,11 +446,14 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"IsPlayerNPC", is_player_npc},
     {"IsValidVehicle", is_valid_vehicle},
     {"PlayerPlaySound", player_play_sound},
+    {"SetGravity", set_gravity},
     {"SetNameTagDrawDistance", set_name_tag_draw_distance},
     {"SetPlayerColor", set_player_color},
     {"SetPlayerScore", set_player_score},
+    {"SetPlayerWeather", set_player_weather},
     {"ShowNameTags", show_name_tags},
     {"ShowPlayerMarkers", show_player_markers},
+    {"VectorSize", vector_size},
 };
 
 }  // namespace
@@ -578,12 +711,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         if (!args.empty()) {
             host.set_weather(args[0]);
         }
-        return 1;
-    };
-    // Official: FUN_004740f0 @ 0x004740f0 (samp-server.exe)
-    vm.native_functions_["SetGravity"] = [&host,as_float](std::span<const cell> args) -> cell {
-        if(args.empty()) return 0;
-        host.set_gravity(as_float(args[0]));
         return 1;
     };
     // Official: FUN_00477640 @ 0x00477640 (samp-server.exe)

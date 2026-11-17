@@ -113,6 +113,20 @@ int main(int, char**) {
         require(call("IsPlayerConnected", {65536}) == 0, "wrapped ID observes disconnect too");
         require(host.players_[999].in_use, "occupancy queries and kick preserve other slots");
 
+        const auto& observer = host.players_[999];
+        require(call("GetPlayerCameraMode", {999}) == observer.aim.front() &&
+                call("GetPlayerCameraMode", {-1}) == -1, "camera mode validity differs");
+        require(call("GetPlayerTargetPlayer", {999}) == 0xffff &&
+                call("GetPlayerTargetActor", {999}) == 0xffff, "weapon target sentinel differs");
+        require(floating("VectorSize", {bits(3.0f), bits(4.0f), bits(12.0f)}) == 13.0f,
+                "vector size must use all three coordinates");
+        require(std::isfinite(floating("VectorSize", {bits(1e30f), 0, 0})),
+                "vector size squared a large float at single precision");
+        require(std::signbit(floating("atan", {bits(-0.0f)})), "atan lost signed zero");
+        require(std::fabs(floating("atan2", {bits(1), bits(-1)}) - 135) < 0.0001f &&
+                std::fabs(floating("atan2", {bits(-1), bits(1)}) + 45) < 0.0001f,
+                "atan2 changed input order or angle units");
+
         for (const auto& [name, native] : samp::pawn::float_natives::kNatives) {
             require(vm.native_functions_.contains(std::string(name)), "float table not registered");
             require(native != nullptr, "float table has null callback");

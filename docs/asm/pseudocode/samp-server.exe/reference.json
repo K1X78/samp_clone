@@ -13428,11 +13428,21 @@
     {
       "address": "0x00472390",
       "assembly_name": "FUN_00472390",
-      "assembly_size": 1856,
-      "assembly_sha1": "6a50eb763f820e002dae0ede563b2a275d43d9f6",
+      "assembly_size": 272,
+      "assembly_sha1": "283764ac1dfa8e74862dea7da877731dcbc38881",
       "native_registration": {
         "name": "GetPlayerCameraTargetActor",
         "table_entry": "0x004cf398"
+      }
+    },
+    {
+      "address": "0x004724a0",
+      "assembly_name": "FUN_004724a0",
+      "assembly_size": 1584,
+      "assembly_sha1": "28d1cfe698db67095ba6de2c4bff4fba026c5caa",
+      "native_registration": {
+        "name": "GetPlayerCameraMode",
+        "table_entry": "0x004cf350"
       }
     },
     {
@@ -13468,8 +13478,28 @@
     {
       "address": "0x00472b70",
       "assembly_name": "FUN_00472b70",
-      "assembly_size": 608,
-      "assembly_sha1": "3c48ac4ebddd1de1c2371156a230e8e7b9f1c39a"
+      "assembly_size": 320,
+      "assembly_sha1": "45f8e584e1a00315ad49a8c7dbcc267b7f757fe0"
+    },
+    {
+      "address": "0x00472cb0",
+      "assembly_name": "FUN_00472cb0",
+      "assembly_size": 64,
+      "assembly_sha1": "8ecef2a83dd15b62c8f17405470fdd231ba0bef8",
+      "native_registration": {
+        "name": "GetPlayerTargetPlayer",
+        "table_entry": "0x004cf488"
+      }
+    },
+    {
+      "address": "0x00472cf0",
+      "assembly_name": "FUN_00472cf0",
+      "assembly_size": 224,
+      "assembly_sha1": "9bc10603068ec305162f36469b13e7a8f7a0564d",
+      "native_registration": {
+        "name": "GetPlayerTargetActor",
+        "table_entry": "0x004cf490"
+      }
     },
     {
       "address": "0x00472dd0",
@@ -13592,8 +13622,18 @@
     {
       "address": "0x00473d50",
       "assembly_name": "FUN_00473d50",
-      "assembly_size": 464,
-      "assembly_sha1": "33baff19a42416d1712fc53eed8484935f189bca"
+      "assembly_size": 416,
+      "assembly_sha1": "f7521acff8d6faf3ba9fbe1336f3b4865f1c2199"
+    },
+    {
+      "address": "0x00473ef0",
+      "assembly_name": "FUN_00473ef0",
+      "assembly_size": 48,
+      "assembly_sha1": "aa23eb836dfe848b208860dac32ce58ef521d2e4",
+      "native_registration": {
+        "name": "EnableTirePopping",
+        "table_entry": "0x004cf018"
+      }
     },
     {
       "address": "0x00473f20",
@@ -13604,14 +13644,44 @@
     {
       "address": "0x00473f40",
       "assembly_name": "FUN_00473f40",
-      "assembly_size": 176,
-      "assembly_sha1": "2733df5d90881fada841e8b715c869896694069b"
+      "assembly_size": 112,
+      "assembly_sha1": "96adaf76cb9819bae94dcfb6dd22ad21f73feea6"
+    },
+    {
+      "address": "0x00473fb0",
+      "assembly_name": "FUN_00473fb0",
+      "assembly_size": 32,
+      "assembly_sha1": "e0954efe2539e1fea99b0fd340b16fdbaa31824b",
+      "native_registration": {
+        "name": "atan",
+        "table_entry": "0x004cef40"
+      }
+    },
+    {
+      "address": "0x00473fd0",
+      "assembly_name": "FUN_00473fd0",
+      "assembly_size": 32,
+      "assembly_sha1": "a6390c7d5a42da51dac60ea32dae7941cae24226",
+      "native_registration": {
+        "name": "atan2",
+        "table_entry": "0x004cef38"
+      }
     },
     {
       "address": "0x00473ff0",
       "assembly_name": "FUN_00473ff0",
-      "assembly_size": 352,
-      "assembly_sha1": "2f72c61fec87c8a9d2920940c59bb2ff310b4fae"
+      "assembly_size": 256,
+      "assembly_sha1": "c8526d3d7515305df713282be7e504762d911bd2"
+    },
+    {
+      "address": "0x004740f0",
+      "assembly_name": "FUN_004740f0",
+      "assembly_size": 96,
+      "assembly_sha1": "bcf61e3726b2ef21291c36751a3be86dc5960147",
+      "native_registration": {
+        "name": "SetGravity",
+        "table_entry": "0x004cf030"
+      }
     },
     {
       "address": "0x00474150",
@@ -14116,11 +14186,21 @@
     {
       "address": "0x0047ccf0",
       "assembly_name": "FUN_0047ccf0",
-      "assembly_size": 1957,
-      "assembly_sha1": "2850c39c14f15e4e0b467c64f0dec4d6492f9129",
+      "assembly_size": 1728,
+      "assembly_sha1": "134c7fa073d14b5f352bbd74c5593a62ee255097",
       "native_registration": {
         "name": "PlayerPlaySound",
         "table_entry": "0x004cf3c8"
+      }
+    },
+    {
+      "address": "0x0047d3b0",
+      "assembly_name": "FUN_0047d3b0",
+      "assembly_size": 229,
+      "assembly_sha1": "43f2b1eb935c699c06c78102cb4f10985a2beb74",
+      "native_registration": {
+        "name": "SetPlayerWeather",
+        "table_entry": "0x004cef08"
       }
     },
     {
@@ -28046,6 +28126,9 @@
     "FUN_00472390": [
       "0x00472390"
     ],
+    "FUN_004724a0": [
+      "0x004724a0"
+    ],
     "FUN_00472ad0": [
       "0x00472ad0"
     ],
@@ -28057,6 +28140,12 @@
     ],
     "FUN_00472b70": [
       "0x00472b70"
+    ],
+    "FUN_00472cb0": [
+      "0x00472cb0"
+    ],
+    "FUN_00472cf0": [
+      "0x00472cf0"
     ],
     "FUN_00472dd0": [
       "0x00472dd0"
@@ -28112,14 +28201,26 @@
     "FUN_00473d50": [
       "0x00473d50"
     ],
+    "FUN_00473ef0": [
+      "0x00473ef0"
+    ],
     "FUN_00473f20": [
       "0x00473f20"
     ],
     "FUN_00473f40": [
       "0x00473f40"
     ],
+    "FUN_00473fb0": [
+      "0x00473fb0"
+    ],
+    "FUN_00473fd0": [
+      "0x00473fd0"
+    ],
     "FUN_00473ff0": [
       "0x00473ff0"
+    ],
+    "FUN_004740f0": [
+      "0x004740f0"
     ],
     "FUN_00474150": [
       "0x00474150"
@@ -28357,6 +28458,9 @@
     ],
     "FUN_0047ccf0": [
       "0x0047ccf0"
+    ],
+    "FUN_0047d3b0": [
+      "0x0047d3b0"
     ],
     "FUN_0047d495": [
       "0x0047d495"
