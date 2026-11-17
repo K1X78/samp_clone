@@ -48,7 +48,7 @@ struct Host : samp::pawn::NativeHost {
     void set_gravity(float) override {}
     void kick_player(int) override {}
     void send_client_message(int, int, std::string_view) override {}
-    void add_player_class(const samp::pawn::PlayerClassSpec&) override {}
+    int add_player_class(const samp::pawn::PlayerClassSpec&) override { return 0; }
     void set_player_interior(int, int) override {}
     void set_player_pos(int, float, float, float) override {}
     void set_player_facing_angle(int, float) override {}

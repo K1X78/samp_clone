@@ -26,8 +26,14 @@
 #include <vector>
 #include <array>
 #include <map>
+#include <memory>
+#include <new>
 
 #include "pawn/pawn_vm.hpp"
+#include "pawn/textdraws.hpp"
+#include "pawn/menus.hpp"
+#include "pawn/player_variables.hpp"
+#include "pawn/server_variables.hpp"
 
 namespace samp::server { class RakNetPeer; }
 namespace samp::proto { class BitStream; }
@@ -79,6 +85,8 @@ struct PlayerNativeState {
     bool is_npc = false;
     bool is_admin = false;
     bool camera_targeting=false;
+    PlayerTextDrawPool textdraw_pool;
+    std::shared_ptr<PlayerVariablePool> variables;
     std::array<std::uint16_t,4> camera_targets{0xffff,0xffff,0xffff,0xffff};
     bool joined = false;
     bool models_ready = false,model_finish_reported=false;
@@ -165,7 +173,7 @@ struct VehicleNativeState {
     float health = 1000;
     std::int32_t virtual_world = 0;
     std::uint8_t interior = 0;
-    std::int32_t respawn_delay = -1;
+    std::int32_t respawn_delay_ms = -1;
     std::uint64_t empty_since_ms = 0;
     bool siren = false;
     int driver = -1;
@@ -202,6 +210,9 @@ public:
     std::int32_t death_drop_amount_ = 0;
     std::uint32_t vehicle_friendly_fire_ = 0;
     std::array<GangZoneNativeState,1024> gang_zones_{};
+    TextDrawPool textdraw_pool_{this};
+    std::unique_ptr<MenuPool> menu_pool_{new(std::nothrow) MenuPool};
+    std::shared_ptr<ServerVariablePool> server_variables_;
     std::vector<StaticPickupNativeState> pickups_=std::vector<StaticPickupNativeState>(4096);
     bool artwork_enabled_=false;
     std::string models_directory_="models";
@@ -214,6 +225,76 @@ public:
     virtual void send_vehicle_stream_in(PlayerNativeState& player, const VehicleNativeState& vehicle) = 0;
     virtual void send_rpc(samp::server::RakNetPeer& peer, std::uint8_t id,
                           const samp::proto::BitStream& payload) = 0;
+
+    int play_player_sound(int player, int sound, const std::array<float,3>& position);
+    int set_camera_behind_player(int player);
+    int interpolate_camera_pos(int player, const std::array<float,3>& from,
+                               const std::array<float,3>& to, int time, int mode);
+    int interpolate_camera_look_at(int player, const std::array<float,3>& from,
+                                   const std::array<float,3>& to, int time, int mode);
+    int set_player_velocity(int player, const std::array<float,3>& velocity);
+    int play_audio_stream_for_player(int player, std::string_view url,
+                                     const std::array<float,3>& position, float radius, int use_position);
+    int stop_audio_stream_for_player(int player);
+    int set_player_pos_find_z(int player, const std::array<float,3>& position);
+    int set_player_special_action(int player, int action);
+    int set_player_ammo(int player, int weapon, int ammunition);
+    int remove_building_for_player(int player, int model, const std::array<float,3>& position, float radius);
+
+    int text_draw_create(std::int32_t x,std::int32_t y,std::string_view text);
+    int text_draw_set_string(int id,std::string_view text);
+    int text_draw_letter_size(int id,std::int32_t x,std::int32_t y);
+    int text_draw_text_size(int id,std::int32_t x,std::int32_t y);
+    int text_draw_alignment(int id,int value);
+    int text_draw_colour(int id,std::uint32_t value);
+    int text_draw_use_box(int id,int value);
+    int text_draw_box_colour(int id,std::uint32_t value);
+    int text_draw_shadow(int id,int value);
+    int text_draw_outline(int id,int value);
+    int text_draw_background_colour(int id,std::uint32_t value);
+    int text_draw_font(int id,int value);
+    int text_draw_proportional(int id,int value);
+    int text_draw_selectable(int id,int value);
+    int text_draw_preview_model(int id,int value);
+    int text_draw_preview_rotation(int id,const std::array<std::int32_t,4>& values);
+    int text_draw_preview_colours(int id,int first,int second);
+    int text_draw_show_for_player(int player,int id);
+    int text_draw_hide_for_player(int player,int id);
+    int text_draw_show_for_all(int id);
+    int text_draw_hide_for_all(int id);
+    int text_draw_destroy(int id);
+    int player_text_draw_create(int player,std::int32_t x,std::int32_t y,std::string_view text);
+    int player_text_draw_set_string(int player,int id,std::string_view text);
+    int player_text_draw_letter_size(int player,int id,std::int32_t x,std::int32_t y);
+    int player_text_draw_text_size(int player,int id,std::int32_t x,std::int32_t y);
+    int player_text_draw_alignment(int player,int id,int value);
+    int player_text_draw_colour(int player,int id,std::uint32_t value);
+    int player_text_draw_use_box(int player,int id,int value);
+    int player_text_draw_box_colour(int player,int id,std::uint32_t value);
+    int player_text_draw_shadow(int player,int id,int value);
+    int player_text_draw_outline(int player,int id,int value);
+    int player_text_draw_background_colour(int player,int id,std::uint32_t value);
+    int player_text_draw_font(int player,int id,int value);
+    int player_text_draw_proportional(int player,int id,int value);
+    int player_text_draw_selectable(int player,int id,int value);
+    int player_text_draw_preview_model(int player,int id,int value);
+    int player_text_draw_preview_rotation(int player,int id,const std::array<std::int32_t,4>& values);
+    int player_text_draw_preview_colours(int player,int id,int first,int second);
+    int player_text_draw_show(int player,int id);
+    int player_text_draw_hide(int player,int id);
+    int player_text_draw_destroy(int player,int id);
+    int select_text_draw(int player,std::uint32_t colour);
+    int cancel_select_text_draw(int player);
+    int create_menu(std::string title,int columns,const std::array<std::int32_t,4>& position);
+    int destroy_menu(int id);
+    int add_menu_item(int id,int column,std::string text);
+    int set_menu_header(int id,int column,std::string text);
+    int show_menu_for_player(int id,int player);
+    int hide_menu_for_player(int id,int player);
+    int is_valid_menu(int id);
+    int disable_menu(int id);
+    int disable_menu_row(int id,int row);
+    int get_player_menu(int player);
 
     // The maximum number of players.
     [[nodiscard]] virtual int max_players() const = 0;
@@ -237,7 +318,7 @@ public:
     // Each of these is one native that the official server turns into an RPC
     // to the player.  There is no default behaviour: the game layer owns the
     // only implementation, exactly like the official server.
-    virtual void add_player_class(const PlayerClassSpec& spec) = 0;
+    virtual int add_player_class(const PlayerClassSpec& spec) = 0;
     virtual void set_player_interior(int id, int interior) = 0;
     virtual void set_player_pos(int id, float x, float y, float z) = 0;
     virtual void set_player_facing_angle(int id, float angle) = 0;

@@ -12,7 +12,8 @@ void GameLayer::process_script_timers(std::uint32_t elapsed_ms) {
         auto current=script_timers_.find(id);
         auto& timer=current->second;
         timer.remaining=std::bit_cast<std::int32_t>(static_cast<std::uint32_t>(timer.remaining)-elapsed_ms);
-        if(timer.remaining<=0) {
+        const bool expired=timer.remaining<=0;
+        if(expired) {
         if(!timer.killed && timer.owner) {
             const auto callback=timer.callback;auto* owner=timer.owner;
             const auto arguments=timer.arguments;
@@ -25,7 +26,9 @@ void GameLayer::process_script_timers(std::uint32_t elapsed_ms) {
             else script_timers_.erase(current);
         }
         }
-        cursor=next_id?script_timers_.lower_bound(*next_id):script_timers_.end();
+        // 0x48336a saves the successor before the callback; 0x483442
+        // advances it again after expiry, even when the timer was killed.
+        cursor=next_id?(expired?script_timers_.upper_bound(*next_id):script_timers_.lower_bound(*next_id)):script_timers_.end();
     }
 }
 

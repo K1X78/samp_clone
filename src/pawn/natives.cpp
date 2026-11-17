@@ -10,6 +10,7 @@
 #include "pawn/time_natives.hpp"
 #include "pawn/format_cells.hpp"
 #include "pawn/file_natives.hpp"
+#include "pawn/variable_natives.hpp"
 #include "pawn/amx_memory_api.hpp"
 #include "pawn/amx_set_string_api.hpp"
 
@@ -273,19 +274,6 @@ cell is_valid_vehicle(NativeHost& host, std::span<const cell> args) {
     return id < 2000 && id < host.vehicles_.size() && host.vehicles_[id].active;
 }
 
-// Official: FUN_0047ccf0 @ 0x0047ccf0 (samp-server.exe)
-cell player_play_sound(NativeHost& host, std::span<const cell> args) {
-    if (args.size() < 5) return 0;
-    const auto* player = find_player(host, args);
-    if (!player) return 0;
-    if (player->peer) {
-        samp::proto::BitStream payload;
-        payload.write(args.subspan(1, 4).data(), 4 * sizeof(cell));
-        host.send_rpc(*player->peer, static_cast<std::uint8_t>(samp::proto::RpcId::PlayerPlaySound), payload);
-    }
-    return 1;
-}
-
 // Official: FUN_004724a0 @ 0x004724a0 (samp-server.exe)
 cell get_player_camera_mode(NativeHost& host, std::span<const cell> args) {
     const auto* player = find_player(host, args);
@@ -487,7 +475,6 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"IsPlayerNPC", is_player_npc},
     {"IsValidVehicle", is_valid_vehicle},
     {"ManualVehicleEngineAndLights", manual_vehicle_engine_and_lights},
-    {"PlayerPlaySound", player_play_sound},
     {"SetDeathDropAmount", set_death_drop_amount},
     {"SetGravity", set_gravity},
     {"SetNameTagDrawDistance", set_name_tag_draw_distance},
@@ -723,6 +710,11 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     }
 
     // ------------------------------------------------------------- the server
+    for(const auto& [name,function]:variable_natives::kNatives)
+        vm.native_functions_[std::string(name)]=[&vm,&host,function](std::span<const cell> args) {
+            return function(&vm.amx_,host,args);
+        };
+
     vm.native_functions_["SetGameModeText"] = [&host, read_script_string](std::span<const cell> args) -> cell {
         if (!args.empty()) {
             const char* text = read_script_string(args[0]);
@@ -782,9 +774,13 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         return true;
     };
     const auto send_zone_all=[&host](std::uint8_t rpc_id,const samp::proto::BitStream& payload) {
-        for(const auto& player:host.players_)
-            if(player.in_use && player.joined && player.peer)
+        // 0x493960 checks occupied slots with a player object, including
+        // initialization callbacks, within the fixed 1000-player domain.
+        for(std::size_t slot=0;slot<1000 && slot<host.players_.size() && static_cast<int>(slot)<=host.player_pool_highest_;++slot) {
+            const auto& player=host.players_[slot];
+            if(player.in_use && player.peer)
                 host.send_rpc(*player.peer,rpc_id,payload);
+        }
     };
     // Official: FUN_0047a230 @ 0x0047a230 (samp-server.exe)
     vm.native_functions_["SetPlayerWorldBounds"]=[&host,player_slot](std::span<const cell> args)->cell {
@@ -987,6 +983,51 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     };
     vm.native_functions_["TogglePlayerSpectating"] = [](std::span<const cell>) -> cell { return 0; };
     vm.native_functions_["AllowAdminTeleport"] = [](std::span<const cell>) -> cell { return 0; };
+    vm.native_functions_["PlayerPlaySound"] = [&host,as_float](std::span<const cell> args) -> cell {
+        if(args.size()<5) return 0;
+        return host.play_player_sound(args[0],args[1],{as_float(args[2]),as_float(args[3]),as_float(args[4])});
+    };
+    vm.native_functions_["SetCameraBehindPlayer"] = [&host](std::span<const cell> args) -> cell {
+        return args.empty()?0:host.set_camera_behind_player(args[0]);
+    };
+    vm.native_functions_["InterpolateCameraPos"] = [&host,as_float](std::span<const cell> args) -> cell {
+        if(args.size()<9) return 0;
+        return host.interpolate_camera_pos(args[0],{as_float(args[1]),as_float(args[2]),as_float(args[3])},
+            {as_float(args[4]),as_float(args[5]),as_float(args[6])},args[7],args[8]);
+    };
+    vm.native_functions_["InterpolateCameraLookAt"] = [&host,as_float](std::span<const cell> args) -> cell {
+        if(args.size()<9) return 0;
+        return host.interpolate_camera_look_at(args[0],{as_float(args[1]),as_float(args[2]),as_float(args[3])},
+            {as_float(args[4]),as_float(args[5]),as_float(args[6])},args[7],args[8]);
+    };
+    vm.native_functions_["SetPlayerVelocity"] = [&host,as_float](std::span<const cell> args) -> cell {
+        if(args.size()<4) return 0;
+        return host.set_player_velocity(args[0],{as_float(args[1]),as_float(args[2]),as_float(args[3])});
+    };
+    vm.native_functions_["SetPlayerPosFindZ"] = [&host,as_float](std::span<const cell> args) -> cell {
+        if(args.size()<4) return 0;
+        return host.set_player_pos_find_z(args[0],{as_float(args[1]),as_float(args[2]),as_float(args[3])});
+    };
+    vm.native_functions_["SetPlayerSpecialAction"] = [&host](std::span<const cell> args) -> cell {
+        return args.size()<2?0:host.set_player_special_action(args[0],args[1]);
+    };
+    vm.native_functions_["SetPlayerAmmo"] = [&host](std::span<const cell> args) -> cell {
+        return args.size()<3?0:host.set_player_ammo(args[0],args[1],args[2]);
+    };
+    vm.native_functions_["RemoveBuildingForPlayer"] = [&host,as_float](std::span<const cell> args) -> cell {
+        if(args.size()<6) return 0;
+        return host.remove_building_for_player(args[0],args[1],{as_float(args[2]),as_float(args[3]),as_float(args[4])},as_float(args[5]));
+    };
+    vm.native_functions_["PlayAudioStreamForPlayer"] = [&host,as_float,read_script_string](std::span<const cell> args) -> cell {
+        if(args.size()<7) return 0;
+        const auto* url=read_script_string(args[1]);
+        if(!url) return 0;
+        return host.play_audio_stream_for_player(args[0],url,{as_float(args[2]),as_float(args[3]),as_float(args[4])},
+            as_float(args[5]),args[6]);
+    };
+    vm.native_functions_["StopAudioStreamForPlayer"] = [&host](std::span<const cell> args) -> cell {
+        return args.empty()?0:host.stop_audio_stream_for_player(args[0]);
+    };
     // Official: FUN_0047b970 @ 0x0047b970 (samp-server.exe)
     vm.native_functions_["GameTextForPlayer"] = [&host,player_slot,read_script_string](std::span<const cell> args) -> cell {
         if (args.size() < 4) return 0;
@@ -1131,6 +1172,7 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     // AddPlayerClass(modelid, Float:x, Float:y, Float:z, Float:angle,
     //                weapon1, weapon1_ammo, weapon2, weapon2_ammo,
     //                weapon3, weapon3_ammo)
+    // Official: FUN_0046ff70 @ 0x0046ff70 (samp-server.exe)
     vm.native_functions_["AddPlayerClass"] = [&host, as_float](std::span<const cell> args) -> cell {
         if (args.size() < 11) {
             return 0;
@@ -1145,16 +1187,16 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
             spec.weapon[i] = args[5 + i * 2];
             spec.ammunition[i] = args[6 + i * 2];
         }
-        host.add_player_class(spec);
-        return 1;
+        return host.add_player_class(spec);
     };
     // AddPlayerClassEx(teamid, modelid, Float:x, ...): the same with a team.
+    // Official: FUN_0046fff0 @ 0x0046fff0 (samp-server.exe)
     vm.native_functions_["AddPlayerClassEx"] = [&host, as_float](std::span<const cell> args) -> cell {
         if (args.size() < 12) {
             return 0;
         }
         PlayerClassSpec spec;
-        spec.team = args[0];
+        spec.team = static_cast<std::uint8_t>(args[0]);
         spec.model = args[1];
         spec.x = as_float(args[2]);
         spec.y = as_float(args[3]);
@@ -1164,26 +1206,29 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
             spec.weapon[i] = args[6 + i * 2];
             spec.ammunition[i] = args[7 + i * 2];
         }
-        host.add_player_class(spec);
-        return 1;
+        return host.add_player_class(spec);
     };
     // 00467530: vehicle IDs 1..1999, models 400..611; no slot returns 0xffff.
     const auto vehicle_slot = [&host](cell id) -> VehicleNativeState* {
         const auto index=static_cast<std::uint16_t>(id);
         return index<host.vehicles_.size() && host.vehicles_[index].active?&host.vehicles_[index]:nullptr;
     };
-    const auto create_vehicle = [&host,as_float](std::span<const cell> args, bool dynamic) -> cell {
-        if(args.size()<7) return 0xffff;
-        if(dynamic && (args[0]==537 || args[0]==538)) return 0;
+    const auto create_vehicle = [&host,as_float](std::span<const cell> args, bool dynamic, bool extended) -> cell {
+        if(args.size()<(extended?8u:7u)) return 0xffff;
+        if(dynamic && (args[0]==537 || args[0]==538)) {
+            constexpr auto message="Only create trains with AddStaticVehicle/Ex";
+            if(host.log_message_) host.log_message_(message);else std::puts(message);
+            return 0;
+        }
         if(args[0]<400 || args[0]>611) return 0xffff;
         auto make=[&](int model,cell delay,bool siren) -> cell {
-            for(std::size_t id=1;id<host.vehicles_.size();++id) {
+            for(std::size_t id=1;id<2000 && id<host.vehicles_.size();++id) {
                 if(host.vehicles_[id].active) continue;
                 auto& v=host.vehicles_[id];v=VehicleNativeState{};
                 v.active=true;v.id=static_cast<std::uint16_t>(id);v.model=model;
                 v.x=v.spawn_x=as_float(args[1]);v.y=v.spawn_y=as_float(args[2]);v.z=v.spawn_z=as_float(args[3]);
                 v.angle=v.spawn_angle=as_float(args[4]);v.colour1=args[5];v.colour2=args[6];
-                v.respawn_delay=delay;v.siren=siren;
+                v.respawn_delay_ms=delay;v.siren=siren;
                 v.respawn_x=v.x;v.respawn_y=v.y;v.respawn_z=v.z;v.respawn_angle=v.angle;
                 v.created_ms=v.last_occupied_ms=static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
                     std::chrono::steady_clock::now().time_since_epoch()).count());
@@ -1191,16 +1236,21 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
             }
             return 0xffff;
         };
-        const cell delay=args.size()>7?args[7]:120;
-        const auto first=make(args[0],delay,args.size()>8 && args[8]!=0);
+        // 0x4717e0 / 0x4701c0 use IMUL in the 32-bit cell domain;
+        // AddStaticVehicle always supplies 120000 ms and has no siren argument.
+        const cell seconds=extended?args[7]:120;
+        const cell delay=seconds==-1?-1:std::bit_cast<cell>(static_cast<std::uint32_t>(seconds)*1000u);
+        const auto first=make(args[0],delay,extended && args.size()>8 && args[8]!=0);
         if(!dynamic && (args[0]==537 || args[0]==538))
             for(int i=0;i<3;++i) make(args[0]==537?569:570,-1,false);
         return first;
     };
-    // Native owners: 004717e0, 00470070 and 004701c0.
-    vm.native_functions_["CreateVehicle"]=[create_vehicle](auto args)->cell{return create_vehicle(args,true);};
-    vm.native_functions_["AddStaticVehicle"]=[create_vehicle](auto args)->cell{return create_vehicle(args,false);};
-    vm.native_functions_["AddStaticVehicleEx"]=[create_vehicle](auto args)->cell{return create_vehicle(args,false);};
+    // Official: FUN_004717e0 @ 0x004717e0 (samp-server.exe)
+    vm.native_functions_["CreateVehicle"]=[create_vehicle](auto args)->cell{return create_vehicle(args,true,true);};
+    // Official: FUN_00470070 @ 0x00470070 (samp-server.exe)
+    vm.native_functions_["AddStaticVehicle"]=[create_vehicle](auto args)->cell{return create_vehicle(args,false,false);};
+    // Official: FUN_004701c0 @ 0x004701c0 (samp-server.exe)
+    vm.native_functions_["AddStaticVehicleEx"]=[create_vehicle](auto args)->cell{return create_vehicle(args,false,true);};
     // 004718b0 -> 004677d0 broadcasts removal and frees all per-player holds.
     vm.native_functions_["DestroyVehicle"]=[&host,vehicle_slot](std::span<const cell> args)->cell {
         auto* v=args.empty()?nullptr:vehicle_slot(args[0]);if(!v) return 0;
@@ -1286,23 +1336,179 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     };
 
 
-    // The text draws are not implemented yet; the natives exist so that the
-    // stock scripts load.
-    vm.native_functions_["TextDrawCreate"] = [](std::span<const cell>) -> cell { return -1; };
-    vm.native_functions_["TextDrawSetString"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawLetterSize"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawTextSize"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawAlignment"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawColor"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawUseBox"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawBoxColor"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawSetShadow"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawSetOutline"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawBackgroundColor"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawFont"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawShowForPlayer"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawHideForPlayer"] = [](std::span<const cell>) -> cell { return 0; };
-    vm.native_functions_["TextDrawDestroy"] = [](std::span<const cell>) -> cell { return 0; };
+    vm.native_functions_["TextDrawCreate"] = [&host,read_script_string](std::span<const cell> args)->cell {
+        if(args.size()<3) return 0xffff;
+        const auto* text=read_script_string(args[2]);
+        return host.text_draw_create(args[0],args[1],text?text:"");
+    };
+    vm.native_functions_["TextDrawSetString"] = [&host,read_script_string](std::span<const cell> args)->cell {
+        if(args.size()<2) return 0;
+        const auto* text=read_script_string(args[1]);
+        return host.text_draw_set_string(args[0],text?text:"");
+    };
+    vm.native_functions_["TextDrawLetterSize"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.text_draw_letter_size(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["TextDrawTextSize"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.text_draw_text_size(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["TextDrawAlignment"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_alignment(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawColor"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_colour(a[0],static_cast<std::uint32_t>(a[1]));
+    };
+    vm.native_functions_["TextDrawUseBox"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_use_box(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawBoxColor"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_box_colour(a[0],static_cast<std::uint32_t>(a[1]));
+    };
+    vm.native_functions_["TextDrawSetShadow"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_shadow(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawSetOutline"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_outline(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawBackgroundColor"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_background_colour(a[0],static_cast<std::uint32_t>(a[1]));
+    };
+    vm.native_functions_["TextDrawFont"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_font(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawSetProportional"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_proportional(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawSetSelectable"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_selectable(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawSetPreviewModel"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_preview_model(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawSetPreviewRot"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<5?0:host.text_draw_preview_rotation(a[0],{a[1],a[2],a[3],a[4]});
+    };
+    vm.native_functions_["TextDrawSetPreviewVehCol"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.text_draw_preview_colours(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["TextDrawShowForPlayer"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_show_for_player(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawHideForPlayer"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.text_draw_hide_for_player(a[0],a[1]);
+    };
+    vm.native_functions_["TextDrawShowForAll"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.text_draw_show_for_all(a[0]);
+    };
+    vm.native_functions_["TextDrawHideForAll"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.text_draw_hide_for_all(a[0]);
+    };
+    vm.native_functions_["TextDrawDestroy"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.text_draw_destroy(a[0]);
+    };
+    vm.native_functions_["CreatePlayerTextDraw"] = [&host,read_script_string](std::span<const cell> a)->cell {
+        if(a.size()<4) return 0;
+        const auto* text=read_script_string(a[3]);
+        return host.player_text_draw_create(a[0],a[1],a[2],text?text:"");
+    };
+    vm.native_functions_["PlayerTextDrawSetString"] = [&host,read_script_string](std::span<const cell> a)->cell {
+        if(a.size()<3) return 0;
+        const auto* text=read_script_string(a[2]);
+        return host.player_text_draw_set_string(a[0],a[1],text?text:"");
+    };
+    vm.native_functions_["PlayerTextDrawLetterSize"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<4?0:host.player_text_draw_letter_size(a[0],a[1],a[2],a[3]);
+    };
+    vm.native_functions_["PlayerTextDrawTextSize"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<4?0:host.player_text_draw_text_size(a[0],a[1],a[2],a[3]);
+    };
+    vm.native_functions_["PlayerTextDrawAlignment"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_alignment(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawColor"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_colour(a[0],a[1],static_cast<std::uint32_t>(a[2]));
+    };
+    vm.native_functions_["PlayerTextDrawUseBox"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_use_box(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawBoxColor"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_box_colour(a[0],a[1],static_cast<std::uint32_t>(a[2]));
+    };
+    vm.native_functions_["PlayerTextDrawSetShadow"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_shadow(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawSetOutline"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_outline(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawBackgroundColor"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_background_colour(a[0],a[1],static_cast<std::uint32_t>(a[2]));
+    };
+    vm.native_functions_["PlayerTextDrawFont"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_font(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawSetProportional"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_proportional(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawSetSelectable"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_selectable(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawSetPreviewModel"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<3?0:host.player_text_draw_preview_model(a[0],a[1],a[2]);
+    };
+    vm.native_functions_["PlayerTextDrawSetPreviewRot"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<6?0:host.player_text_draw_preview_rotation(a[0],a[1],{a[2],a[3],a[4],a[5]});
+    };
+    vm.native_functions_["PlayerTextDrawSetPreviewVehCol"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<4?0:host.player_text_draw_preview_colours(a[0],a[1],a[2],a[3]);
+    };
+    vm.native_functions_["PlayerTextDrawShow"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.player_text_draw_show(a[0],a[1]);
+    };
+    vm.native_functions_["PlayerTextDrawHide"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.player_text_draw_hide(a[0],a[1]);
+    };
+    vm.native_functions_["PlayerTextDrawDestroy"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.player_text_draw_destroy(a[0],a[1]);
+    };
+    vm.native_functions_["SelectTextDraw"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.select_text_draw(a[0],static_cast<std::uint32_t>(a[1]));
+    };
+    vm.native_functions_["CancelSelectTextDraw"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.cancel_select_text_draw(a[0]);
+    };
+    vm.native_functions_["CreateMenu"] = [&host,read_script_string](std::span<const cell> a)->cell {
+        if(a.size()<6) return -1;const auto* text=read_script_string(a[0]);
+        return host.create_menu(text?text:"",a[1],{a[2],a[3],a[4],a[5]});
+    };
+    vm.native_functions_["DestroyMenu"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.destroy_menu(a[0]);
+    };
+    vm.native_functions_["AddMenuItem"] = [&host,read_script_string](std::span<const cell> a)->cell {
+        if(a.size()<3) return 0;const auto* text=read_script_string(a[2]);
+        return host.add_menu_item(a[0],a[1],text?text:"");
+    };
+    vm.native_functions_["SetMenuColumnHeader"] = [&host,read_script_string](std::span<const cell> a)->cell {
+        if(a.size()<3) return 0;const auto* text=read_script_string(a[2]);
+        return host.set_menu_header(a[0],a[1],text?text:"");
+    };
+    vm.native_functions_["ShowMenuForPlayer"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.show_menu_for_player(a[0],a[1]);
+    };
+    vm.native_functions_["HideMenuForPlayer"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.hide_menu_for_player(a[0],a[1]);
+    };
+    vm.native_functions_["IsValidMenu"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.is_valid_menu(a[0]);
+    };
+    vm.native_functions_["DisableMenu"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?0:host.disable_menu(a[0]);
+    };
+    vm.native_functions_["DisableMenuRow"] = [&host](std::span<const cell> a)->cell {
+        return a.size()<2?0:host.disable_menu_row(a[0],a[1]);
+    };
+    vm.native_functions_["GetPlayerMenu"] = [&host](std::span<const cell> a)->cell {
+        return a.empty()?255:host.get_player_menu(a[0]);
+    };
 
     // 00472c50 delegates slot selection to the original 004841a0 table.
     vm.native_functions_["GetPlayerAmmo"]=[player_slot](std::span<const cell> args)->cell {

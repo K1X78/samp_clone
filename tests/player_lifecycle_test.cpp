@@ -138,7 +138,7 @@ void vehicles() {
     auto& p=game.players_[0];p.in_use=p.joined=true;p.peer=&peer;p.streamed_to.resize(1);
     p.streamed_vehicles.resize(2000);p.streamed_vehicles[1]=1;p.streamed_vehicle_count=1;
     auto& v=game.vehicles_[1];v.active=true;v.id=1;v.model=411;v.health=400;
-    v.x=v.spawn_x=20;v.respawn_x=10;v.respawn_delay=1;v.has_been_occupied=true;
+    v.x=v.spawn_x=20;v.respawn_x=10;v.respawn_delay_ms=1000;v.has_been_occupied=true;
     std::vector<std::string> trace;
     auto callback=[&](std::string_view prefix,std::string_view name) {
         trace.push_back(std::string(prefix)+std::string(name));
@@ -159,7 +159,7 @@ void vehicles() {
     trace.clear();v.model=537;v.health=400;v.has_been_occupied=true;
     for(int i=0;i<100;++i) game.update_vehicles(100000);
     CHECK(v.health==400 && trace.empty()); // trains do not use idle respawn
-    v.model=411;v.respawn_delay=-1;p.streamed_vehicles[1]=1;p.streamed_vehicle_count=1;
+    v.model=411;v.respawn_delay_ms=-1;p.streamed_vehicles[1]=1;p.streamed_vehicle_count=1;
     samp::proto::BitStream death;const std::uint16_t id=1;death.write(&id,2);rpc(game,peer,136,death);
     CHECK(v.dead && !v.death_notified && trace.empty());
     game.update_vehicles(20000);
@@ -229,5 +229,67 @@ void callback_live_arguments() {
     CHECK(key_calls == 1 && state_calls == 2);
 }
 
+void vehicle_callback_live_arguments() {
+    using Access=samp::pawn::PawnNativeTestAccess;
+    samp::server::GameLayer game;
+    auto& vehicle=game.vehicles_[1];
+    vehicle.active=vehicle.dead=true; vehicle.id=1; vehicle.killer=7;
+    int calls=0;
+    auto filter=std::make_unique<samp::pawn::PawnVm>();
+    auto* filter_vm=filter.get();
+    Access::callbacks(*filter,{"OnVehicleDeath"},[&](auto) {
+        CHECK(Access::argument(*filter_vm,0)==1 && Access::argument(*filter_vm,1)==7);
+        vehicle.killer=8; ++calls; return 1;
+    });
+    game.filterscripts_.push_back(std::move(filter));
+    Access::callbacks(game.vm_,{"OnVehicleDeath"},[&](auto) {
+        CHECK(calls==1 && Access::argument(game.vm_,0)==1 && Access::argument(game.vm_,1)==8);
+        ++calls; return 1;
+    });
+    game.update_vehicles(10000);
+    CHECK(calls==2 && vehicle.death_notified);
 }
-int main(int,char**) {lifecycle();callback_order();vehicles();callback_live_arguments();std::printf("player lifecycle: %d failures\n",failures);return failures!=0;}
+
+void timer_iteration() {
+    using Access=samp::pawn::PawnNativeTestAccess;
+    samp::server::GameLayer game;
+    std::vector<int> calls;
+    std::function<void(int)> on_timer;
+    Access::callbacks(game.vm_,{"Timer"},[&](auto) {
+        const auto id=Access::argument(game.vm_,0);
+        calls.push_back(id);if(on_timer) on_timer(id);return 1;
+    });
+    const auto add=[&](unsigned id,bool repeat=true) {
+        auto& timer=game.script_timers_[id];
+        timer.owner=&game.vm_;timer.callback="Timer";timer.arguments={static_cast<samp::amx::cell>(id)};
+        timer.interval=20;timer.remaining=10;timer.repeat=repeat;
+    };
+    for(unsigned id=1;id<=4;++id) add(id);
+    game.process_script_timers(10);
+    CHECK(calls==std::vector<int>({1,3}));
+    CHECK(game.script_timers_[1].remaining==20 && game.script_timers_[2].remaining==10 &&
+        game.script_timers_[3].remaining==20 && game.script_timers_[4].remaining==10);
+    game.process_script_timers(1);game.process_script_timers(9);
+    CHECK(calls==std::vector<int>({1,3,2,4}));
+    CHECK(game.script_timers_[3].remaining==19); // skipped timers do not consume this tick's elapsed time
+    game.script_timers_.clear();calls.clear();
+    add(1,false);add(2,false);
+    game.script_timers_[1].killed=true;game.script_timers_[1].remaining=0;
+    game.process_script_timers(10);
+    CHECK(calls.empty() && !game.script_timers_.contains(1) && game.script_timers_[2].remaining==10);
+    game.process_script_timers(10);
+    CHECK(calls==std::vector<int>({2}) && game.script_timers_.empty());
+    calls.clear();add(1,false);add(2,false);
+    on_timer=[&](int id){if(id==1) add(3,false);};
+    game.process_script_timers(10);
+    CHECK(calls==std::vector<int>({1,3}) && game.script_timers_.size()==1 && game.script_timers_.contains(2));
+    game.script_timers_.clear();calls.clear();add(1,false);
+    on_timer=[&](int id){if(id==1) add(2,false);};
+    game.process_script_timers(10);
+    CHECK(calls==std::vector<int>({1}) && game.script_timers_.at(2).remaining==10);
+    game.process_script_timers(10);
+    CHECK(calls==std::vector<int>({1,2}) && game.script_timers_.empty());
+}
+
+}
+int main(int,char**) {lifecycle();callback_order();vehicles();callback_live_arguments();vehicle_callback_live_arguments();timer_iteration();std::printf("player lifecycle: %d failures\n",failures);return failures!=0;}
