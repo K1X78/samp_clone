@@ -14,4 +14,7 @@ int set_debug_hook(samp::amx::Amx* state, void* debug_hook) noexcept;
 // must be valid, as required by the original SDK routine.
 int callback(samp::amx::Amx* state, samp::amx::cell index,
              samp::amx::cell* result, const samp::amx::cell* parameters) noexcept;
+
+// Execute an indexed entry of a state owned by a loaded PawnVm.
+int execute(samp::amx::Amx* state, samp::amx::cell* result, int index);
 }

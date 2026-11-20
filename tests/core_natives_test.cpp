@@ -33,6 +33,13 @@ struct Host : samp::pawn::NativeHost {
     std::vector<Sent> sent;
     void send_vehicle_stream_in(samp::pawn::PlayerNativeState&, const samp::pawn::VehicleNativeState&) override {}
     void send_vehicle_stream_out(samp::pawn::PlayerNativeState&, std::uint16_t) override { CHECK(false); }
+    void respawn_vehicle(samp::pawn::VehicleNativeState&, std::uint64_t) override { CHECK(false); }
+    void notify_vehicle_damage(std::uint16_t, std::uint16_t) override { CHECK(false); }
+    bool allow_vehicle_appearance(samp::pawn::VehicleAppearanceEvent, std::uint16_t,
+                                  std::uint16_t, std::uint32_t, std::uint32_t) override {
+        CHECK(false);
+        return false;
+    }
     void send_object(samp::pawn::PlayerNativeState&,const samp::pawn::ObjectNativeState&) override {CHECK(false);}
     int max_players() const override { return 10; }
     bool is_player_connected(int id) const override {
@@ -41,8 +48,11 @@ struct Host : samp::pawn::NativeHost {
     }
     bool select_gamemode(std::string_view) override {CHECK(false);return false;}
     int add_custom_model(const samp::pawn::CustomModelSpec&) override { CHECK(false);return 0; }
+    int model_base_id(std::int32_t) const override { return -1; }
+    void notify_actor_stream(std::uint16_t, int, bool) override { CHECK(false); }
     bool redirect_download(int,std::string_view) override { CHECK(false);return false; }
     void send_rpc(samp::server::RakNetPeer&, std::uint8_t id, const samp::proto::BitStream& payload) override { sent.push_back({id, payload}); }
+    void send_streamed_player_rpc(std::uint16_t, std::uint8_t, const samp::proto::BitStream&) override { CHECK(false); }
     void update_player_position(samp::pawn::PlayerNativeState&, float, float, float, bool) override { CHECK(false); }
     void set_player_state(samp::pawn::PlayerNativeState&, std::uint8_t) override { CHECK(false); }
     void set_game_mode_text(std::string_view) override {}

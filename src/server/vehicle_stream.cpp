@@ -20,14 +20,23 @@ void GameLayer::send_vehicle_stream_in(GamePlayer& player, const GameVehicle& ve
     spawn[37]=vehicle.damage_lights;spawn[38]=vehicle.damage_tires;spawn[39]=vehicle.siren;
     std::array<std::uint8_t,23> tune{};
     std::copy(vehicle.mods.begin(),vehicle.mods.end(),tune.begin());tune[14]=vehicle.paintjob;
-    const std::int32_t body=-1;std::memcpy(tune.data()+15,&body,4);std::memcpy(tune.data()+19,&body,4);
+    std::memcpy(tune.data() + 15, &vehicle.respray_colour1, sizeof(vehicle.respray_colour1));
+    std::memcpy(tune.data() + 19, &vehicle.respray_colour2, sizeof(vehicle.respray_colour2));
     samp::proto::BitStream payload;payload.write(spawn.data(),spawn.size());payload.write(tune.data(),tune.size());
     send_rpc(*player.peer,164,payload);
-    if (std::any_of(vehicle.parameters.begin(), vehicle.parameters.end(),
-                    [](std::uint8_t value) { return value != 0xff; })) {
+    if (!vehicle.number_plate.empty()) {
+        samp::proto::BitStream number_plate;
+        const auto length = static_cast<std::uint8_t>(vehicle.number_plate.size());
+        number_plate.write(&vehicle.id, sizeof(vehicle.id));
+        number_plate.write(&length, sizeof(length));
+        number_plate.write(reinterpret_cast<const std::uint8_t*>(vehicle.number_plate.data()), length);
+        send_rpc(*player.peer, 123, number_plate);
+    }
+    if (vehicle.has_parameter_overrides()) {
         samp::proto::BitStream parameters;
+        const auto& state = vehicle.parameter_block();
         parameters.write(&vehicle.id, sizeof(vehicle.id));
-        parameters.write(vehicle.parameters.data(), vehicle.parameters.size());
+        parameters.write(state.data(), state.size());
         send_rpc(*player.peer, 24, parameters);
     }
     player.streamed_vehicles[vehicle.id]=1;++player.streamed_vehicle_count;

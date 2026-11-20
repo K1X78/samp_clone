@@ -100,6 +100,12 @@ if(TARGET samp_client)
     target_link_libraries(client_text_util_test PRIVATE samp_client)
     add_test(NAME client_text_util_test COMMAND client_text_util_test)
 
+    add_executable(client_archive_crypto_test client_archive_crypto_test.cpp)
+    target_include_directories(client_archive_crypto_test PRIVATE ../src/client)
+    target_link_libraries(client_archive_crypto_test PRIVATE samp_client advapi32)
+    add_test(NAME client_archive_crypto_test COMMAND client_archive_crypto_test)
+    set_tests_properties(client_archive_crypto_test PROPERTIES TIMEOUT 15)
+
     add_executable(client_camera_math_test client_camera_math_test.cpp)
     target_include_directories(client_camera_math_test PRIVATE ../src/client)
     target_link_libraries(client_camera_math_test PRIVATE samp_client
@@ -254,10 +260,19 @@ target_link_libraries(pawn_natives_test PRIVATE samp_server)
 target_compile_features(pawn_natives_test PRIVATE cxx_std_20)
 add_test(NAME pawn_natives_test COMMAND pawn_natives_test)
 
+add_executable(pawn_database_test pawn_database_test.cpp)
+target_link_libraries(pawn_database_test PRIVATE samp_server)
+add_test(NAME pawn_database_test COMMAND pawn_database_test)
+set_tests_properties(pawn_database_test PROPERTIES TIMEOUT 30)
+
 add_executable(pawn_strings_test pawn_strings_test.cpp)
 target_link_libraries(pawn_strings_test PRIVATE samp_server)
 target_compile_features(pawn_strings_test PRIVATE cxx_std_20)
 add_test(NAME pawn_strings_test COMMAND pawn_strings_test)
+
+add_executable(pawn_sdk_dispatch_test pawn_sdk_dispatch_test.cpp)
+target_link_libraries(pawn_sdk_dispatch_test PRIVATE samp_server)
+add_test(NAME pawn_sdk_dispatch_test COMMAND pawn_sdk_dispatch_test)
 
 if(EXISTS "${PROJECT_SOURCE_DIR}/GTA Sa samp_clone/samp-server.exe.official")
     add_executable(pawn_vm_test pawn_vm_test.cpp)

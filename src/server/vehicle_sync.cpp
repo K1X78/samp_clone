@@ -35,6 +35,9 @@ void GameLayer::handle_driver_packet(GamePlayer& player,const samp::proto::BitSt
     for(int i=0;i<4;++i) vehicle.rotation[i]=f32(8+i*4);
     for(int i=0;i<3;++i) vehicle.velocity[i]=f32(36+i*4);
     vehicle.health=f32(48);vehicle.driver=player.id;vehicle.has_been_occupied=true;
+    update_vehicle_siren(vehicle, static_cast<std::uint16_t>(player.id), raw[55]);
+    if (!player.in_use || !vehicle.active) return;
+    vehicle.reset_door_parameters();
     vehicle.last_occupied_ms=static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::steady_clock::now().time_since_epoch()).count());
     player.health=raw[52];player.armour=raw[53];player.weapon=raw[54]&0x3f;
@@ -94,6 +97,7 @@ void GameLayer::handle_passenger_packet(GamePlayer& player,const samp::proto::Bi
         for(auto& occupant:other_vehicle.passengers) if(occupant==player.id) occupant=-1;
     }
     vehicle.passengers[seat-1]=player.id;
+    vehicle.reset_door_parameters();
     const auto old_keys=player.keys;
     player.vehicle_id=id;player.vehicle_seat=seat;player.weapon=raw[3]&0x3f;
     player.health=raw[4];player.armour=raw[5];

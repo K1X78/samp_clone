@@ -13,14 +13,12 @@
 // A script that requires a native the server does not know fails to load
 // with AMX_ERR_NOTFOUND (19).
 //
-// The natives that are implemented here are the ones the stock game modes
-// and filterscripts actually call, plus the core runtime natives of the
-// amxcore, float, string, time and file tables.  The ones that would need
-// a full game world (the text draws, the objects, the actors) are present
-// but do nothing yet.
+// The server binds gameplay and runtime natives through the same Pawn
+// dispatch table for gamemodes and filterscripts.
 
 #pragma once
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -28,7 +26,9 @@
 #include <map>
 #include <memory>
 #include <new>
+#include <optional>
 
+#include "pawn/actors.hpp"
 #include "pawn/pawn_vm.hpp"
 #include "pawn/textdraws.hpp"
 #include "pawn/menus.hpp"
@@ -80,6 +80,8 @@ struct CheckpointState {
     bool inside = false;
 };
 
+inline constexpr std::uint16_t kTextLabelPoolSize = 1024;
+
 struct TextLabelNativeState {
     bool active = false;
     std::string text;
@@ -88,7 +90,6 @@ struct TextLabelNativeState {
     float draw_distance = 0;
     std::uint8_t test_line_of_sight = 0;
     std::int32_t virtual_world = 0;
-    std::int32_t owner_player = -1;
     std::uint16_t attached_player = 0xffff;
     std::uint16_t attached_vehicle = 0xffff;
 };
@@ -106,9 +107,13 @@ struct PlayerNativeState {
     bool is_npc = false;
     bool is_admin = false;
     bool camera_targeting=false;
+    bool object_edit_enabled = false;
+    std::uint16_t dialog_id = 0;
     PlayerTextDrawPool textdraw_pool;
     std::shared_ptr<PlayerVariablePool> variables;
     std::map<std::uint16_t, TextLabelNativeState> text_labels;
+    std::array<std::uint8_t, kTextLabelPoolSize> streamed_text_labels{};
+    int streamed_text_label_count = 0;
     std::array<std::uint16_t,4> camera_targets{0xffff,0xffff,0xffff,0xffff};
     bool joined = false;
     bool models_ready = false,model_finish_reported=false;
@@ -121,11 +126,14 @@ struct PlayerNativeState {
     std::uint32_t custom_model = 0;
     float x = 0, y = 0, z = 0, angle = 0;
     double distance_from_point(float x, float y, float z) const;
+    double squared_distance_from_point(float x, float y, float z) const;
+    double squared_horizontal_distance_to(float x, float y) const;
     CheckpointState checkpoint;
     CheckpointState race_checkpoint;
     std::array<float, 3> race_checkpoint_next{};
     std::uint8_t race_checkpoint_type = 0;
     std::uint32_t last_stream_position_ms = 0;
+    std::optional<std::uint32_t> last_marker_sync_ms;
     std::uint32_t position_correction_ms = 0;
     std::array<float, 3> position_correction_target{};
     bool position_correction_pending = false;
@@ -145,6 +153,9 @@ struct PlayerNativeState {
     std::int32_t score = 0;
     std::uint32_t last_score_request_ms = 0;
     std::uint8_t weapon = 0;
+    std::uint8_t special_action = 0;
+    std::uint16_t surfing_id = 0;
+    std::uint32_t on_foot_animation = 0;
     std::uint16_t ammo = 0;
     std::uint16_t target_player = 0xffff, target_actor = 0xffff;
     std::int32_t drunk_level = 0;
@@ -159,6 +170,7 @@ struct PlayerNativeState {
     std::uint8_t interior = 0;
     std::uint16_t vehicle_id = 0;
     std::uint8_t vehicle_seat = 0;
+    bool in_mod_shop = false;
     std::uint64_t last_sync_ms = 0;
     std::vector<std::uint8_t> streamed_to;
     unsigned streamed_count = 0;
@@ -166,6 +178,10 @@ struct PlayerNativeState {
     std::vector<std::uint8_t> streamed_vehicles;
     std::vector<std::uint8_t> streamed_pickups;
     unsigned streamed_vehicle_count = 0;
+    std::array<std::uint8_t, kActorPoolSize> streamed_actors{};
+    unsigned streamed_actor_count = 0;
+
+    [[nodiscard]] bool is_actor_streamed(std::uint16_t actor_id) const;
 };
 
 struct ObjectNativeState {
@@ -175,6 +191,18 @@ struct ObjectNativeState {
     std::array<float,3> position{},rotation{};
     float draw_distance=0;
     bool no_camera_collision = false;
+    bool moving = false;
+    std::array<float, 3> move_target{};
+    float move_speed = 0.0f;
+    std::uint16_t attached_vehicle = 0xffff;
+    std::uint16_t attached_object = 0xffff;
+    std::array<float, 3> attachment_offset{}, attachment_rotation{};
+    std::uint8_t attachment_sync_rotation = 0;
+
+    [[nodiscard]] double remaining_move_distance() const;
+    [[nodiscard]] float start_move(const std::array<float, 3>& target, float speed,
+                                   const std::array<float, 3>& target_rotation);
+    [[nodiscard]] bool advance_move(float elapsed_seconds);
 };
 
 struct ScriptTimer {
@@ -214,20 +242,34 @@ struct VehicleNativeState {
     std::int32_t respawn_delay_ms = -1;
     std::uint64_t empty_since_ms = 0;
     bool siren = false;
+    std::uint8_t last_siren_signal = 0;
+    using ParameterBlock = std::array<std::uint8_t, 16>;
     // The sixteen bytes sent by RPC 24 (SetVehicleParamsEx and the
     // per-window/per-door parameter natives).  0xff means that the server
     // has not selected a value for that client-side vehicle property.
-    std::array<std::uint8_t, 16> parameters{
+    ParameterBlock parameters{
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+    const ParameterBlock& parameter_block() const noexcept;
+    bool has_parameter_overrides() const noexcept;
     int driver = -1;
     std::array<int, 8> passengers{-1, -1, -1, -1, -1, -1, -1, -1};
     std::uint32_t damage_panels = 0, damage_doors = 0;
     std::uint8_t damage_lights = 0, damage_tires = 0;
+    void reset_door_parameters();
     std::array<std::uint8_t, 14> mods{};
     std::uint8_t paintjob = 0;
+    std::int32_t respray_colour1 = -1, respray_colour2 = -1;
+    std::string number_plate;
     std::array<float, 4> rotation{1, 0, 0, 0};
     std::array<float, 3> velocity{};
+};
+
+enum class VehicleAppearanceEvent : std::uint32_t {
+    Paintjob = 1,
+    Component = 2,
+    Respray = 3,
+    ModShop = 4,
 };
 
 // The services the natives need from the game.
@@ -246,6 +288,10 @@ public:
     std::function<void(std::string_view)> log_message_;
     bool show_name_tags_=true,stunt_bonus_enabled_=true;
     std::int32_t player_marker_mode_=1;
+    bool limit_player_marker_radius_ = false;
+    float player_marker_radius_ = 10000.0f;
+    bool limit_global_chat_radius_ = false;
+    float global_chat_radius_ = 10000.0f;
     float gravity_=0.008f;
     bool zone_names_enabled_=false;
     bool interior_enter_exits_disabled_=false;
@@ -257,36 +303,82 @@ public:
     std::int32_t death_drop_amount_ = 0;
     std::uint32_t vehicle_friendly_fire_ = 0;
     std::array<GangZoneNativeState,1024> gang_zones_{};
-    std::vector<TextLabelNativeState> text_labels_ = std::vector<TextLabelNativeState>(2048);
+    std::vector<TextLabelNativeState> text_labels_ = std::vector<TextLabelNativeState>(kTextLabelPoolSize);
     TextDrawPool textdraw_pool_{this};
     std::unique_ptr<MenuPool> menu_pool_{new(std::nothrow) MenuPool};
     std::shared_ptr<ServerVariablePool> server_variables_;
     std::vector<StaticPickupNativeState> pickups_=std::vector<StaticPickupNativeState>(4096);
     std::uint32_t pickup_pool_highest_ = 0;
     void update_pickup_pool_size();
-    void sync_text_labels(PlayerNativeState& player);
+    void update_text_label_streaming(PlayerNativeState& player);
+    void reset_global_text_labels();
     int create_pickup(int model, int type, const std::array<float, 3>& position, int world);
     bool destroy_pickup(std::uint32_t id);
     void send_pickup_create_rpc(PlayerNativeState& player, std::uint32_t id);
     void send_pickup_destroy_rpc(PlayerNativeState& player, std::uint32_t id);
     void send_pickup_in(PlayerNativeState& player, std::uint32_t id);
     void send_pickup_out(PlayerNativeState& player, std::uint32_t id);
+    std::array<std::unique_ptr<ActorNativeState>, kActorPoolSize> actors_{};
+    int actor_pool_highest_ = 0;
+    bool actor_pool_ready_ = true;
+    [[nodiscard]] ActorNativeState* get_actor(std::uint16_t id) const;
+    void update_actor_pool_size();
+    std::uint16_t create_actor(std::int32_t model, const std::array<float, 3>& position, float angle);
+    bool destroy_actor(std::uint16_t id);
+    void reset_actors();
+    void destroy_actor_streaming(std::uint16_t id);
+    void clear_actor_viewers(std::uint16_t id);
+    void set_actor_world(std::uint16_t id, std::int32_t world);
+    void set_actor_health(std::uint16_t id, ActorNativeState& actor, float health);
+    void apply_actor_animation(std::uint16_t id, ActorNativeState& actor, ActorAnimation animation);
+    void clear_actor_animation(std::uint16_t id, ActorNativeState& actor);
+    void send_actor_update(std::uint16_t id, std::uint8_t rpc, const samp::proto::BitStream& payload);
+    void send_actor_create(PlayerNativeState& player, std::uint16_t id);
+    void send_actor_destroy(PlayerNativeState& player, std::uint16_t id);
+    void send_actor_animation(PlayerNativeState& player, std::uint16_t id, const ActorAnimation& animation);
+    void stream_actor_in(PlayerNativeState& player, std::uint16_t id);
+    void stream_actor_out(PlayerNativeState& player, std::uint16_t id);
+    void update_actor_streaming(PlayerNativeState& player, float distance);
+    virtual void notify_actor_stream(std::uint16_t actor, int player, bool visible) = 0;
     bool artwork_enabled_=false;
     std::string models_directory_="models";
     std::vector<CustomModelRecord> models_;
+    [[nodiscard]] virtual int model_base_id(std::int32_t custom) const = 0;
     virtual int add_custom_model(const CustomModelSpec& spec)=0;
     virtual bool redirect_download(int player,std::string_view url)=0;
-    std::vector<ObjectNativeState> objects_=std::vector<ObjectNativeState>(2000);
+    static constexpr std::size_t kObjectPoolSize = 2000;
+    std::vector<ObjectNativeState> objects_ = std::vector<ObjectNativeState>(kObjectPoolSize);
+    std::map<std::uint16_t, std::map<std::uint16_t, ObjectNativeState>> player_objects_;
+    std::array<std::uint16_t, kObjectPoolSize> player_object_reservations_{};
     bool objects_disable_camera_collision_ = false;
+    [[nodiscard]] ObjectNativeState* find_global_object(std::uint16_t object_id);
+    [[nodiscard]] ObjectNativeState* find_player_object(std::uint16_t player_id, std::uint16_t object_id);
+    void clear_player_objects(std::uint16_t player_id);
+    void reset_objects();
+    void send_global_object(PlayerNativeState& player, const ObjectNativeState& object);
     virtual void send_object(PlayerNativeState& player,const ObjectNativeState& object)=0;
     std::vector<VehicleNativeState> vehicles_ = std::vector<VehicleNativeState>(2000);
     int vehicle_pool_highest_ = 0;
     void update_vehicle_pool_size();
     void clear_vehicle_streaming(std::uint16_t vehicle);
+    bool apply_vehicle_component(VehicleNativeState& vehicle, std::uint16_t sender, std::uint16_t component);
+    void apply_vehicle_paintjob(VehicleNativeState& vehicle, std::uint16_t sender, std::uint8_t paintjob);
+    void apply_vehicle_respray(VehicleNativeState& vehicle, std::uint16_t sender, std::uint32_t first,
+                               std::uint32_t second);
+    void apply_vehicle_damage(VehicleNativeState& vehicle, std::uint16_t sender,
+                              std::uint32_t panels, std::uint32_t doors,
+                              std::uint8_t lights, std::uint8_t tires);
+    virtual void notify_vehicle_damage(std::uint16_t vehicle, std::uint16_t sender) = 0;
+    virtual bool allow_vehicle_appearance(VehicleAppearanceEvent event, std::uint16_t sender,
+                                          std::uint16_t vehicle, std::uint32_t first,
+                                          std::uint32_t second) = 0;
     virtual void send_vehicle_stream_in(PlayerNativeState& player, const VehicleNativeState& vehicle) = 0;
     virtual void send_vehicle_stream_out(PlayerNativeState& player, std::uint16_t vehicle) = 0;
+    virtual void respawn_vehicle(VehicleNativeState& vehicle, std::uint64_t now) = 0;
     virtual void send_rpc(samp::server::RakNetPeer& peer, std::uint8_t id,
                           const samp::proto::BitStream& payload) = 0;
+    virtual void send_streamed_player_rpc(std::uint16_t source, std::uint8_t id,
+                                         const samp::proto::BitStream& payload) = 0;
     virtual void update_player_position(PlayerNativeState& player, float x, float y, float z, bool force_stream) = 0;
     virtual void set_player_state(PlayerNativeState& player, std::uint8_t state) = 0;
 
@@ -397,6 +489,11 @@ public:
     virtual void set_camera_pos(int id, float x, float y, float z) = 0;
     virtual void set_camera_look_at(int id, float x, float y, float z, int cut) = 0;
     virtual void toggle_player_clock(int id, std::uint8_t on) = 0;
+};
+
+inline constexpr auto live_player_slots = [](NativeHost& host) {
+    const auto size = static_cast<std::size_t>(std::clamp(host.player_pool_highest_, -1, 999) + 1);
+    return std::span(host.players_).first(std::min(size, host.players_.size()));
 };
 
 // Registers the natives on the virtual machine.

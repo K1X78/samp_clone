@@ -3,10 +3,12 @@ add_library(samp_server STATIC
     raknet_server.cpp
     connection.cpp
     player_lifecycle.cpp
+    actor_callbacks.cpp
     player_sync.cpp
     vehicle_stream.cpp
     vehicle_sync.cpp
     vehicle_lifecycle.cpp
+    vehicle_callbacks.cpp
     object_runtime.cpp
     script_timers.cpp
     player_queries.cpp

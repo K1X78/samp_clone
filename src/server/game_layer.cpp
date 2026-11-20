@@ -101,9 +101,8 @@ void GameLayer::send_stream_in(GamePlayer& receiver, const GamePlayer& other) {
     send_rpc(*receiver.peer, kRpcPlayerStreamIn, payload);
     receiver.streamed_to[other.id] = 1;
     ++receiver.streamed_count;
-    const cell args[]{other.id,receiver.id};cell result=1;
-    for(const auto& script:filterscripts_) script->execute("OnPlayerStreamIn",args,result);
-    vm_.execute("OnPlayerStreamIn",args,result);
+    filterscript_player_stream_in(other.id, receiver.id);
+    gamemode_player_stream_in(other.id, receiver.id);
     std::printf("[stream] in source=%d receiver=%d skin=%u pos=%.2f,%.2f,%.2f\n",
                 other.id, receiver.id, other.skin, other.x, other.y, other.z);
 }
@@ -116,9 +115,8 @@ void GameLayer::send_stream_out(GamePlayer& receiver, const GamePlayer& other) {
     send_rpc(*receiver.peer, kRpcPlayerStreamOut, payload);
     receiver.streamed_to[other.id] = 0;
     if (receiver.streamed_count) --receiver.streamed_count;
-    const cell args[]{other.id,receiver.id};cell result=1;
-    for(const auto& script:filterscripts_) script->execute("OnPlayerStreamOut",args,result);
-    vm_.execute("OnPlayerStreamOut",args,result);
+    filterscript_player_stream_out(other.id, receiver.id);
+    gamemode_player_stream_out(other.id, receiver.id);
     std::printf("[stream] out source=%d receiver=%d\n", other.id, receiver.id);
 }
 
@@ -131,7 +129,7 @@ void GameLayer::update_streaming() {
         if (!receiver.in_use || !receiver.peer || !receiver.joined) continue;
         if(receiver.streamed_objects.size()!=objects_.size()) receiver.streamed_objects.resize(objects_.size());
         if(!artwork_enabled_ || models_.empty() || receiver.models_ready) {
-            for(const auto& object:objects_) if(object.active && !receiver.streamed_objects[object.id]) send_object(receiver,object);
+            for(const auto& object:objects_) if(object.active && !receiver.streamed_objects[object.id]) send_global_object(receiver,object);
         }
         if(receiver.streamed_vehicles.size()!=vehicles_.size()) receiver.streamed_vehicles.resize(vehicles_.size());
         if(receiver.streamed_pickups.size()!=pickups_.size()) receiver.streamed_pickups.resize(pickups_.size());
@@ -158,19 +156,19 @@ void GameLayer::update_streaming() {
             if (receiver.id == other.id) continue;
             // 0x4853a9..0x4853e7 measures a passenger against its vehicle,
             // since its last passenger packet may precede the driver's motion.
-            float target_x=other.x,target_y=other.y;
+            double distance = other.squared_horizontal_distance_to(receiver.x, receiver.y);
             if(other.state==3) {
                 if(other.vehicle_id==0 || other.vehicle_id>=vehicles_.size() ||
                    !vehicles_[other.vehicle_id].active) continue;
-                target_x=vehicles_[other.vehicle_id].x;
-                target_y=vehicles_[other.vehicle_id].y;
+                const auto& vehicle = vehicles_[other.vehicle_id];
+                const double dx = double(vehicle.x) - receiver.x;
+                const double dy = double(vehicle.y) - receiver.y;
+                distance = dx * dx + dy * dy;
             }
-            const double dx = double(receiver.x) - target_x;
-            const double dy = double(receiver.y) - target_y;
             const bool visible = receiver.spawned && other.in_use && other.spawned &&
                 other.state != 0 && other.state != 9 &&
                 receiver.virtual_world == other.virtual_world &&
-                dx * dx + dy * dy < double(kStreamRadius) * kStreamRadius;
+                distance < double(kStreamRadius) * kStreamRadius;
             const bool held = receiver.streamed_to[&other - players_.data()] != 0;
             if (held && !visible) send_stream_out(receiver, other);
             else if (!held && visible && receiver.streamed_count < kMaxStreamedPlayers)
@@ -196,23 +194,7 @@ bool GameLayer::load_filterscript(const std::string& name) {
     }
     std::vector<std::uint8_t> bytes;
     bytes.assign(std::istreambuf_iterator<char>(file),std::istreambuf_iterator<char>());
-    samp::pawn::AmxImage image;
-    if(!samp::pawn::AmxImage::load_from_memory(bytes.data(),bytes.size(),image)) {
-        script->ok_=false;script->error_=image.error_;
-        return false;
-    }
-    script->ok_=false;script->error_.clear();script->last_error_=0;
-    script->sleeping_=false;script->string_buffers_.clear();
-    script->image_=image.data_;script->header_=image.header_;
-    script->publics_=image.publics_;script->natives_=image.natives_;
-    script->frm_=0;script->stk_=script->header_.stp-script->header_.dat-4;
-    script->hea_=script->header_.hea-script->header_.dat;
-    script->hlw_=script->header_.hea-script->header_.dat;script->cip_=script->header_.cip;
-    script->pri_=0;script->alt_=0;script->amx_=samp::amx::Amx{};
-    script->amx_.base=script->image_.data();script->amx_.data=nullptr;
-    script->amx_.hea=script->hea_;script->amx_.hlw=script->hlw_;
-    script->amx_.stp=script->stk_;script->amx_.stk=script->stk_;
-    script->amx_.flags=0x8000;script->amx_.sysreq_d=0x87;script->ok_=true;
+    if (!script->load(bytes, path)) return false;
     samp::pawn::register_server_natives(*script,*this);
     samp::amx::cell result=0;
     static_cast<void>(script->execute("OnFilterScriptInit",{},result));
@@ -227,10 +209,6 @@ int GameLayer::start_gamemode() {
     vm_.execute("OnGameModeInit", std::span<const samp::amx::cell>{}, result);
     if (!vm_.ok_) return vm_.last_error_ = 13;
     if (vm_.header_.cip == 0xFFFFFFFF) return vm_.last_error_ = 20;
-    for (const auto& native : vm_.natives_) {
-        if (!vm_.native_functions_.contains(native.name)) return vm_.last_error_ = 19;
-    }
-    vm_.amx_.flags |= 0x1000;
     return vm_.execute(std::string_view{}, std::span<const samp::amx::cell>{}, result);
 }
 
@@ -244,8 +222,7 @@ int GameLayer::max_players() const {
 // The native truncates to WORD before its fixed 1000-slot occupancy check.
 // Official: FUN_00472dd0 @ 0x00472dd0 (samp-server.exe)
 bool GameLayer::is_player_connected(int id) const {
-    const auto slot = static_cast<std::uint16_t>(id);
-    return slot < 1000 && slot < players_.size() && players_[slot].in_use;
+    return player_slot_is_occupied(static_cast<std::uint16_t>(id));
 }
 
 // Source adapter only; no established separate native entry.
@@ -263,7 +240,7 @@ bool GameLayer::player_send_totals(int id, std::uint64_t& sent, std::uint64_t& r
 // source adapter only; no established separate native entry
 bool GameLayer::read_console_variable(std::string_view name, std::string& value) const {
     if (!config_) return false;
-    const auto found = config_->values_.find(std::string(name));
+    const auto found = config_->find_variable(name);
     if (found == config_->values_.end()) return false;
     value = found->second;
     return true;
@@ -293,7 +270,7 @@ bool GameLayer::player_name_in_use(const char* name) const {
 
 // Official: FUN_0046fef0 @ 0x0046fef0 (samp-server.exe)
 void GameLayer::set_game_mode_text(std::string_view text) {
-    config_->values_["gamemodetext"]=std::string(text);
+    config_->set_string_variable("gamemodetext", std::string(text));
 }
 
 // Official: FUN_00496170 @ 0x00496170 (samp-server.exe)
@@ -308,7 +285,7 @@ void GameLayer::set_world_time(int hour) {
     }
     char buffer[16];
     std::snprintf(buffer, sizeof(buffer), "%02d:00", world_hour_);
-    config_->values_["worldtime"]=buffer;
+    config_->set_string_variable("worldtime", buffer);
 }
 
 // Official: FUN_00496240 @ 0x00496240 (samp-server.exe)
@@ -323,7 +300,7 @@ void GameLayer::set_weather(int id) {
         const auto& player=players_[slot];
         if (player.in_use && player.peer) send_rpc(*player.peer, 152, payload);
     }
-    config_->values_["weather"]=std::to_string(weather_id_);
+    config_->set_string_variable("weather", std::to_string(weather_id_));
 }
 
 // Official: FUN_00496310 @ 0x00496310 (samp-server.exe)
@@ -332,7 +309,7 @@ void GameLayer::set_gravity(float gravity) {
     gravity_ = gravity;
     char buffer[32];
     std::snprintf(buffer, sizeof(buffer), "%f", gravity);
-    config_->values_["gravity"]=buffer;
+    config_->set_string_variable("gravity", buffer);
     samp::proto::BitStream payload;
     payload.write(&gravity,4);
     for(std::size_t slot=0;slot<1000 && slot<players_.size() && static_cast<int>(slot)<=player_pool_highest_;++slot) {
@@ -519,7 +496,10 @@ void GameLayer::handle_rpc_packet(RakNetPeer& peer, const BitStream& message) {
         }
         case 184: handle_model_finish(peer, payload); break;
         case 155: handle_score_request(peer); break;
+        case 27: handle_object_selection(peer, payload); break;
+        case 117: handle_object_edit(peer, payload); break;
         case 83: handle_textdraw_click(peer,payload); break;
+        case 62: handle_dialog_response(peer, payload); break;
         case 132: handle_menu_row(peer,payload); break;
         case 140: handle_menu_exit(peer); break;
         // 497a10 ->483770 accepts eight target bytes only while enabled.
@@ -533,26 +513,17 @@ void GameLayer::handle_rpc_packet(RakNetPeer& peer, const BitStream& message) {
             }
             break;
         }
-        // RPC131 registration49d594 ->499b20. The original reports the
-        // slot to GM first, then filterscripts, without inventing a pickup.
-        case 131: {
-            if (gamemode_restarting_) break;
-            std::int32_t pickup = 0;
-            if (!payload.read(&pickup, 4)) break;
-            for (const auto& player : players_) if (player.in_use && player.peer == &peer) {
-                const cell args[]{player.id, pickup};
-                cell result = 0;
-                vm_.execute("OnPlayerPickUpPickup", args, result);
-                for (const auto& script : filterscripts_) script->execute("OnPlayerPickUpPickup", args, result);
-                break;
-            }
-            break;
-        }
+        case 23: handle_player_click(peer, payload); break;
+        case 119: handle_player_map_click(peer, payload); break;
+        case 131: handle_player_pickup(peer, payload); break;
         case 136: handle_vehicle_death(peer, payload); break;
+        case 96: handle_vehicle_appearance(peer, payload); break;
+        case 106: handle_vehicle_damage(peer, payload); break;
         case 26: handle_vehicle_enter(peer, payload); break;
         case 154: handle_vehicle_exit(peer, payload); break;
         case 118: handle_player_interior(peer, payload); break;
         case 53: handle_player_death(peer, payload); break;
+        case kRpcPlayerGiveDamageActor: handle_actor_damage(peer, payload); break;
         case kRpcPlayerRequestChat: handle_player_chat(peer, payload); break;
         case kRpcPlayerRequestCommand: handle_player_command(peer, payload); break;
         default: break;
@@ -698,6 +669,8 @@ void GameLayer::handle_player_connect(RakNetPeer& peer, const BitStream& payload
     player.streamed_count = 0;
     player.streamed_vehicles.assign(vehicles_.size(),0);
     player.streamed_vehicle_count=0;
+    player.last_marker_sync_ms = static_cast<std::uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now().time_since_epoch()).count());
 
     // The PlayerJoin: the id, the colour, the NPC flag and the name.
     BitStream join;
@@ -735,9 +708,8 @@ void GameLayer::handle_player_connect(RakNetPeer& peer, const BitStream& payload
     // work/probe-alpha.txt and work/probe_official.txt (RPC 139).
     // 4661c0 invokes46ae10/46dbf0 before496740 builds the manifest/init.
     // Downloads defer only the initial object batch, never OnPlayerConnect.
-    const cell connect_args[]{player.id};cell callback_result=1;
-    for(const auto& script:filterscripts_) script->execute("OnPlayerConnect",connect_args,callback_result);
-    vm_.execute("OnPlayerConnect",connect_args,callback_result);
+    filterscript_player_connect(player.id);
+    gamemode_player_connect(player.id);
     if(!player.in_use || player.peer!=&peer) return;
     // 0x4661c0 updates the cached highest slot after OnPlayerConnect.
     update_player_pool_size();
@@ -832,6 +804,9 @@ void GameLayer::handle_game_packet(RakNetPeer& peer, const BitStream& message) {
     // samp-server.exe 0x487040: every foot sync also moves the live state of
     // the sender (the position the stream-in RPC reports and the distance
     // checks of the streaming pass 0x4851d0 use it).
+    player->special_action = state.special_action;
+    player->surfing_id = state.surfing_id;
+    player->on_foot_animation = state.animation_id;
     update_player_position(*player, state.x, state.y, state.z, false);
     if (!player->in_use || player->peer != &peer) return;
     const auto previous_keys = player->keys;
@@ -851,6 +826,13 @@ void GameLayer::handle_game_packet(RakNetPeer& peer, const BitStream& message) {
     player->vehicle_seat = 0;
     notify_key_change(*player,previous_keys);
     set_player_state(*player,1);
+    if (!player->in_use || player->peer != &peer) return;
+    if (state.surfing_id >= 2000 && state.surfing_id < 4000) {
+        const auto object = static_cast<std::size_t>(state.surfing_id - 2000);
+        if (object >= objects_.size() || !objects_[object].active) {
+            player->surfing_id = 0xffff;
+        }
+    }
     {
         const float qw = state.qw;
         const float qx = state.qx;
@@ -969,17 +951,14 @@ void GameLayer::handle_player_request_class(RakNetPeer& peer, const BitStream& p
     player->team = static_cast<std::uint8_t>(selected.team);
     player->skin = static_cast<std::uint32_t>(selected.model);
     player->custom_model = selected.custom_model;
-    const cell args[2] = {static_cast<cell>(player->id), static_cast<cell>(class_id)};
-    cell result = 1;
-    for (const auto& script : filterscripts_) script->execute("OnPlayerRequestClass", args, result);
-    result = 1;
-    const bool has_callback = std::any_of(vm_.publics_.begin(), vm_.publics_.end(),
-        [](const auto& entry) { return entry.name == "OnPlayerRequestClass"; });
-    player->class_allowed = !has_callback || (vm_.execute("OnPlayerRequestClass", args, result) == 0 && result != 0);
+    filterscript_player_request_class(player->id, static_cast<int>(class_id));
+    const auto accepted = static_cast<std::uint8_t>(
+        vm_.ok_ ? gamemode_player_request_class(player->id, static_cast<int>(class_id)) : 1);
+    player->class_allowed = accepted != 0;
 
     BitStream answer;
     const samp::pawn::PlayerClassSpec& entry=player->spawn_info;
-    answer.write(std::array<std::uint8_t,1>{static_cast<std::uint8_t>(player->class_allowed ? 1 : 0)}.data(),1);
+    answer.write(&accepted, 1);
     answer.write(std::array<std::uint8_t,1>{static_cast<std::uint8_t>(static_cast<std::uint8_t>(entry.team))}.data(),1);
     answer.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<std::uint32_t>(static_cast<std::uint32_t>(entry.model))).data(),4);
     answer.write(std::bit_cast<std::array<std::uint8_t,4>>(entry.custom_model).data(),4);
@@ -1007,17 +986,9 @@ void GameLayer::handle_player_request_spawn(RakNetPeer& peer) {
     if (player == nullptr || !player->has_spawn_info) {
         return;
     }
-    const cell args[1] = {static_cast<cell>(player->id)};
-    const auto call = [&](samp::pawn::PawnVm& script) {
-        if (!std::any_of(script.publics_.begin(), script.publics_.end(),
-            [](const auto& entry) { return entry.name == "OnPlayerRequestSpawn"; })) return true;
-        cell result = 1;
-        return script.execute("OnPlayerRequestSpawn", args, result) == 0 && result != 0;
-    };
-    bool allowed = true;
-    for (const auto& script : filterscripts_) if (!call(*script)) { allowed = false; break; }
-    if (allowed) allowed = call(vm_);
-    player->spawn_authorized = allowed;
+    const bool allowed = filterscript_player_request_spawn(player->id) != 0 &&
+        (!vm_.ok_ || gamemode_player_request_spawn(player->id) != 0);
+    if (allowed) player->spawn_authorized = true;
     BitStream answer;
     answer.write(std::array<std::uint8_t,1>{static_cast<std::uint8_t>(allowed ? kSpawnAnswerAllowed : 0)}.data(),1);
     send_rpc(peer, kRpcPlayerRequestSpawn, answer);
@@ -1054,10 +1025,8 @@ void GameLayer::handle_player_in_game(RakNetPeer& peer) {
     player->custom_model = player->spawn_info.custom_model;
     player->team = static_cast<std::uint8_t>(player->spawn_info.team);
     set_player_state(*player, 8);
-    const cell args[1] = {static_cast<cell>(player->id)};
-    cell result = 0;
-    for (const auto& script : filterscripts_) script->execute("OnPlayerSpawn", args, result);
-    vm_.execute("OnPlayerSpawn", args, result);
+    filterscript_player_spawn(player->id);
+    gamemode_player_spawn(player->id);
     update_streaming();
 }
 
@@ -1095,73 +1064,62 @@ void GameLayer::handle_player_chat(RakNetPeer& peer, const BitStream& payload) {
         return;
     }
     text = sanitise_chat_text(std::move(text));
-    const auto allot_script_heap = [](samp::pawn::PawnVm& script, std::int32_t cells) {
-        if (!script.ok_ || cells < 0) return -1;
-        const std::int64_t bytes = static_cast<std::int64_t>(cells) * 4;
-        if (script.hea_ < 0 || static_cast<std::int64_t>(script.stk_) - script.hea_ - bytes < 64)
-            return -1;
-        const std::int32_t address = script.hea_;
-        script.hea_ += static_cast<std::int32_t>(bytes);
-        script.amx_.hea = script.hea_;
-        return address;
-    };
-    const auto release_script_heap = [](samp::pawn::PawnVm& script, std::int32_t address) {
-        if (address < script.hea_) {
-            script.hea_ = address;
-            script.amx_.hea = address;
-        }
-    };
-    const auto write_script_string = [](samp::pawn::PawnVm& script, std::int32_t address,
-                                        std::string_view value, std::size_t max_cells) {
-        if (max_cells == 0) return false;
-        const std::size_t count = std::min<std::size_t>(value.size(), max_cells - 1);
-        if (address < 0 || static_cast<std::uint64_t>(address) + (count + 1) * 4u >
-                               static_cast<std::uint32_t>(script.amx_.stp)) return false;
-        for (std::size_t i = 0; i <= count; ++i) {
-            const std::int32_t offset = address + static_cast<std::int32_t>(i * 4u);
-            if (!script.ok_ || offset < 0 || static_cast<std::int64_t>(offset) >= script.amx_.stp ||
-                (offset >= script.amx_.hea && offset < script.amx_.stk)) return false;
-            const std::size_t at = static_cast<std::size_t>(script.header_.dat + offset);
-            if (at >= script.image_.size()) return false;
-            auto* cell_bytes = script.image_.data() + at;
-            const char character = i < count ? value[i] : '\0';
-            cell_bytes[0] = static_cast<std::uint8_t>(character);
-            cell_bytes[1] = cell_bytes[2] = cell_bytes[3] = 0;
-        }
-        return true;
-    };
-    const auto has_public = [](const samp::pawn::PawnVm& script, std::string_view name) {
-        return std::any_of(script.publics_.begin(), script.publics_.end(),
-            [name](const samp::amx::AmxPublic& entry) { return entry.name == name; });
-    };
-    const auto call_on_player_text = [player_id=player->id,text,&has_public,
-                                      &allot_script_heap,&release_script_heap,
-                                      write_script_string](samp::pawn::PawnVm& script) {
-        if (!has_public(script, "OnPlayerText")) return true;
-        const std::int32_t address=allot_script_heap(script,static_cast<std::int32_t>(text.size()+1));
-        if(address<0) return false;
-        if(!write_script_string(script,address,text,text.size()+1)) {
-            release_script_heap(script,address);
-            return false;
-        }
-        const cell args[2]={static_cast<cell>(player_id),static_cast<cell>(address)};
-        cell result=0;
-        const int error=script.execute("OnPlayerText",args,result);
-        release_script_heap(script,address);
-        return error==0 && result!=0;
-    };
-    for(const auto& script:filterscripts_) {
-        if(script->ok_ && has_public(*script, "OnPlayerText") && !call_on_player_text(*script))
-            return;
+    text.resize(std::strlen(text.c_str()));
+    if (log_message_ && config_ && config_->getInt("chatlogging", 1) != 0) {
+        log_message_("[chat] [" + player->name + "]: " + text);
     }
-    if(vm_.ok_ && has_public(vm_, "OnPlayerText") && !call_on_player_text(vm_)) return;
-    broadcast_player_chat(*player, text);
+    if (filterscript_player_text(player->id, text) == 0 || !player->in_use) return;
+    if (vm_.ok_) gamemode_player_text(player->id, text);
+    else broadcast_player_chat(*player, text);
 }
 
-// samp-server.exe 0x498ea0: a u32-prefixed command of 2..255 bytes.  The
-// command goes to OnPlayerCommandText of the game mode and then of every
-// filterscript; when no script answers 1 the player is told
-// "SERVER: Unknown command." with the RPC 93 in white.
+// Official: FUN_0046b200 @ 0x0046b200 (samp-server.exe)
+cell GameLayer::filterscript_player_text(int player, std::string& text) {
+    const cell args[]{player};
+    cell result = 1;
+    for (std::size_t slot = 0; slot < 16 && slot < filterscripts_.size(); ++slot) {
+        if (!filterscripts_[slot]) continue;
+        run_script_text_callback(*filterscripts_[slot], "OnPlayerText", args, text.c_str(), result, &text);
+        if (result == 0) break;
+    }
+    return result;
+}
+
+// Official: FUN_0046de60 @ 0x0046de60 (samp-server.exe)
+cell GameLayer::gamemode_player_text(int player, std::string& text) {
+    if (!vm_.ok_) return 0;
+    const cell args[]{player};
+    cell result = 1;
+    run_script_text_callback(vm_, "OnPlayerText", args, text.c_str(), result, &text);
+    const auto slot = static_cast<std::uint16_t>(player);
+    if (result != 0 && slot < 1000 && slot < players_.size() && players_[slot].in_use) {
+        broadcast_player_chat(players_[slot], text);
+    }
+    return result;
+}
+
+// Official: FUN_0046b2d0 @ 0x0046b2d0 (samp-server.exe)
+cell GameLayer::filterscript_player_command(int player, const char* text) {
+    const cell args[]{player};
+    cell result = 0;
+    for (std::size_t slot = 0; slot < 16 && slot < filterscripts_.size(); ++slot) {
+        if (!filterscripts_[slot]) continue;
+        run_script_text_callback(*filterscripts_[slot], "OnPlayerCommandText", args, text, result);
+        if (result != 0) return 1;
+    }
+    return result;
+}
+
+// Official: FUN_0046df60 @ 0x0046df60 (samp-server.exe)
+cell GameLayer::gamemode_player_command(int player, const char* text) {
+    const auto slot = static_cast<std::uint16_t>(player);
+    if (slot >= 1000 || slot >= players_.size() || !players_[slot].in_use) return 0;
+    const cell args[]{player};
+    cell result = 0;
+    run_script_text_callback(vm_, "OnPlayerCommandText", args, text, result);
+    return result;
+}
+
 // Official: FUN_00498ea0 @ 0x00498ea0 (samp-server.exe)
 void GameLayer::handle_player_command(RakNetPeer& peer, const BitStream& payload) {
     GamePlayer* player = nullptr;
@@ -1191,63 +1149,9 @@ void GameLayer::handle_player_command(RakNetPeer& peer, const BitStream& payload
         return;
     }
     command = sanitise_chat_text(std::move(command));
-    const auto allot_script_heap = [](samp::pawn::PawnVm& script, std::int32_t cells) {
-        if (!script.ok_ || cells < 0) return -1;
-        const std::int64_t bytes = static_cast<std::int64_t>(cells) * 4;
-        if (script.hea_ < 0 || static_cast<std::int64_t>(script.stk_) - script.hea_ - bytes < 64)
-            return -1;
-        const std::int32_t address = script.hea_;
-        script.hea_ += static_cast<std::int32_t>(bytes);
-        script.amx_.hea = script.hea_;
-        return address;
-    };
-    const auto release_script_heap = [](samp::pawn::PawnVm& script, std::int32_t address) {
-        if (address < script.hea_) {
-            script.hea_ = address;
-            script.amx_.hea = address;
-        }
-    };
-    const auto write_script_string = [](samp::pawn::PawnVm& script, std::int32_t address,
-                                        std::string_view value, std::size_t max_cells) {
-        if (max_cells == 0) return false;
-        const std::size_t count = std::min<std::size_t>(value.size(), max_cells - 1);
-        if (address < 0 || static_cast<std::uint64_t>(address) + (count + 1) * 4u >
-                               static_cast<std::uint32_t>(script.amx_.stp)) return false;
-        for (std::size_t i = 0; i <= count; ++i) {
-            const std::int32_t offset = address + static_cast<std::int32_t>(i * 4u);
-            if (!script.ok_ || offset < 0 || static_cast<std::int64_t>(offset) >= script.amx_.stp ||
-                (offset >= script.amx_.hea && offset < script.amx_.stk)) return false;
-            const std::size_t at = static_cast<std::size_t>(script.header_.dat + offset);
-            if (at >= script.image_.size()) return false;
-            auto* cell_bytes = script.image_.data() + at;
-            const char character = i < count ? value[i] : '\0';
-            cell_bytes[0] = static_cast<std::uint8_t>(character);
-            cell_bytes[1] = cell_bytes[2] = cell_bytes[3] = 0;
-        }
-        return true;
-    };
-    const auto has_public = [](const samp::pawn::PawnVm& script, std::string_view name) {
-        return std::any_of(script.publics_.begin(), script.publics_.end(),
-            [name](const samp::amx::AmxPublic& entry) { return entry.name == name; });
-    };
-    const auto call_on_player_command = [player_id=player->id,command,&has_public,
-                                         &allot_script_heap,&release_script_heap,
-                                         write_script_string](samp::pawn::PawnVm& script) {
-        if(!has_public(script, "OnPlayerCommandText")) return false;
-        const std::int32_t address=allot_script_heap(script,static_cast<std::int32_t>(command.size()+1));
-        if(address<0) return false;
-        if(!write_script_string(script,address,command,command.size()+1)) {
-            release_script_heap(script,address);
-            return false;
-        }
-        const cell args[2]={static_cast<cell>(player_id),static_cast<cell>(address)};
-        cell result=0;
-        const bool handled=script.execute("OnPlayerCommandText",args,result)==0 && result!=0;
-        release_script_heap(script,address);
-        return handled;
-    };
-    for(const auto& script:filterscripts_) if(script->ok_ && call_on_player_command(*script)) return;
-    if(vm_.ok_ && call_on_player_command(vm_)) return;
+    if (std::strlen(command.c_str()) < 2 ||
+        filterscript_player_command(player->id, command.c_str()) != 0 ||
+        !vm_.ok_ || gamemode_player_command(player->id, command.c_str()) != 0) return;
     BitStream answer;
     answer.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<std::uint32_t>(0xFFFFFFFFu)).data(),4);
     constexpr std::string_view unknown_command="SERVER: Unknown command.";
@@ -1262,23 +1166,49 @@ void GameLayer::handle_player_command(RakNetPeer& peer, const BitStream& payload
     send_rpc(peer, kRpcClientMessage, answer);
 }
 
+// Official: FUN_00465d60 @ 0x00465d60 (samp-server.exe)
+double GameLayer::player_distance(const GamePlayer& sender, const GamePlayer& receiver) const {
+    return std::sqrt(sender.squared_distance_from_point(receiver.x, receiver.y, receiver.z));
+}
+
 // Official: FUN_00484eb0 @ 0x00484eb0 (samp-server.exe)
 void GameLayer::broadcast_player_chat(const GamePlayer& sender, std::string_view text) {
-    for (const GamePlayer& player : players_) {
-        if (!player.in_use || !player.joined || player.peer == nullptr) {
-            continue;
-        }
-        BitStream payload;
-        payload.write(std::bit_cast<std::array<std::uint8_t,2>>(static_cast<std::uint16_t>(static_cast<std::uint16_t>(sender.id))).data(),2);
-        const auto length=static_cast<std::uint8_t>(text.size());
-        payload.write(&length,sizeof(length));
-        if(!text.empty()) payload.write(text.data(),text.size());
-        send_rpc(*player.peer, kRpcPlayerChat, payload);
+    BitStream payload;
+    const auto id = static_cast<std::uint16_t>(sender.id);
+    const auto length = static_cast<std::uint8_t>(text.size());
+    payload.write(&id, sizeof(id));
+    payload.write(&length, sizeof(length));
+    if (length) payload.write(text.data(), length);
+
+    const auto channel = limit_global_chat_radius_ ? std::uint8_t{3} : kServerChannelRpc;
+    for (std::size_t slot = 0; slot < 1000 && slot < players_.size(); ++slot) {
+        const auto& recipient = players_[slot];
+        if (!recipient.in_use || !recipient.joined || !recipient.peer) continue;
+        if (limit_global_chat_radius_ && &recipient != &sender &&
+            !(player_distance(sender, recipient) < global_chat_radius_)) continue;
+        send_ordered_rpc(*recipient.peer, kRpcPlayerChat, payload, channel);
     }
 }
 
 // Official: FUN_00456040 @ 0x00456040 (samp-server.exe)
 void GameLayer::send_rpc(RakNetPeer& peer, std::uint8_t rpc_id, const BitStream& payload) {
+    send_ordered_rpc(peer, rpc_id, payload, kServerChannelRpc);
+}
+
+// Official: FUN_00493a40 @ 0x00493a40 (samp-server.exe)
+void GameLayer::send_streamed_player_rpc(std::uint16_t source, std::uint8_t rpc_id, const BitStream& payload) {
+    if (source >= 1000) return;
+    for (const auto& recipient : samp::pawn::live_player_slots(*this)) {
+        if (recipient.in_use && recipient.peer && recipient.id != source &&
+            source < recipient.streamed_to.size() && recipient.streamed_to[source]) {
+            send_ordered_rpc(*recipient.peer, rpc_id, payload, kServerChannelRpc);
+        }
+    }
+}
+
+// no standalone native entry
+void GameLayer::send_ordered_rpc(RakNetPeer& peer, std::uint8_t rpc_id, const BitStream& payload,
+                                 std::uint8_t channel) {
     BitStream frame;
     frame.write(std::array<std::uint8_t,1>{static_cast<std::uint8_t>(samp::proto::kRaknetIdRpc)}.data(),1);
     frame.write(std::array<std::uint8_t,1>{static_cast<std::uint8_t>(rpc_id)}.data(),1);
@@ -1289,7 +1219,7 @@ void GameLayer::send_rpc(RakNetPeer& peer, std::uint8_t rpc_id, const BitStream&
     frame.writeCompressed(payload_bit_count,32,true);
     if(payload_bits!=0) frame.writeBits(payload.data_.data(),static_cast<int>(payload_bits),false);
     peer.send(std::span<const std::uint8_t>(frame.data_.data(), (frame.numberOfBitsUsed_+7u)>>3),
-              Reliability::ReliableOrdered, kServerChannelRpc, frame.numberOfBitsUsed_);
+              Reliability::ReliableOrdered, channel, frame.numberOfBitsUsed_);
 }
 
 }  // namespace samp::server

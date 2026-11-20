@@ -79,6 +79,8 @@ void GameLayer::relay_sync(const GamePlayer& player, const samp::proto::BitStrea
 void GameLayer::handle_aim_packet(GamePlayer& player, const samp::proto::BitStream& message) {
     if(message.numberOfBitsUsed_<32*8) return;
     const auto* block=message.data_.data()+1;
+    // The official player stores the aim fields before deciding whether to relay.
+    std::memcpy(player.aim.data(),block,31);
     for(std::size_t at=1;at<=25;at+=4) {
         float value=0;std::memcpy(&value,block+at,4);
         if(!std::isfinite(value)) return;
@@ -86,7 +88,6 @@ void GameLayer::handle_aim_packet(GamePlayer& player, const samp::proto::BitStre
     float direction[3];std::memcpy(direction,block+1,12);
     const float magnitude=std::sqrt(direction[0]*direction[0]+direction[1]*direction[1]+direction[2]*direction[2]);
     if(magnitude<=0 || magnitude>1.5f) return;
-    std::memcpy(player.aim.data(),block,31);
     samp::proto::BitStream relay;
     const std::uint8_t kind=203;const auto id=static_cast<std::uint16_t>(player.id);
     relay.write(&kind,1);relay.write(&id,2);relay.write(block,31);

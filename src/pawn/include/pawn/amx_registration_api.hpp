@@ -3,6 +3,9 @@
 #include "samp/proto/amx.hpp"
 
 namespace samp::pawn::amx_registration {
+std::uint32_t find_function(const char* name, const samp::amx::AmxNativeInfo* functions,
+                            int maximum) noexcept;
+
 // Bind unresolved entries in an initialized image's native table. A negative
 // maximum other than -1 searches no entries. Existing bindings are preserved.
 // Missing names return 19 after all possible bindings have been applied.

@@ -52,6 +52,9 @@ void GameLayer::respawn_vehicle(GameVehicle& vehicle,std::uint64_t now) {
     vehicle.health=1000;vehicle.rotation={1,0,0,0};vehicle.velocity={};
     vehicle.damage_doors=vehicle.damage_panels=0;vehicle.damage_lights=vehicle.damage_tires=0;
     vehicle.mods={};vehicle.paintjob=0;vehicle.dead=vehicle.death_notified=vehicle.has_been_occupied=false;
+    vehicle.respray_colour1 = -1;
+    vehicle.respray_colour2 = -1;
+    vehicle.parameters.fill(0xff);
     vehicle.created_ms=vehicle.last_occupied_ms=now;vehicle.death_ms=0;vehicle.killer=0xffff;
     vehicle.driver=-1;vehicle.passengers.fill(-1);
     clear_vehicle_streaming(id);

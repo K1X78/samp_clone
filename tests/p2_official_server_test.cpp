@@ -346,9 +346,15 @@ void console() {
     } host;
     const auto directory=std::filesystem::temp_directory_path()/("samp-console-unit-"+std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     std::filesystem::create_directories(directory);
-    for(const char* name:{"bare.amx","lvdm.amx"}) {std::ofstream file(directory/name,std::ios::binary);file.put('\0');}
+    for(const char* name:{"bare.amx","lvdm.amx","mode with spaces.amx"}) {
+        std::ofstream file(directory/name,std::ios::binary);file.put('\0');
+    }
     samp::server::GameLayer game;samp::server::Config config;game.config_=&config;game.gamemodes_directory_=directory.string();
     config.values_["gamemode0"]="bare 1";config.values_["gamemode1"]="lvdm 1";
+    config.values_["gamemode2"]="  ";
+    config.values_["hostname"]="original";
+    config.values_["port"]="8192";
+    config.types_["port"]=samp::server::ConfigValueType::Int;
     bool running=true;samp::server::Console console{&host,&game,&config,&running,true};
     samp::server::RakNetPeer peer;game.players_.resize(1);
     game.players_[0].in_use=game.players_[0].joined=true;game.players_[0].peer=&peer;
@@ -356,7 +362,17 @@ void console() {
     auto gravity_wire=payload(Wire::messages(peer).back(),146);float gravity=0;
     CHECK(gravity_wire.read(&gravity,4) && gravity==game.gravity_);
     CHECK(console.execute("ECHO Exact message") && host.lines.back()=="Exact message");
+    CHECK(console.execute("HOSTNAME first  second \t ") && config.get("HostName")=="first  second");
+    config.set_string_variable("PORT","8888");
+    config.set_string_variable("missing","unused");
+    CHECK(config.getInt("Port")==8192 && !config.values_.contains("missing"));
     CHECK(console.execute("gmx") && game.gamemode_exit_requested_ && game.next_gamemode_=="lvdm");
+    game.gamemode_exit_requested_=false;
+    CHECK(console.execute("gmx") && game.gamemode_index_==0 &&
+        game.gamemode_exit_requested_ && game.next_gamemode_=="bare");
+    game.gamemode_exit_requested_=false;
+    CHECK(console.execute("changemode mode with spaces") &&
+        game.gamemode_exit_requested_ && game.next_gamemode_=="mode with spaces");
     game.gamemode_exit_requested_=false;
     CHECK(console.execute("changemode bare") && game.gamemode_exit_requested_ && game.next_gamemode_=="bare");
     game.gamemode_exit_requested_=false;console.execute("changemode missing");CHECK(!game.gamemode_exit_requested_);

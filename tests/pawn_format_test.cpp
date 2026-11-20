@@ -207,6 +207,7 @@ int main(int argc,char** argv) {
             require(game.script_timers_.size()==1 && game.script_timers_.begin()->second.remaining==1000,"Repeating timer did not reset");
             game.gamemodes_directory_=std::filesystem::path(argv[2]).parent_path().string();
             config.values_["gamemode0"]="lvdm 1";config.values_["gamemode1"]="bare 1";
+            config.values_["gamemodetext"]="Unknown";
             require(vm.native_functions_.at("GameModeExit")({})==0 && game.gamemode_exit_requested_ && game.next_gamemode_=="bare","GameModeExit did not select actual next script");
             game.begin_gamemode_restart();require(game.script_timers_.empty() && game.gamemode_restarting_,"Gamemode timer cleanup failed");
             game.finish_gamemode_restart();require(!game.gamemode_restarting_ && config.get("gamemodetext")=="Bare Script","Original next gamemode did not initialize");

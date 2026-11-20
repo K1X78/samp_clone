@@ -86,6 +86,8 @@ inline constexpr std::uint8_t kRpcClientMessage = 93;
 inline constexpr std::uint8_t kRpcPlayerRequestChat = 101;
 inline constexpr std::uint8_t kRpcPlayerChat = 101;
 inline constexpr std::uint8_t kRpcPlayerRequestCommand = 50;
+// Registered at 0x0049d72c with handler 0x0049a280 and ID storage 0x004c0324.
+inline constexpr std::uint8_t kRpcPlayerGiveDamageActor = 177;
 inline constexpr std::size_t kMaxChatLength = 128;
 inline constexpr std::size_t kMaxCommandLength = 255;
 
@@ -130,6 +132,11 @@ public:
     void update_player_pool_size();
     void update_streaming();
     void update_vehicles(std::uint64_t now);
+    void update_objects(float elapsed_seconds);
+    std::uint32_t filterscript_object_moved(std::uint16_t id);
+    std::uint32_t gamemode_object_moved(std::uint16_t id);
+    std::uint32_t filterscript_player_object_moved(std::uint16_t player_id, std::uint16_t object_id);
+    std::uint32_t gamemode_player_object_moved(std::uint16_t player_id, std::uint16_t object_id);
     void process_script_timers(std::uint32_t elapsed_ms);
     void remove_script_timers(samp::pawn::PawnVm* script);
     int add_custom_model(const samp::pawn::CustomModelSpec& spec) override;
@@ -141,7 +148,7 @@ public:
     bool read_model_block(GamePlayer& player);
     void send_model_error(GamePlayer& player);
     void handle_model_finish(RakNetPeer& peer,const samp::proto::BitStream& payload);
-    int model_base_id(std::int32_t custom) const;
+    int model_base_id(std::int32_t custom) const override;
     void load_model_config(std::string_view name="artconfig.txt");
 
     // Loads the game mode script and the filterscripts.
@@ -150,6 +157,7 @@ public:
     // Runs the game mode: OnGameModeInit and then main().
     int start_gamemode();
     bool select_gamemode(std::string_view name) override;
+    std::string next_configured_gamemode();
     void begin_gamemode_restart();
     void finish_gamemode_restart();
     void initialize_player(GamePlayer& player);
@@ -198,6 +206,13 @@ public:
 
 private:
     void handle_rpc_packet(RakNetPeer& peer, const samp::proto::BitStream& message);
+    void handle_object_edit(RakNetPeer& peer, const samp::proto::BitStream& payload);
+    void handle_object_selection(RakNetPeer& peer, const samp::proto::BitStream& payload);
+    bool run_object_interaction_filterscripts(std::string_view name, std::span<const samp::amx::cell> args);
+    bool filterscript_object_edit(std::span<const samp::amx::cell> args);
+    bool filterscript_object_selection(std::span<const samp::amx::cell> args);
+    samp::amx::cell gamemode_object_edit(std::span<const samp::amx::cell> args);
+    samp::amx::cell gamemode_object_selection(std::span<const samp::amx::cell> args);
     void handle_textdraw_click(RakNetPeer& peer,const samp::proto::BitStream& payload);
     void handle_menu_row(RakNetPeer& peer,const samp::proto::BitStream& payload);
     void handle_menu_exit(RakNetPeer& peer);
@@ -225,14 +240,89 @@ private:
     void handle_player_request_spawn(RakNetPeer& peer);
     void handle_player_in_game(RakNetPeer& peer);
     void process_vehicle(GameVehicle& vehicle,std::uint64_t now);
-    void respawn_vehicle(GameVehicle& vehicle,std::uint64_t now);
+    void respawn_vehicle(GameVehicle& vehicle, std::uint64_t now) override;
     void handle_vehicle_death(RakNetPeer& peer,const samp::proto::BitStream& payload);
     void handle_vehicle_enter(RakNetPeer& peer, const samp::proto::BitStream& payload);
     void handle_vehicle_exit(RakNetPeer& peer, const samp::proto::BitStream& payload);
+    void handle_vehicle_appearance(RakNetPeer& peer, const samp::proto::BitStream& payload);
+    void handle_vehicle_damage(RakNetPeer& peer, const samp::proto::BitStream& payload);
+    void notify_vehicle_damage(std::uint16_t vehicle, std::uint16_t sender) override;
+    samp::amx::cell filterscript_vehicle_damage(std::uint16_t vehicle, std::uint16_t sender);
+    samp::amx::cell gamemode_vehicle_damage(std::uint16_t vehicle, std::uint16_t sender);
+    void update_vehicle_siren(GameVehicle& vehicle, std::uint16_t sender, std::uint8_t signal);
+    samp::amx::cell filterscript_vehicle_siren(std::uint16_t sender, std::uint16_t vehicle,
+                                              std::uint8_t signal);
+    samp::amx::cell gamemode_vehicle_siren(std::uint16_t sender, std::uint16_t vehicle,
+                                          std::uint8_t signal);
+    void set_vehicle_mod_shop(GamePlayer& player, std::uint16_t vehicle, std::uint32_t enter,
+                             std::uint32_t interior);
+    bool allow_vehicle_appearance(samp::pawn::VehicleAppearanceEvent event, std::uint16_t sender,
+                                  std::uint16_t vehicle, std::uint32_t first, std::uint32_t second) override;
+    samp::amx::cell run_vehicle_filterscripts(std::string_view name,
+                                             std::span<const samp::amx::cell> args, bool any_veto);
+    samp::amx::cell filterscript_vehicle_mod(std::span<const samp::amx::cell> args);
+    samp::amx::cell filterscript_vehicle_respray(std::span<const samp::amx::cell> args);
+    samp::amx::cell filterscript_vehicle_paintjob(std::span<const samp::amx::cell> args);
+    samp::amx::cell filterscript_vehicle_mod_shop(std::span<const samp::amx::cell> args);
+    samp::amx::cell gamemode_vehicle_mod(std::span<const samp::amx::cell> args);
+    samp::amx::cell gamemode_vehicle_respray(std::span<const samp::amx::cell> args);
+    samp::amx::cell gamemode_vehicle_paintjob(std::span<const samp::amx::cell> args);
+    samp::amx::cell gamemode_vehicle_mod_shop(std::span<const samp::amx::cell> args);
     void handle_player_interior(RakNetPeer& peer, const samp::proto::BitStream& payload);
+    void handle_dialog_response(RakNetPeer& peer, const samp::proto::BitStream& payload);
+    void run_script_text_callback(samp::pawn::PawnVm& script, std::string_view name,
+                                  std::span<const samp::amx::cell> prefix, const char* text,
+                                  samp::amx::cell& result, std::string* copy_back = nullptr);
+    samp::amx::cell filterscript_dialog_response(const std::array<samp::amx::cell, 4>& prefix, const char* text);
+    samp::amx::cell gamemode_dialog_response(const std::array<samp::amx::cell, 4>& prefix, const char* text);
     void handle_player_death(RakNetPeer& peer, const samp::proto::BitStream& payload);
+    bool player_slot_is_occupied(std::uint16_t slot) const;
+    void handle_player_click(RakNetPeer& peer, const samp::proto::BitStream& payload);
+    void handle_player_map_click(RakNetPeer& peer, const samp::proto::BitStream& payload);
+    void handle_player_pickup(RakNetPeer& peer, const samp::proto::BitStream& payload);
+    bool filterscript_player_click(std::span<const samp::amx::cell> args);
+    samp::amx::cell gamemode_player_click(std::span<const samp::amx::cell> args);
+    bool filterscript_player_map_click(std::span<const samp::amx::cell> args);
+    samp::amx::cell gamemode_player_map_click(std::span<const samp::amx::cell> args);
+    samp::amx::cell filterscript_player_pickup(std::span<const samp::amx::cell> args);
+    samp::amx::cell gamemode_player_pickup(std::span<const samp::amx::cell> args);
+    void handle_actor_damage(RakNetPeer& peer, const samp::proto::BitStream& payload);
     void update_player_position(GamePlayer& player, float x, float y, float z, bool force_stream) override;
     void set_player_state(GamePlayer& player, std::uint8_t state) override;
+    bool run_script_callback(samp::pawn::PawnVm& script, std::string_view name,
+                                std::span<const samp::amx::cell> args, samp::amx::cell& result);
+    enum class FilterscriptStop { Never, OnZero, OnNonzero };
+    samp::amx::cell run_filterscripts(std::string_view name, std::span<const samp::amx::cell> args,
+                                     FilterscriptStop stop, samp::amx::cell initial_result = 0);
+    samp::amx::cell filterscript_player_connect(int player);
+    samp::amx::cell gamemode_player_connect(int player);
+    samp::amx::cell filterscript_player_disconnect(int player, int reason);
+    samp::amx::cell gamemode_player_disconnect(int player, int reason);
+    samp::amx::cell filterscript_player_spawn(int player);
+    samp::amx::cell gamemode_player_spawn(int player);
+    samp::amx::cell filterscript_player_death(int player, int killer, int reason);
+    samp::amx::cell gamemode_player_death(int player, int killer, int reason);
+    samp::amx::cell filterscript_player_state_change(int player, int state, int previous);
+    samp::amx::cell gamemode_player_state_change(int player, int state, int previous);
+    samp::amx::cell filterscript_player_key_change(int player, samp::amx::cell keys, samp::amx::cell previous);
+    samp::amx::cell gamemode_player_key_change(int player, samp::amx::cell keys, samp::amx::cell previous);
+    samp::amx::cell filterscript_player_interior_change(int player, int interior, int previous);
+    samp::amx::cell gamemode_player_interior_change(int player, int interior, int previous);
+    samp::amx::cell filterscript_player_stream_in(int player, int viewer);
+    samp::amx::cell gamemode_player_stream_in(int player, int viewer);
+    samp::amx::cell filterscript_player_stream_out(int player, int viewer);
+    samp::amx::cell gamemode_player_stream_out(int player, int viewer);
+    samp::amx::cell filterscript_player_request_class(int player, int class_id);
+    samp::amx::cell gamemode_player_request_class(int player, int class_id);
+    samp::amx::cell filterscript_player_request_spawn(int player);
+    samp::amx::cell gamemode_player_request_spawn(int player);
+    void notify_actor_stream(std::uint16_t actor, int player, bool visible) override;
+    samp::amx::cell filterscript_actor_stream_in(int actor, int player);
+    samp::amx::cell filterscript_actor_stream_out(int actor, int player);
+    samp::amx::cell gamemode_actor_stream_in(int actor, int player);
+    samp::amx::cell gamemode_actor_stream_out(int actor, int player);
+    samp::amx::cell filterscript_actor_damage(std::span<const samp::amx::cell, 5> args);
+    samp::amx::cell gamemode_actor_damage(std::span<const samp::amx::cell, 5> args);
     samp::amx::cell filterscript_enter_checkpoint(int player);
     samp::amx::cell filterscript_leave_checkpoint(int player);
     samp::amx::cell filterscript_enter_race_checkpoint(int player);
@@ -257,6 +347,18 @@ private:
     void send_stream_out(GamePlayer& receiver, const GamePlayer& other);
     // The chat broadcast of the official server (samp-server.exe 0x484eb0).
     void broadcast_player_chat(const GamePlayer& sender, std::string_view text);
+    samp::amx::cell filterscript_player_text(int player, std::string& text);
+    samp::amx::cell gamemode_player_text(int player, std::string& text);
+    samp::amx::cell filterscript_player_command(int player, const char* text);
+    samp::amx::cell gamemode_player_command(int player, const char* text);
+    double player_distance(const GamePlayer& sender, const GamePlayer& receiver) const;
+    void send_ordered_rpc(RakNetPeer& peer, std::uint8_t id, const samp::proto::BitStream& payload,
+                          std::uint8_t channel);
+    void send_streamed_player_rpc(std::uint16_t source, std::uint8_t id,
+                                 const samp::proto::BitStream& payload) override;
+    std::uint32_t count_human_players();
+    void update_player_markers(GamePlayer& receiver, std::uint32_t now);
+    void send_marker_sync(RakNetPeer& peer, const samp::proto::BitStream& packet);
 
 
     int world_hour_ = 12;

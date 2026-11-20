@@ -522,28 +522,7 @@ int main(int argc, char** argv) {
             } else {
                 std::vector<std::uint8_t> bytes;
                 bytes.assign(std::istreambuf_iterator<char>(file),std::istreambuf_iterator<char>());
-                samp::pawn::AmxImage image;
-                if(!samp::pawn::AmxImage::load_from_memory(bytes.data(),bytes.size(),image)) {
-                    script->ok_=false;
-                    script->error_=image.error_;
-                } else {
-                    script->ok_=false;script->error_.clear();script->last_error_=0;
-                    script->sleeping_=false;script->string_buffers_.clear();
-                    script->image_=image.data_;script->header_=image.header_;
-                    script->publics_=image.publics_;script->natives_=image.natives_;
-                    script->frm_=0;
-                    script->stk_=script->header_.stp-script->header_.dat-4;
-                    script->hea_=script->header_.hea-script->header_.dat;
-                    script->hlw_=script->header_.hea-script->header_.dat;
-                    script->cip_=script->header_.cip;script->pri_=0;script->alt_=0;
-                    script->amx_=samp::amx::Amx{};
-                    script->amx_.base=script->image_.data();script->amx_.data=nullptr;
-                    script->amx_.hea=script->hea_;script->amx_.hlw=script->hlw_;
-                    script->amx_.stp=script->stk_;script->amx_.stk=script->stk_;
-                    script->amx_.flags=0x8000;script->amx_.sysreq_d=0x87;
-                    script->ok_=true;
-                    loaded=true;
-                }
+                loaded = script->load(bytes, path);
             }
             if(loaded) {
                 samp::pawn::register_server_natives(*script,game_layer);
@@ -582,22 +561,7 @@ int main(int argc, char** argv) {
         } else {
             std::vector<std::uint8_t> bytes;
             bytes.assign(std::istreambuf_iterator<char>(file),std::istreambuf_iterator<char>());
-            samp::pawn::AmxImage image;
-            if(!samp::pawn::AmxImage::load_from_memory(bytes.data(),bytes.size(),image)) {
-                vm.ok_=false;vm.error_=image.error_;
-            } else {
-                vm.ok_=false;vm.error_.clear();vm.last_error_=0;
-                vm.sleeping_=false;vm.string_buffers_.clear();
-                vm.image_=image.data_;vm.header_=image.header_;
-                vm.publics_=image.publics_;vm.natives_=image.natives_;
-                vm.frm_=0;vm.stk_=vm.header_.stp-vm.header_.dat-4;
-                vm.hea_=vm.header_.hea-vm.header_.dat;vm.hlw_=vm.header_.hea-vm.header_.dat;
-                vm.cip_=vm.header_.cip;vm.pri_=0;vm.alt_=0;
-                vm.amx_=samp::amx::Amx{};vm.amx_.base=vm.image_.data();vm.amx_.data=nullptr;
-                vm.amx_.hea=vm.hea_;vm.amx_.hlw=vm.hlw_;vm.amx_.stp=vm.stk_;vm.amx_.stk=vm.stk_;
-                vm.amx_.flags=0x8000;vm.amx_.sysreq_d=0x87;
-                vm.ok_=true;gamemode_loaded=true;
-            }
+            gamemode_loaded = vm.load(bytes, path);
         }
         if(gamemode_loaded) samp::pawn::register_server_natives(game_layer.vm_,game_layer);
         if (gamemode_loaded) {
@@ -773,8 +737,10 @@ int main(int argc, char** argv) {
                 game_layer.finish_gamemode_restart();server.state_.gamemode=server.config_.get("gamemodetext");
             }
         } else {
+            game_layer.update_vehicles(now);
+            game_layer.update_objects(elapsed_seconds);
             game_layer.process_script_timers(static_cast<std::uint32_t>(elapsed_seconds*1000.f));
-            game_layer.update_vehicles(now);game_layer.update_streaming();
+            game_layer.update_streaming();
         }
         for(auto& player:game_layer.players_) game_layer.process_model_download(player);
         network.tick(now);

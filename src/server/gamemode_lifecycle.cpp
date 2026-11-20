@@ -1,12 +1,31 @@
 #include "samp/server/game_layer.hpp"
 #include <algorithm>
 #include <bit>
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <iterator>
 
 namespace samp::server {
+
+// Official: FUN_00493460 @ 0x00493460 (samp-server.exe)
+std::string GameLayer::next_configured_gamemode() {
+    if (!config_) return {};
+    const auto mode_name = [](std::string_view entry) {
+        const auto begin = entry.find_first_not_of(' ');
+        if (begin == std::string_view::npos) return std::string{};
+        const auto end = entry.find(' ', begin);
+        return std::string(entry.substr(begin, end - begin));
+    };
+    ++gamemode_index_;
+    std::string mode = mode_name(config_->get("gamemode" + std::to_string(gamemode_index_)));
+    if (mode.empty()) {
+        gamemode_index_ = 0;
+        mode = mode_name(config_->get("gamemode0"));
+    }
+    return mode;
+}
 
 // Official: FUN_00493520 @ 0x00493520 (samp-server.exe)
 bool GameLayer::select_gamemode(std::string_view requested) {
@@ -36,9 +55,8 @@ void GameLayer::begin_gamemode_restart() {
     samp::proto::BitStream restart;
     for(auto& player:players_) if(player.in_use && player.peer) send_rpc(*player.peer,40,restart);
     for(auto& player:players_) if(player.in_use) {
-        const samp::amx::cell args[]{player.id,1};samp::amx::cell result=0;
-        vm_.execute("OnPlayerDisconnect",args,result);
-        for(const auto& script:filterscripts_) script->execute("OnPlayerDisconnect",args,result);
+        gamemode_player_disconnect(player.id, 1);
+        filterscript_player_disconnect(player.id, 1);
         if(!player.in_use) continue;
         const auto id=player.id;const auto name=player.name;const auto colour=player.colour;
         const auto ip=player.ipv4_address;const auto npc=player.is_npc;const auto admin=player.is_admin;auto* peer=player.peer;
@@ -49,10 +67,15 @@ void GameLayer::begin_gamemode_restart() {
         player.peer=peer;player.in_use=player.joined=true;player.models_ready=ready;
         player.streamed_to.assign(players_.size(),0);player.streamed_vehicles.assign(vehicles_.size(),0);
         player.streamed_pickups.assign(pickups_.size(),0);
+        player.last_marker_sync_ms = static_cast<std::uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::steady_clock::now().time_since_epoch()).count());
     }
     samp::amx::cell result=0;vm_.execute("OnGameModeExit",{},result);
     remove_script_timers(&vm_);vm_.ok_=false;
-    classes_.clear();objects_.assign(objects_.size(),{});vehicles_.assign(vehicles_.size(),{});pickups_.assign(pickups_.size(),{});
+    reset_global_text_labels();
+    reset_actors();
+    reset_objects();
+    classes_.clear();vehicles_.assign(vehicles_.size(),{});pickups_.assign(pickups_.size(),{});
     pickup_pool_highest_ = 0;
     vehicle_pool_highest_ = 0;
     menu_pool_.reset();textdraw_pool_.release();
@@ -64,20 +87,16 @@ void GameLayer::begin_gamemode_restart() {
 void GameLayer::finish_gamemode_restart() {
     menu_pool_.reset(new(std::nothrow) samp::pawn::MenuPool);
     textdraw_pool_.reset();
+    actor_pool_ready_ = true;
     auto& vm=vm_;const auto path=std::filesystem::path(gamemodes_directory_)/(next_gamemode_+".amx");
     std::ifstream input(path,std::ios::binary);std::vector<std::uint8_t> bytes{std::istreambuf_iterator<char>(input),{}};
-    samp::pawn::AmxImage image;
-    if(!samp::pawn::AmxImage::load_from_memory(bytes.data(),bytes.size(),image)) {
-        vm.ok_=false;vm.error_=image.error_;return;
-    }
-    vm.image_=std::move(image.data_);vm.header_=image.header_;vm.publics_=image.publics_;vm.natives_=image.natives_;
-    vm.path_=path.string();vm.error_.clear();vm.last_error_=0;vm.sleeping_=false;vm.string_buffers_.clear();
-    vm.frm_=0;vm.stk_=vm.header_.stp-vm.header_.dat-4;vm.hea_=vm.hlw_=vm.header_.hea-vm.header_.dat;
-    vm.cip_=vm.header_.cip;vm.pri_=vm.alt_=0;vm.amx_={};vm.amx_.base=vm.image_.data();
-    vm.amx_.hea=vm.hea_;vm.amx_.hlw=vm.hlw_;vm.amx_.stp=vm.amx_.stk=vm.stk_;
-    vm.amx_.flags=0x8000;vm.amx_.sysreq_d=0x87;vm.ok_=true;
+    if (!vm.load(bytes, path.string())) return;
     // New-game initializer4935f0 restores these defaults before script init.
     show_name_tags_=true;player_marker_mode_=1;zone_names_enabled_=false;
+    limit_player_marker_radius_ = false;
+    player_marker_radius_ = 10000.0f;
+    limit_global_chat_radius_ = false;
+    global_chat_radius_ = 10000.0f;
     interior_enter_exits_disabled_=false;name_tag_draw_distance_=70.0f;
     use_player_ped_anims_ = false;
     name_tag_line_of_sight_ = true;
@@ -85,11 +104,10 @@ void GameLayer::finish_gamemode_restart() {
     samp::pawn::register_server_natives(vm,*this);start_gamemode();
     gamemode_restarting_=false;
     for(auto& player:players_) if(player.in_use && player.peer) {
-        for(const auto& object:objects_) if(object.active) send_object(player,object);
+        for(const auto& object:objects_) if(object.active) send_global_object(player,object);
         initialize_player(player);
-        const samp::amx::cell args[]{player.id};samp::amx::cell result=0;
-        for(const auto& script:filterscripts_) script->execute("OnPlayerConnect",args,result);
-        vm.execute("OnPlayerConnect",args,result);
+        filterscript_player_connect(player.id);
+        gamemode_player_connect(player.id);
     }
 }
 
@@ -104,8 +122,8 @@ void GameLayer::initialize_player(GamePlayer& player) {
     if(zone_names_enabled_) init.write1();else init.write0(); // EnableZoneNames
     if (use_player_ped_anims_) init.write1(); else init.write0();
     if (allow_interior_weapons_) init.write1(); else init.write0();
-    init.write0();          // UseLimitGlobalChatRadius
-    init.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<float>(10000.0f)).data(),4);  // LimitGlobalChatRadius
+    if (limit_global_chat_radius_) init.write1(); else init.write0();
+    init.write(&global_chat_radius_, sizeof(global_chat_radius_));
     if(stunt_bonus_enabled_) init.write1();else init.write0();
     init.write(std::bit_cast<std::array<std::uint8_t,4>>(name_tag_draw_distance_).data(),4); // SetNameTagDrawDistance
     if(interior_enter_exits_disabled_) init.write1();else init.write0(); // DisableInteriorEnterExits
@@ -145,7 +163,6 @@ void GameLayer::initialize_player(GamePlayer& player) {
 
     player.joined = true;
     player.model_finish_reported=player.models_ready;
-    sync_text_labels(player);
 }
 
 } // namespace samp::server

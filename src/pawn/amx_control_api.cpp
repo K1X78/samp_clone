@@ -1,4 +1,5 @@
 #include "pawn/amx_control_api.hpp"
+#include "pawn/pawn_vm.hpp"
 
 #include <cstring>
 
@@ -70,6 +71,9 @@ int set_debug_hook(samp::amx::Amx* state, void* function) noexcept {
 // Official: FUN_00401070 @ 0x00401070 (samp-server.exe)
 int callback(samp::amx::Amx* state, samp::amx::cell index,
              samp::amx::cell* result, const samp::amx::cell* parameters) noexcept {
+    if (auto* owner = PawnVm::find_sdk_owner(state))
+        return owner->invoke_sdk_native(index, result, parameters);
+
     const auto read = []<typename Value>(std::uintptr_t address) {
         Value value;
         std::memcpy(&value, reinterpret_cast<const void*>(address), sizeof(value));

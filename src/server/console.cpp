@@ -14,7 +14,6 @@
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
-#include <sstream>
 
 namespace samp::server {
 
@@ -25,6 +24,12 @@ namespace {
 // 65 6e 61 6d 65 3e.  There is NO zero-width space (U+200B) in it, and no
 // U+200B exists anywhere in .text/.rdata/.data of the shipped binary.
 constexpr std::string_view kExecUsage = "  exec <filename>";
+
+// Official: FUN_00490260 @ 0x00490260 (samp-server.exe)
+void trim_console_string_tail(std::string& text) {
+    const auto end = text.find_last_not_of(" \t");
+    text.resize(end == std::string::npos ? 0 : end + 1);
+}
 
 // Official: FUN_0048fd60 @ 0x0048fd60 (samp-server.exe)
 bool parse_ipv4(std::string_view text, std::string& out) {
@@ -51,6 +56,24 @@ bool parse_ipv4(std::string_view text, std::string& out) {
 }
 
 }  // namespace
+
+// Official: FUN_00490aa0 @ 0x00490aa0 (samp-server.exe)
+Config::Values::const_iterator Config::find_variable(std::string_view key) const {
+    std::string lower(key.substr(0, std::min<std::size_t>(key.find('\0'), 255)));
+    std::transform(lower.begin(), lower.end(), lower.begin(), [](unsigned char byte) {
+        return static_cast<char>(std::tolower(byte));
+    });
+    return values_.find(lower);
+}
+
+// Official: FUN_00490bc0 @ 0x00490bc0 (samp-server.exe)
+void Config::set_string_variable(std::string_view key, std::string value) {
+    const auto entry = find_variable(key);
+    if (entry == values_.end()) return;
+    const auto type = types_.find(entry->first);
+    if (type != types_.end() && type->second != ConfigValueType::String) return;
+    values_.at(entry->first) = std::move(value);
+}
 
 // Official: FUN_00490200 @ 0x00490200 (samp-server.exe)
 void Console::command_list() {
@@ -337,6 +360,20 @@ void Console::command_reload_filterscript(const ConsoleLine& line) {
     command_load_filterscript(line);
 }
 
+// Official: FUN_0048fea0 @ 0x0048fea0 (samp-server.exe)
+void Console::command_next_gamemode() {
+    if (!game_layer_) return;
+    const auto mode = game_layer_->next_configured_gamemode();
+    if (!mode.empty() && game_layer_->select_gamemode(mode))
+        game_layer_->gamemode_exit_requested_ = true;
+}
+
+// Official: FUN_0048fed0 @ 0x0048fed0 (samp-server.exe)
+void Console::command_change_gamemode(std::string_view argument) {
+    if (game_layer_ && !argument.empty() && game_layer_->select_gamemode(argument))
+        game_layer_->gamemode_exit_requested_ = true;
+}
+
 // Official: FUN_00490ce0 @ 0x00490ce0 (samp-server.exe)
 bool Console::execute(std::string_view input) {
     ConsoleLine parsed;
@@ -345,6 +382,7 @@ bool Console::execute(std::string_view input) {
     const std::size_t command_begin=position;
     while(position<input.size() && input[position]!=' ' && input[position]!='\t') ++position;
     parsed.name=std::string(input.substr(command_begin,position-command_begin));
+    const auto delimiter = position;
     while(position<input.size() && (input[position]==' ' || input[position]=='\t')) ++position;
     parsed.rest=std::string(input.substr(position));
     std::size_t argument_position=0;
@@ -431,32 +469,34 @@ bool Console::execute(std::string_view input) {
         command_weather(parsed);
         return true;
     }
-    // 48fea0 explicitly takes the NEXT configured mode (493460), then
-    // selects that name; it does not use GameModeExit's repetition path.
     if(name=="gmx") {
-        if(game_layer_) {
-            ++game_layer_->gamemode_index_;
-            auto entry=config_->get("gamemode"+std::to_string(game_layer_->gamemode_index_));
-            if(entry.empty()) {game_layer_->gamemode_index_=0;entry=config_->get("gamemode0");}
-            std::istringstream fields(entry);std::string mode;
-            if(fields>>mode && game_layer_->select_gamemode(mode)) game_layer_->gamemode_exit_requested_=true;
-        }
+        command_next_gamemode();
         return true;
     }
-    // Official callback48fed0 consumes the next space-delimited argument.
     if(name=="changemode") {
-        if(game_layer_ && !parsed.args.empty() && game_layer_->select_gamemode(parsed.args.front()))
-            game_layer_->gamemode_exit_requested_=true;
+        const auto command = input.substr(0, std::min<std::size_t>(input.find('\0'), 255));
+        if (delimiter < command.size()) command_change_gamemode(command.substr(delimiter + 1));
         return true;
     }
     if(name=="reloadbans") return true;
     Config& config=*config_;
-    if(config.values_.find(parsed.name)!=config.values_.end()) {
+    if(config.find_variable(parsed.name)!=config.values_.end()) {
         const auto flags_it=config.flags_.find(parsed.name);
         const unsigned flags=flags_it==config.flags_.end()?0u:flags_it->second;
         const bool read_only=(flags & kVarFlagReadOnly)!=0u;
+        const auto type_it=config.types_.find(parsed.name);
+        const ConfigValueType type=type_it==config.types_.end()?ConfigValueType::String:type_it->second;
         if(!parsed.args.empty() && !read_only) {
             std::string value=parsed.rest;
+            if (type == ConfigValueType::String) {
+                const auto separator = value.find(' ');
+                if (separator != std::string::npos) {
+                    auto tail = value.substr(separator + 1);
+                    value.resize(separator + (tail.empty() ? 0 : 1));
+                    trim_console_string_tail(tail);
+                    value.append(tail);
+                }
+            }
             if(parsed.name=="maxplayers") {
                 const long number=std::strtol(value.c_str(),nullptr,10);
                 if(number<0) value="0"; else if(number>1000) value="1000";
@@ -475,8 +515,6 @@ bool Console::execute(std::string_view input) {
             const std::string value=config.get(parsed.name);
             const std::string suffix=read_only?", read-only":std::string();
             std::string rendered;
-            const auto type_it=config.types_.find(parsed.name);
-            const ConfigValueType type=type_it==config.types_.end()?ConfigValueType::String:type_it->second;
             switch(type) {
                 case ConfigValueType::Int:
                     rendered=std::to_string(config.getInt(parsed.name,0))+"  (int"+suffix+")";

@@ -1,4 +1,5 @@
 #include "pawn/amx_registration_api.hpp"
+#include "pawn/pawn_vm.hpp"
 
 #include <cstring>
 
@@ -32,6 +33,9 @@ std::uint32_t find_function(const char* name,
 int register_natives(samp::amx::Amx* state,
                      const samp::amx::AmxNativeInfo* functions,
                      int maximum) noexcept {
+    if (auto* owner = PawnVm::find_sdk_owner(state))
+        return owner->register_sdk_natives(functions, maximum);
+
     const auto read_i16 = [](const void* address) {
         std::int16_t value = 0;
         std::memcpy(&value, address, sizeof(value));

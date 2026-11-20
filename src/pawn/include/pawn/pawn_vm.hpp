@@ -51,7 +51,9 @@
 #include <vector>
 
 #include "samp/proto/amx.hpp"
+#include "pawn/amx_control_api.hpp"
 #include "pawn/amx_loader.hpp"
+#include "pawn/amx_registration_api.hpp"
 
 int main(int argc, char** argv);
 
@@ -62,7 +64,7 @@ namespace samp::pawn {
 class PawnVm;
 class NativeHost;
 void register_server_natives(PawnVm& vm, NativeHost& host);
-void register_db_natives(PawnVm& vm);
+void register_db_natives(PawnVm& vm, NativeHost& host);
 
 // The native calling convention: params[0] is the byte size of the argument
 // block, the arguments are at &params[1] and the result is returned.
@@ -78,13 +80,22 @@ class PawnVm {
     friend class ::samp::server::Console;
     friend int ::main(int argc, char** argv);
     friend void register_server_natives(PawnVm& vm, NativeHost& host);
-    friend void register_db_natives(PawnVm& vm);
+    friend void register_db_natives(PawnVm& vm, NativeHost& host);
+    friend int amx_control::callback(samp::amx::Amx*, samp::amx::cell, samp::amx::cell*,
+                                     const samp::amx::cell*) noexcept;
+    friend int amx_control::execute(samp::amx::Amx*, samp::amx::cell*, int);
+    friend int amx_registration::register_natives(samp::amx::Amx*, const samp::amx::AmxNativeInfo*,
+                                                  int) noexcept;
 public:
     PawnVm() = default;
+    ~PawnVm();
     PawnVm(const PawnVm&) = delete;
     PawnVm& operator=(const PawnVm&) = delete;
     PawnVm(PawnVm&&) = delete;
     PawnVm& operator=(PawnVm&&) = delete;
+
+    [[nodiscard]] bool load(std::span<const std::uint8_t> bytes, std::string path);
+    [[nodiscard]] samp::amx::Amx* sdk_state() noexcept;
 
     // Resolves and executes a public function through the AMX execution path.
     // Returns the AMX error code (0 = success).
@@ -108,6 +119,16 @@ public:
     // nullptr for the heap/stack gap or an offset outside [0, stp-dat-4).
 
 private:
+    using SdkNative = decltype(samp::amx::AmxNativeInfo::func);
+
+    static PawnVm* find_sdk_owner(const samp::amx::Amx* state);
+    void detach_sdk_state();
+    int register_sdk_natives(const samp::amx::AmxNativeInfo* functions, int maximum) noexcept;
+    int invoke_sdk_native(samp::amx::cell index, samp::amx::cell* result,
+                          const samp::amx::cell* parameters);
+    [[nodiscard]] bool sdk_callback_active() const noexcept;
+    [[nodiscard]] SdkNative find_sdk_native(std::uintptr_t address) const noexcept;
+
     // The interpreter.
     // The CODE-relative offset of a public function.
 
@@ -121,6 +142,9 @@ private:
     std::vector<samp::amx::AmxPublic> publics_;
     std::vector<RequiredNative> natives_;
     std::map<std::string, PawnNativeFn> native_functions_;
+    std::vector<SdkNative> sdk_natives_;
+    PawnVm* next_sdk_owner_ = nullptr;
+    bool owns_sdk_state_ = false;
     mutable std::map<std::int32_t, std::string> string_buffers_;
 
     samp::amx::AmxHeader header_{};

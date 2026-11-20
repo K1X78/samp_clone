@@ -211,6 +211,7 @@ void rpc_length_bounds() {
 
 void weather_broadcast() {
     samp::server::Config config;
+    config.values_ = {{"weather", "10"}, {"gravity", "0.008"}};
     samp::server::GameLayer game;
     game.config_ = &config;
     game.players_.resize(4);

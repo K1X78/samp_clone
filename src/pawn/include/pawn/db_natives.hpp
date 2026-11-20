@@ -7,6 +7,6 @@
 namespace samp::pawn {
 
 // Registers db_open, db_close, db_query and the 15 accessor natives.
-void register_db_natives(PawnVm& vm);
+void register_db_natives(PawnVm& vm, NativeHost& host);
 
 }  // namespace samp::pawn

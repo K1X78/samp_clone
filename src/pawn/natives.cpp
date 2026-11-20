@@ -1,5 +1,6 @@
 #include "pawn/natives.hpp"
 
+#include "actor_natives.hpp"
 #include "pawn/db_natives.hpp"
 #include "pawn/password_hash.hpp"
 #include "samp/proto/bitstream.hpp"
@@ -56,6 +57,43 @@ cell is_player_admin(NativeHost& host, std::span<const cell> args) {
     return player && player->is_admin;
 }
 
+// Official: FUN_00471d80 @ 0x00471d80 (samp-server.exe)
+cell get_player_surfing_vehicle(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    if (!player || player->state != 1 || player->surfing_id == 0 || player->surfing_id >= 2000)
+        return 0xffff;
+    return player->surfing_id;
+}
+
+// Official: FUN_00471dd0 @ 0x00471dd0 (samp-server.exe)
+cell get_player_surfing_object(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    if (!player || player->state != 1 || player->surfing_id < 2000 || player->surfing_id >= 4000)
+        return 0xffff;
+    return player->surfing_id - 2000;
+}
+
+// Official: FUN_00479080 @ 0x00479080 (samp-server.exe)
+cell get_player_weapon_state(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    if (player->state != 1) return -1;
+    return player->aim[29] >> 6;
+}
+
+// Official: FUN_004741e0 @ 0x004741e0 (samp-server.exe)
+cell get_player_animation_index(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    if (!player || player->state != 1) return 0;
+    return std::bit_cast<std::int16_t>(static_cast<std::uint16_t>(player->on_foot_animation));
+}
+
+// Official: FUN_00472040 @ 0x00472040 (samp-server.exe)
+cell get_player_special_action(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player && player->state == 1 ? player->special_action : 0;
+}
+
 // Official: FUN_004722a0 @ 0x004722a0 (samp-server.exe)
 cell get_player_camera_target_object(NativeHost& host, std::span<const cell> args) {
     const auto* player = find_player(host, args);
@@ -109,6 +147,14 @@ cell show_name_tags(NativeHost& host, std::span<const cell> args) {
 cell show_player_markers(NativeHost& host, std::span<const cell> args) {
     if (args.empty()) return 0;
     host.player_marker_mode_ = args.front();
+    return 1;
+}
+
+// Official: FUN_00473280 @ 0x00473280 (samp-server.exe)
+cell limit_player_marker_radius(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    host.limit_player_marker_radius_ = true;
+    host.player_marker_radius_ = std::bit_cast<float>(args.front());
     return 1;
 }
 
@@ -366,6 +412,51 @@ cell vector_size(NativeHost&, std::span<const cell> args) {
 }
 
 constexpr float radians_to_degrees = std::bit_cast<float>(0x42652ee0u);
+
+// Implementation helper for the two registered natives. The shipped CRT
+// forms sqrt((1-x)*(1+x)) and uses FPATAN with the operands in opposite order.
+// Shared reconstruction helper with no standalone native entry.
+cell inverse_sine_or_cosine(cell input, bool cosine) {
+    const auto bits = std::bit_cast<std::uint32_t>(input);
+    const auto magnitude = bits & 0x7fffffffu;
+    if (magnitude > 0x7f800000u) return std::bit_cast<cell>(bits | 0x00400000u);
+    if (magnitude > 0x3f800000u) return std::bit_cast<cell>(0xffc00000u);
+
+    const float value = std::bit_cast<float>(bits);
+#if defined(_MSC_VER) && defined(_M_IX86)
+    float result;
+    __asm {
+        fld value
+        fld1
+        fadd st(0), st(1)
+        fld1
+        fsub st(0), st(2)
+        fmulp st(1), st(0)
+        fsqrt
+        cmp cosine, 0
+        je sine_order
+        fxch st(1)
+    sine_order:
+        fpatan
+        fmul radians_to_degrees
+        fstp result
+    }
+#else
+    const auto angle = cosine ? std::acos(static_cast<double>(value)) : std::asin(static_cast<double>(value));
+    const auto result = static_cast<float>(angle * radians_to_degrees);
+#endif
+    return std::bit_cast<cell>(result);
+}
+
+// Official: FUN_00473f70 @ 0x00473f70 (samp-server.exe)
+cell arc_sine(NativeHost&, std::span<const cell> args) {
+    return args.empty() ? 0 : inverse_sine_or_cosine(args.front(), false);
+}
+
+// Official: FUN_00473f90 @ 0x00473f90 (samp-server.exe)
+cell arc_cosine(NativeHost&, std::span<const cell> args) {
+    return args.empty() ? 0 : inverse_sine_or_cosine(args.front(), true);
+}
 
 // Official: FUN_00473fb0 @ 0x00473fb0 (samp-server.exe)
 cell arc_tangent(NativeHost&, std::span<const cell> args) {
@@ -651,6 +742,55 @@ cell gang_zone_stop_flash_for_all(NativeHost& host, std::span<const cell> args) 
 
 using CellWriter = std::function<bool(cell, cell)>;
 using StringReader = std::function<const char*(cell)>;
+
+// Official: FUN_004802d0 @ 0x004802d0 (samp-server.exe)
+cell set_player_chat_bubble(NativeHost& host, std::span<const cell> args, const StringReader& read_string) {
+    if (args.size() < 5) return 0;
+    const auto* player = find_player(host, args);
+    if (!player || player->state == 0 || player->state == 9) return 0;
+    const char* text = read_string(args[1]);
+    const auto length = text ? static_cast<std::uint8_t>(std::strlen(text)) : std::uint8_t{};
+    if (length > 144) return 0;
+
+    samp::proto::BitStream payload;
+    const auto source = static_cast<std::uint16_t>(args.front());
+    payload.write(&source, sizeof(source));
+    payload.write(&args[2], 3 * sizeof(cell));
+    payload.write(&length, sizeof(length));
+    if (length) payload.write(text, length);
+    host.send_streamed_player_rpc(source, static_cast<std::uint8_t>(samp::proto::RpcId::SetPlayerChatBubble), payload);
+    return 1;
+}
+
+// Official: FUN_004809f0 @ 0x004809f0 (samp-server.exe)
+cell show_player_dialog(NativeHost& host, std::span<const cell> args, const StringReader& read_string) {
+    if (args.size() < 7) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    const auto style = static_cast<std::uint8_t>(args[2]);
+    if (player->peer) {
+        samp::proto::BitStream payload;
+        payload.write(&id, sizeof(id));
+        payload.write(&style, sizeof(style));
+        for (const cell address : {args[3], args[5], args[6]}) {
+            const char* field = read_string(address);
+            const auto length = field ? static_cast<std::uint8_t>(std::strlen(field)) : std::uint8_t{};
+            payload.write(&length, sizeof(length));
+            if (length) payload.write(field, length);
+        }
+#if defined(SAMP_HAS_RAKNET_STRING_COMPRESSOR)
+        if (StringCompressor::Instance() == nullptr) StringCompressor::AddReference();
+        const char* text = read_string(args[4]);
+        RakNet::BitStream compressed;
+        StringCompressor::Instance()->EncodeString(text ? text : "", 0, &compressed, 0);
+        payload.writeBits(compressed.GetData(), compressed.GetNumberOfBitsUsed(), false);
+        host.send_rpc(*player->peer, static_cast<std::uint8_t>(samp::proto::RpcId::ShowDialog), payload);
+#endif
+    }
+    player->dialog_id = id;
+    return 1;
+}
 using CellDataReader = std::function<const std::uint8_t*(cell)>;
 
 // Dotted-decimal parser shared by the BlockIpAddress natives; no standalone
@@ -681,18 +821,15 @@ bool parse_native_ipv4(std::string_view input, std::string& canonical) {
     return true;
 }
 
-// 3D labels encode text with the same RakNet English Huffman table used by
-// the 0.3.DL client. This helper has no standalone official entry.
 // no standalone native entry
-void send_text_label(NativeHost& host, PlayerNativeState& player,
-                     std::uint16_t id, const TextLabelNativeState& label) {
-    if (!player.peer) return;
+void send_text_label(NativeHost& host, samp::server::RakNetPeer& peer,
+                     std::uint16_t wire_id, const TextLabelNativeState& label) {
 #if defined(SAMP_HAS_RAKNET_STRING_COMPRESSOR)
     if (StringCompressor::Instance() == nullptr) StringCompressor::AddReference();
     RakNet::BitStream compressed;
-    StringCompressor::Instance()->EncodeString(label.text.c_str(), 2048, &compressed, 0);
+    StringCompressor::Instance()->EncodeString(label.text.c_str(), 0, &compressed, 0);
     samp::proto::BitStream payload;
-    payload.write(&id, sizeof(id));
+    payload.write(&wire_id, sizeof(wire_id));
     payload.write(&label.colour, sizeof(label.colour));
     payload.write(label.position.data(), sizeof(label.position));
     payload.write(&label.draw_distance, sizeof(label.draw_distance));
@@ -701,35 +838,175 @@ void send_text_label(NativeHost& host, PlayerNativeState& player,
     payload.write(&label.attached_vehicle, sizeof(label.attached_vehicle));
     if (compressed.GetNumberOfBitsUsed() > 0)
         payload.writeBits(compressed.GetData(), compressed.GetNumberOfBitsUsed(), false);
-    host.send_rpc(*player.peer, 36, payload);
+    host.send_rpc(peer, 36, payload);
 #else
     (void)host;
-    (void)id;
+    (void)peer;
+    (void)wire_id;
     (void)label;
 #endif
 }
 
-// GameLayer invokes this after RPC 137 and when a player's virtual world
-// changes. The function is a clone integration helper, not a standalone
-// official binary entry.
 // no standalone native entry
-void sync_text_labels_for_player(NativeHost& host, PlayerNativeState& player) {
-    if (!player.in_use || !player.peer) return;
-    for (std::size_t id = 0; id < host.text_labels_.size() && id < 2048; ++id) {
-        const auto& label = host.text_labels_[id];
-        if (!label.active) continue;
-        if ((label.owner_player < 0 || label.owner_player == player.id) &&
-            label.virtual_world == player.virtual_world)
-            send_text_label(host, player, static_cast<std::uint16_t>(id), label);
-        else {
-            samp::proto::BitStream payload;
-            const auto label_id = static_cast<std::uint16_t>(id);
-            payload.write(&label_id, sizeof(label_id));
-            host.send_rpc(*player.peer, 58, payload);
+void hide_text_label(NativeHost& host, samp::server::RakNetPeer& peer, std::uint16_t wire_id) {
+    samp::proto::BitStream payload;
+    payload.write(&wire_id, sizeof(wire_id));
+    host.send_rpc(peer, 58, payload);
+}
+
+// Official: FUN_004835b0 @ 0x004835b0 (samp-server.exe)
+TextLabelNativeState* global_label(NativeHost& host, std::uint16_t id) {
+    return id < kTextLabelPoolSize && id < host.text_labels_.size() ? &host.text_labels_[id] : nullptr;
+}
+
+// Official: FUN_004835d0 @ 0x004835d0 (samp-server.exe)
+std::uint16_t text_label_attached_player(NativeHost& host, std::uint16_t id) {
+    const auto* label = global_label(host, id);
+    return label && label->active ? label->attached_player : 0xffff;
+}
+
+// Official: FUN_00483600 @ 0x00483600 (samp-server.exe)
+std::uint16_t text_label_attached_vehicle(NativeHost& host, std::uint16_t id) {
+    const auto* label = global_label(host, id);
+    return label && label->active ? label->attached_vehicle : 0xffff;
+}
+
+// Official: FUN_00463d60 @ 0x00463d60 (samp-server.exe)
+std::uint8_t streamed_text_label(const PlayerNativeState& player, std::uint16_t id) {
+    return id < kTextLabelPoolSize ? player.streamed_text_labels[id] : 0;
+}
+
+// Official: FUN_00464290 @ 0x00464290 (samp-server.exe)
+void hide_global_text_label(NativeHost& host, PlayerNativeState& player, std::uint16_t id) {
+    const auto* label = global_label(host, id);
+    if (label && label->active && player.peer) hide_text_label(host, *player.peer, id);
+}
+
+// Official: FUN_00464340 @ 0x00464340 (samp-server.exe)
+void show_global_text_label(NativeHost& host, PlayerNativeState& player, std::uint16_t id) {
+    const auto* label = global_label(host, id);
+    if (label && label->active && player.peer) send_text_label(host, *player.peer, id, *label);
+}
+
+// Official: FUN_00483c90 @ 0x00483c90 (samp-server.exe)
+void stream_text_label_in(NativeHost& host, PlayerNativeState& player, std::uint16_t id) {
+    show_global_text_label(host, player, id);
+    ++player.streamed_text_labels[id];
+    ++player.streamed_text_label_count;
+}
+
+// Official: FUN_00483ce0 @ 0x00483ce0 (samp-server.exe)
+void stream_text_label_out(NativeHost& host, PlayerNativeState& player, std::uint16_t id) {
+    hide_global_text_label(host, player, id);
+    player.streamed_text_labels[id] = 0;
+    --player.streamed_text_label_count;
+}
+
+// Official: FUN_00463f80 @ 0x00463f80 (samp-server.exe)
+void hide_streamed_text_label(NativeHost& host, std::uint16_t id) {
+    for (auto& player : std::span(host.players_).first(std::min<std::size_t>(host.players_.size(), 1000))) {
+        if (player.in_use && streamed_text_label(player, id))
+            stream_text_label_out(host, player, id);
+    }
+}
+
+// Official: FUN_00463ff0 @ 0x00463ff0 (samp-server.exe)
+void refresh_streamed_text_label(NativeHost& host, std::uint16_t id) {
+    for (auto& player : std::span(host.players_).first(std::min<std::size_t>(host.players_.size(), 1000))) {
+        if (player.in_use && streamed_text_label(player, id)) {
+            stream_text_label_out(host, player, id);
+            stream_text_label_in(host, player, id);
         }
     }
-    for (const auto& [id, label] : player.text_labels)
-        if (label.active) send_text_label(host, player, id, label);
+}
+
+// Official: FUN_00463e20 @ 0x00463e20 (samp-server.exe)
+std::uint16_t allocate_global_text_label(NativeHost& host, TextLabelNativeState label) {
+    const auto found = std::find_if(host.text_labels_.begin(), host.text_labels_.end(),
+                                    [](const auto& entry) { return !entry.active; });
+    if (found == host.text_labels_.end()) return 0xffff;
+    const auto id = static_cast<std::uint16_t>(found - host.text_labels_.begin());
+    *found = std::move(label);
+    for (auto& player : live_player_slots(host)) {
+        // Creation uses a strict 3D radius. The periodic stream pass also
+        // checks virtual world and attachments.
+        if (player.in_use && player.state != 0 && player.state != 9 &&
+            player.distance_from_point(found->position[0], found->position[1], found->position[2]) <
+                found->draw_distance)
+            stream_text_label_in(host, player, id);
+    }
+    return id;
+}
+
+// Official: FUN_00464210 @ 0x00464210 (samp-server.exe)
+bool release_global_text_label(NativeHost& host, std::uint16_t id) {
+    auto* label = global_label(host, id);
+    if (!label || !label->active) return false;
+    hide_streamed_text_label(host, id);
+    *label = {};
+    return true;
+}
+
+// Official: FUN_00464060 @ 0x00464060 (samp-server.exe)
+void update_global_text_label(NativeHost& host, std::uint16_t id,
+                              std::uint32_t colour, const char* text) {
+    auto* label = global_label(host, id);
+    if (!label || !label->active) return;
+    label->text = text;
+    label->colour = colour;
+    refresh_streamed_text_label(host, id);
+}
+
+// Official: FUN_00487c30 @ 0x00487c30 (samp-server.exe)
+void hide_private_text_label(NativeHost& host, PlayerNativeState& player, std::uint16_t id) {
+    if (player.peer && player.text_labels.contains(id))
+        hide_text_label(host, *player.peer, static_cast<std::uint16_t>(id + kTextLabelPoolSize));
+}
+
+// Official: FUN_00487ce0 @ 0x00487ce0 (samp-server.exe)
+void show_private_text_label(NativeHost& host, PlayerNativeState& player, std::uint16_t id) {
+    const auto label = player.text_labels.find(id);
+    if (player.peer && label != player.text_labels.end())
+        send_text_label(host, *player.peer, static_cast<std::uint16_t>(id + kTextLabelPoolSize),
+                        label->second);
+}
+
+// Official: FUN_00487e90 @ 0x00487e90 (samp-server.exe)
+std::uint16_t allocate_private_text_label(NativeHost& host, PlayerNativeState& player,
+                                         TextLabelNativeState label) {
+    std::uint16_t id = 0;
+    while (id < kTextLabelPoolSize && player.text_labels.contains(id)) ++id;
+    if (id == kTextLabelPoolSize) return 0xffff;
+    player.text_labels.emplace(id, std::move(label));
+    show_private_text_label(host, player, id);
+    return id;
+}
+
+// Official: FUN_00487f60 @ 0x00487f60 (samp-server.exe)
+bool release_private_text_label(NativeHost& host, PlayerNativeState& player, std::uint16_t id) {
+    if (id >= kTextLabelPoolSize || !player.text_labels.contains(id)) return false;
+    hide_private_text_label(host, player, id);
+    player.text_labels.erase(id);
+    return true;
+}
+
+// Official: FUN_00487fe0 @ 0x00487fe0 (samp-server.exe)
+void update_private_text_label(NativeHost& host, PlayerNativeState& player, std::uint16_t id,
+                               std::uint32_t colour, const char* text) {
+    const auto label = player.text_labels.find(id);
+    if (id >= kTextLabelPoolSize || label == player.text_labels.end()) return;
+    label->second.text = text;
+    label->second.colour = colour;
+    hide_private_text_label(host, player, id);
+    show_private_text_label(host, player, id);
+}
+
+// Official: FUN_00473260 @ 0x00473260 (samp-server.exe)
+cell limit_global_chat_radius(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    host.limit_global_chat_radius_ = true;
+    host.global_chat_radius_ = std::bit_cast<float>(args[0]);
+    return 1;
 }
 
 // Official: FUN_00477a00 @ 0x00477a00 (samp-server.exe)
@@ -737,38 +1014,23 @@ cell create_3d_text_label(NativeHost& host, std::span<const cell> args,
                           const StringReader& read_script_string) {
     if (args.size() < 8) return 0xffff;
     const char* text = read_script_string(args[0]);
-    if (!text || std::strlen(text) >= 2048) return 0xffff;
-    const auto found = std::find_if(host.text_labels_.begin(), host.text_labels_.end(),
-                                    [](const auto& label) { return !label.active; });
-    if (found == host.text_labels_.end()) return 0xffff;
-    const auto id = static_cast<std::uint16_t>(std::distance(host.text_labels_.begin(), found));
-    found->active = true;
-    found->text = text;
-    found->colour = static_cast<std::uint32_t>(args[1]);
-    found->position = {std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]),
+    if (!text) return 0xffff;
+    TextLabelNativeState label;
+    label.active = true;
+    label.text = text;
+    label.colour = static_cast<std::uint32_t>(args[1]);
+    label.position = {std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]),
                        std::bit_cast<float>(args[4])};
-    found->draw_distance = std::bit_cast<float>(args[5]);
-    found->virtual_world = args[6];
-    found->test_line_of_sight = static_cast<std::uint8_t>(args[7]);
-    for (auto& player : host.players_)
-        if (player.in_use && player.virtual_world == found->virtual_world)
-            send_text_label(host, player, id, *found);
-    return id;
+    label.draw_distance = std::bit_cast<float>(args[5]);
+    label.virtual_world = args[6];
+    label.test_line_of_sight = static_cast<std::uint8_t>(args[7]);
+    return allocate_global_text_label(host, std::move(label));
 }
 
-// The native-table callback address for Delete3DTextLabel is inside shared
-// 0x00477a00 code, not a separate official function boundary.
-// no standalone native entry
+// Official: FUN_00477bd0 @ 0x00477bd0 (samp-server.exe)
 cell delete_3d_text_label(NativeHost& host, std::span<const cell> args) {
     if (args.empty()) return 0;
-    const auto id = static_cast<std::uint16_t>(args[0]);
-    if (id >= host.text_labels_.size() || !host.text_labels_[id].active) return 0;
-    host.text_labels_[id] = {};
-    samp::proto::BitStream payload;
-    payload.write(&id, sizeof(id));
-    for (const auto& player : host.players_)
-        if (player.in_use && player.peer) host.send_rpc(*player.peer, 58, payload);
-    return 1;
+    return release_global_text_label(host, static_cast<std::uint16_t>(args[0]));
 }
 
 // Official: FUN_00477d20 @ 0x00477d20 (samp-server.exe)
@@ -776,15 +1038,10 @@ cell update_3d_text_label_text(NativeHost& host, std::span<const cell> args,
                                const StringReader& read_script_string) {
     if (args.size() < 3) return 0;
     const auto id = static_cast<std::uint16_t>(args[0]);
-    if (id >= host.text_labels_.size() || !host.text_labels_[id].active) return 0;
     const char* text = read_script_string(args[2]);
-    if (!text || std::strlen(text) >= 2048) return 0;
-    auto& label = host.text_labels_[id];
-    label.colour = static_cast<std::uint32_t>(args[1]);
-    label.text = text;
-    for (auto& player : host.players_)
-        if (player.in_use && player.virtual_world == label.virtual_world)
-            send_text_label(host, player, id, label);
+    const auto* label = global_label(host, id);
+    if (!text || !label || !label->active) return 0;
+    update_global_text_label(host, id, static_cast<std::uint32_t>(args[1]), text);
     return 1;
 }
 
@@ -793,11 +1050,9 @@ cell create_player_3d_text_label(NativeHost& host, std::span<const cell> args,
                                  const StringReader& read_script_string) {
     if (args.size() < 10) return 0xffff;
     auto* player = find_player(host, args);
+    if (!player) return 0xffff;
     const char* text = read_script_string(args[1]);
-    if (!player || !text || std::strlen(text) >= 2048) return 0xffff;
-    std::uint16_t id = 0;
-    while (id < 1024 && player->text_labels.contains(id)) ++id;
-    if (id >= 1024) return 0xffff;
+    if (!text) return 0xffff;
     TextLabelNativeState label;
     label.active = true;
     label.text = text;
@@ -805,33 +1060,19 @@ cell create_player_3d_text_label(NativeHost& host, std::span<const cell> args,
     label.position = {std::bit_cast<float>(args[3]), std::bit_cast<float>(args[4]),
                       std::bit_cast<float>(args[5])};
     label.draw_distance = std::bit_cast<float>(args[6]);
-    label.virtual_world = player->virtual_world;
-    label.owner_player = player->id;
+    label.virtual_world = -1;
     label.attached_player = static_cast<std::uint16_t>(args[7]);
     label.attached_vehicle = static_cast<std::uint16_t>(args[8]);
     label.test_line_of_sight = static_cast<std::uint8_t>(args[9]);
-    player->text_labels.emplace(id, std::move(label));
-    send_text_label(host, *player, id, player->text_labels.at(id));
-    return id;
+    return allocate_private_text_label(host, *player, std::move(label));
 }
 
-// The native-table callback for DeletePlayer3DTextLabel is embedded in shared
-// label-pool code and has no separate official function boundary.
-// no standalone native entry
+// Official: FUN_00477c10 @ 0x00477c10 (samp-server.exe)
 cell delete_player_3d_text_label(NativeHost& host, std::span<const cell> args) {
     if (args.size() < 2) return 0;
     auto* player = find_player(host, args);
     if (!player) return 0;
-    const auto id = static_cast<std::uint16_t>(args[1]);
-    const auto found = player->text_labels.find(id);
-    if (found == player->text_labels.end()) return 0;
-    player->text_labels.erase(found);
-    if (player->peer) {
-        samp::proto::BitStream payload;
-        payload.write(&id, sizeof(id));
-        host.send_rpc(*player->peer, 58, payload);
-    }
-    return 1;
+    return release_private_text_label(host, *player, static_cast<std::uint16_t>(args[1]));
 }
 
 // Official: FUN_00477dd0 @ 0x00477dd0 (samp-server.exe)
@@ -841,12 +1082,9 @@ cell update_player_3d_text_label_text(NativeHost& host, std::span<const cell> ar
     auto* player = find_player(host, args);
     if (!player) return 0;
     const auto id = static_cast<std::uint16_t>(args[1]);
-    const auto found = player->text_labels.find(id);
     const char* text = read_script_string(args[3]);
-    if (found == player->text_labels.end() || !text || std::strlen(text) >= 2048) return 0;
-    found->second.colour = static_cast<std::uint32_t>(args[2]);
-    found->second.text = text;
-    send_text_label(host, *player, id, found->second);
+    if (!text || id >= kTextLabelPoolSize || !player->text_labels.contains(id)) return 0;
+    update_private_text_label(host, *player, id, static_cast<std::uint32_t>(args[2]), text);
     return 1;
 }
 
@@ -923,44 +1161,44 @@ cell send_rcon_command(NativeHost& host, std::span<const cell> args,
     return command && host.send_rcon_command(command);
 }
 
-// These Pawn table callbacks are embedded inside shared label management
-// code and do not correspond to separate official function regions.
-// no standalone native entry
-cell attach_3d_text_label_to_player(NativeHost& host, std::span<const cell> args) {
-    if (args.size() < 5) return 0;
-    const auto id = static_cast<std::uint16_t>(args[0]);
-    if (id >= host.text_labels_.size() || !host.text_labels_[id].active) return 0;
-    auto* player = find_player(host, args.subspan(1));
-    if (!player) return 0;
-    auto& label = host.text_labels_[id];
-    label.position = {std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]),
-                      std::bit_cast<float>(args[4])};
-    label.attached_player = static_cast<std::uint16_t>(player->id);
-    label.attached_vehicle = 0xffff;
-    for (auto& receiver : host.players_)
-        if (receiver.in_use && receiver.virtual_world == label.virtual_world)
-            send_text_label(host, receiver, id, label);
-    return 1;
+// Official: FUN_004640f0 @ 0x004640f0 (samp-server.exe)
+bool attach_global_text_label_to_player(NativeHost& host, std::uint16_t id,
+                                       std::uint16_t player_id, std::array<float, 3> offset) {
+    auto* label = global_label(host, id);
+    if (!label || !label->active || player_id >= 1000 || player_id >= host.players_.size() ||
+        !host.players_[player_id].in_use) return false;
+    label->attached_player = player_id;
+    label->position = offset;
+    refresh_streamed_text_label(host, id);
+    return true;
 }
 
-// no standalone native entry
+// Official: FUN_00477c80 @ 0x00477c80 (samp-server.exe)
+cell attach_3d_text_label_to_player(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 5) return 0;
+    return attach_global_text_label_to_player(host,
+        static_cast<std::uint16_t>(args[0]), static_cast<std::uint16_t>(args[1]),
+        {std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]), std::bit_cast<float>(args[4])});
+}
+
+// Official: FUN_00464180 @ 0x00464180 (samp-server.exe)
+bool attach_global_text_label_to_vehicle(NativeHost& host, std::uint16_t id,
+                                        std::uint16_t vehicle_id, std::array<float, 3> offset) {
+    auto* label = global_label(host, id);
+    if (!label || !label->active || vehicle_id >= 2000 || vehicle_id >= host.vehicles_.size() ||
+        !host.vehicles_[vehicle_id].active) return false;
+    label->attached_vehicle = vehicle_id;
+    label->position = offset;
+    refresh_streamed_text_label(host, id);
+    return true;
+}
+
+// Official: FUN_00477cd0 @ 0x00477cd0 (samp-server.exe)
 cell attach_3d_text_label_to_vehicle(NativeHost& host, std::span<const cell> args) {
     if (args.size() < 5) return 0;
-    const auto id = static_cast<std::uint16_t>(args[0]);
-    if (id >= host.text_labels_.size() || !host.text_labels_[id].active) return 0;
-    const auto vehicle_id = static_cast<std::uint16_t>(args[1]);
-    if (vehicle_id >= 2000 || vehicle_id >= host.vehicles_.size() ||
-        !host.vehicles_[vehicle_id].active) return 0;
-    auto* vehicle = &host.vehicles_[vehicle_id];
-    auto& label = host.text_labels_[id];
-    label.position = {std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]),
-                      std::bit_cast<float>(args[4])};
-    label.attached_player = 0xffff;
-    label.attached_vehicle = vehicle->id;
-    for (auto& receiver : host.players_)
-        if (receiver.in_use && receiver.virtual_world == label.virtual_world)
-            send_text_label(host, receiver, id, label);
-    return 1;
+    return attach_global_text_label_to_vehicle(host,
+        static_cast<std::uint16_t>(args[0]), static_cast<std::uint16_t>(args[1]),
+        {std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]), std::bit_cast<float>(args[4])});
 }
 
 // Official: FUN_00473090 @ 0x00473090 (samp-server.exe)
@@ -1324,12 +1562,10 @@ constexpr auto find_vehicle = [](NativeHost& host, cell id) -> VehicleNativeStat
     return &host.vehicles_[index];
 };
 
-// Native-table callback: GetVehicleParamsSirenState @ 0x004706e0 (samp-server.exe).
-// The callback address is inside a shared official body; no standalone native entry.
-// no standalone native entry
+// Official: FUN_004706e0 @ 0x004706e0 (samp-server.exe)
 cell get_vehicle_siren_state(NativeHost& host, std::span<const cell> args) {
     const auto* vehicle = args.empty() ? nullptr : find_vehicle(host, args[0]);
-    return vehicle ? vehicle->siren : 0;
+    return vehicle ? std::bit_cast<std::int8_t>(vehicle->parameter_block()[7]) : 0;
 }
 
 // Official: FUN_004676b0 @ 0x004676b0 (samp-server.exe)
@@ -1377,11 +1613,6 @@ cell get_vehicle_velocity(NativeHost& host, std::span<const cell> args, const Ce
            write(args[3], std::bit_cast<cell>(vehicle->velocity[2]));
 }
 
-constexpr auto live_player_slots = [](NativeHost& host) {
-    const auto size = static_cast<std::size_t>(std::clamp(host.player_pool_highest_, -1, 999) + 1);
-    return std::span(host.players_).first(std::min(size, host.players_.size()));
-};
-
 // Official: FUN_00493960 @ 0x00493960 (samp-server.exe)
 void broadcast_native_rpc(NativeHost& host, std::uint8_t rpc, const samp::proto::BitStream& payload,
                           std::uint16_t excluded) {
@@ -1393,9 +1624,7 @@ void broadcast_native_rpc(NativeHost& host, std::uint8_t rpc, const samp::proto:
 }
 
 constexpr auto find_object = [](NativeHost& host, cell id) -> ObjectNativeState* {
-    const auto slot = static_cast<std::uint16_t>(id);
-    if (slot >= 2000 || slot >= host.objects_.size() || !host.objects_[slot].active) return nullptr;
-    return &host.objects_[slot];
+    return host.find_global_object(static_cast<std::uint16_t>(id));
 };
 
 // Official: FUN_0049d770 @ 0x0049d770 (samp-server.exe)
@@ -1413,10 +1642,10 @@ ObjectNativeState initialize_object(const NativeHost& host, cell model, const st
 // Official: FUN_00465380 @ 0x00465380 (samp-server.exe)
 std::uint16_t allocate_global_object(NativeHost& host, cell model, const std::array<float, 3>& position,
                                      const std::array<float, 3>& rotation, float draw_distance) {
-    const auto limit = std::min<std::size_t>(2000, host.objects_.size());
+    const auto limit = std::min(NativeHost::kObjectPoolSize, host.objects_.size());
     for (std::size_t i = 1; i < limit; ++i) {
         auto& object = host.objects_[i];
-        if (object.active) continue;
+        if (object.active || host.player_object_reservations_[i] != 0) continue;
         object = initialize_object(host, model, position, rotation, draw_distance);
         object.active = true;
         object.id = static_cast<std::uint16_t>(i);
@@ -1442,7 +1671,7 @@ cell create_global_object(NativeHost& host, std::span<const cell> args) {
     const auto id = allocate_global_object(host, args[0], position, rotation, std::bit_cast<float>(args[7]));
     if (id != 0xffff) {
         for (auto& player : live_player_slots(host))
-            if (player.in_use && player.peer) host.send_object(player, host.objects_[id]);
+            if (player.in_use && player.peer) host.send_global_object(player, host.objects_[id]);
     }
     return id;
 }
@@ -1460,9 +1689,121 @@ cell destroy_global_object(NativeHost& host, std::span<const cell> args) {
     return 1;
 }
 
+// Official: FUN_0049d9d0 @ 0x0049d9d0 (samp-server.exe)
+void set_object_vehicle_attachment(ObjectNativeState& object, std::uint16_t vehicle,
+                                   const std::array<float, 3>& offset, const std::array<float, 3>& rotation) {
+    object.attached_vehicle = vehicle;
+    if (vehicle == 0xffff) {
+        object.attachment_offset = {};
+        object.attachment_rotation = {};
+    } else {
+        object.attachment_offset = offset;
+        object.attachment_rotation = rotation;
+    }
+}
+
+// Official: FUN_0049da60 @ 0x0049da60 (samp-server.exe)
+void set_object_object_attachment(ObjectNativeState& object, std::uint16_t target,
+                                  const std::array<float, 3>& offset, const std::array<float, 3>& rotation,
+                                  std::uint8_t sync_rotation) {
+    object.attached_object = target;
+    if (target == 0xffff) {
+        object.attachment_offset = {};
+        object.attachment_rotation = {};
+        object.attachment_sync_rotation = 1;
+    } else {
+        object.attachment_offset = offset;
+        object.attachment_rotation = rotation;
+        object.attachment_sync_rotation = sync_rotation;
+    }
+}
+
+// Official: FUN_00474c20 @ 0x00474c20 (samp-server.exe)
+cell attach_global_object_to_vehicle(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 8) return 0;
+    auto* object = find_object(host, args[0]);
+    if (!object) return 0;
+
+    const std::array offset{std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]), std::bit_cast<float>(args[4])};
+    const std::array rotation{std::bit_cast<float>(args[5]), std::bit_cast<float>(args[6]), std::bit_cast<float>(args[7])};
+    set_object_vehicle_attachment(*object, static_cast<std::uint16_t>(args[1]), offset, rotation);
+
+    for (auto& player : live_player_slots(host))
+        if (player.in_use && player.peer) host.send_global_object(player, *object);
+    return 1;
+}
+
+// Official: FUN_00474da0 @ 0x00474da0 (samp-server.exe)
+cell attach_global_object_to_object(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 9) return 0;
+    auto* object = find_object(host, args[0]);
+    if (!object) return 0;
+
+    const std::array offset{std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]), std::bit_cast<float>(args[4])};
+    const std::array rotation{std::bit_cast<float>(args[5]), std::bit_cast<float>(args[6]), std::bit_cast<float>(args[7])};
+    set_object_object_attachment(*object, static_cast<std::uint16_t>(args[1]), offset, rotation,
+                                 static_cast<std::uint8_t>(args[8]));
+
+    for (auto& player : live_player_slots(host))
+        if (player.in_use && player.peer) host.send_global_object(player, *object);
+    return 1;
+}
+
 // Official: FUN_00475460 @ 0x00475460 (samp-server.exe)
 cell is_valid_global_object(NativeHost& host, std::span<const cell> args) {
     return !args.empty() && find_object(host, args[0]);
+}
+
+// Official: FUN_004754a0 @ 0x004754a0 (samp-server.exe)
+cell is_global_object_moving(NativeHost& host, std::span<const cell> args) {
+    const auto* object = args.empty() ? nullptr : find_object(host, args[0]);
+    return object && object->moving;
+}
+
+// Official: FUN_0047e140 @ 0x0047e140 (samp-server.exe)
+cell stop_global_object(NativeHost& host, std::span<const cell> args) {
+    auto* object = args.empty() ? nullptr : find_object(host, args[0]);
+    if (!object || !object->moving) return 0;
+
+    object->moving = false;
+    samp::proto::BitStream payload;
+    payload.write(&object->id, sizeof(object->id));
+    broadcast_native_rpc(host, 122, payload, 0xffff);
+    return 1;
+}
+
+// no standalone native entry
+samp::proto::BitStream object_move_payload(const ObjectNativeState& object, const std::array<float, 3>& target,
+                                          float speed, const std::array<float, 3>& rotation) {
+    samp::proto::BitStream payload;
+    payload.write(&object.id, sizeof(object.id));
+    payload.write(object.position.data(), sizeof(object.position));
+    payload.write(target.data(), sizeof(target));
+    payload.write(&speed, sizeof(speed));
+    payload.write(rotation.data(), sizeof(rotation));
+    return payload;
+}
+
+// The original conversion returns the low word of an x87 signed 64-bit result.
+// no standalone native entry
+cell object_move_milliseconds(float duration) {
+    const double milliseconds = static_cast<double>(duration) * 1000.0;
+    if (!std::isfinite(milliseconds) || milliseconds < -0x1p63 || milliseconds >= 0x1p63) return 0;
+    return std::bit_cast<cell>(static_cast<std::uint32_t>(static_cast<std::int64_t>(milliseconds)));
+}
+
+// Official: FUN_0047de70 @ 0x0047de70 (samp-server.exe)
+cell move_global_object(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 8) return 0;
+    auto* object = find_object(host, args[0]);
+    if (!object) return 0;
+
+    if (object->moving) stop_global_object(host, args.first(1));
+    const std::array target{std::bit_cast<float>(args[1]), std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3])};
+    const float speed = std::bit_cast<float>(args[4]);
+    const std::array rotation{std::bit_cast<float>(args[5]), std::bit_cast<float>(args[6]), std::bit_cast<float>(args[7])};
+    broadcast_native_rpc(host, 99, object_move_payload(*object, target, speed, rotation), 0xffff);
+    return object_move_milliseconds(object->start_move(target, speed, rotation));
 }
 
 // Official: FUN_00475390 @ 0x00475390 (samp-server.exe)
@@ -1479,6 +1820,238 @@ void update_object_rotation(ObjectNativeState& object, const std::array<float, 3
 // Official: FUN_0049d8c0 @ 0x0049d8c0 (samp-server.exe)
 const std::array<float, 3>& object_rotation(const ObjectNativeState& object) {
     return object.rotation;
+}
+
+// Official: FUN_0046fe70 @ 0x0046fe70 (samp-server.exe)
+bool is_player_object_allocated(NativeHost& host, std::uint16_t player_id, std::uint16_t object_id) {
+    return object_id < host.player_object_reservations_.size() &&
+           host.player_object_reservations_[object_id] != 0 &&
+           host.find_player_object(player_id, object_id) != nullptr;
+}
+
+// Official: FUN_00465460 @ 0x00465460 (samp-server.exe)
+std::uint16_t allocate_player_object(NativeHost& host, std::uint16_t player_id, cell model,
+                                     const std::array<float, 3>& position, const std::array<float, 3>& rotation,
+                                     float draw_distance) {
+    try {
+        auto& objects = host.player_objects_[player_id];
+        for (std::uint16_t id = 1; id < NativeHost::kObjectPoolSize; ++id) {
+            if (find_object(host, id) || objects.contains(id)) continue;
+            auto object = initialize_object(host, model, position, rotation, draw_distance);
+            object.id = id;
+            object.active = true;
+            objects.emplace(id, std::move(object));
+            ++host.player_object_reservations_[id];
+            return id;
+        }
+    } catch (const std::bad_alloc&) {
+        return 0xffff;
+    }
+    return 0xffff;
+}
+
+// Official: FUN_004656c0 @ 0x004656c0 (samp-server.exe)
+bool free_player_object(NativeHost& host, std::uint16_t player_id, std::uint16_t object_id) {
+    if (object_id >= host.player_object_reservations_.size() ||
+        host.player_object_reservations_[object_id] == 0) return false;
+    const auto owner = host.player_objects_.find(player_id);
+    if (owner == host.player_objects_.end() || owner->second.erase(object_id) == 0) return false;
+    --host.player_object_reservations_[object_id];
+    return true;
+}
+
+// Official: FUN_004756b0 @ 0x004756b0 (samp-server.exe)
+cell create_player_object(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 9) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    const auto player_id = static_cast<std::uint16_t>(args[0]);
+    const std::array position{std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]), std::bit_cast<float>(args[4])};
+    const std::array rotation{std::bit_cast<float>(args[5]), std::bit_cast<float>(args[6]), std::bit_cast<float>(args[7])};
+    const auto id = allocate_player_object(host, player_id, args[1], position, rotation, std::bit_cast<float>(args[8]));
+    if (const auto* object = host.find_player_object(player_id, id); object && player->peer)
+        host.send_object(*player, *object);
+    return id;
+}
+
+// Official: FUN_0047e980 @ 0x0047e980 (samp-server.exe)
+cell destroy_player_object(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    if (free_player_object(host, static_cast<std::uint16_t>(args[0]), id) && player->peer) {
+        samp::proto::BitStream payload;
+        payload.write(&id, sizeof(id));
+        host.send_rpc(*player->peer, 47, payload);
+    }
+    return 1;
+}
+
+// Official: FUN_00475960 @ 0x00475960 (samp-server.exe)
+cell is_valid_player_object(NativeHost& host, std::span<const cell> args) {
+    return args.size() >= 2 && find_player(host, args) &&
+           host.find_player_object(static_cast<std::uint16_t>(args[0]), static_cast<std::uint16_t>(args[1]));
+}
+
+// Official: FUN_00475900 @ 0x00475900 (samp-server.exe)
+cell get_player_object_model(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2 || !find_player(host, args)) return 0;
+    const auto* object = host.find_player_object(static_cast<std::uint16_t>(args[0]), static_cast<std::uint16_t>(args[1]));
+    return object ? object->model : -1;
+}
+
+// Official: FUN_00475780 @ 0x00475780 (samp-server.exe)
+cell get_player_object_position(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 5 || !find_player(host, args)) return 0;
+    const auto* object = host.find_player_object(static_cast<std::uint16_t>(args[0]), static_cast<std::uint16_t>(args[1]));
+    if (!object) return 0;
+    for (std::size_t i = 0; i < object->position.size(); ++i)
+        if (!write(args[i + 2], std::bit_cast<cell>(object->position[i]))) return 0;
+    return 1;
+}
+
+// Official: FUN_00475830 @ 0x00475830 (samp-server.exe)
+cell get_player_object_rotation(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 5 || !find_player(host, args)) return 0;
+    const auto* object = host.find_player_object(static_cast<std::uint16_t>(args[0]), static_cast<std::uint16_t>(args[1]));
+    if (!object) return 0;
+    const auto& rotation = object_rotation(*object);
+    for (std::size_t i = 0; i < rotation.size(); ++i)
+        if (!write(args[i + 2], std::bit_cast<cell>(rotation[i]))) return 0;
+    return 1;
+}
+
+// no standalone native entry
+void send_player_object_transform(NativeHost& host, const PlayerNativeState& player, std::uint16_t object_id,
+                                  std::uint8_t rpc, std::span<const cell> values) {
+    if (!player.peer) return;
+    samp::proto::BitStream payload;
+    payload.write(&object_id, sizeof(object_id));
+    payload.write(values.data(), values.size_bytes());
+    host.send_rpc(*player.peer, rpc, payload);
+}
+
+// Official: FUN_0047e4d0 @ 0x0047e4d0 (samp-server.exe)
+cell set_player_object_position(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 5) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    const auto player_id = static_cast<std::uint16_t>(args[0]);
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    if (!is_player_object_allocated(host, player_id, id)) return 0;
+    auto* object = host.find_player_object(player_id, id);
+    send_player_object_transform(host, *player, id, 45, args.subspan(2, 3));
+    object->position = {std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]), std::bit_cast<float>(args[4])};
+    return 1;
+}
+
+// Official: FUN_0047e690 @ 0x0047e690 (samp-server.exe)
+cell set_player_object_rotation(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 5) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    const auto player_id = static_cast<std::uint16_t>(args[0]);
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    if (!is_player_object_allocated(host, player_id, id)) return 0;
+    send_player_object_transform(host, *player, id, 46, args.subspan(2, 3));
+    update_object_rotation(*host.find_player_object(player_id, id),
+                           {std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]), std::bit_cast<float>(args[4])});
+    return 1;
+}
+
+// Official: FUN_004759d0 @ 0x004759d0 (samp-server.exe)
+cell is_player_object_moving(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2 || !find_player(host, args)) return 0;
+    const auto* object = host.find_player_object(static_cast<std::uint16_t>(args[0]), static_cast<std::uint16_t>(args[1]));
+    return object && object->moving;
+}
+
+// Official: FUN_0047edf0 @ 0x0047edf0 (samp-server.exe)
+cell stop_player_object(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    auto* object = host.find_player_object(static_cast<std::uint16_t>(args[0]), static_cast<std::uint16_t>(args[1]));
+    if (!object || !object->moving) return 0;
+
+    object->moving = false;
+    if (player->peer) {
+        samp::proto::BitStream payload;
+        payload.write(&object->id, sizeof(object->id));
+        host.send_rpc(*player->peer, 122, payload);
+    }
+    return 1;
+}
+
+// Official: FUN_0047eab0 @ 0x0047eab0 (samp-server.exe)
+cell move_player_object(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 9) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    auto* object = host.find_player_object(static_cast<std::uint16_t>(args[0]), static_cast<std::uint16_t>(args[1]));
+    if (!object) return 0;
+
+    if (object->moving) stop_player_object(host, args.first(2));
+    const std::array target{std::bit_cast<float>(args[2]), std::bit_cast<float>(args[3]), std::bit_cast<float>(args[4])};
+    const float speed = std::bit_cast<float>(args[5]);
+    std::array rotation{std::bit_cast<float>(args[6]), std::bit_cast<float>(args[7]), std::bit_cast<float>(args[8])};
+    for (std::size_t axis = 0; axis < rotation.size(); ++axis)
+        if (rotation[axis] < -999.0f) rotation[axis] = object->rotation[axis];
+
+    if (player->peer) host.send_rpc(*player->peer, 99, object_move_payload(*object, target, speed, rotation));
+    return object_move_milliseconds(object->start_move(target, speed, rotation));
+}
+
+// Official: FUN_004754e0 @ 0x004754e0 (samp-server.exe)
+cell select_object(NativeHost& host, std::span<const cell> args) {
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    if (player->peer) host.send_rpc(*player->peer, 27, {});
+    player->object_edit_enabled = true;
+    return 1;
+}
+
+// Official: FUN_004755d0 @ 0x004755d0 (samp-server.exe)
+cell cancel_object_edit(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    if (player->peer) host.send_rpc(*player->peer, 28, {});
+    return 1;
+}
+
+// no standalone native entry
+void send_object_edit_request(NativeHost& host, PlayerNativeState& player, std::uint16_t object_id,
+                              bool player_owned) {
+    if (player.peer) {
+        samp::proto::BitStream payload;
+        if (player_owned) payload.write1();
+        else payload.write0();
+        payload.write(&object_id, sizeof(object_id));
+        host.send_rpc(*player.peer, 117, payload);
+    }
+    player.object_edit_enabled = true;
+}
+
+// Official: FUN_0047e250 @ 0x0047e250 (samp-server.exe)
+cell edit_global_object(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2 || host.objects_.empty()) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    if (host.find_global_object(id)) send_object_edit_request(host, *player, id, false);
+    return 1;
+}
+
+// Official: FUN_0047e390 @ 0x0047e390 (samp-server.exe)
+cell edit_player_object(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2 || host.objects_.empty()) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    const auto player_id = static_cast<std::uint16_t>(args[0]);
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    if (host.find_player_object(player_id, id)) send_object_edit_request(host, *player, id, true);
+    return 1;
 }
 
 // Official: FUN_0047dab0 @ 0x0047dab0 (samp-server.exe)
@@ -1534,7 +2107,7 @@ cell set_global_object_no_camera_collision(NativeHost& host, std::span<const cel
     if (!object) return 0;
     object->no_camera_collision = true;
     for (auto& player : live_player_slots(host))
-        if (player.in_use && player.peer) host.send_object(player, *object);
+        if (player.in_use && player.peer) host.send_global_object(player, *object);
     return 1;
 }
 
@@ -1704,87 +2277,213 @@ void broadcast_vehicle_rpc(NativeHost& host, std::uint8_t rpc, const samp::proto
     }
 }
 
-// Native-table callback: SetVehicleParamsEx @ 0x004725f0 (samp-server.exe).
-// The callback address is inside a shared official body; no standalone native entry.
-// no standalone native entry
+// The official slot tables at 0x004be3c0 and 0x004befa0 agree for IDs 1000–1193.
+constexpr std::array<std::uint8_t, 194> vehicle_component_types{
+    0, 0, 0, 0, 1, 1, 2, 3, 5, 5, 5, 1, 1, 4, 0, 0, 0, 3,
+    6, 6, 6, 6, 6, 0, 4, 7, 3, 3, 6, 6, 3, 3, 2, 2, 6, 2,
+    3, 6, 2, 3, 3, 3, 3, 6, 6, 6, 6, 3, 3, 0, 0, 3, 3, 2,
+    2, 2, 3, 3, 0, 6, 0, 2, 3, 3, 6, 6, 6, 2, 2, 3, 3, 3,
+    3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 9, 2, 6,
+    3, 2, 6, 3, 3, 3, 7, 7, 7, 3, 10, 3, 3, 2, 6, 6, 3, 3,
+    3, 11, 11, 1, 1, 6, 6, 10, 10, 10, 3, 3, 3, 3, 3, 10, 3, 10,
+    6, 6, 2, 6, 2, 2, 6, 3, 3, 6, 6, 3, 0, 0, 11, 11, 12, 13,
+    12, 13, 0, 0, 11, 11, 11, 11, 10, 10, 11, 10, 11, 10, 0, 11, 10, 11,
+    0, 0, 0, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11, 10, 11, 11, 10,
+    11, 10, 10, 11, 11, 10, 11, 11, 10, 10, 10, 10, 11, 11};
+
+// Model tags at 0x004bf068. A tag is (model + 112) modulo 256, or 255 for any model.
+constexpr std::array<std::uint8_t, 194> vehicle_component_model_tags{
+    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+    255, 255, 255, 255, 255, 255, 255, 255, 160, 160, 160, 160, 160, 160, 160, 160, 162, 162,
+    162, 162, 162, 162, 162, 162, 175, 175, 175, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+    165, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 159, 159, 159, 159, 159, 159, 159,
+    159, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 158, 158,
+    158, 158, 158, 158, 158, 158, 255, 255, 255, 175, 134, 134, 167, 136, 136, 136, 134, 136,
+    136, 135, 135, 135, 135, 135, 135, 135, 135, 135, 135, 135, 135, 135, 134, 134, 134, 134,
+    134, 134, 136, 167, 167, 167, 167, 167, 176, 176, 176, 176, 160, 160, 160, 160, 255, 255,
+    255, 255, 162, 162, 162, 162, 165, 165, 165, 165, 161, 161, 161, 161, 159, 159, 159, 159,
+    159, 158, 158, 158, 158, 158, 158, 160, 160, 162, 162, 159, 175, 175, 175, 175, 134, 134,
+    134, 136, 136, 136, 136, 134, 167, 167, 167, 167, 176, 176, 176, 176};
+
+// Source adapter only; no established separate native entry.
+void send_vehicle_appearance_event(NativeHost& host, const VehicleNativeState& vehicle,
+                                   std::uint16_t sender, VehicleAppearanceEvent event,
+                                   std::uint32_t first, std::uint32_t second) {
+    const std::array<std::uint32_t, 4> values{static_cast<std::uint32_t>(event), vehicle.id, first, second};
+    samp::proto::BitStream payload;
+    payload.write(&sender, sizeof(sender));
+    payload.write(values.data(), sizeof(values));
+    broadcast_vehicle_rpc(host, 96, payload, vehicle.id, sender);
+}
+
+// Official: FUN_00470460 @ 0x00470460 (samp-server.exe)
+cell add_vehicle_component(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    auto* vehicle = find_vehicle(host, args[0]);
+    if (!vehicle) return 0;
+    host.apply_vehicle_component(*vehicle, 0xffff, static_cast<std::uint16_t>(args[1]));
+    return 1;
+}
+
+// Official: FUN_0048a230 @ 0x0048a230 (samp-server.exe)
+void remove_installed_vehicle_component(NativeHost& host, VehicleNativeState& vehicle,
+                                        std::uint16_t sender, std::uint16_t component) {
+    if (component < 1000 || component >= 1194) return;
+    auto& installed = vehicle.mods[vehicle_component_types[component - 1000]];
+    if (installed != component - 999) return;
+    const std::array<std::uint16_t, 2> values{vehicle.id, component};
+    samp::proto::BitStream payload;
+    payload.write(values.data(), sizeof(values));
+    broadcast_vehicle_rpc(host, 57, payload, vehicle.id, sender);
+    installed = 0;
+}
+
+// Official: FUN_004704a0 @ 0x004704a0 (samp-server.exe)
+cell remove_vehicle_component(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    auto* vehicle = find_vehicle(host, args[0]);
+    if (!vehicle) return 0;
+    remove_installed_vehicle_component(host, *vehicle, 0xffff, static_cast<std::uint16_t>(args[1]));
+    return 1;
+}
+
+// Official: FUN_004704e0 @ 0x004704e0 (samp-server.exe)
+cell change_vehicle_colour(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 3) return 0;
+    auto* vehicle = find_vehicle(host, args[0]);
+    if (!vehicle) return 0;
+    host.apply_vehicle_respray(*vehicle, 0xffff, static_cast<std::uint8_t>(args[1]),
+                              static_cast<std::uint8_t>(args[2]));
+    return 1;
+}
+
+// Official: FUN_00470530 @ 0x00470530 (samp-server.exe)
+cell change_vehicle_paintjob(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2 || host.vehicles_.empty()) return 0;
+    if (auto* vehicle = find_vehicle(host, args[0])) {
+        host.apply_vehicle_paintjob(*vehicle, 0xffff, static_cast<std::uint8_t>(args[1]));
+    }
+    return 1;
+}
+
+// Official: FUN_00489910 @ 0x00489910 (samp-server.exe)
+void assign_vehicle_number_plate(VehicleNativeState& vehicle, std::string_view plate) {
+    if (plate.size() <= 32) vehicle.number_plate = plate;
+}
+
+// Official: FUN_00470570 @ 0x00470570 (samp-server.exe)
+cell set_vehicle_number_plate(NativeHost& host, std::span<const cell> args, const StringReader& read) {
+    if (args.size() < 2) return 0;
+    auto* vehicle = find_vehicle(host, args[0]);
+    if (!vehicle) return 0;
+    const auto* plate = read(args[1]);
+    if (!plate) return 0;
+    assign_vehicle_number_plate(*vehicle, plate);
+    return *plate != '\0';
+}
+
+// Official: FUN_00470740 @ 0x00470740 (samp-server.exe)
+cell get_vehicle_component_in_slot(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* vehicle = find_vehicle(host, args[0]);
+    const auto slot = static_cast<std::uint8_t>(args[1]);
+    if (!vehicle || slot >= vehicle->mods.size()) return 0;
+    const auto component = vehicle->mods[slot];
+    return component != 0 ? component + 999 : 0;
+}
+
+// Official: FUN_004707b0 @ 0x004707b0 (samp-server.exe)
+cell get_vehicle_component_type(NativeHost&, std::span<const cell> args) {
+    if (args.empty()) return -1;
+    const auto component = static_cast<std::uint16_t>(args[0]);
+    if (component < 1000 || component >= 1194) return -1;
+    return vehicle_component_types[component - 1000];
+}
+
+// Official: FUN_00470350 @ 0x00470350 (samp-server.exe)
+cell set_vehicle_to_respawn(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    auto* vehicle = find_vehicle(host, args[0]);
+    if (!vehicle) return 0;
+    using namespace std::chrono;
+    const auto now = duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();
+    host.respawn_vehicle(*vehicle, static_cast<std::uint64_t>(now));
+    return 1;
+}
+
+// Official: FUN_0048a640 @ 0x0048a640 (samp-server.exe)
+void apply_vehicle_parameters(NativeHost& host, VehicleNativeState& vehicle,
+                              const VehicleNativeState::ParameterBlock& parameters) {
+    vehicle.parameters = parameters;
+    samp::proto::BitStream payload;
+    payload.write(&vehicle.id, sizeof(vehicle.id));
+    payload.write(vehicle.parameters.data(), vehicle.parameters.size());
+    broadcast_vehicle_rpc(host, 24, payload, vehicle.id, 0xffff);
+}
+
+// Official: FUN_004725f0 @ 0x004725f0 (samp-server.exe)
 cell set_vehicle_params_ex(NativeHost& host, std::span<const cell> args) {
     if (args.size() < 8) return 0;
     auto* vehicle = find_vehicle(host, args[0]);
     if (!vehicle) return 0;
-    for (std::size_t i = 0; i < 7; ++i)
-        vehicle->parameters[i] = static_cast<std::uint8_t>(args[i + 1]);
-    samp::proto::BitStream payload;
-    payload.write(&vehicle->id, sizeof(vehicle->id));
-    payload.write(vehicle->parameters.data(), vehicle->parameters.size());
-    broadcast_vehicle_rpc(host, 24, payload, vehicle->id, 0xffff);
+    auto parameters = vehicle->parameter_block();
+    for (std::size_t i = 0; i < 7; ++i) parameters[i] = static_cast<std::uint8_t>(args[i + 1]);
+    apply_vehicle_parameters(host, *vehicle, parameters);
     return 1;
 }
 
-// Native-table callback: GetVehicleParamsEx @ 0x004726b0 (samp-server.exe).
-// The callback address is inside a shared official body; no standalone native entry.
-// no standalone native entry
+// Official: FUN_004726b0 @ 0x004726b0 (samp-server.exe)
 cell get_vehicle_params_ex(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
     if (args.size() < 8) return 0;
     const auto* vehicle = find_vehicle(host, args[0]);
     if (!vehicle) return 0;
+    const auto& parameters = vehicle->parameter_block();
     for (std::size_t i = 0; i < 7; ++i)
-        if (!write(args[i + 1], vehicle->parameters[i])) return 0;
+        if (!write(args[i + 1], std::bit_cast<std::int8_t>(parameters[i]))) return 0;
     return 1;
 }
 
-// Native-table callback: SetVehicleParamsCarDoors @ 0x004727d0 (samp-server.exe).
-// The callback address is inside a shared official body; no standalone native entry.
-// no standalone native entry
+// Official: FUN_004727d0 @ 0x004727d0 (samp-server.exe)
 cell set_vehicle_params_car_doors(NativeHost& host, std::span<const cell> args) {
     if (args.size() < 5) return 0;
     auto* vehicle = find_vehicle(host, args[0]);
     if (!vehicle) return 0;
-    for (std::size_t i = 0; i < 4; ++i)
-        vehicle->parameters[8 + i] = static_cast<std::uint8_t>(args[i + 1]);
-    samp::proto::BitStream payload;
-    payload.write(&vehicle->id, sizeof(vehicle->id));
-    payload.write(vehicle->parameters.data(), vehicle->parameters.size());
-    broadcast_vehicle_rpc(host, 24, payload, vehicle->id, 0xffff);
+    auto parameters = vehicle->parameter_block();
+    for (std::size_t i = 0; i < 4; ++i) parameters[8 + i] = static_cast<std::uint8_t>(args[i + 1]);
+    apply_vehicle_parameters(host, *vehicle, parameters);
     return 1;
 }
 
-// Native-table callback: GetVehicleParamsCarDoors @ 0x00472880 (samp-server.exe).
-// The callback address is inside a shared official body; no standalone native entry.
-// no standalone native entry
+// Official: FUN_00472880 @ 0x00472880 (samp-server.exe)
 cell get_vehicle_params_car_doors(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
     if (args.size() < 5) return 0;
     const auto* vehicle = find_vehicle(host, args[0]);
     if (!vehicle) return 0;
+    const auto& parameters = vehicle->parameter_block();
     for (std::size_t i = 0; i < 4; ++i)
-        if (!write(args[i + 1], vehicle->parameters[8 + i])) return 0;
+        if (!write(args[i + 1], std::bit_cast<std::int8_t>(parameters[8 + i]))) return 0;
     return 1;
 }
 
-// Native-table callback: SetVehicleParamsCarWindows @ 0x00472950 (samp-server.exe).
-// The callback address is inside a shared official body; no standalone native entry.
-// no standalone native entry
+// Official: FUN_00472950 @ 0x00472950 (samp-server.exe)
 cell set_vehicle_params_car_windows(NativeHost& host, std::span<const cell> args) {
     if (args.size() < 5) return 0;
     auto* vehicle = find_vehicle(host, args[0]);
     if (!vehicle) return 0;
-    for (std::size_t i = 0; i < 4; ++i)
-        vehicle->parameters[12 + i] = static_cast<std::uint8_t>(args[i + 1]);
-    samp::proto::BitStream payload;
-    payload.write(&vehicle->id, sizeof(vehicle->id));
-    payload.write(vehicle->parameters.data(), vehicle->parameters.size());
-    broadcast_vehicle_rpc(host, 24, payload, vehicle->id, 0xffff);
+    auto parameters = vehicle->parameter_block();
+    for (std::size_t i = 0; i < 4; ++i) parameters[12 + i] = static_cast<std::uint8_t>(args[i + 1]);
+    apply_vehicle_parameters(host, *vehicle, parameters);
     return 1;
 }
 
-// Native-table callback: GetVehicleParamsCarWindows @ 0x00472a00 (samp-server.exe).
-// The callback address is inside a shared official body; no standalone native entry.
-// no standalone native entry
+// Official: FUN_00472a00 @ 0x00472a00 (samp-server.exe)
 cell get_vehicle_params_car_windows(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
     if (args.size() < 5) return 0;
     const auto* vehicle = find_vehicle(host, args[0]);
     if (!vehicle) return 0;
+    const auto& parameters = vehicle->parameter_block();
     for (std::size_t i = 0; i < 4; ++i)
-        if (!write(args[i + 1], vehicle->parameters[12 + i])) return 0;
+        if (!write(args[i + 1], std::bit_cast<std::int8_t>(parameters[12 + i]))) return 0;
     return 1;
 }
 
@@ -1795,6 +2494,43 @@ void apply_vehicle_health(NativeHost& host, VehicleNativeState& vehicle, cell he
     payload.write(&health, sizeof(health));
     broadcast_vehicle_rpc(host, 147, payload, vehicle.id, 0xffff);
     vehicle.health = std::bit_cast<float>(health);
+}
+
+// Official: FUN_00489f80 @ 0x00489f80 (samp-server.exe)
+void repair_vehicle_state(NativeHost& host, VehicleNativeState& vehicle) {
+    apply_vehicle_health(host, vehicle, std::bit_cast<cell>(1000.0f));
+    host.apply_vehicle_damage(vehicle, 0xffff, 0, 0, 0, 0);
+    vehicle.parameters[4] = 0;
+    vehicle.parameters[5] = 0;
+    vehicle.reset_door_parameters();
+}
+
+// Official: FUN_00470420 @ 0x00470420 (samp-server.exe)
+cell repair_vehicle(NativeHost& host, std::span<const cell> args) {
+    auto* vehicle = args.empty() ? nullptr : find_vehicle(host, args[0]);
+    if (!vehicle) return 0;
+    repair_vehicle_state(host, *vehicle);
+    return 1;
+}
+
+// Official: FUN_004790e0 @ 0x004790e0 (samp-server.exe)
+cell get_vehicle_damage_status(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 5) return 0;
+    const auto* vehicle = find_vehicle(host, args[0]);
+    return vehicle && write(args[1], std::bit_cast<cell>(vehicle->damage_panels)) &&
+           write(args[2], std::bit_cast<cell>(vehicle->damage_doors)) &&
+           write(args[3], vehicle->damage_lights) && write(args[4], vehicle->damage_tires);
+}
+
+// Official: FUN_004791c0 @ 0x004791c0 (samp-server.exe)
+cell update_vehicle_damage_status(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 5) return 0;
+    auto* vehicle = find_vehicle(host, args[0]);
+    if (!vehicle) return 0;
+    host.apply_vehicle_damage(*vehicle, 0xffff, std::bit_cast<std::uint32_t>(args[1]),
+                              std::bit_cast<std::uint32_t>(args[2]), static_cast<std::uint8_t>(args[3]),
+                              static_cast<std::uint8_t>(args[4]));
+    return 1;
 }
 
 // Official: FUN_00474110 @ 0x00474110 (samp-server.exe)
@@ -1894,7 +2630,6 @@ void apply_player_virtual_world(NativeHost& host, PlayerNativeState& player, cel
     if (host.artwork_enabled_ && world != 0) player.models_ready = false;
     player.virtual_world = world;
     send_player_command(host, player, samp::proto::RpcId::SetPlayerVirtualWorld, {&world, 1});
-    host.sync_text_labels(player);
 }
 
 // Official: FUN_00470ee0 @ 0x00470ee0 (samp-server.exe)
@@ -2717,10 +3452,15 @@ cell get_player_keys(NativeHost& host, std::span<const cell> args, const CellWri
 
 using OutputNative = cell (*)(NativeHost&, std::span<const cell>, const CellWriter&);
 constexpr std::pair<const char*, OutputNative> output_natives[] = {
+    {"GetActorFacingAngle", actor_natives::get_angle},
+    {"GetActorHealth", actor_natives::get_health},
+    {"GetActorPos", actor_natives::get_position},
     {"GetNetworkStats", get_network_stats},
     {"GetPlayerNetworkStats", get_player_network_stats},
     {"GetObjectPos", get_global_object_position},
     {"GetObjectRot", get_global_object_rotation},
+    {"GetPlayerObjectPos", get_player_object_position},
+    {"GetPlayerObjectRot", get_player_object_rotation},
     {"GetPlayerArmour", get_player_armour},
     {"GetPlayerCameraFrontVector", get_player_camera_front_vector},
     {"GetPlayerCameraPos", get_player_camera_pos},
@@ -2733,6 +3473,7 @@ constexpr std::pair<const char*, OutputNative> output_natives[] = {
     {"GetPlayerVelocity", get_player_velocity},
     {"GetPlayerWeaponData", get_player_weapon_data},
     {"GetVehicleHealth", get_vehicle_health},
+    {"GetVehicleDamageStatus", get_vehicle_damage_status},
     {"GetVehiclePos", get_vehicle_position},
     {"GetVehicleParamsEx", get_vehicle_params_ex},
     {"GetVehicleParamsCarDoors", get_vehicle_params_car_doors},
@@ -2744,16 +3485,39 @@ constexpr std::pair<const char*, OutputNative> output_natives[] = {
 
 using ServerNative = cell (*)(NativeHost&, std::span<const cell>);
 constexpr std::pair<const char*, ServerNative> server_natives[] = {
+    {"CreateActor", actor_natives::create},
+    {"ClearActorAnimations", actor_natives::clear_animations},
+    {"DestroyActor", actor_natives::destroy},
+    {"GetActorPoolSize", actor_natives::get_pool_size},
+    {"GetActorVirtualWorld", actor_natives::get_world},
+    {"IsActorInvulnerable", actor_natives::is_invulnerable},
+    {"IsActorStreamedIn", actor_natives::is_streamed_in},
+    {"IsValidActor", actor_natives::is_valid},
+    {"SetActorFacingAngle", actor_natives::set_angle},
+    {"SetActorHealth", actor_natives::set_health},
+    {"SetActorInvulnerable", actor_natives::set_invulnerable},
+    {"SetActorPos", actor_natives::set_position},
+    {"SetActorVirtualWorld", actor_natives::set_world},
     {"NetStats_PacketLossPercent", get_packet_loss_percent},
     {"AllowInteriorWeapons", allow_interior_weapons},
     {"AddPlayerClass", add_player_class},
     {"AddPlayerClassEx", add_player_class_ex},
     {"Ban", ban_player},
+    {"AttachObjectToObject", attach_global_object_to_object},
+    {"AttachObjectToVehicle", attach_global_object_to_vehicle},
     {"CreateObject", create_global_object},
+    {"CreatePlayerObject", create_player_object},
+    {"CancelEdit", cancel_object_edit},
+    {"EditObject", edit_global_object},
+    {"EditPlayerObject", edit_player_object},
+    {"SelectObject", select_object},
     {"CreateExplosion", create_explosion},
     {"CreateExplosionForPlayer", create_explosion_for_player},
     {"DestroyObject", destroy_global_object},
+    {"DestroyPlayerObject", destroy_player_object},
     {"DestroyVehicle", destroy_vehicle},
+    {"asin", arc_sine},
+    {"acos", arc_cosine},
     {"atan", arc_tangent},
     {"atan2", arc_tangent_two},
     {"ClearAnimations", clear_player_animations},
@@ -2781,6 +3545,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GangZoneStopFlashForPlayer", gang_zone_stop_flash_for_player},
     {"GetGravity", get_gravity},
     {"GetObjectModel", get_global_object_model},
+    {"GetPlayerObjectModel", get_player_object_model},
     {"GetPlayerCameraAspectRatio", get_player_camera_aspect_ratio},
     {"GetPlayerCameraMode", get_player_camera_mode},
     {"GetPlayerCameraTargetActor", get_player_camera_target_actor},
@@ -2804,6 +3569,11 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GetPlayerVehicleID", get_player_vehicle_id},
     {"GetPlayerVehicleSeat", get_player_vehicle_seat},
     {"GetPlayerVirtualWorld", get_player_virtual_world},
+    {"GetPlayerSurfingVehicleID", get_player_surfing_vehicle},
+    {"GetPlayerSurfingObjectID", get_player_surfing_object},
+    {"GetPlayerWeaponState", get_player_weapon_state},
+    {"GetPlayerAnimationIndex", get_player_animation_index},
+    {"GetPlayerSpecialAction", get_player_special_action},
     {"EnablePlayerCameraTarget", enable_player_camera_target},
     {"EnableStuntBonusForAll", enable_stunt_bonus_for_all},
     {"AddStaticPickup", add_static_pickup},
@@ -2814,23 +3584,38 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GetTickCount", get_tick_count},
     {"GetVehicleDistanceFromPoint", get_vehicle_distance_from_point},
     {"GetVehicleModel", get_vehicle_model},
+    {"RepairVehicle", repair_vehicle},
+    {"UpdateVehicleDamageStatus", update_vehicle_damage_status},
+    {"AddVehicleComponent", add_vehicle_component},
+    {"RemoveVehicleComponent", remove_vehicle_component},
+    {"ChangeVehicleColor", change_vehicle_colour},
+    {"ChangeVehiclePaintjob", change_vehicle_paintjob},
+    {"GetVehicleComponentInSlot", get_vehicle_component_in_slot},
+    {"GetVehicleComponentType", get_vehicle_component_type},
+    {"SetVehicleToRespawn", set_vehicle_to_respawn},
     {"GetVehicleParamsSirenState", get_vehicle_siren_state},
     {"GetVehiclePoolSize", get_vehicle_pool_size},
     {"GetVehicleVirtualWorld", get_vehicle_virtual_world},
     {"GivePlayerMoney", give_player_money},
     {"GivePlayerWeapon", give_player_weapon},
     {"IsPlayerAdmin", is_player_admin},
+    {"LimitGlobalChatRadius", limit_global_chat_radius},
     {"IsPlayerInAnyVehicle", is_player_in_any_vehicle},
     {"IsPlayerInCheckpoint", is_player_in_checkpoint},
     {"IsPlayerInRaceCheckpoint", is_player_in_race_checkpoint},
     {"IsPlayerInRangeOfPoint", is_player_in_range_of_point},
     {"IsPlayerInVehicle", is_player_in_vehicle},
     {"IsPlayerNPC", is_player_npc},
+    {"IsObjectMoving", is_global_object_moving},
     {"IsValidObject", is_valid_global_object},
+    {"IsValidPlayerObject", is_valid_player_object},
+    {"IsPlayerObjectMoving", is_player_object_moving},
     {"IsValidVehicle", is_valid_vehicle},
     {"KillTimer", kill_timer},
     {"LinkVehicleToInterior", link_vehicle_to_interior},
     {"ManualVehicleEngineAndLights", manual_vehicle_engine_and_lights},
+    {"MoveObject", move_global_object},
+    {"MovePlayerObject", move_player_object},
     {"PlayerSpectatePlayer", player_spectate_player},
     {"PlayerSpectateVehicle", player_spectate_vehicle},
     {"RemovePlayerMapIcon", remove_player_map_icon},
@@ -2845,6 +3630,8 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetObjectNoCameraCol", set_global_object_no_camera_collision},
     {"SetObjectPos", set_global_object_position},
     {"SetObjectRot", set_global_object_rotation},
+    {"SetPlayerObjectPos", set_player_object_position},
+    {"SetPlayerObjectRot", set_player_object_rotation},
     {"SetObjectsDefaultCameraCol", set_default_object_camera_collision},
     {"SetPlayerArmour", set_player_armour},
     {"SetPlayerArmedWeapon", set_player_armed_weapon},
@@ -2869,6 +3656,9 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetWorldTime", set_world_time},
     {"ShowNameTags", show_name_tags},
     {"ShowPlayerMarkers", show_player_markers},
+    {"LimitPlayerMarkerRadius", limit_player_marker_radius},
+    {"StopObject", stop_global_object},
+    {"StopPlayerObject", stop_player_object},
     {"TogglePlayerSpectating", toggle_player_spectating},
     {"UsePlayerPedAnims", use_player_ped_anims},
     {"VectorSize", vector_size},
@@ -2876,10 +3666,81 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
 
 }  // namespace
 
-// Clone lifecycle integration; no standalone native entry.
+// Official: FUN_004652e0 @ 0x004652e0 (samp-server.exe)
+ObjectNativeState* NativeHost::find_global_object(std::uint16_t object_id) {
+    if (object_id >= kObjectPoolSize || object_id >= objects_.size() || !objects_[object_id].active) return nullptr;
+    return &objects_[object_id];
+}
+
+// Official: FUN_0046fe30 @ 0x0046fe30 (samp-server.exe)
+ObjectNativeState* NativeHost::find_player_object(std::uint16_t player_id, std::uint16_t object_id) {
+    if (player_id >= 1000 || object_id >= kObjectPoolSize) return nullptr;
+    const auto owner = player_objects_.find(player_id);
+    if (owner == player_objects_.end()) return nullptr;
+    const auto object = owner->second.find(object_id);
+    return object == owner->second.end() ? nullptr : &object->second;
+}
+
 // no standalone native entry
-void NativeHost::sync_text_labels(PlayerNativeState& player) {
-    sync_text_labels_for_player(*this, player);
+void NativeHost::send_global_object(PlayerNativeState& player, const ObjectNativeState& object) {
+    if (!player.peer || !object.active || object.id >= objects_.size()) return;
+    send_object(player, object);
+    if (player.streamed_objects.size() != objects_.size()) player.streamed_objects.resize(objects_.size());
+    player.streamed_objects[object.id] = 1;
+}
+
+// no standalone native entry
+void NativeHost::clear_player_objects(std::uint16_t player_id) {
+    const auto owner = player_objects_.find(player_id);
+    if (owner == player_objects_.end()) return;
+    auto& objects = owner->second;
+    while (!objects.empty()) free_player_object(*this, player_id, objects.begin()->first);
+    player_objects_.erase(owner);
+}
+
+// Official: FUN_00465820 @ 0x00465820 (samp-server.exe)
+void NativeHost::reset_objects() {
+    std::fill(objects_.begin(), objects_.end(), ObjectNativeState{});
+    player_objects_.clear();
+    player_object_reservations_.fill(0);
+}
+
+// Official: FUN_00484130 @ 0x00484130 (samp-server.exe)
+double PlayerNativeState::squared_distance_from_point(float point_x, float point_y, float point_z) const {
+    const double dx = double(x) - point_x;
+    const double dy = double(y) - point_y;
+    const double dz = double(z) - point_z;
+    return (dz * dz + dy * dy) + dx * dx;
+}
+
+// The label pass of 0x004851d0, called after player and vehicle visibility is updated.
+// no standalone native entry
+void NativeHost::update_text_label_streaming(PlayerNativeState& player) {
+    for (std::uint16_t id = 0; id < text_labels_.size(); ++id) {
+        const auto& label = text_labels_[id];
+        const bool held = streamed_text_label(player, id) != 0;
+        bool visible = false;
+        if (label.active) {
+            if (const auto target = text_label_attached_player(*this, id); target != 0xffff) {
+                visible = target < player.streamed_to.size() && player.streamed_to[target];
+            } else if (const auto vehicle = text_label_attached_vehicle(*this, id); vehicle != 0xffff) {
+                visible = vehicle < player.streamed_vehicles.size() && player.streamed_vehicles[vehicle];
+            } else if (player.virtual_world == label.virtual_world) {
+                const double radius = label.draw_distance;
+                visible = player.squared_distance_from_point(
+                    label.position[0], label.position[1], label.position[2]) <= radius * radius;
+            }
+        }
+        if (visible && !held) stream_text_label_in(*this, player, id);
+        if (!visible && held) stream_text_label_out(*this, player, id);
+    }
+}
+
+// Official: FUN_00464510 @ 0x00464510 (samp-server.exe)
+void NativeHost::reset_global_text_labels() {
+    for (std::uint16_t id = 0; id < text_labels_.size(); ++id) {
+        if (text_labels_[id].active) release_global_text_label(*this, id);
+    }
 }
 
 // Official: FUN_00467490 @ 0x00467490 (samp-server.exe)
@@ -2900,6 +3761,96 @@ void NativeHost::clear_vehicle_streaming(std::uint16_t vehicle) {
         if (player.in_use && vehicle < player.streamed_vehicles.size() && player.streamed_vehicles[vehicle])
             send_vehicle_stream_out(player, vehicle);
     }
+}
+
+// Official: FUN_00489fc0 @ 0x00489fc0 (samp-server.exe)
+bool NativeHost::apply_vehicle_component(VehicleNativeState& vehicle, std::uint16_t sender,
+                                         std::uint16_t component) {
+    if (component < 1000 || component >= 1194) return false;
+    const auto index = component - 1000;
+    const auto model_tag = vehicle_component_model_tags[index];
+    if (model_tag != 0xff && model_tag != static_cast<std::uint8_t>(vehicle.model + 112)) return false;
+
+    const auto event = VehicleAppearanceEvent::Component;
+    if (sender != 0xffff && !allow_vehicle_appearance(event, sender, vehicle.id, component, 0)) {
+        const cell player_id = sender;
+        const auto* player = find_player(*this, {&player_id, 1});
+        if (player && player->peer && vehicle.active) {
+            const std::array<std::uint16_t, 2> values{vehicle.id, component};
+            samp::proto::BitStream payload;
+            payload.write(values.data(), sizeof(values));
+            send_rpc(*player->peer, 57, payload);
+        }
+        return false;
+    }
+
+    const auto slot = vehicle_component_types[index];
+    if (!vehicle.active || slot == 8) return false;
+    vehicle.mods[slot] = static_cast<std::uint8_t>(component - 999);
+    send_vehicle_appearance_event(*this, vehicle, sender, event, component, 0);
+    return true;
+}
+
+// Official: FUN_0048a340 @ 0x0048a340 (samp-server.exe)
+void NativeHost::apply_vehicle_paintjob(VehicleNativeState& vehicle, std::uint16_t sender,
+                                        std::uint8_t paintjob) {
+    const auto event = VehicleAppearanceEvent::Paintjob;
+    if (sender != 0xffff && !allow_vehicle_appearance(event, sender, vehicle.id, paintjob, 0)) return;
+    if (!vehicle.active) return;
+    vehicle.paintjob = static_cast<std::uint8_t>(paintjob + 1u);
+    send_vehicle_appearance_event(*this, vehicle, sender, event, paintjob, 0);
+}
+
+// Official: FUN_0048a4c0 @ 0x0048a4c0 (samp-server.exe)
+void NativeHost::apply_vehicle_respray(VehicleNativeState& vehicle, std::uint16_t sender,
+                                       std::uint32_t first, std::uint32_t second) {
+    const auto event = VehicleAppearanceEvent::Respray;
+    if (sender != 0xffff && !allow_vehicle_appearance(event, sender, vehicle.id, first, second)) return;
+    if (!vehicle.active) return;
+    vehicle.respray_colour1 = std::bit_cast<std::int32_t>(first);
+    vehicle.respray_colour2 = std::bit_cast<std::int32_t>(second);
+    send_vehicle_appearance_event(*this, vehicle, sender, event, first, second);
+}
+
+// Official: FUN_004899c0 @ 0x004899c0 (samp-server.exe)
+const VehicleNativeState::ParameterBlock& VehicleNativeState::parameter_block() const noexcept {
+    return parameters;
+}
+
+// Official: FUN_004899d0 @ 0x004899d0 (samp-server.exe)
+bool VehicleNativeState::has_parameter_overrides() const noexcept {
+    return std::ranges::any_of(parameters, [](std::uint8_t value) { return value != 0xff; });
+}
+
+// Official: FUN_00489ae0 @ 0x00489ae0 (samp-server.exe)
+void VehicleNativeState::reset_door_parameters() {
+    std::fill_n(parameters.begin() + 8, 4, 0xff);
+}
+
+// Official: FUN_00489e00 @ 0x00489e00 (samp-server.exe)
+void NativeHost::apply_vehicle_damage(VehicleNativeState& vehicle, std::uint16_t sender,
+                                      std::uint32_t panels, std::uint32_t doors,
+                                      std::uint8_t lights, std::uint8_t tires) {
+    vehicle.damage_panels = panels;
+    vehicle.damage_doors = doors;
+    vehicle.damage_lights = lights;
+    vehicle.damage_tires = tires;
+    const auto id = vehicle.id;
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    payload.write(&panels, sizeof(panels));
+    payload.write(&doors, sizeof(doors));
+    payload.write(&lights, sizeof(lights));
+    payload.write(&tires, sizeof(tires));
+    if (sender != 0xffff) notify_vehicle_damage(id, sender);
+    if (vehicle.active) broadcast_vehicle_rpc(*this, 106, payload, id, sender);
+}
+
+// Official: FUN_00484170 @ 0x00484170 (samp-server.exe)
+double PlayerNativeState::squared_horizontal_distance_to(float point_x, float point_y) const {
+    const double dx = double(x) - point_x;
+    const double dy = double(y) - point_y;
+    return dx * dx + dy * dy;
 }
 
 // Official: FUN_004840f0 @ 0x004840f0 (samp-server.exe)
@@ -2966,6 +3917,9 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     };
     vm.native_functions_["SetPlayerName"] = [&host, read_script_string](std::span<const cell> args) {
         return set_player_name(host, args, read_script_string);
+    };
+    vm.native_functions_["SetVehicleNumberPlate"] = [&host, read_script_string](std::span<const cell> args) {
+        return set_vehicle_number_plate(host, args, read_script_string);
     };
     const auto data_pointer = [&vm](std::int32_t address) -> const std::uint8_t* {
         if (!vm.ok_ || address < 0 || static_cast<std::int64_t>(address) >= vm.amx_.stp ||
@@ -3059,6 +4013,9 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     }
 
     // ------------------------------------------------------------- the server
+    vm.native_functions_["ApplyActorAnimation"] = [&host, read_script_string](std::span<const cell> args) {
+        return actor_natives::apply_animation(host, args, read_script_string);
+    };
     for(const auto& [name,function]:variable_natives::kNatives)
         vm.native_functions_[std::string(name)]=[&vm,&host,function](std::span<const cell> args) {
             return function(&vm.amx_,host,args);
@@ -3166,6 +4123,12 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     };
     vm.native_functions_["GameTextForAll"] = [&host, read_script_string](std::span<const cell> args) {
         return game_text_for_all(host, args, read_script_string);
+    };
+    vm.native_functions_["ShowPlayerDialog"] = [&host, read_script_string](std::span<const cell> args) {
+        return show_player_dialog(host, args, read_script_string);
+    };
+    vm.native_functions_["SetPlayerChatBubble"] = [&host, read_script_string](std::span<const cell> args) {
+        return set_player_chat_bubble(host, args, read_script_string);
     };
     vm.native_functions_["CreatePlayer3DTextLabel"] = [&host, read_script_string](std::span<const cell> args) {
         return create_player_3d_text_label(host, args, read_script_string);
@@ -3504,7 +4467,10 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
 
     // ------------------------------------------------------------- the db
     // The 18 SQLite natives of a_sampdb.inc (backed by the vendored 3.7.0).
-    register_db_natives(vm);
+    register_db_natives(vm, host);
+
+    if (auto* state = vm.sdk_state())
+        static_cast<void>(amx_registration::register_natives(state, nullptr, 0));
 }
 
 }  // namespace samp::pawn

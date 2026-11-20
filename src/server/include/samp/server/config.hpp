@@ -142,16 +142,20 @@ inline constexpr int kGamemodeVariableCount = 16;
 class Config {
 public:
     Config() = default;
+    using Values = std::map<std::string, std::string>;
+
+    [[nodiscard]] Values::const_iterator find_variable(std::string_view key) const;
+    void set_string_variable(std::string_view key, std::string value);
 
     // Official: FUN_00490ba0 @ 0x00490ba0 (samp-server.exe)
     [[nodiscard]] std::string get(std::string_view key, std::string_view fallback = "") const {
-        const auto it = values_.find(std::string(key));
+        const auto it = find_variable(key);
         return it == values_.end() ? std::string(fallback) : it->second;
     }
 
     // Official: FUN_00490c80 @ 0x00490c80 (samp-server.exe)
     [[nodiscard]] int getInt(std::string_view key, int fallback = 0) const {
-        const auto it = values_.find(std::string(key));
+        const auto it = find_variable(key);
         if (it == values_.end()) {
             return fallback;
         }
@@ -164,7 +168,7 @@ public:
 
     // Official: FUN_00490c30 @ 0x00490c30 (samp-server.exe)
     [[nodiscard]] float getFloat(std::string_view key, float fallback = 0.0f) const {
-        const auto it = values_.find(std::string(key));
+        const auto it = find_variable(key);
         if (it == values_.end()) {
             return fallback;
         }
@@ -179,7 +183,7 @@ public:
     // "On" / "Off" in the console variables and in the server rules.
     // Official: FUN_00490cc0 @ 0x00490cc0 (samp-server.exe)
     [[nodiscard]] bool getBool(std::string_view key, bool fallback = false) const {
-        const auto it = values_.find(std::string(key));
+        const auto it = find_variable(key);
         if (it == values_.end()) {
             return fallback;
         }
@@ -195,7 +199,7 @@ public:
 public:
     friend class Console;
     std::vector<std::string> ordered_names_;
-    std::map<std::string, std::string> values_;
+    Values values_;
     std::map<std::string, ConfigValueType> types_;
     std::map<std::string, unsigned> flags_;
 };

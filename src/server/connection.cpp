@@ -73,16 +73,8 @@ void RakNetServer::accept_connection(RakNetPeer& peer) {
 void GameLayer::disconnect_player(int id, std::uint8_t reason) {
     if (id < 0 || static_cast<std::size_t>(id) >= players_.size() || !players_[id].in_use) return;
     auto& leaving = players_[id];
-    const samp::amx::cell arguments[]{id, reason};
-    const auto notify = [&](samp::pawn::PawnVm& script) {
-        if (!script.ok_ || !std::any_of(script.publics_.begin(), script.publics_.end(), [](const auto& entry) {
-            return entry.name == "OnPlayerDisconnect";
-        })) return;
-        samp::amx::cell result = 0;
-        script.execute("OnPlayerDisconnect", arguments, result);
-    };
-    for (auto& script : filterscripts_) notify(*script);
-    notify(vm_);
+    filterscript_player_disconnect(id, reason);
+    gamemode_player_disconnect(id, reason);
     if (leaving.peer) {
         leaving.peer->stage_ = RakNetPeer::Stage::Closing;
         leaving.peer->close_after_ms_ = leaving.peer->last_receive_ms_;
@@ -105,6 +97,7 @@ void GameLayer::disconnect_player(int id, std::uint8_t reason) {
         }
         if (receiver.joined) send_rpc(*receiver.peer, kRpcPlayerQuit, quit);
     }
+    clear_player_objects(player_id);
     // Native 0x4666f2 refreshes the cache after callbacks and slot release.
     update_player_pool_size();
 }

@@ -14,7 +14,11 @@ add_library(samp_pawn STATIC
     amx_control_api.cpp
     amx_lookup_api.cpp
     pawn_vm.cpp
+    pawn_vm_sdk.cpp
     natives.cpp
+    object_movement.cpp
+    actor_natives.cpp
+    actor_pool.cpp
     password_hash.cpp
     player_commands.cpp
     pickup_pool.cpp

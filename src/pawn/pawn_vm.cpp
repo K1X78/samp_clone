@@ -54,9 +54,9 @@ struct VmFault { int error; };
 int PawnVm::execute(std::string_view public_name, std::span<const cell> args, cell& result,
                     std::optional<int> entry_index) {
 
-    // Raw indexed calls retain the SDK's callback/bound/initialized checks,
-    // in that order (0x401C99..0x401CCE). Named host calls bind closures below.
-    if (entry_index.has_value()) {
+    // The owned image and raw indexed calls share the SDK's ordered checks
+    // (0x401C99..0x401CCE).
+    if (entry_index.has_value() || owns_sdk_state_) {
         if (amx_.callback == nullptr) return last_error_ = kErrCallback;
         if ((amx_.flags & 0x1000) == 0) return last_error_ = 19;
         if ((amx_.flags & 0x8000) == 0) return last_error_ = 22;
@@ -65,6 +65,7 @@ int PawnVm::execute(std::string_view public_name, std::span<const cell> args, ce
         last_error_ = kErrInvState;
         return last_error_;
     }
+    if (owns_sdk_state_ && amx_.base != image_.data()) return last_error_ = 17;
     const auto* image = static_cast<const std::uint8_t*>(amx_.base);
     const auto& header = *reinterpret_cast<const samp::amx::AmxHeader*>(image);
     auto* code = const_cast<std::uint8_t*>(image) + header.cod;
@@ -194,6 +195,11 @@ int PawnVm::execute(std::string_view public_name, std::span<const cell> args, ce
         return static_cast<cell>(static_cast<std::uint32_t>(left) +
                                  static_cast<std::uint32_t>(right));
     };
+    const auto valid_native_frame = [&]() {
+        const cell bytes = data_cell(stk_);
+        return bytes >= 0 && bytes % kCellSize == 0 &&
+            static_cast<std::int64_t>(stk_) + kCellSize + bytes <= amx_.stp;
+    };
     const auto call_native = [&](std::int32_t index) {
         amx_.cip = cip_;
         amx_.frm = frm_;
@@ -202,7 +208,10 @@ int PawnVm::execute(std::string_view public_name, std::span<const cell> args, ce
         const auto suspended = std::tuple{alt_, frm_, stk_, hea_, hlw_, cip_,
                                           reset_stk_, reset_hea_, host_call_, sleeping_, halted_};
         int error;
-        if (amx_.callback != nullptr) {
+        if (sdk_callback_active()) {
+            if (!valid_native_frame()) return kErrMemaccess;
+            error = invoke_sdk_native(index, &pri_, &data_cell(stk_));
+        } else if (amx_.callback != nullptr) {
             using Callback = int (*)(samp::amx::Amx*, cell, cell*, const cell*);
             const auto callback = reinterpret_cast<Callback>(amx_.callback);
             error = callback(&amx_, index, &pri_, &data_cell(stk_));
@@ -210,9 +219,8 @@ int PawnVm::execute(std::string_view public_name, std::span<const cell> args, ce
             if (index < 0 || static_cast<std::size_t>(index) >= natives_.size()) return kErrNative;
             const auto native = native_functions_.find(natives_[static_cast<std::size_t>(index)].name);
             if (native == native_functions_.end()) return 19;
-            const std::int32_t bytes = data_cell(stk_);
-            if (bytes < 0 || bytes % 4 != 0 ||
-                static_cast<std::int64_t>(stk_) + 4 + bytes > amx_.stp) return kErrMemaccess;
+            if (!valid_native_frame()) return kErrMemaccess;
+            const cell bytes = data_cell(stk_);
             // SYSREQ passes DATA+STK itself; natives may edit argument cells.
             const auto* parameters = reinterpret_cast<const cell*>(data + stk_ + kCellSize);
             const std::span<const cell> native_args(parameters, static_cast<std::size_t>(bytes / kCellSize));
@@ -994,10 +1002,13 @@ int PawnVm::execute(std::string_view public_name, std::span<const cell> args, ce
                 amx_.hea = hea_;
                 amx_.stk = stk_;
                 const auto function = reinterpret_cast<PawnNative>(address);
-                if (!function) return kErrNative;
+                const auto sdk_native = owns_sdk_state_ ? find_sdk_native(address) : nullptr;
+                if (!function || (owns_sdk_state_ && !sdk_native)) return kErrNative;
+                if (sdk_native && !valid_native_frame()) return kErrMemaccess;
                 const auto suspended = std::tuple{alt_, frm_, stk_, hea_, hlw_, cip_,
                                                   reset_stk_, reset_hea_, host_call_, sleeping_, halted_};
-                const auto value = function(&amx_, &data_cell(stk_));
+                const auto value = sdk_native ? sdk_native(&amx_, &data_cell(stk_))
+                                              : function(&amx_, &data_cell(stk_));
                 std::tie(alt_, frm_, stk_, hea_, hlw_, cip_, reset_stk_, reset_hea_,
                          host_call_, sleeping_, halted_) = suspended;
                 pri_ = value;

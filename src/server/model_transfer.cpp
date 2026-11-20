@@ -106,7 +106,7 @@ void GameLayer::handle_model_finish(RakNetPeer& peer,const samp::proto::BitStrea
     // 497bc9's flag guards the initial object batch (465760), not OnPlayerConnect.
     if(!player.model_finish_reported) {
         player.model_finish_reported=true;
-        for(const auto& object:objects_) if(object.active) send_object(player,object);
+        for(const auto& object:objects_) if(object.active) send_global_object(player,object);
     }
     const samp::amx::cell args[]{player.id,player.virtual_world};
     for(const auto& script:filterscripts_) script->execute("OnPlayerFinishedDownloading",args,result);

@@ -46,18 +46,33 @@ struct PawnNativeTestAccess {
         for(;;at+=4) {samp::amx::cell c;std::memcpy(&c,vm.image_.data()+at,4);if(!c) return value;value+=static_cast<char>(c);}
     }
     static void redirect(PawnVm& vm,std::function<samp::amx::cell()> action,const char* public_name="OnPlayerRequestDownload") {
-        const samp::amx::cell code[]{0x78,0,0x2e,0x27,0,0x7b,0,0x2c,4,0x30};
-        vm.header_.cod=sizeof(samp::amx::AmxHeader);vm.header_.dat=vm.header_.cod+sizeof(code);
+        redirect_args(vm, 0, [action](auto) { return action(); }, public_name);
+    }
+    static void redirect_args(PawnVm& vm, samp::amx::cell argument_count,
+                              std::function<samp::amx::cell(std::span<const samp::amx::cell>)> action,
+                              const char* public_name) {
+        using samp::amx::cell;
+        std::vector<cell> code{0x78, 0, 0x2e};
+        for (cell index = argument_count; index > 0; --index)
+            code.insert(code.end(), {0x29, 12 + (index - 1) * 4});
+        code.insert(code.end(), {0x27, argument_count * 4, 0x7b, 0, 0x2c, (argument_count + 1) * 4, 0x30});
+        const auto code_bytes = static_cast<cell>(code.size() * sizeof(cell));
+        vm.header_.cod=sizeof(samp::amx::AmxHeader);vm.header_.dat=vm.header_.cod+code_bytes;
         vm.header_.hea=vm.header_.dat+128;vm.header_.stp=vm.header_.dat+4096;
         vm.image_.assign(vm.header_.stp,0);std::memcpy(vm.image_.data(),&vm.header_,sizeof(vm.header_));
-        std::memcpy(vm.image_.data()+vm.header_.cod,code,sizeof(code));
+        std::memcpy(vm.image_.data()+vm.header_.cod,code.data(),code_bytes);
         vm.publics_={{public_name,8}};vm.natives_={{"redirect-fixture"}};
-        vm.native_functions_["redirect-fixture"]=[action](auto){return action();};
+        vm.native_functions_["redirect-fixture"]=std::move(action);
         vm.amx_.base=vm.image_.data();vm.amx_.stk=vm.amx_.stp=4092;
         vm.amx_.hea=vm.amx_.hlw=128;vm.amx_.flags=0x8000;vm.ok_=true;
     }
     static samp::amx::cell call(PawnVm& vm,const char* name,std::initializer_list<samp::amx::cell> args) {
         return vm.native_functions_.at(name)({args.begin(),args.size()});
+    }
+    static float read_float(const PawnVm& vm, std::size_t address) {
+        float value;
+        std::memcpy(&value, vm.image_.data() + vm.header_.dat + address, sizeof(value));
+        return value;
     }
 };
 }
@@ -163,6 +178,505 @@ void native_activation_messages(const std::filesystem::path& root) {
     BitStream truncated;const std::uint16_t id=1;truncated.write(&id,2);
     CHECK(!samp::client::apply_server_rpc(context,44,truncated) && world.objects_.empty());
 }
+void global_object_motion() {
+    using samp::amx::cell;
+    samp::server::GameLayer game;
+    samp::server::RakNetPeer peer;
+    Peer::authenticate(peer);
+    auto& player = game.players_.emplace_back();
+    player.id = 0;
+    player.in_use = player.joined = true;
+    player.peer = &peer;
+    game.update_player_pool_size();
+
+    std::vector<int> callbacks;
+    auto script = std::make_unique<samp::pawn::PawnVm>();
+    Native::redirect(*script, [&] { callbacks.push_back(1); return 1; }, "OnObjectMoved");
+    game.filterscripts_.push_back(std::move(script));
+    Native::redirect(game.vm_, [&] { callbacks.push_back(2); return 1; }, "OnObjectMoved");
+
+    samp::pawn::PawnVm vm;
+    Native::prepare(vm);
+    samp::pawn::register_server_natives(vm, game);
+
+    const auto bits = [](float value) { return std::bit_cast<cell>(value); };
+    const cell id = Native::call(vm, "CreateObject", {19379, 0, 0, 0, 0, 0, 0, 0});
+    CHECK(id == 1);
+    Peer::drain(peer);
+    CHECK(Native::call(vm, "IsObjectMoving", {id}) == 0);
+    CHECK(Native::call(vm, "StopObject", {id}) == 0);
+    CHECK(Native::call(vm, "MoveObject", {2000, bits(12), 0, 0, bits(4), 0, 0, 0}) == 0);
+    CHECK(Peer::drain(peer).empty());
+
+    CHECK(Native::call(vm, "MoveObject", {id, bits(12), 0, 0, bits(4), bits(11), bits(22), bits(33)}) == 3000);
+    CHECK(Native::call(vm, "IsObjectMoving", {id + 65536}) == 1);
+    auto messages = Peer::drain(peer);
+    CHECK(messages.size() == 1);
+    auto move = decode(messages.at(0));
+    CHECK(move.id == 99 && move.payload.numberOfBitsUsed_ == 42 * 8);
+    std::uint16_t wire_id = 0;
+    CHECK(move.payload.read(&wire_id, 2) && wire_id == id);
+    const std::array expected_fields{0.0f, 0.0f, 0.0f, 12.0f, 0.0f, 0.0f, 4.0f, 11.0f, 22.0f, 33.0f};
+    for (const auto expected : expected_fields) {
+        float value = 0.0f;
+        CHECK(move.payload.read(&value, 4) && value == expected);
+    }
+    CHECK(Native::call(vm, "GetObjectRot", {id, 0, 4, 8}) == 1);
+    CHECK(Native::read_float(vm, 0) == 11.0f && Native::read_float(vm, 4) == 22.0f && Native::read_float(vm, 8) == 33.0f);
+
+    game.update_objects(1.0f);
+    CHECK(callbacks.empty());
+    CHECK(Native::call(vm, "GetObjectPos", {id, 0, 4, 8}) == 1);
+    CHECK(Native::read_float(vm, 0) == 4.0f);
+    CHECK(Native::call(vm, "StopObject", {id}) == 1);
+    messages = Peer::drain(peer);
+    CHECK(messages.size() == 1);
+    auto stop = decode(messages.at(0));
+    CHECK(stop.id == 122 && stop.payload.numberOfBitsUsed_ == 16 && stop.payload.read(&wire_id, 2) && wire_id == id);
+    CHECK(Native::call(vm, "StopObject", {id}) == 0);
+    game.update_objects(2.0f);
+    CHECK(Native::call(vm, "GetObjectPos", {id, 0, 4, 8}) == 1 && Native::read_float(vm, 0) == 4.0f);
+    CHECK(callbacks.empty() && Peer::drain(peer).empty());
+
+    CHECK(Native::call(vm, "MoveObject", {id, bits(12), 0, 0, bits(4), bits(-999), bits(91), bits(92)}) == 2000);
+    Peer::drain(peer);
+    CHECK(Native::call(vm, "MoveObject", {id, bits(10), 0, 0, bits(4), bits(-999), bits(91), bits(92)}) == 1500);
+    messages = Peer::drain(peer);
+    CHECK(messages.size() == 2 && decode(messages.at(0)).id == 122 && decode(messages.at(1)).id == 99);
+    CHECK(Native::call(vm, "GetObjectRot", {id, 0, 4, 8}) == 1);
+    CHECK(Native::read_float(vm, 0) == 11.0f && Native::read_float(vm, 4) == 22.0f && Native::read_float(vm, 8) == 33.0f);
+    game.update_objects(1.5f);
+    game.update_objects(1.5f);
+    CHECK((callbacks == std::vector<int>{1, 2}));
+    CHECK(Native::call(vm, "GetObjectPos", {id, 0, 4, 8}) == 1 && Native::read_float(vm, 0) == 10.0f);
+    CHECK(Native::call(vm, "IsObjectMoving", {id}) == 0);
+    CHECK(Peer::drain(peer).empty());
+}
+
+void check_object_attachment(Rpc rpc, std::uint16_t vehicle, std::uint16_t object,
+                             const std::array<float, 6>& transform, std::uint8_t sync_rotation) {
+    const bool attached = vehicle != 0xffff || object != 0xffff;
+    const std::size_t bytes = attached ? 65 : 40;
+    CHECK(rpc.id == 44 && rpc.payload.numberOfBitsUsed_ == bytes * 8);
+    std::array<std::uint8_t, 35> header{};
+    std::uint16_t wire_vehicle = 0, wire_object = 0;
+    CHECK(rpc.payload.read(header.data(), header.size()));
+    CHECK(rpc.payload.read(&wire_vehicle, 2) && wire_vehicle == vehicle);
+    CHECK(rpc.payload.read(&wire_object, 2) && wire_object == object);
+    if (attached) {
+        std::array<float, 6> wire_transform{};
+        std::uint8_t wire_sync = 0;
+        CHECK(rpc.payload.read(wire_transform.data(), sizeof(wire_transform)) && wire_transform == transform);
+        CHECK(rpc.payload.read(&wire_sync, 1) && wire_sync == sync_rotation);
+    }
+    std::uint8_t material_count = 0xff;
+    CHECK(rpc.payload.read(&material_count, 1) && material_count == 0);
+}
+
+void global_object_attachments() {
+    using samp::amx::cell;
+    samp::server::GameLayer game;
+    game.players_.resize(2);
+    for (auto& slot : game.players_)
+        slot.streamed_to.resize(game.players_.size());
+    samp::server::RakNetPeer viewer, late_viewer;
+    Peer::authenticate(viewer);
+    Peer::authenticate(late_viewer);
+    auto& player = game.players_[0];
+    player.id = 0;
+    player.in_use = player.joined = true;
+    player.peer = &viewer;
+    game.update_player_pool_size();
+
+    samp::pawn::PawnVm vm;
+    Native::prepare(vm);
+    samp::pawn::register_server_natives(vm, game);
+    const auto bits = [](float value) { return std::bit_cast<cell>(value); };
+    const cell id = Native::call(vm, "CreateObject", {19379, 0, 0, 0, 0, 0, 0, 0});
+    CHECK(id == 1);
+    auto packets = Peer::drain(viewer);
+    CHECK(packets.size() == 1);
+    check_object_attachment(decode(packets.at(0)), 0xffff, 0xffff, {}, 0);
+
+    CHECK(Native::call(vm, "AttachObjectToVehicle", {2000, 2, 0, 0, 0, 0, 0, 0}) == 0);
+    CHECK(Peer::drain(viewer).empty());
+    CHECK(Native::call(vm, "AttachObjectToVehicle", {id, 0x10002, bits(1), bits(2), bits(3), bits(4), bits(5), bits(6)}) == 1);
+    packets = Peer::drain(viewer);
+    CHECK(packets.size() == 1);
+    check_object_attachment(decode(packets.at(0)), 2, 0xffff, {1, 2, 3, 4, 5, 6}, 0);
+
+    CHECK(Native::call(vm, "AttachObjectToObject", {id, 3, bits(-1), bits(-2), bits(-3), bits(-4), bits(-5), bits(-6), 0x1ab}) == 1);
+    packets = Peer::drain(viewer);
+    CHECK(packets.size() == 1);
+    check_object_attachment(decode(packets.at(0)), 2, 3, {-1, -2, -3, -4, -5, -6}, 0xab);
+
+    auto& late_player = game.players_[1];
+    late_player.id = 1;
+    late_player.in_use = late_player.joined = true;
+    late_player.peer = &late_viewer;
+    game.update_player_pool_size();
+    game.update_streaming();
+    packets = Peer::drain(late_viewer);
+    CHECK(packets.size() == 1);
+    check_object_attachment(decode(packets.at(0)), 2, 3, {-1, -2, -3, -4, -5, -6}, 0xab);
+
+    CHECK(Native::call(vm, "AttachObjectToVehicle", {id, -1, bits(9), 0, 0, 0, 0, 0}) == 1);
+    packets = Peer::drain(viewer);
+    CHECK(packets.size() == 1);
+    check_object_attachment(decode(packets.at(0)), 0xffff, 3, {}, 0xab);
+    packets = Peer::drain(late_viewer);
+    CHECK(packets.size() == 1);
+    check_object_attachment(decode(packets.at(0)), 0xffff, 3, {}, 0xab);
+
+    CHECK(Native::call(vm, "AttachObjectToObject", {id, -1, bits(9), 0, 0, 0, 0, 0, 0}) == 1);
+    packets = Peer::drain(viewer);
+    CHECK(packets.size() == 1);
+    check_object_attachment(decode(packets.at(0)), 0xffff, 0xffff, {}, 0);
+    CHECK(Native::call(vm, "AttachObjectToVehicle", {id, 4, 0, 0, 0, 0, 0, 0}) == 1);
+    packets = Peer::drain(viewer);
+    CHECK(packets.size() == 1);
+    check_object_attachment(decode(packets.at(0)), 4, 0xffff, {}, 1);
+
+    CHECK(Native::call(vm, "DestroyObject", {id}) == 1);
+    Peer::drain(viewer);
+    CHECK(Native::call(vm, "CreateObject", {19379, 0, 0, 0, 0, 0, 0, 0}) == id);
+    packets = Peer::drain(viewer);
+    CHECK(packets.size() == 1);
+    check_object_attachment(decode(packets.at(0)), 0xffff, 0xffff, {}, 0);
+}
+
+void player_object_lifecycle() {
+    using samp::amx::cell;
+    samp::server::GameLayer game;
+    game.players_.resize(3);
+    std::array<samp::server::RakNetPeer, 2> peers;
+    for (std::size_t id = 0; id < peers.size(); ++id) {
+        Peer::authenticate(peers[id]);
+        auto& player = game.players_[id];
+        player.id = static_cast<int>(id);
+        player.in_use = player.joined = true;
+        player.peer = &peers[id];
+        player.streamed_to.resize(game.players_.size());
+    }
+    game.update_player_pool_size();
+
+    samp::pawn::PawnVm vm;
+    Native::prepare(vm);
+    samp::pawn::register_server_natives(vm, game);
+    const auto bits = [](float value) { return std::bit_cast<cell>(value); };
+    const auto make_global = [&] { return Native::call(vm, "CreateObject", {19379, 0, 0, 0, 0, 0, 0, 0}); };
+    const auto create_for = [&](cell owner, cell model) {
+        return Native::call(vm, "CreatePlayerObject",
+                            {owner, model, bits(1), bits(2), bits(3), bits(4), bits(5), bits(6), bits(150)});
+    };
+    const auto expect_create = [&](std::size_t owner, std::uint16_t id, std::int32_t model) {
+        const auto messages = Peer::drain(peers[owner]);
+        CHECK(messages.size() == 1);
+        auto create = decode(messages.at(0));
+        std::uint16_t object = 0;
+        std::int32_t wire_model = 0;
+        std::array<float, 7> fields{};
+        CHECK(create.id == 44 && create.payload.numberOfBitsUsed_ == 40 * 8);
+        CHECK(create.payload.read(&object, 2) && object == id);
+        CHECK(create.payload.read(&wire_model, 4) && wire_model == model);
+        CHECK((create.payload.read(fields.data(), sizeof(fields)) && fields == std::array<float, 7>{1, 2, 3, 4, 5, 6, 150}));
+    };
+    const auto expect_transform = [&](std::uint8_t rpc, std::uint16_t id, const std::array<float, 3>& expected) {
+        const auto messages = Peer::drain(peers[0]);
+        CHECK(messages.size() == 1 && Peer::drain(peers[1]).empty());
+        auto update = decode(messages.at(0));
+        std::uint16_t object = 0;
+        std::array<float, 3> fields{};
+        CHECK(update.id == rpc && update.payload.numberOfBitsUsed_ == 14 * 8);
+        CHECK(update.payload.read(&object, 2) && object == id);
+        CHECK(update.payload.read(fields.data(), sizeof(fields)) && fields == expected);
+    };
+
+    CHECK(make_global() == 1);
+    for (auto& peer : peers) CHECK(Peer::drain(peer).size() == 1);
+    CHECK(create_for(2, 1000) == 0);
+    CHECK(create_for(65536, -1000) == 2);
+    expect_create(0, 2, -1000);
+    CHECK(Peer::drain(peers[1]).empty());
+    CHECK(create_for(1, 19379) == 2);
+    expect_create(1, 2, 19379);
+    CHECK(Peer::drain(peers[0]).empty());
+    CHECK(game.players_[0].streamed_objects[2] == 0 && game.players_[1].streamed_objects[2] == 0);
+    CHECK(make_global() == 3);
+    for (auto& peer : peers) CHECK(Peer::drain(peer).size() == 1);
+
+    CHECK(Native::call(vm, "IsValidPlayerObject", {65536, 65538}) == 1);
+    CHECK(Native::call(vm, "IsValidPlayerObject", {0, 1}) == 0);
+    CHECK(Native::call(vm, "GetPlayerObjectModel", {0, 2}) == -1000);
+    CHECK(Native::call(vm, "GetPlayerObjectModel", {1, 2}) == 19379);
+    CHECK(Native::call(vm, "GetPlayerObjectModel", {1, 2000}) == -1);
+    CHECK(Native::call(vm, "GetPlayerObjectModel", {2, 2}) == 0);
+    CHECK(Native::call(vm, "SetPlayerObjectPos", {1, 1, 0, 0, 0}) == 0);
+    CHECK(Native::call(vm, "SetPlayerObjectRot", {2, 2, 0, 0, 0}) == 0);
+    CHECK(Peer::drain(peers[0]).empty() && Peer::drain(peers[1]).empty());
+
+    CHECK(Native::call(vm, "SetPlayerObjectPos", {65536, 65538, bits(-8), bits(9), bits(-10)}) == 1);
+    expect_transform(45, 2, {-8, 9, -10});
+    CHECK(Native::call(vm, "SetPlayerObjectRot", {0, 2, bits(155), bits(-54), bits(31)}) == 1);
+    expect_transform(46, 2, {155, -54, 31});
+    CHECK(Native::call(vm, "GetPlayerObjectPos", {0, 2, 0, 4, 8}) == 1);
+    CHECK(Native::read_float(vm, 0) == -8 && Native::read_float(vm, 4) == 9 && Native::read_float(vm, 8) == -10);
+    CHECK(Native::call(vm, "GetPlayerObjectRot", {0, 2, 0, 4, 8}) == 1);
+    CHECK(Native::read_float(vm, 0) == 155 && Native::read_float(vm, 4) == -54 && Native::read_float(vm, 8) == 31);
+    CHECK(Native::call(vm, "GetPlayerObjectPos", {1, 2, 0, 4, 8}) == 1);
+    CHECK(Native::read_float(vm, 0) == 1 && Native::read_float(vm, 4) == 2 && Native::read_float(vm, 8) == 3);
+    CHECK(Native::call(vm, "GetPlayerObjectPos", {0, 1, 0, 4, 8}) == 0);
+    CHECK(Native::read_float(vm, 0) == 1 && Native::read_float(vm, 4) == 2 && Native::read_float(vm, 8) == 3);
+
+    CHECK(Native::call(vm, "DestroyPlayerObject", {0, 2}) == 1);
+    const auto messages = Peer::drain(peers[0]);
+    CHECK(messages.size() == 1 && Peer::drain(peers[1]).empty());
+    auto destroy = decode(messages.at(0));
+    std::uint16_t object = 0;
+    CHECK(destroy.id == 47 && destroy.payload.numberOfBitsUsed_ == 16 && destroy.payload.read(&object, 2) && object == 2);
+    CHECK(Native::call(vm, "DestroyPlayerObject", {0, 2}) == 1);
+    CHECK(Native::call(vm, "DestroyPlayerObject", {2, 2}) == 0);
+    CHECK(Peer::drain(peers[0]).empty() && Peer::drain(peers[1]).empty());
+    CHECK(make_global() == 4);
+    for (auto& peer : peers) CHECK(Peer::drain(peer).size() == 1);
+    game.disconnect_player(1, 1);
+    CHECK(Peer::drain(peers[0]).size() == 1);
+    CHECK(Peer::drain(peers[1]).empty());
+    CHECK(make_global() == 2);
+    CHECK(Peer::drain(peers[0]).size() == 1);
+
+    CHECK(create_for(0, 19379) == 5);
+    expect_create(0, 5, 19379);
+    game.begin_gamemode_restart();
+    const auto restart = Peer::drain(peers[0]);
+    CHECK(restart.size() == 1 && decode(restart.at(0)).id == 40);
+    CHECK(Native::call(vm, "GetPlayerObjectModel", {0, 5}) == -1);
+    CHECK(make_global() == 1);
+    CHECK(Peer::drain(peers[0]).size() == 1);
+    CHECK(create_for(0, 19379) == 2);
+    expect_create(0, 2, 19379);
+}
+
+void player_object_motion() {
+    using samp::amx::cell;
+    samp::server::GameLayer game;
+    std::array<samp::server::RakNetPeer, 2> peers;
+    game.players_.resize(peers.size());
+    for (std::size_t id = 0; id < peers.size(); ++id) {
+        Peer::authenticate(peers[id]);
+        auto& player = game.players_[id];
+        player.id = static_cast<int>(id);
+        player.in_use = player.joined = true;
+        player.peer = &peers[id];
+    }
+    game.update_player_pool_size();
+
+    samp::pawn::PawnVm vm;
+    Native::prepare(vm);
+    samp::pawn::register_server_natives(vm, game);
+    std::vector<std::array<cell, 3>> callbacks;
+    auto first = std::make_unique<samp::pawn::PawnVm>();
+    Native::redirect_args(*first, 2, [&](const auto args) -> cell {
+        callbacks.push_back({1, args[0], args[1]});
+        if (args[0] == 0 && args[1] == 2)
+            CHECK(Native::call(vm, "DestroyPlayerObject", {0, 2}) == 1);
+        return 1;
+    }, "OnPlayerObjectMoved");
+    game.filterscripts_.push_back(std::move(first));
+    auto second = std::make_unique<samp::pawn::PawnVm>();
+    Native::redirect_args(*second, 2, [&](const auto args) -> cell {
+        callbacks.push_back({2, args[0], args[1]});
+        return 0;
+    }, "OnPlayerObjectMoved");
+    game.filterscripts_.push_back(std::move(second));
+    auto global = std::make_unique<samp::pawn::PawnVm>();
+    Native::redirect_args(*global, 1, [&](const auto args) -> cell {
+        callbacks.push_back({4, -1, args[0]});
+        return 1;
+    }, "OnObjectMoved");
+    game.filterscripts_.push_back(std::move(global));
+    Native::redirect_args(game.vm_, 2, [&](const auto args) -> cell {
+        callbacks.push_back({3, args[0], args[1]});
+        return 1;
+    }, "OnPlayerObjectMoved");
+
+    const auto bits = [](float value) { return std::bit_cast<cell>(value); };
+    const auto create_for = [&](cell owner) {
+        return Native::call(vm, "CreatePlayerObject", {owner, 19379, 0, 0, 0, bits(10), bits(20), bits(30), 0});
+    };
+    const auto move = [&](cell owner, cell id, float target, float rx, float ry, float rz) {
+        return Native::call(vm, "MovePlayerObject", {owner, id, bits(target), 0, 0, bits(4), bits(rx), bits(ry), bits(rz)});
+    };
+    const auto check_move = [&](Rpc rpc, const std::array<float, 10>& values) {
+        std::uint16_t id = 0;
+        std::array<float, 10> fields{};
+        CHECK(rpc.id == 99 && rpc.payload.numberOfBitsUsed_ == 42 * 8);
+        CHECK(rpc.payload.read(&id, 2) && id == 2);
+        CHECK(rpc.payload.read(fields.data(), sizeof(fields)) && fields == values);
+    };
+    const auto check_stop = [&](Rpc rpc) {
+        std::uint16_t id = 0;
+        CHECK(rpc.id == 122 && rpc.payload.numberOfBitsUsed_ == 16);
+        CHECK(rpc.payload.read(&id, 2) && id == 2);
+    };
+
+    CHECK(Native::call(vm, "CreateObject", {19379, 0, 0, 0, 0, 0, 0, 0}) == 1);
+    CHECK(create_for(0) == 2 && create_for(0) == 3 && create_for(1) == 2);
+    CHECK(Peer::drain(peers[0]).size() == 3 && Peer::drain(peers[1]).size() == 2);
+    CHECK(move(1, 3, 12, 0, 0, 0) == 0);
+    CHECK(Native::call(vm, "StopPlayerObject", {0, 2}) == 0);
+    CHECK(move(65536, 65538, 12, -1000, 90, -999) == 3000);
+    auto messages = Peer::drain(peers[0]);
+    CHECK(messages.size() == 1 && Peer::drain(peers[1]).empty());
+    check_move(decode(messages.at(0)), {0, 0, 0, 12, 0, 0, 4, 10, 90, -999});
+    CHECK(Native::call(vm, "GetPlayerObjectRot", {0, 2, 0, 4, 8}) == 1 && Native::read_float(vm, 4) == 20);
+    CHECK(Native::call(vm, "IsPlayerObjectMoving", {65536, 65538}) == 1);
+    CHECK(Native::call(vm, "IsPlayerObjectMoving", {1, 2}) == 0);
+    game.update_objects(1.0f);
+    CHECK(callbacks.empty());
+    CHECK(Native::call(vm, "GetPlayerObjectPos", {0, 2, 0, 4, 8}) == 1 && Native::read_float(vm, 0) == 4);
+    CHECK(Native::call(vm, "StopPlayerObject", {0, 2}) == 1);
+    messages = Peer::drain(peers[0]);
+    CHECK(messages.size() == 1 && Peer::drain(peers[1]).empty());
+    check_stop(decode(messages.at(0)));
+    game.update_objects(2.0f);
+    CHECK(callbacks.empty());
+    CHECK(Native::call(vm, "GetPlayerObjectPos", {0, 2, 0, 4, 8}) == 1 && Native::read_float(vm, 0) == 4);
+
+    CHECK(move(0, 2, 12, -1000, 90, -1000) == 2000);
+    CHECK(move(0, 2, 8, -1000, 90, -1000) == 1000);
+    messages = Peer::drain(peers[0]);
+    CHECK(messages.size() == 3 && Peer::drain(peers[1]).empty());
+    check_stop(decode(messages.at(1)));
+    check_move(decode(messages.at(2)), {4, 0, 0, 8, 0, 0, 4, 10, 90, 30});
+    CHECK(Native::call(vm, "GetPlayerObjectRot", {0, 2, 0, 4, 8}) == 1 && Native::read_float(vm, 4) == 90);
+    CHECK(move(0, 3, 4, 0, 0, 0) == 1000 && move(1, 2, 4, 0, 0, 0) == 1000);
+    CHECK(Native::call(vm, "MoveObject", {1, bits(4), 0, 0, bits(4), 0, 0, 0}) == 1000);
+    game.update_objects(1.0f);
+    game.update_objects(1.0f);
+    const std::vector<std::array<cell, 3>> expected{
+        {1, 0, 2}, {2, 0, 2}, {3, 0, 2}, {1, 0, 3}, {2, 0, 3}, {3, 0, 3},
+        {1, 1, 2}, {2, 1, 2}, {3, 1, 2}, {4, -1, 1},
+    };
+    CHECK(callbacks == expected);
+    CHECK(Native::call(vm, "IsValidPlayerObject", {0, 2}) == 0);
+    CHECK(Native::call(vm, "GetPlayerObjectPos", {1, 2, 0, 4, 8}) == 1 && Native::read_float(vm, 0) == 4);
+}
+
+void object_selection_and_editing() {
+    using samp::amx::cell;
+    samp::server::GameLayer game;
+    std::array<samp::server::RakNetPeer, 2> peers;
+    game.players_.resize(peers.size());
+    for (std::size_t id = 0; id < peers.size(); ++id) {
+        Peer::authenticate(peers[id]);
+        auto& player = game.players_[id];
+        player.id = static_cast<int>(id);
+        player.in_use = player.joined = true;
+        player.peer = &peers[id];
+    }
+    game.update_player_pool_size();
+
+    samp::pawn::PawnVm vm;
+    Native::prepare(vm);
+    samp::pawn::register_server_natives(vm, game);
+    const auto bits = [](float value) { return std::bit_cast<cell>(value); };
+    std::vector<std::vector<cell>> callbacks;
+    const auto record = [&](cell owner, std::span<const cell> args) {
+        callbacks.emplace_back(1, owner);
+        callbacks.back().insert(callbacks.back().end(), args.begin(), args.end());
+    };
+    bool consume_selection = false;
+    auto selection = std::make_unique<samp::pawn::PawnVm>();
+    Native::redirect_args(*selection, 7, [&](const auto args) -> cell {
+        record(1, args);
+        return consume_selection;
+    }, "OnPlayerSelectObject");
+    game.filterscripts_.push_back(std::move(selection));
+    auto edit = std::make_unique<samp::pawn::PawnVm>();
+    Native::redirect_args(*edit, 10, [&](const auto args) -> cell { record(3, args); return 0; }, "OnPlayerEditObject");
+    game.filterscripts_.push_back(std::move(edit));
+    Native::redirect_args(game.vm_, 7, [&](const auto args) -> cell { record(2, args); return 0; }, "OnPlayerSelectObject");
+
+    const auto send_selection = [&](std::size_t owner, std::uint16_t id) {
+        BitStream payload;
+        const std::uint32_t request_type = 0;
+        const std::array<cell, 4> fields{1000, bits(1), bits(-2), bits(3)};
+        payload.write(&request_type, sizeof(request_type));
+        payload.write(&id, sizeof(id));
+        payload.write(fields.data(), sizeof(fields));
+        route(game, peers[owner], 27, payload);
+    };
+    const auto send_edit = [&](std::size_t owner, bool player_owned, std::uint16_t id, cell status) {
+        BitStream payload;
+        if (player_owned) payload.write1();
+        else payload.write0();
+        payload.write(&id, sizeof(id));
+        const std::array<cell, 7> fields{status, bits(1), bits(2), bits(3), bits(4), bits(5), bits(6)};
+        payload.write(fields.data(), sizeof(fields));
+        route(game, peers[owner], 117, payload);
+    };
+    const auto expect_request = [&](std::size_t owner, std::uint8_t rpc, std::uint16_t id, bool player_owned) {
+        const auto messages = Peer::drain(peers[owner]);
+        CHECK(messages.size() == 1 && Peer::drain(peers[1 - owner]).empty());
+        auto request = decode(messages.at(0));
+        CHECK(request.id == rpc && request.payload.numberOfBitsUsed_ == (rpc == 117 ? 17u : 0u));
+        if (rpc == 117) {
+            CHECK(request.payload.readBit() == player_owned);
+            std::uint16_t object_id = 0;
+            CHECK(request.payload.read(&object_id, sizeof(object_id)) && object_id == id);
+        }
+    };
+
+    CHECK(Native::call(vm, "CreateObject", {19379, 0, 0, 0, 0, 0, 0, 0}) == 1);
+    CHECK(Native::call(vm, "CreatePlayerObject", {0, 19379, 0, 0, 0, 0, 0, 0, 0}) == 2);
+    for (auto& peer : peers) Peer::drain(peer);
+    send_edit(0, false, 1, 2);
+    CHECK(callbacks.empty());
+    CHECK(Native::call(vm, "SelectObject", {65536}) == 1);
+    expect_request(0, 27, 0, false);
+    send_selection(0, 1);
+    CHECK((callbacks == std::vector<std::vector<cell>>{
+        {1, 0, 1, 1, 1000, bits(1), bits(-2), bits(3)}, {2, 0, 1, 1, 1000, bits(1), bits(-2), bits(3)}}));
+    callbacks.clear();
+    consume_selection = true;
+    send_selection(1, 2);
+    send_selection(0, 2);
+    CHECK((callbacks == std::vector<std::vector<cell>>{{1, 0, 2, 2, 1000, bits(1), bits(-2), bits(3)}}));
+    callbacks.clear();
+
+    Native::redirect_args(game.vm_, 10, [&](const auto args) -> cell { record(4, args); return 0; }, "OnPlayerEditObject");
+    CHECK(Native::call(vm, "EditPlayerObject", {1, 2}) == 1);
+    CHECK(Native::call(vm, "EditObject", {0, 2}) == 1);
+    CHECK(Native::call(vm, "EditObject", {2, 1}) == 0);
+    CHECK(Peer::drain(peers[0]).empty() && Peer::drain(peers[1]).empty());
+    CHECK(Native::call(vm, "EditObject", {1, 1}) == 1);
+    expect_request(1, 117, 1, false);
+    send_edit(1, true, 2, 1);
+    CHECK(callbacks.empty());
+    send_edit(1, false, 1, 2);
+    CHECK((callbacks == std::vector<std::vector<cell>>{
+        {3, 1, 0, 1, 2, bits(1), bits(2), bits(3), bits(4), bits(5), bits(6)},
+        {4, 1, 0, 1, 2, bits(1), bits(2), bits(3), bits(4), bits(5), bits(6)}}));
+    callbacks.clear();
+    CHECK(Native::call(vm, "EditPlayerObject", {0, 65538}) == 1);
+    expect_request(0, 117, 2, true);
+    CHECK(Native::call(vm, "CancelEdit", {0}) == 1);
+    expect_request(0, 28, 0, false);
+    send_edit(0, true, 2, 1);
+    CHECK((callbacks == std::vector<std::vector<cell>>{
+        {3, 0, 1, 2, 1, bits(1), bits(2), bits(3), bits(4), bits(5), bits(6)},
+        {4, 0, 1, 2, 1, bits(1), bits(2), bits(3), bits(4), bits(5), bits(6)}}));
+    callbacks.clear();
+    BitStream truncated;
+    truncated.write1();
+    route(game, peers[0], 117, truncated);
+    game.gamemode_restarting_ = true;
+    send_selection(0, 2);
+    send_edit(0, true, 2, 1);
+    CHECK(callbacks.empty());
+}
+
 void connect_callback_order(const std::filesystem::path& root) {
     samp::server::Config config;samp::server::GameLayer game;game.config_=&config;game.players_.resize(2);
     samp::server::RakNetPeer peer;Peer::authenticate(peer);game.artwork_enabled_=true;game.models_directory_=root.string();
@@ -537,7 +1051,7 @@ int main(int argc,char** argv) {
         pipeline(root,argv[2],argv[3]);std::filesystem::remove_all(root);
         std::printf("real asset transfer/cache: %d failures\n",failures);return failures!=0;
     }
-    registry_and_transfer(root);native_activation_messages(root);connect_callback_order(root);world_selection_and_failures(root);pipeline(root);
+    registry_and_transfer(root);native_activation_messages(root);global_object_motion();global_object_attachments();player_object_lifecycle();player_object_motion();object_selection_and_editing();connect_callback_order(root);world_selection_and_failures(root);pipeline(root);
 #ifdef _WIN32
     WSADATA winsock{};CHECK(WSAStartup(MAKEWORD(2,2),&winsock)==0);http_pipeline(root);WSACleanup();
 #endif

@@ -94,6 +94,8 @@ private:
     void command_load_filterscript(const ConsoleLine& line);
     void command_unload_filterscript(const ConsoleLine& line);
     void command_reload_filterscript(const ConsoleLine& line);
+    void command_next_gamemode();
+    void command_change_gamemode(std::string_view argument);
 
 public:
     ConsoleHost* host_;

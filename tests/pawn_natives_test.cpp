@@ -3,6 +3,7 @@
 #include "pawn/natives.hpp"
 #include "pawn/property_natives.hpp"
 #include "pawn/string_natives.hpp"
+#include "samp/proto/own_sync.hpp"
 #include "samp/server/game_layer.hpp"
 
 #include <array>
@@ -126,6 +127,75 @@ int main(int, char**) {
         require(std::fabs(floating("atan2", {bits(1), bits(-1)}) - 135) < 0.0001f &&
                 std::fabs(floating("atan2", {bits(-1), bits(1)}) + 45) < 0.0001f,
                 "atan2 changed input order or angle units");
+        require(call("asin", {bits(-0.0f)}) == bits(-0.0f), "asin lost signed zero");
+        require(std::fabs(floating("asin", {bits(-1)}) + 90) < 0.0001f &&
+                std::fabs(floating("asin", {bits(0.5f)}) - 30) < 0.0001f,
+                "asin changed input sign or angle units");
+        require(floating("acos", {bits(1)}) == 0 &&
+                std::fabs(floating("acos", {bits(-1)}) - 180) < 0.0001f &&
+                std::fabs(floating("acos", {bits(0.5f)}) - 60) < 0.0001f,
+                "acos changed quadrants or angle units");
+        for (const auto* name : {"asin", "acos"}) {
+            require(call(name, {bits(1.0001f)}) == std::bit_cast<cell>(0xffc00000u) &&
+                    vm.amx_.error == 0, "inverse trig domain return differs");
+            require(call(name, {std::bit_cast<cell>(0xff812345u)}) == std::bit_cast<cell>(0xffc12345u),
+                    "inverse trig lost the NaN sign or payload");
+        }
+
+        {
+            auto& player = host.players_[999];
+            samp::server::RakNetPeer peer;
+            player.id = 999;
+            player.peer = &peer;
+            player.spawned = true;
+            require(call("GetPlayerWeaponState", {999}) == -1 &&
+                    call("GetPlayerWeaponState", {-1}) == 0, "weapon state sentinels differ");
+            require(call("GetPlayerSurfingVehicleID", {999}) == 0xffff &&
+                    call("GetPlayerSurfingObjectID", {999}) == 0xffff &&
+                    call("GetPlayerAnimationIndex", {999}) == 0 &&
+                    call("GetPlayerSpecialAction", {999}) == 0, "off-foot native defaults differ");
+
+            std::array<std::uint8_t, 32> aim{};
+            aim[0] = 203;
+            aim[30] = 0x9f;
+            samp::proto::BitStream aim_packet;
+            aim_packet.write(aim.data(), aim.size());
+            host.on_user_message(peer, aim_packet);
+
+            std::array<std::uint8_t, 1 + samp::proto::own::kFootSyncBlockSize> foot{};
+            foot[0] = samp::proto::own::kFootSyncId;
+            const float rotation = 1.0f;
+            std::memcpy(foot.data() + 1 + 0x12, &rotation, sizeof(rotation));
+            foot[1 + 0x25] = 255;
+            const std::uint32_t animation = 0x12348001;
+            std::memcpy(foot.data() + 1 + 0x40, &animation, sizeof(animation));
+            const auto sync_surfing = [&](std::uint16_t id) {
+                std::memcpy(foot.data() + 1 + 0x3e, &id, sizeof(id));
+                samp::proto::BitStream packet;
+                packet.write(foot.data(), foot.size());
+                host.on_user_message(peer, packet);
+            };
+            sync_surfing(1999);
+            require(call("GetPlayerSurfingVehicleID", {65536 + 999}) == 1999 &&
+                    call("GetPlayerSurfingObjectID", {999}) == 0xffff, "vehicle surf range differs");
+            require(call("GetPlayerWeaponState", {999}) == 2, "aim top bits differ");
+            require(call("GetPlayerAnimationIndex", {999}) == -32767 &&
+                    call("GetPlayerSpecialAction", {999}) == 255, "on-foot native sync fields differ");
+
+            sync_surfing(2000);
+            require(call("GetPlayerSurfingObjectID", {999}) == 0xffff, "absent global object remained surfable");
+            host.objects_[0].active = true;
+            sync_surfing(2000);
+            require(call("GetPlayerSurfingObjectID", {999}) == 0 &&
+                    call("GetPlayerSurfingVehicleID", {999}) == 0xffff, "object surf encoding differs");
+            sync_surfing(4000);
+            require(call("GetPlayerSurfingObjectID", {999}) == 0xffff, "one-past object surf id accepted");
+            sync_surfing(0);
+            require(call("GetPlayerSurfingVehicleID", {999}) == 0xffff, "zero surf id treated as a vehicle");
+            host.objects_[0].active = false;
+            player = samp::pawn::PlayerNativeState{};
+            player.in_use = true;
+        }
 
         for (const auto& [name, native] : samp::pawn::float_natives::kNatives) {
             require(vm.native_functions_.contains(std::string(name)), "float table not registered");
