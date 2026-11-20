@@ -1592,11 +1592,22 @@ constexpr std::string_view kAnimationNames[]{
 };
 static_assert(std::size(kAnimationNames) == 1812);
 
+// Official: FUN_00494420 @ 0x00494420 (samp-server.exe)
+std::string_view weapon_name_for_id(cell id) {
+    if (id < 1 || static_cast<std::size_t>(id) >= std::size(kOfficialWeaponNames)) return {};
+    return kOfficialWeaponNames[static_cast<std::size_t>(id)];
+}
+
+// Official: FUN_0048f870 @ 0x0048f870 (samp-server.exe)
+std::string_view animation_name_for_index(std::int16_t index) {
+    if (index < 1 || static_cast<std::size_t>(index) > std::size(kAnimationNames)) return {};
+    return kAnimationNames[static_cast<std::size_t>(index - 1)];
+}
+
 // Official: FUN_004717a0 @ 0x004717a0 (samp-server.exe)
 cell get_weapon_name(NativeHost&, std::span<const cell> args, const CellWriter& write) {
     if (args.size() < 3 || args[0] > 54) return 0;
-    const std::string_view name = args[0] < 1 ? std::string_view{} :
-        kOfficialWeaponNames[static_cast<std::size_t>(args[0])];
+    const auto name = weapon_name_for_id(args[0]);
     const std::size_t count = args[2] == 0 ? 0 : args[2] < 0 ? name.size() :
         std::min<std::size_t>(name.size(), static_cast<std::size_t>(args[2] - 1));
     for (std::size_t i = 0; i <= count; ++i) {
@@ -1609,9 +1620,9 @@ cell get_weapon_name(NativeHost&, std::span<const cell> args, const CellWriter& 
 
 // Official: FUN_00474240 @ 0x00474240 (samp-server.exe)
 cell get_animation_name(NativeHost&, std::span<const cell> args, const CellWriter& write) {
-    if (args.size() < 5 || args[0] <= 0 ||
-        static_cast<std::size_t>(args[0]) > std::size(kAnimationNames)) return 0;
-    const auto entry = kAnimationNames[static_cast<std::size_t>(args[0] - 1)];
+    if (args.size() < 5) return 0;
+    const auto index = std::bit_cast<std::int16_t>(static_cast<std::uint16_t>(args[0]));
+    const auto entry = animation_name_for_index(index);
     const auto separator = entry.find(':');
     if (separator == std::string_view::npos) return 0;
     const std::string_view library = entry.substr(0, separator);
@@ -1660,6 +1671,16 @@ cell get_player_network_stats(NativeHost& host, std::span<const cell> args, cons
         if (address < 0 || address > INT32_MAX || !write(static_cast<cell>(address), character)) return 0;
     }
     return 1;
+}
+
+// Official: FUN_004739b0 @ 0x004739b0 (samp-server.exe)
+cell get_packet_loss_percent(NativeHost& host, std::span<const cell> args) {
+    std::uint64_t sent = 0;
+    std::uint64_t resent = 0;
+    if (args.empty() || !host.player_send_totals(args[0], sent, resent) || sent == 0)
+        return std::bit_cast<cell>(0.0f);
+    const auto percent = static_cast<float>(static_cast<double>(resent) * 100.0 / static_cast<double>(sent));
+    return std::bit_cast<cell>(percent);
 }
 
 constexpr auto send_player_command = [](NativeHost& host, const PlayerNativeState& player,
@@ -2723,6 +2744,7 @@ constexpr std::pair<const char*, OutputNative> output_natives[] = {
 
 using ServerNative = cell (*)(NativeHost&, std::span<const cell>);
 constexpr std::pair<const char*, ServerNative> server_natives[] = {
+    {"NetStats_PacketLossPercent", get_packet_loss_percent},
     {"AllowInteriorWeapons", allow_interior_weapons},
     {"AddPlayerClass", add_player_class},
     {"AddPlayerClassEx", add_player_class_ex},

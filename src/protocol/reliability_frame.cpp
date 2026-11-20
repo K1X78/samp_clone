@@ -156,7 +156,9 @@ void update_reliability_sends(ReliabilitySendState& state, std::uint64_t now_ms,
             pending->epoch = state.epoch;
             pending->next_send_ms = now_ms + state.retry_ms;
             datagram.frames.push_back(pending->frame);
-            used = encode_connected_datagram(datagram).numberOfBitsUsed_;
+            const auto encoded_bits = encode_connected_datagram(datagram).numberOfBitsUsed_;
+            state.total_bits_resent += encoded_bits - used;
+            used = encoded_bits;
         }
         for (auto& priority : state.unsent) {
             while (!priority.empty()) {
@@ -178,7 +180,9 @@ void update_reliability_sends(ReliabilitySendState& state, std::uint64_t now_ms,
         }
         if (datagram.frames.empty()) break;
         const auto encoded = encode_connected_datagram(datagram);
-        state.outbox.emplace_back(encoded.data_.begin(), encoded.data_.begin() + (encoded.numberOfBitsUsed_ + 7u) / 8u);
+        const auto byte_count = (encoded.numberOfBitsUsed_ + 7u) / 8u;
+        state.outbox.emplace_back(encoded.data_.begin(), encoded.data_.begin() + byte_count);
+        state.total_bits_sent += byte_count * 8u;
         state.credit -= encoded.numberOfBitsUsed_ + 224.0;
     }
     // Native congestion controller: rate/credit at +0x452/+0x45a, lower/upper

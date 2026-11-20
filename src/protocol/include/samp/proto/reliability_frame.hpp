@@ -49,6 +49,8 @@ struct ReliabilitySendState {
     std::size_t queued_bytes = 0;
     std::vector<std::vector<std::uint8_t>> outbox;
     std::size_t pending_bytes = 0;
+    std::uint64_t total_bits_sent = 0;
+    std::uint64_t total_bits_resent = 0;
     std::uint32_t ping_ms = 1000;
     std::uint32_t timeout_ms = 10000;
     std::uint32_t simulated_delay_ms = 0;

@@ -364,6 +364,9 @@ public:
     [[nodiscard]] virtual int max_players() const = 0;
     // Queries actual slot occupancy using the official native's WORD ID.
     [[nodiscard]] virtual bool is_player_connected(int id) const = 0;
+    // Optional transport statistics for hosts that own live peers.
+    // no standalone native entry
+    virtual bool player_send_totals(int, std::uint64_t&, std::uint64_t&) const { return false; }
     // Hosts without a console have no console variables or standalone native entry.
     // no standalone native entry
     virtual bool read_console_variable(std::string_view, std::string&) const { return false; }

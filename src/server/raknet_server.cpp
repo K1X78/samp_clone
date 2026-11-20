@@ -252,7 +252,10 @@ void RakNetServer::tick(std::uint64_t now) {
                     ranges.begin() + std::min(offset + 256, ranges.size()));
                 const BitStream encoded=samp::proto::encode_connected_datagram(acknowledgements);
                 const std::size_t byte_count=(encoded.numberOfBitsUsed_+7u)>>3;
-                if(byte_count!=0) peer.outbox_.emplace_back(encoded.data_.data(),encoded.data_.data()+byte_count);
+                if (byte_count != 0) {
+                    peer.outbox_.emplace_back(encoded.data_.data(), encoded.data_.data() + byte_count);
+                    peer.send_state_.total_bits_sent += byte_count * 8u;
+                }
             }
             peer.received_.clear();
             peer.next_ack_time_=now+kMinPingToResendMs;

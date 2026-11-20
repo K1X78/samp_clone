@@ -163,6 +163,7 @@ public:
     // ------------------------------------------------------ the native host
     [[nodiscard]] int max_players() const override;
     [[nodiscard]] bool is_player_connected(int id) const override;
+    bool player_send_totals(int id, std::uint64_t& sent, std::uint64_t& resent) const override;
     [[nodiscard]] bool read_console_variable(std::string_view name, std::string& value) const override;
     bool send_rcon_command(std::string_view command) override;
     [[nodiscard]] bool player_name_in_use(const char* name) const;

@@ -248,6 +248,16 @@ bool GameLayer::is_player_connected(int id) const {
     return slot < 1000 && slot < players_.size() && players_[slot].in_use;
 }
 
+// Source adapter only; no established separate native entry.
+bool GameLayer::player_send_totals(int id, std::uint64_t& sent, std::uint64_t& resent) const {
+    if (!is_player_connected(id)) return false;
+    const auto* peer = players_[static_cast<std::uint16_t>(id)].peer;
+    if (!peer) return false;
+    sent = peer->send_state_.total_bits_sent;
+    resent = peer->send_state_.total_bits_resent;
+    return true;
+}
+
 // Console-variable access used by the Pawn native adapter; no separate
 // standalone official body is assigned to this interface bridge.
 // source adapter only; no established separate native entry
