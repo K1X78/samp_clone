@@ -15,6 +15,7 @@ add_library(samp_pawn STATIC
     amx_lookup_api.cpp
     pawn_vm.cpp
     natives.cpp
+    password_hash.cpp
     player_commands.cpp
     pickup_pool.cpp
     textdraw_pool.cpp
