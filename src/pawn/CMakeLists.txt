@@ -46,6 +46,10 @@ target_include_directories(samp_pawn
 )
 
 target_link_libraries(samp_pawn PUBLIC samp::proto samp::sqlite)
+if(TARGET samp::raknet)
+    target_link_libraries(samp_pawn PUBLIC samp::raknet)
+    target_compile_definitions(samp_pawn PRIVATE SAMP_HAS_RAKNET_STRING_COMPRESSOR)
+endif()
 if(WIN32)
     target_link_libraries(samp_pawn PUBLIC user32 winmm)
 endif()

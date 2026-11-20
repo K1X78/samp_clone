@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <limits>
 #include <random>
 
 #include "samp/proto/wire.hpp"
@@ -56,6 +57,16 @@ void RakNetServer::handle_datagram(std::uint32_t address, std::uint16_t port,
         const auto* octets=reinterpret_cast<const std::uint8_t*>(&address);
         const std::string ip=std::to_string(octets[0])+"."+std::to_string(octets[1])+"."+
                              std::to_string(octets[2])+"."+std::to_string(octets[3]);
+        const auto now = static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::steady_clock::now().time_since_epoch()).count());
+        const auto temporary = game_layer->blocked_ips_.find(ip);
+        if (temporary != game_layer->blocked_ips_.end()) {
+            if (temporary->second == std::numeric_limits<std::uint64_t>::max() || now < temporary->second) {
+                outbox_.push_back({address,port,{0x24}});
+                return;
+            }
+            game_layer->blocked_ips_.erase(temporary);
+        }
         if(std::find(game_layer->banned_ips_.begin(),game_layer->banned_ips_.end(),ip)!=
            game_layer->banned_ips_.end()) {
             outbox_.push_back({address,port,{0x24}});

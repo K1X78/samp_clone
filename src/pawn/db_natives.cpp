@@ -45,6 +45,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <functional>
 #include <map>
 #include <string>
 #include <string_view>
@@ -65,16 +66,138 @@ struct ResultSet {
     std::size_t cursor = 0;
 };
 
+std::map<int, sqlite3*> databases;
+std::map<int, ResultSet> result_sets;
+int next_database_handle = 1;
+int next_result_handle = 1;
+
+using ScriptStringReader = std::function<const char*(cell)>;
+using ScriptStringWriter = std::function<bool(cell, std::string_view, std::size_t)>;
+
+// Official: FUN_00482190 @ 0x00482190 (samp-server.exe)
+cell db_open(PawnVm&, std::span<const cell> args, const ScriptStringReader& read_script_string) {
+    if (args.empty()) return 0;
+    const char* name = read_script_string(args[0]);
+    if (name == nullptr || *name == '\0') return 0;
+    sqlite3* db = nullptr;
+    if (sqlite3_open(name, &db) != SQLITE_OK) {
+        if (db != nullptr) sqlite3_close(db);
+        return 0;
+    }
+    const int handle = next_database_handle++;
+    databases[handle] = db;
+    return handle;
+}
+
+// Official: FUN_00482330 @ 0x00482330 (samp-server.exe)
+cell db_query(PawnVm&, std::span<const cell> args, const ScriptStringReader& read_script_string) {
+    if (args.size() < 2) return 0;
+    const auto database = databases.find(args[0]);
+    sqlite3* db = database == databases.end() ? nullptr : database->second;
+    const char* query = read_script_string(args[1]);
+    if (db == nullptr || query == nullptr) return 0;
+    sqlite3_stmt* stmt = nullptr;
+    if (sqlite3_prepare_v2(db, query, -1, &stmt, nullptr) != SQLITE_OK) return 0;
+    ResultSet result;
+    const int columns = sqlite3_column_count(stmt);
+    result.columns.reserve(static_cast<std::size_t>(columns));
+    for (int i = 0; i < columns; ++i) {
+        const char* name = sqlite3_column_name(stmt, i);
+        result.columns.emplace_back(name == nullptr ? "" : name);
+    }
+    int rc = SQLITE_OK;
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        std::vector<std::string> row;
+        row.reserve(static_cast<std::size_t>(columns));
+        for (int i = 0; i < columns; ++i) {
+            const unsigned char* text = sqlite3_column_text(stmt, i);
+            row.emplace_back(text == nullptr ? "" : reinterpret_cast<const char*>(text));
+        }
+        result.rows.push_back(std::move(row));
+    }
+    sqlite3_finalize(stmt);
+    if (rc != SQLITE_DONE) return 0;
+    const int handle = next_result_handle++;
+    result_sets[handle] = std::move(result);
+    return handle;
+}
+
+// Official: FUN_00481be0 @ 0x00481be0 (samp-server.exe)
+cell db_get_field_float(std::span<const cell> args) {
+    if (args.empty()) return 0;
+    const auto found = result_sets.find(args[0]);
+    if (found == result_sets.end()) return 0;
+    const ResultSet& result = found->second;
+    const int column = args.size() > 1 ? args[1] : 0;
+    const std::string* value = column < 0 || static_cast<std::size_t>(column) >= result.columns.size() ||
+        result.cursor >= result.rows.size() ? nullptr :
+        &result.rows[result.cursor][static_cast<std::size_t>(column)];
+    const float number = value == nullptr ? 0.0f : std::strtof(value->c_str(), nullptr);
+    cell bits = 0;
+    std::memcpy(&bits, &number, sizeof(bits));
+    return bits;
+}
+
+// Official: FUN_00481c60 @ 0x00481c60 (samp-server.exe)
+cell db_get_field_assoc(PawnVm&, std::span<const cell> args,
+                        const ScriptStringReader& read_script_string,
+                        const ScriptStringWriter& write_string) {
+    if (args.size() < 4) return 0;
+    const auto found = result_sets.find(args[0]);
+    if (found == result_sets.end()) return 0;
+    const ResultSet& result = found->second;
+    const char* name = read_script_string(args[1]);
+    if (name == nullptr) return 0;
+    int column = -1;
+    for (std::size_t i = 0; i < result.columns.size(); ++i)
+        if (result.columns[i] == name) { column = static_cast<int>(i); break; }
+    if (column < 0 || result.cursor >= result.rows.size()) return 0;
+    const auto& value = result.rows[result.cursor][static_cast<std::size_t>(column)];
+    const std::size_t max_cells = static_cast<std::size_t>(std::max<cell>(args[3], 0));
+    return write_string(args[2], value, max_cells) ? 1 : 0;
+}
+
+// Official: FUN_00481df0 @ 0x00481df0 (samp-server.exe)
+cell db_get_field_assoc_int(std::span<const cell> args, const ScriptStringReader& read_script_string) {
+    if (args.size() < 2) return 0;
+    const auto found = result_sets.find(args[0]);
+    if (found == result_sets.end()) return 0;
+    const ResultSet& result = found->second;
+    const char* name = read_script_string(args[1]);
+    if (name == nullptr) return 0;
+    int column = -1;
+    for (std::size_t i = 0; i < result.columns.size(); ++i)
+        if (result.columns[i] == name) { column = static_cast<int>(i); break; }
+    const std::string* value = column < 0 || result.cursor >= result.rows.size() ? nullptr :
+        &result.rows[result.cursor][static_cast<std::size_t>(column)];
+    return value == nullptr ? 0 : static_cast<cell>(std::strtol(value->c_str(), nullptr, 10));
+}
+
+// Official: FUN_00481f40 @ 0x00481f40 (samp-server.exe)
+cell db_get_field_assoc_float(std::span<const cell> args, const ScriptStringReader& read_script_string) {
+    if (args.size() < 2) return 0;
+    const auto found = result_sets.find(args[0]);
+    if (found == result_sets.end()) return 0;
+    const ResultSet& result = found->second;
+    const char* name = read_script_string(args[1]);
+    if (name == nullptr) return 0;
+    int column = -1;
+    for (std::size_t i = 0; i < result.columns.size(); ++i)
+        if (result.columns[i] == name) { column = static_cast<int>(i); break; }
+    const std::string* value = column < 0 || result.cursor >= result.rows.size() ? nullptr :
+        &result.rows[result.cursor][static_cast<std::size_t>(column)];
+    const float number = value == nullptr ? 0.0f : std::strtof(value->c_str(), nullptr);
+    cell bits = 0;
+    std::memcpy(&bits, &number, sizeof(bits));
+    return bits;
+}
+
 }  // namespace
 
 // The official SQLite registration entry passes the module's native table
 // (0x4cfba0) to amx_Register for every loaded AMX.
 // Official: FUN_00481880 @ 0x00481880 (samp-server.exe)
 void register_db_natives(PawnVm& vm) {
-    static std::map<int, sqlite3*> databases;
-    static std::map<int, ResultSet> result_sets;
-    static int next_database_handle = 1;
-    static int next_result_handle = 1;
     const auto read_script_string = [&vm](std::int32_t address) -> const char* {
         const std::uint8_t* start = nullptr;
         if (vm.ok_ && address >= 0 && static_cast<std::int64_t>(address) < vm.amx_.stp &&
@@ -134,21 +257,7 @@ void register_db_natives(PawnVm& vm) {
     };
 
     vm.native_functions_["db_open"] = [&vm, read_script_string](std::span<const cell> args) -> cell {
-        if (args.empty()) {
-            return 0;
-        }
-        const char* name = read_script_string(args[0]);
-        if (name == nullptr || *name == '\0') {
-            return 0;
-        }
-        sqlite3* db = nullptr;
-        if (sqlite3_open(name, &db) != SQLITE_OK) {
-            if (db != nullptr) sqlite3_close(db);
-            return 0;
-        }
-        const int handle = next_database_handle++;
-        databases[handle] = db;
-        return handle;
+        return db_open(vm, args, read_script_string);
     };
 
     vm.native_functions_["db_close"] = [](std::span<const cell> args) -> cell {
@@ -163,46 +272,7 @@ void register_db_natives(PawnVm& vm) {
     };
 
     vm.native_functions_["db_query"] = [&vm, read_script_string](std::span<const cell> args) -> cell {
-        if (args.size() < 2) {
-            return 0;
-        }
-        const auto database = databases.find(args[0]);
-        sqlite3* db = database == databases.end() ? nullptr : database->second;
-        const char* query = read_script_string(args[1]);
-        if (db == nullptr || query == nullptr) {
-            return 0;
-        }
-        sqlite3_stmt* stmt = nullptr;
-        if (sqlite3_prepare_v2(db, query, -1, &stmt, nullptr) != SQLITE_OK) {
-            return 0;
-        }
-        ResultSet result;
-        const int columns = sqlite3_column_count(stmt);
-        result.columns.reserve(static_cast<std::size_t>(columns));
-        for (int i = 0; i < columns; ++i) {
-            const char* name = sqlite3_column_name(stmt, i);
-            result.columns.emplace_back(name == nullptr ? "" : name);
-        }
-        int rc = SQLITE_OK;
-        while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-            std::vector<std::string> row;
-            row.reserve(static_cast<std::size_t>(columns));
-            for (int i = 0; i < columns; ++i) {
-                const unsigned char* text = sqlite3_column_text(stmt, i);
-                row.emplace_back(text == nullptr ? "" : reinterpret_cast<const char*>(text));
-            }
-            result.rows.push_back(std::move(row));
-        }
-        sqlite3_finalize(stmt);
-        // SQLITE_DONE ends a well formed statement.  Any other code is a
-        // runtime error (a constraint, a missing table, ...) and the native
-        // fails the way the reference does: with a null result handle.
-        if (rc != SQLITE_DONE) {
-            return 0;
-        }
-        const int handle = next_result_handle++;
-        result_sets[handle] = std::move(result);
-        return handle;
+        return db_query(vm, args, read_script_string);
     };
 
     vm.native_functions_["db_free_result"] = [](std::span<const cell> args) -> cell {
@@ -288,87 +358,19 @@ void register_db_natives(PawnVm& vm) {
     };
 
     vm.native_functions_["db_get_field_float"] = [](std::span<const cell> args) -> cell {
-        if (args.empty()) {
-            return 0;
-        }
-        const auto found = result_sets.find(args[0]);
-        if (found == result_sets.end()) return 0;
-        const ResultSet* result = &found->second;
-        const int column = args.size() > 1 ? args[1] : 0;
-        const std::string* value = column < 0 || static_cast<std::size_t>(column) >= result->columns.size() ||
-            result->cursor >= result->rows.size() ? nullptr :
-            &result->rows[result->cursor][static_cast<std::size_t>(column)];
-        const float number = value == nullptr ? 0.0f : std::strtof(value->c_str(), nullptr);
-        cell bits = 0;
-        std::memcpy(&bits, &number, sizeof(bits));
-        return bits;
+        return db_get_field_float(args);
     };
 
     vm.native_functions_["db_get_field_assoc"] = [&vm, write_string, read_script_string](std::span<const cell> args) -> cell {
-        if (args.size() < 4) {
-            return 0;
-        }
-        const auto found = result_sets.find(args[0]);
-        if (found == result_sets.end()) return 0;
-        const ResultSet* result = &found->second;
-        const char* name = read_script_string(args[1]);
-        if (name == nullptr) {
-            return 0;
-        }
-        int column = -1;
-        for (std::size_t i = 0; i < result->columns.size(); ++i)
-            if (result->columns[i] == name) { column = static_cast<int>(i); break; }
-        if (column < 0) {
-            return 0;
-        }
-        const std::string* value = result->cursor >= result->rows.size() ? nullptr :
-            &result->rows[result->cursor][static_cast<std::size_t>(column)];
-        if (value == nullptr) {
-            return 0;
-        }
-        const std::size_t max_cells = static_cast<std::size_t>(std::max<cell>(args[3], 0));
-        return write_string(args[2], *value, max_cells) ? 1 : 0;
+        return db_get_field_assoc(vm, args, read_script_string, write_string);
     };
 
     vm.native_functions_["db_get_field_assoc_int"] = [read_script_string](std::span<const cell> args) -> cell {
-        if (args.size() < 2) {
-            return 0;
-        }
-        const auto found = result_sets.find(args[0]);
-        if (found == result_sets.end()) return 0;
-        const ResultSet* result = &found->second;
-        const char* name = read_script_string(args[1]);
-        if (name == nullptr) {
-            return 0;
-        }
-        int column = -1;
-        for (std::size_t i = 0; i < result->columns.size(); ++i)
-            if (result->columns[i] == name) { column = static_cast<int>(i); break; }
-        const std::string* value = column < 0 || result->cursor >= result->rows.size() ? nullptr :
-            &result->rows[result->cursor][static_cast<std::size_t>(column)];
-        return value == nullptr ? 0 : static_cast<cell>(std::strtol(value->c_str(), nullptr, 10));
+        return db_get_field_assoc_int(args, read_script_string);
     };
 
     vm.native_functions_["db_get_field_assoc_float"] = [read_script_string](std::span<const cell> args) -> cell {
-        if (args.size() < 2) {
-            return 0;
-        }
-        const auto found = result_sets.find(args[0]);
-        if (found == result_sets.end()) return 0;
-        const ResultSet* result = &found->second;
-        const char* name = read_script_string(args[1]);
-        if (name == nullptr) {
-            return 0;
-        }
-        int column = -1;
-        for (std::size_t i = 0; i < result->columns.size(); ++i)
-            if (result->columns[i] == name) { column = static_cast<int>(i); break; }
-        const std::string* value = column < 0 || result->cursor >= result->rows.size() ? nullptr :
-            &result->rows[result->cursor][static_cast<std::size_t>(column)];
-        const float number = value == nullptr ? 0.0f : std::strtof(value->c_str(), nullptr);
-        cell bits = 0;
-        std::memcpy(&bits, &number, sizeof(bits));
-        return bits;
+        return db_get_field_assoc_float(args, read_script_string);
     };
 
     vm.native_functions_["db_get_mem_handle"] = [](std::span<const cell> args) -> cell {

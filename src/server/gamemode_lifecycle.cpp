@@ -96,6 +96,8 @@ void GameLayer::finish_gamemode_restart() {
 // Official: FUN_00495dc0 @ 0x00495dc0 (samp-server.exe)
 void GameLayer::initialize_player(GamePlayer& player) {
     if(!player.in_use || !player.peer) return;
+    player.world_hour = static_cast<std::uint8_t>(world_hour_);
+    player.world_minute = 0;
     using samp::proto::BitStream;
     const int slot=player.id;auto& peer=*player.peer;
     BitStream init;
@@ -143,6 +145,7 @@ void GameLayer::initialize_player(GamePlayer& player) {
 
     player.joined = true;
     player.model_finish_reported=player.models_ready;
+    sync_text_labels(player);
 }
 
 } // namespace samp::server

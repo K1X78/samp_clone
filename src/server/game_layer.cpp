@@ -248,6 +248,25 @@ bool GameLayer::is_player_connected(int id) const {
     return slot < 1000 && slot < players_.size() && players_[slot].in_use;
 }
 
+// Console-variable access used by the Pawn native adapter; no separate
+// standalone official body is assigned to this interface bridge.
+// source adapter only; no established separate native entry
+bool GameLayer::read_console_variable(std::string_view name, std::string& value) const {
+    if (!config_) return false;
+    const auto found = config_->values_.find(std::string(name));
+    if (found == config_->values_.end()) return false;
+    value = found->second;
+    return true;
+}
+
+// RCON native-to-console bridge; no separate official function entry.
+// source adapter only; no established separate native entry
+bool GameLayer::send_rcon_command(std::string_view command) {
+    if (!execute_remote_console_) return false;
+    execute_remote_console_(-1, command);
+    return true;
+}
+
 // Scan every official slot, including occupied slots after holes.
 // Official: FUN_00465de0 @ 0x00465de0 (samp-server.exe)
 bool GameLayer::player_name_in_use(const char* name) const {
@@ -272,7 +291,9 @@ void GameLayer::set_world_time(int hour) {
     world_hour_ = hour & 0xFF;
     const auto byte=static_cast<std::uint8_t>(world_hour_);BitStream payload;payload.write(&byte,1);
     for(std::size_t slot=0;slot<1000 && slot<players_.size() && static_cast<int>(slot)<=player_pool_highest_;++slot) {
-        const auto& player=players_[slot];
+        auto& player=players_[slot];
+        player.world_hour = byte;
+        player.world_minute = 0;
         if(player.in_use && player.peer) send_rpc(*player.peer,94,payload);
     }
     char buffer[16];

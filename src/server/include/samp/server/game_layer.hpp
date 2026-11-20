@@ -163,6 +163,8 @@ public:
     // ------------------------------------------------------ the native host
     [[nodiscard]] int max_players() const override;
     [[nodiscard]] bool is_player_connected(int id) const override;
+    [[nodiscard]] bool read_console_variable(std::string_view name, std::string& value) const override;
+    bool send_rcon_command(std::string_view command) override;
     [[nodiscard]] bool player_name_in_use(const char* name) const;
     void set_game_mode_text(std::string_view text) override;
     void set_world_time(int hour) override;
@@ -183,7 +185,6 @@ public:
 
     // The server main loop and console query commands report the live slots.
     std::vector<std::unique_ptr<samp::pawn::PawnVm>> filterscripts_;
-    std::vector<std::string> banned_ips_;
     samp::pawn::PawnVm vm_;
     Config* config_ = nullptr;
     std::function<void(int,std::string_view)> execute_remote_console_;

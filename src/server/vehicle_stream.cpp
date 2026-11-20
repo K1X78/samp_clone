@@ -23,6 +23,13 @@ void GameLayer::send_vehicle_stream_in(GamePlayer& player, const GameVehicle& ve
     const std::int32_t body=-1;std::memcpy(tune.data()+15,&body,4);std::memcpy(tune.data()+19,&body,4);
     samp::proto::BitStream payload;payload.write(spawn.data(),spawn.size());payload.write(tune.data(),tune.size());
     send_rpc(*player.peer,164,payload);
+    if (std::any_of(vehicle.parameters.begin(), vehicle.parameters.end(),
+                    [](std::uint8_t value) { return value != 0xff; })) {
+        samp::proto::BitStream parameters;
+        parameters.write(&vehicle.id, sizeof(vehicle.id));
+        parameters.write(vehicle.parameters.data(), vehicle.parameters.size());
+        send_rpc(*player.peer, 24, parameters);
+    }
     player.streamed_vehicles[vehicle.id]=1;++player.streamed_vehicle_count;
     const samp::amx::cell args[]{vehicle.id,player.id};samp::amx::cell result=1;
     for(const auto& script:filterscripts_) script->execute("OnVehicleStreamIn",args,result);

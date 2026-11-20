@@ -80,6 +80,19 @@ struct CheckpointState {
     bool inside = false;
 };
 
+struct TextLabelNativeState {
+    bool active = false;
+    std::string text;
+    std::uint32_t colour = 0;
+    std::array<float, 3> position{};
+    float draw_distance = 0;
+    std::uint8_t test_line_of_sight = 0;
+    std::int32_t virtual_world = 0;
+    std::int32_t owner_player = -1;
+    std::uint16_t attached_player = 0xffff;
+    std::uint16_t attached_vehicle = 0xffff;
+};
+
 // Shared host records let Pawn natives and the networking/game layer refer to
 // the same slots. Observed health/weapons/keys are updated by synchronization;
 // sending a command does not fabricate a client acknowledgement.
@@ -87,6 +100,7 @@ struct PlayerNativeState {
     bool in_use = false;
     int id = 0;
     std::string name;
+    std::string shop_name;
     std::uint32_t colour = 0;
     std::uint32_t ipv4_address = 0;
     bool is_npc = false;
@@ -94,6 +108,7 @@ struct PlayerNativeState {
     bool camera_targeting=false;
     PlayerTextDrawPool textdraw_pool;
     std::shared_ptr<PlayerVariablePool> variables;
+    std::map<std::uint16_t, TextLabelNativeState> text_labels;
     std::array<std::uint16_t,4> camera_targets{0xffff,0xffff,0xffff,0xffff};
     bool joined = false;
     bool models_ready = false,model_finish_reported=false;
@@ -119,6 +134,7 @@ struct PlayerNativeState {
     std::uint8_t spectate_target_type = 0;
     std::uint32_t spectate_target = 0xffffffffu;
     std::uint8_t clock_enabled = 0;
+    std::uint8_t world_hour = 12, world_minute = 0;
     PlayerClassSpec spawn_info{};
     bool has_spawn_info = false;
     bool spawn_authorized = false;
@@ -198,6 +214,12 @@ struct VehicleNativeState {
     std::int32_t respawn_delay_ms = -1;
     std::uint64_t empty_since_ms = 0;
     bool siren = false;
+    // The sixteen bytes sent by RPC 24 (SetVehicleParamsEx and the
+    // per-window/per-door parameter natives).  0xff means that the server
+    // has not selected a value for that client-side vehicle property.
+    std::array<std::uint8_t, 16> parameters{
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     int driver = -1;
     std::array<int, 8> passengers{-1, -1, -1, -1, -1, -1, -1, -1};
     std::uint32_t damage_panels = 0, damage_doors = 0;
@@ -214,6 +236,9 @@ public:
     virtual ~NativeHost() = default;
     std::vector<PlayerNativeState> players_;
     int player_pool_highest_ = 0;
+    std::uint32_t server_tick_count_ = 0;
+    std::vector<std::string> banned_ips_;
+    std::map<std::string, std::uint64_t> blocked_ips_;
     std::map<std::uint32_t,ScriptTimer> script_timers_;
     std::uint32_t next_script_timer_=0;
     bool gamemode_exit_requested_=false;
@@ -232,12 +257,14 @@ public:
     std::int32_t death_drop_amount_ = 0;
     std::uint32_t vehicle_friendly_fire_ = 0;
     std::array<GangZoneNativeState,1024> gang_zones_{};
+    std::vector<TextLabelNativeState> text_labels_ = std::vector<TextLabelNativeState>(2048);
     TextDrawPool textdraw_pool_{this};
     std::unique_ptr<MenuPool> menu_pool_{new(std::nothrow) MenuPool};
     std::shared_ptr<ServerVariablePool> server_variables_;
     std::vector<StaticPickupNativeState> pickups_=std::vector<StaticPickupNativeState>(4096);
     std::uint32_t pickup_pool_highest_ = 0;
     void update_pickup_pool_size();
+    void sync_text_labels(PlayerNativeState& player);
     int create_pickup(int model, int type, const std::array<float, 3>& position, int world);
     bool destroy_pickup(std::uint32_t id);
     void send_pickup_create_rpc(PlayerNativeState& player, std::uint32_t id);
@@ -337,6 +364,11 @@ public:
     [[nodiscard]] virtual int max_players() const = 0;
     // Queries actual slot occupancy using the official native's WORD ID.
     [[nodiscard]] virtual bool is_player_connected(int id) const = 0;
+    // Hosts without a console have no console variables or standalone native entry.
+    // no standalone native entry
+    virtual bool read_console_variable(std::string_view, std::string&) const { return false; }
+    // no standalone native entry
+    virtual bool send_rcon_command(std::string_view command) { (void)command; return false; }
     // Sets the game mode text (the "gamemodetext" variable).
     virtual void set_game_mode_text(std::string_view text) = 0;
     // Sets the world time and the weather.  The original writes the

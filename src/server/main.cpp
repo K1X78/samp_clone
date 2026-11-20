@@ -642,6 +642,7 @@ int main(int argc, char** argv) {
     std::string console_line;
     auto last_timer_tick=std::chrono::steady_clock::now();
     while (server.running_) {
+        ++game_layer.server_tick_count_;
 
         // Poll the socket and the console together.
         fd_set read_set;
