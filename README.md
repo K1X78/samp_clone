@@ -4,8 +4,8 @@
 | Binary | Mapped official entries | Official entries | Official entries remaining | Coverage |
 |---|---:|---:|---:|---:|
 | `samp.dll` | 2,417 | 6,669 | 4,252 | 36.24% |
-| `samp-server.exe` | 898 | 3,771 | 2,873 | 23.81% |
-| **Combined** | **3,315** | **10,440** | **7,125** | **31.75%** |
+| `samp-server.exe` | 899 | 3,771 | 2,872 | 23.84% |
+| **Combined** | **3,316** | **10,440** | **7,124** | **31.76%** |
 <!-- function-coverage:end -->
 
 A C++20 reimplementation of the SA-MP 0.3.DL client and dedicated server. The

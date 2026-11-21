@@ -1312,6 +1312,81 @@ void actor_pool_lifecycle() {
         "mode restart must clear the actor pool and per-player view");
 }
 
+void player_animations() {
+    using Access = samp::pawn::PawnNativeTestAccess;
+    samp::server::GameLayer game;
+    std::array<samp::server::RakNetPeer, 3> peers;
+    game.players_.resize(4);
+    for (std::uint16_t id = 0; id < peers.size(); ++id) {
+        auto& player = game.players_[id];
+        player.id = id;
+        player.in_use = true;
+        player.peer = &peers[id];
+        player.streamed_to.resize(game.players_.size());
+    }
+    game.players_[1].streamed_to[0] = 1;
+    game.update_player_pool_size();
+    samp::pawn::register_server_natives(game.vm_, game);
+    Access::text(game.vm_, std::string(260, 'L'));
+    constexpr cell animation_name = 1500;
+    Access::set_data_text(game.vm_, animation_name, "Animation", true);
+    constexpr float speed = 3.5f;
+    constexpr cell time = -13;
+    const auto apply = [&](cell player, cell force) {
+        return call(game.vm_, "ApplyAnimation",
+            {player, 0, animation_name, std::bit_cast<cell>(speed), 256, 0, -1, 0, time, force});
+    };
+    const auto check_animation = [](BitStream payload) {
+        require(payload.numberOfBitsUsed_ == 204, "player animation bit length differs");
+        std::uint16_t player = 0xffff;
+        require(payload.read(&player, sizeof(player)) && player == 0, "player animation WORD ID differs");
+        for (const std::string_view expected : {"LLLL", "Animation"}) {
+            std::uint8_t length = 0;
+            std::array<char, 16> actual{};
+            require(payload.read(&length, 1) && length == expected.size() &&
+                payload.read(actual.data(), length) && std::string_view(actual.data(), length) == expected,
+                "player animation string field differs");
+        }
+        float actual_speed = 0.0f;
+        require(payload.read(&actual_speed, sizeof(actual_speed)) && actual_speed == speed,
+            "player animation speed differs");
+        for (const bool flag : {true, false, true, false})
+            require(payload.readBit() == flag, "player animation flag differs");
+        cell actual_time = 0;
+        require(payload.read(&actual_time, sizeof(actual_time)) && actual_time == time,
+            "player animation time differs");
+    };
+    const auto check_clear = [](const BitStream& payload) {
+        require(payload.numberOfBitsUsed_ == 16 && payload.data_[0] == 0 && payload.data_[1] == 0,
+            "clear player animation RPC differs");
+    };
+
+    for (const cell force : {0, 1, 2, -1}) {
+        require(apply(65536, force) == 1, "player animation command failed");
+        if (force == 0 || force == 1) check_animation(take_rpc(peers[0], 86));
+        if (force != 0) check_animation(take_rpc(peers[1], 86));
+        require(call(game.vm_, "ClearAnimations", {65536, force}) == 1, "clear animation command failed");
+        check_clear(take_rpc(peers[0], 87));
+        if (force != 0) check_clear(take_rpc(peers[1], 87));
+        for (auto& peer : peers)
+            require(RakNetTransportTestAccess::messages(peer).empty(), "animation reached an unintended player");
+    }
+
+    game.players_[0].is_npc = true;
+    require(apply(0, 0) == 1 && call(game.vm_, "ClearAnimations", {0}) == 1,
+        "NPC animation defaults failed");
+    for (const auto id : {0, 1}) {
+        const auto frames = RakNetTransportTestAccess::messages(peers[id]);
+        require(frames.size() == 2, "NPC animation did not use the viewer route");
+        check_animation(read_rpc(frames[0], 86));
+        check_clear(read_rpc(frames[1], 87));
+    }
+    require(apply(3, 1) == 1 && call(game.vm_, "ClearAnimations", {1000, 1}) == 1,
+        "missing player animation return value differs");
+    for (auto& peer : peers)
+        require(RakNetTransportTestAccess::messages(peer).empty(), "animation for an absent player sent an RPC");
+}
+
 void actor_animations() {
     using Access = samp::pawn::PawnNativeTestAccess;
     samp::server::GameLayer game;
@@ -1547,6 +1622,7 @@ int main(int, char**) {
         player_commands();
         audio_stream_commands();
         actor_pool_lifecycle();
+        player_animations();
         actor_animations();
         text_label_lifecycle();
         std::puts("Server native parity checks passed");

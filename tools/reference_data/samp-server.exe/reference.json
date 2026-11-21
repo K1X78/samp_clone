@@ -15496,18 +15496,22 @@
     {
       "address": "0x0047d3b0",
       "assembly_name": "FUN_0047d3b0",
-      "assembly_size": 229,
-      "assembly_sha1": "43f2b1eb935c699c06c78102cb4f10985a2beb74",
+      "assembly_size": 224,
+      "assembly_sha1": "b7aecb97bf7d1f46c81d4449720ec618f17d3e78",
       "native_registration": {
         "name": "SetPlayerWeather",
         "table_entry": "0x004cef08"
       }
     },
     {
-      "address": "0x0047d495",
-      "assembly_name": "FUN_0047d495",
-      "assembly_size": 779,
-      "assembly_sha1": "19054ab483e8ac666a15a2d9242c96f7cd8c8475"
+      "address": "0x0047d490",
+      "assembly_name": "FUN_0047d490",
+      "assembly_size": 784,
+      "assembly_sha1": "e96e84c343e3cb8eeccb625b57cdf9f1a5d175e6",
+      "native_registration": {
+        "name": "ApplyAnimation",
+        "table_entry": "0x004cf560"
+      }
     },
     {
       "address": "0x0047d7a0",
@@ -30092,9 +30096,6 @@
     "FUN_0047d3b0": [
       "0x0047d3b0"
     ],
-    "FUN_0047d495": [
-      "0x0047d495"
-    ],
     "FUN_0047d7a0": [
       "0x0047d7a0"
     ],
@@ -34813,6 +34814,9 @@
     ],
     "FUN_0047d010": [
       "0x0047d010"
+    ],
+    "FUN_0047d490": [
+      "0x0047d490"
     ]
   },
   "client_rpc_registrations": [],

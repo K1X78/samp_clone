@@ -1515,18 +1515,52 @@ cell unblock_ip_address(NativeHost& host, std::span<const cell> args,
     return host.blocked_ips_.erase(ip) != 0;
 }
 
-// Official: FUN_0047d7a0 @ 0x0047d7a0 (samp-server.exe)
-cell clear_player_animations(NativeHost& host, std::span<const cell> args) {
+// Official: FUN_0047d490 @ 0x0047d490 (samp-server.exe)
+cell apply_player_animation(NativeHost& host, std::span<const cell> args, const StringReader& read) {
+    if (args.size() < 9) return 0;
     const auto* player = find_player(host, args);
-    if (!player) return 0;
-    const auto id = static_cast<std::uint16_t>(player->id);
+    if (!player) return 1;
+    const auto* library_arg = read(args[1]);
+    if (!library_arg || !*library_arg) return 1;
+    const std::string library(library_arg);
+    const auto* name = read(args[2]);
+    if (!name || !*name) return 1;
+
+    const auto id = static_cast<std::uint16_t>(args[0]);
+    const auto library_length = static_cast<std::uint8_t>(library.size());
+    const auto name_length = static_cast<std::uint8_t>(std::strlen(name));
     samp::proto::BitStream payload;
     payload.write(&id, sizeof(id));
-    for (std::size_t slot = 0; slot < host.players_.size() && slot < 1000 &&
-         static_cast<int>(slot) <= host.player_pool_highest_; ++slot) {
-        const auto& receiver = host.players_[slot];
-        if (receiver.in_use && receiver.peer) host.send_rpc(*receiver.peer, 87, payload);
+    payload.write(&library_length, sizeof(library_length));
+    payload.write(library.data(), library_length);
+    payload.write(&name_length, sizeof(name_length));
+    payload.write(name, name_length);
+    payload.write(&args[3], sizeof(cell));
+    for (const auto flag : args.subspan(4, 4)) {
+        if (flag != 0) payload.write1();
+        else payload.write0();
     }
+    payload.write(&args[8], sizeof(cell));
+
+    const cell force_sync = args.size() > 9 ? args[9] : 0;
+    constexpr auto rpc = static_cast<std::uint8_t>(samp::proto::RpcId::ApplyPlayerAnimation);
+    if (force_sync != 0 || player->is_npc) host.send_streamed_player_rpc(id, rpc, payload);
+    if ((force_sync == 0 || force_sync == 1) && player->peer) host.send_rpc(*player->peer, rpc, payload);
+    return 1;
+}
+
+// Official: FUN_0047d7a0 @ 0x0047d7a0 (samp-server.exe)
+cell clear_player_animations(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 1;
+    const auto id = static_cast<std::uint16_t>(args[0]);
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    constexpr auto rpc = static_cast<std::uint8_t>(samp::proto::RpcId::ClearPlayerTasks);
+    if ((args.size() > 1 && args[1] != 0) || player->is_npc)
+        host.send_streamed_player_rpc(id, rpc, payload);
+    if (player->peer) host.send_rpc(*player->peer, rpc, payload);
     return 1;
 }
 
@@ -4203,6 +4237,9 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     // ------------------------------------------------------------- the server
     vm.native_functions_["ApplyActorAnimation"] = [&host, read_script_string](std::span<const cell> args) {
         return actor_natives::apply_animation(host, args, read_script_string);
+    };
+    vm.native_functions_["ApplyAnimation"] = [&host, read_script_string](std::span<const cell> args) {
+        return apply_player_animation(host, args, read_script_string);
     };
     for(const auto& [name,function]:variable_natives::kNatives)
         vm.native_functions_[std::string(name)]=[&vm,&host,function](std::span<const cell> args) {
