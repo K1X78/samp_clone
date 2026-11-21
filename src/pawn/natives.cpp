@@ -2779,6 +2779,45 @@ cell enable_stunt_bonus_for_all(NativeHost& host, std::span<const cell> args) {
     return 1;
 }
 
+// Official: FUN_00477700 @ 0x00477700 (samp-server.exe)
+cell enable_stunt_bonus_for_player(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    const bool enabled = args[1] == 1;
+    // The native normalizes the live Pawn argument as well as the wire bit.
+    if (!enabled) const_cast<cell&>(args[1]) = 0;
+    if (player->peer) {
+        samp::proto::BitStream payload;
+        if (enabled) payload.write1();
+        else payload.write0();
+        host.send_rpc(*player->peer, static_cast<std::uint8_t>(samp::proto::RpcId::EnableStuntBonusForPlayer), payload);
+    }
+    return 1;
+}
+
+// Official: FUN_004795e0 @ 0x004795e0 (samp-server.exe)
+cell disable_remote_vehicle_collisions(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    if (player->peer) {
+        samp::proto::BitStream payload;
+        if (args[1] != 0) payload.write1();
+        else payload.write0();
+        host.send_rpc(*player->peer, static_cast<std::uint8_t>(samp::proto::RpcId::DisableRemoteVehicleCollisions), payload);
+    }
+    return 1;
+}
+
+// Official: FUN_00470d90 @ 0x00470d90 (samp-server.exe)
+cell force_class_selection(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    send_player_command(host, *player, samp::proto::RpcId::ForcePlayerClassSelection, {});
+    return 1;
+}
+
 // Official: FUN_0047a230 @ 0x0047a230 (samp-server.exe)
 cell set_player_world_bounds(NativeHost& host, std::span<const cell> args) {
     if (args.size() < 5) return 0;
@@ -3152,6 +3191,38 @@ cell set_player_team(NativeHost& host, std::span<const cell> args) {
         if (receiver.in_use && receiver.peer) {
             host.send_rpc(*receiver.peer, static_cast<std::uint8_t>(samp::proto::RpcId::SetPlayerTeam), payload);
         }
+    }
+    return 1;
+}
+
+// Official: FUN_0047ce10 @ 0x0047ce10 (samp-server.exe)
+cell show_player_name_tag_for_player(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 3) return 0;
+    const auto* viewer = find_player(host, args);
+    if (!viewer || !find_player(host, args.subspan(1))) return 0;
+    if (viewer->peer) {
+        const auto target = static_cast<std::uint16_t>(args[1]);
+        const auto show = static_cast<std::uint8_t>(args[2]);
+        samp::proto::BitStream payload;
+        payload.write(&target, sizeof(target));
+        payload.write(&show, sizeof(show));
+        host.send_rpc(*viewer->peer, static_cast<std::uint8_t>(samp::proto::RpcId::ShowPlayerNameTagForPlayer), payload);
+    }
+    return 1;
+}
+
+// Official: FUN_0047d010 @ 0x0047d010 (samp-server.exe)
+cell set_player_marker_for_player(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 3) return 0;
+    const auto* viewer = find_player(host, args);
+    if (!viewer || !find_player(host, args.subspan(1))) return 0;
+    if (viewer->peer) {
+        const auto target = static_cast<std::uint16_t>(args[1]);
+        const auto colour = static_cast<std::uint32_t>(args[2]);
+        samp::proto::BitStream payload;
+        payload.write(&target, sizeof(target));
+        payload.write(&colour, sizeof(colour));
+        host.send_rpc(*viewer->peer, static_cast<std::uint8_t>(samp::proto::RpcId::SetPlayerColor), payload);
     }
     return 1;
 }
@@ -3633,9 +3704,11 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"DisableNameTagLOS", disable_name_tag_los},
     {"DisablePlayerCheckpoint", disable_player_checkpoint},
     {"DisablePlayerRaceCheckpoint", disable_player_race_checkpoint},
+    {"DisableRemoteVehicleCollisions", disable_remote_vehicle_collisions},
     {"EnableTirePopping", enable_tire_popping},
     {"EnableVehicleFriendlyFire", enable_vehicle_friendly_fire},
     {"EnableZoneNames", enable_zone_names},
+    {"ForceClassSelection", force_class_selection},
     {"GameModeExit", game_mode_exit},
     {"GangZoneCreate", gang_zone_create},
     {"GangZoneDestroy", gang_zone_destroy},
@@ -3682,6 +3755,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GetPlayerSpecialAction", get_player_special_action},
     {"EnablePlayerCameraTarget", enable_player_camera_target},
     {"EnableStuntBonusForAll", enable_stunt_bonus_for_all},
+    {"EnableStuntBonusForPlayer", enable_stunt_bonus_for_player},
     {"AddStaticPickup", add_static_pickup},
     {"CreatePickup", create_pickup},
     {"DestroyPickup", destroy_pickup},
@@ -3751,6 +3825,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetPlayerFightingStyle", set_player_fighting_style},
     {"SetPlayerHealth", set_player_health},
     {"SetPlayerMapIcon", set_player_map_icon},
+    {"SetPlayerMarkerForPlayer", set_player_marker_for_player},
     {"SetPlayerRaceCheckpoint", set_player_race_checkpoint},
     {"SetPlayerScore", set_player_score},
     {"SetPlayerTeam", set_player_team},
@@ -3758,6 +3833,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetPlayerVirtualWorld", set_player_virtual_world},
     {"SetPlayerWeather", set_player_weather},
     {"SetPlayerWorldBounds", set_player_world_bounds},
+    {"ShowPlayerNameTagForPlayer", show_player_name_tag_for_player},
     {"SetVehicleVirtualWorld", set_vehicle_virtual_world},
     {"SetVehicleHealth", set_vehicle_health},
     {"SetVehicleParamsEx", set_vehicle_params_ex},

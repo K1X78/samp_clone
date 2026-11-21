@@ -1014,6 +1014,59 @@ void player_wanted_level_and_fighting_style() {
         "late stream-in discarded the current fighting style");
 }
 
+void targeted_player_commands() {
+    samp::server::GameLayer game;
+    std::array<samp::server::RakNetPeer, 2> peers;
+    game.players_.resize(3);
+    for (std::uint16_t id = 0; id < peers.size(); ++id) {
+        game.players_[id].id = id;
+        game.players_[id].in_use = true;
+        game.players_[id].peer = &peers[id];
+    }
+    game.players_[1].colour = 0x12345678;
+    samp::pawn::register_server_natives(game.vm_, game);
+
+    require(call(game.vm_, "ForceClassSelection", {65536}) == 1 &&
+        take_rpc(peers[0], 74).numberOfBitsUsed_ == 0, "force class selection RPC differs");
+    for (const cell value : {0, 1, 256, -1}) {
+        std::array<cell, 2> stunt{65536, value};
+        require(samp::pawn::PawnNativeTestAccess::call_span(game.vm_, "EnableStuntBonusForPlayer", stunt) == 1 &&
+            stunt[1] == (value == 1), "stunt bonus must normalize the argument to an exact boolean");
+        const auto stunt_payload = take_rpc(peers[0], 104);
+        require(stunt_payload.numberOfBitsUsed_ == 1 && (stunt_payload.data_[0] & 0x80) == (value == 1 ? 128 : 0),
+            "stunt bonus RPC differs");
+
+        require(call(game.vm_, "DisableRemoteVehicleCollisions", {65536, value}) == 1,
+            "disable remote collisions failed");
+        const auto collisions = take_rpc(peers[0], 167);
+        require(collisions.numberOfBitsUsed_ == 1 && (collisions.data_[0] & 0x80) == (value != 0 ? 128 : 0),
+            "remote collision RPC differs");
+    }
+
+    require(call(game.vm_, "ShowPlayerNameTagForPlayer", {65536, 65537, 0x1a5}) == 1,
+        "targeted nametag command failed");
+    const auto nametag = take_rpc(peers[0], 80);
+    const std::array<std::uint8_t, 3> expected_tag{1, 0, 0xa5};
+    require(nametag.numberOfBitsUsed_ == 24 &&
+        std::memcmp(nametag.data_.data(), expected_tag.data(), expected_tag.size()) == 0, "nametag RPC differs");
+
+    require(call(game.vm_, "SetPlayerMarkerForPlayer", {65536, 65537, std::bit_cast<cell>(0x99887766u)}) == 1,
+        "targeted marker command failed");
+    const auto marker = take_rpc(peers[0], 72);
+    const std::array<std::uint8_t, 6> expected_marker{1, 0, 0x66, 0x77, 0x88, 0x99};
+    require(marker.numberOfBitsUsed_ == 48 &&
+        std::memcmp(marker.data_.data(), expected_marker.data(), expected_marker.size()) == 0 &&
+        game.players_[1].colour == 0x12345678, "marker RPC changed the global player colour or wire bytes");
+
+    require(call(game.vm_, "ForceClassSelection", {2}) == 0 &&
+        call(game.vm_, "EnableStuntBonusForPlayer", {1000, 1}) == 0 &&
+        call(game.vm_, "DisableRemoteVehicleCollisions", {-1, 1}) == 0 &&
+        call(game.vm_, "ShowPlayerNameTagForPlayer", {0, 2, 1}) == 0 &&
+        call(game.vm_, "SetPlayerMarkerForPlayer", {2, 1, 0}) == 0, "targeted command accepted an invalid slot");
+    for (auto& peer : peers)
+        require(RakNetTransportTestAccess::messages(peer).empty(), "targeted RPC reached an unintended recipient");
+}
+
 void player_commands() {
     using Access=samp::pawn::PawnNativeTestAccess;
     samp::server::GameLayer game;
@@ -1490,6 +1543,7 @@ int main(int, char**) {
         vehicle_tick_boundaries();
         cached_world_broadcasts();
         player_wanted_level_and_fighting_style();
+        targeted_player_commands();
         player_commands();
         audio_stream_commands();
         actor_pool_lifecycle();

@@ -13350,8 +13350,18 @@
     {
       "address": "0x00470c00",
       "assembly_name": "FUN_00470c00",
-      "assembly_size": 592,
-      "assembly_sha1": "4f51084c0b72a95b6d7cafddce2cb3b8eef3ae17"
+      "assembly_size": 400,
+      "assembly_sha1": "5e52d48792fc3eb666eb15d7bbb5101c7a4ab5c0"
+    },
+    {
+      "address": "0x00470d90",
+      "assembly_name": "FUN_00470d90",
+      "assembly_size": 192,
+      "assembly_sha1": "19e322987e3448bafa991a87b29208b7dff91191",
+      "native_registration": {
+        "name": "ForceClassSelection",
+        "table_entry": "0x004cf4b0"
+      }
     },
     {
       "address": "0x00470e50",
@@ -14782,11 +14792,21 @@
     {
       "address": "0x00477640",
       "assembly_name": "FUN_00477640",
-      "assembly_size": 432,
-      "assembly_sha1": "5c6ea8d4f9b78551411e98540e5dcb6df134b4e1",
+      "assembly_size": 192,
+      "assembly_sha1": "aca0e81e5b519815af6d8fe1775899c32f148e17",
       "native_registration": {
         "name": "EnableStuntBonusForAll",
         "table_entry": "0x004cf528"
+      }
+    },
+    {
+      "address": "0x00477700",
+      "assembly_name": "FUN_00477700",
+      "assembly_size": 240,
+      "assembly_sha1": "01872659e7da5e280d925167effde24c33719b8f",
+      "native_registration": {
+        "name": "EnableStuntBonusForPlayer",
+        "table_entry": "0x004cf530"
       }
     },
     {
@@ -15070,8 +15090,18 @@
     {
       "address": "0x004793f0",
       "assembly_name": "FUN_004793f0",
-      "assembly_size": 720,
-      "assembly_sha1": "25370be89b43f030a10da42e6275b21fd487d7e1"
+      "assembly_size": 496,
+      "assembly_sha1": "931ffb87ef32ba2c8ad64add4fd77a6e9cb2e580"
+    },
+    {
+      "address": "0x004795e0",
+      "assembly_name": "FUN_004795e0",
+      "assembly_size": 224,
+      "assembly_sha1": "59d5c6d38bc0c51b40b5da2a114b412016fb7fc9",
+      "native_registration": {
+        "name": "DisableRemoteVehicleCollisions",
+        "table_entry": "0x004cf5e8"
+      }
     },
     {
       "address": "0x004796c0",
@@ -15406,21 +15436,41 @@
     {
       "address": "0x0047ccf0",
       "assembly_name": "FUN_0047ccf0",
-      "assembly_size": 576,
-      "assembly_sha1": "af07bbc9322a961ba402ef8c74bcbb7094b6f901",
+      "assembly_size": 288,
+      "assembly_sha1": "2803de88644603d46b51ddfd2581a35dd64dc3ad",
       "native_registration": {
         "name": "PlayerPlaySound",
         "table_entry": "0x004cf3c8"
       }
     },
     {
+      "address": "0x0047ce10",
+      "assembly_name": "FUN_0047ce10",
+      "assembly_size": 288,
+      "assembly_sha1": "c26f981765bb46f6a7c24b80a3bab41b9f25f991",
+      "native_registration": {
+        "name": "ShowPlayerNameTagForPlayer",
+        "table_entry": "0x004cf520"
+      }
+    },
+    {
       "address": "0x0047cf30",
       "assembly_name": "FUN_0047cf30",
-      "assembly_size": 512,
-      "assembly_sha1": "db453932f700765d0f31debf02a8a97b01f38ae6",
+      "assembly_size": 224,
+      "assembly_sha1": "29b30fceb3e02bed7c467c405301ee3d6f7ae1bb",
       "native_registration": {
         "name": "SetPlayerArmour",
         "table_entry": "0x004cf448"
+      }
+    },
+    {
+      "address": "0x0047d010",
+      "assembly_name": "FUN_0047d010",
+      "assembly_size": 288,
+      "assembly_sha1": "d2083af1f9ccf61dd3e391554c7f8acf9103fc44",
+      "native_registration": {
+        "name": "SetPlayerMarkerForPlayer",
+        "table_entry": "0x004cf470"
       }
     },
     {
@@ -34748,6 +34798,21 @@
     ],
     "FUN_0047d9d0": [
       "0x0047d9d0"
+    ],
+    "FUN_00470d90": [
+      "0x00470d90"
+    ],
+    "FUN_00477700": [
+      "0x00477700"
+    ],
+    "FUN_004795e0": [
+      "0x004795e0"
+    ],
+    "FUN_0047ce10": [
+      "0x0047ce10"
+    ],
+    "FUN_0047d010": [
+      "0x0047d010"
     ]
   },
   "client_rpc_registrations": [],
