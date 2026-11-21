@@ -1665,6 +1665,33 @@ cell get_vehicle_health(NativeHost& host, std::span<const cell> args, const Cell
     return vehicle && write(args[1], std::bit_cast<cell>(vehicle->health));
 }
 
+// Official: FUN_004732a0 @ 0x004732a0 (samp-server.exe)
+cell get_vehicle_z_angle(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 2) return 0;
+    const auto* vehicle = find_vehicle(host, args[0]);
+    if (!vehicle) return 0;
+    const auto& forward = vehicle->rotation_basis[1];
+    float angle = vehicle->spawn_angle;
+    if (forward[0] != 0.0f || forward[1] != 0.0f) {
+        const double degrees = std::atan2(-double(forward[0]), double(forward[1])) * 57.295776f;
+        angle = static_cast<float>(degrees);
+        if (degrees < 0.0) angle += 360.0f;
+        else if (angle >= 360.0f) angle -= 360.0f;
+    }
+    return write(args[1], std::bit_cast<cell>(angle));
+}
+
+// Official: FUN_00473390 @ 0x00473390 (samp-server.exe)
+cell get_vehicle_rotation_quat(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
+    if (args.size() < 5) return 0;
+    const auto* vehicle = find_vehicle(host, args[0]);
+    if (!vehicle) return 0;
+    const auto quaternion = vehicle_quaternion_from_basis(vehicle->rotation_basis);
+    for (std::size_t i = 0; i < quaternion.size(); ++i)
+        if (!write(args[i + 1], std::bit_cast<cell>(quaternion[i]))) return 0;
+    return 1;
+}
+
 // Official: FUN_00477930 @ 0x00477930 (samp-server.exe)
 cell get_vehicle_velocity(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
     if (args.size() < 4) return 0;
@@ -2655,6 +2682,94 @@ cell set_vehicle_position(NativeHost& host, std::span<const cell> args) {
             continue;
         send_vehicle_position(host, *vehicle, player);
         if (vehicle->driver == player.id) player.expect_position(vehicle->x, vehicle->y, vehicle->z);
+    }
+    return 1;
+}
+
+constexpr auto send_vehicle_driver_rpc = [](NativeHost& host, const VehicleNativeState& vehicle,
+                                            samp::proto::RpcId rpc, const samp::proto::BitStream& payload) {
+    const cell player_id = vehicle.last_sync_driver;
+    const auto* player = find_player(host, std::span(&player_id, 1));
+    if (player && player->peer) host.send_rpc(*player->peer, static_cast<std::uint8_t>(rpc), payload);
+};
+
+// Official: FUN_0047cbd0 @ 0x0047cbd0 (samp-server.exe)
+cell set_vehicle_z_angle(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* vehicle = find_vehicle(host, args[0]);
+    if (!vehicle) return 0;
+    if (vehicle->last_sync_driver != 0xffff) {
+        const auto id = static_cast<std::uint16_t>(args[0]);
+        samp::proto::BitStream payload;
+        payload.write(&id, sizeof(id));
+        payload.write(&args[1], sizeof(cell));
+        send_vehicle_driver_rpc(host, *vehicle, samp::proto::RpcId::SetVehicleZAngle, payload);
+    }
+    return 1;
+}
+
+constexpr auto set_vehicle_motion = [](NativeHost& host, std::span<const cell> args, std::uint8_t type) -> cell {
+    if (args.size() < 4) return 0;
+    const auto* vehicle = find_vehicle(host, args[0]);
+    if (!vehicle || vehicle->last_sync_driver == 0xffff) return 0;
+    samp::proto::BitStream payload;
+    payload.write(&type, sizeof(type));
+    payload.write(args.data() + 1, 3 * sizeof(cell));
+    send_vehicle_driver_rpc(host, *vehicle, samp::proto::RpcId::SetVehicleVelocity, payload);
+    return 1;
+};
+
+// Official: FUN_0047ff40 @ 0x0047ff40 (samp-server.exe)
+cell set_vehicle_velocity(NativeHost& host, std::span<const cell> args) {
+    return set_vehicle_motion(host, args, 0);
+}
+
+// Official: FUN_00480090 @ 0x00480090 (samp-server.exe)
+cell set_vehicle_angular_velocity(NativeHost& host, std::span<const cell> args) {
+    return set_vehicle_motion(host, args, 1);
+}
+
+// Official: FUN_0047c5d0 @ 0x0047c5d0 (samp-server.exe)
+cell set_vehicle_params_for_player(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 4 || !find_vehicle(host, args[0])) return 0;
+    const auto* player = find_player(host, args.subspan(1));
+    if (!player) return 0;
+    if (player->peer) {
+        const auto id = static_cast<std::uint16_t>(args[0]);
+        const std::array parameters{static_cast<std::uint8_t>(args[2]), static_cast<std::uint8_t>(args[3])};
+        samp::proto::BitStream payload;
+        payload.write(&id, sizeof(id));
+        payload.write(parameters.data(), parameters.size());
+        host.send_rpc(*player->peer, 161, payload);
+    }
+    return 1;
+}
+
+// Official: FUN_0047b180 @ 0x0047b180 (samp-server.exe)
+cell put_player_in_vehicle(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 3) return 0;
+    auto* player = find_player(host, args);
+    auto* vehicle = find_vehicle(host, args[1]);
+    if (!player || !vehicle) return 0;
+    host.send_vehicle_stream_in(*player, *vehicle);
+    if (!player->in_use || !vehicle->active) return 0;
+
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    const auto seat = static_cast<std::uint16_t>(args[2]);
+    if (seat == 0) {
+        vehicle->last_sync_driver = static_cast<std::uint16_t>(args[0]);
+        vehicle->driver = player->id;
+    }
+    player->vehicle_id = id;
+    const auto x = vehicle->x, y = vehicle->y, z = vehicle->z;
+    host.update_player_position(*player, x, y, z, true);
+    if (player->in_use && player->peer) {
+        player->expect_position(x, y, z);
+        const auto wire_seat = static_cast<std::uint8_t>(seat);
+        samp::proto::BitStream payload;
+        payload.write(&id, sizeof(id));
+        payload.write(&wire_seat, sizeof(wire_seat));
+        host.send_rpc(*player->peer, 70, payload);
     }
     return 1;
 }
@@ -3686,6 +3801,8 @@ constexpr std::pair<const char*, OutputNative> output_natives[] = {
     {"GetVehicleParamsCarDoors", get_vehicle_params_car_doors},
     {"GetVehicleParamsCarWindows", get_vehicle_params_car_windows},
     {"GetVehicleVelocity", get_vehicle_velocity},
+    {"GetVehicleZAngle", get_vehicle_z_angle},
+    {"GetVehicleRotationQuat", get_vehicle_rotation_quat},
     {"GetAnimationName", get_animation_name},
     {"GetWeaponName", get_weapon_name},
 };
@@ -3836,6 +3953,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"MovePlayerObject", move_player_object},
     {"PlayerSpectatePlayer", player_spectate_player},
     {"PlayerSpectateVehicle", player_spectate_vehicle},
+    {"PutPlayerInVehicle", put_player_in_vehicle},
     {"RemovePlayerMapIcon", remove_player_map_icon},
     {"RemovePlayerFromVehicle", remove_player_from_vehicle},
     {"ResetPlayerMoney", reset_player_money},
@@ -3871,9 +3989,13 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetVehicleVirtualWorld", set_vehicle_virtual_world},
     {"SetVehicleHealth", set_vehicle_health},
     {"SetVehicleParamsEx", set_vehicle_params_ex},
+    {"SetVehicleParamsForPlayer", set_vehicle_params_for_player},
     {"SetVehicleParamsCarDoors", set_vehicle_params_car_doors},
     {"SetVehicleParamsCarWindows", set_vehicle_params_car_windows},
     {"SetVehiclePos", set_vehicle_position},
+    {"SetVehicleZAngle", set_vehicle_z_angle},
+    {"SetVehicleVelocity", set_vehicle_velocity},
+    {"SetVehicleAngularVelocity", set_vehicle_angular_velocity},
     {"SetWeather", set_world_weather},
     {"SetWorldTime", set_world_time},
     {"ShowNameTags", show_name_tags},
@@ -4453,16 +4575,6 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     };
     vm.native_functions_["AddStaticVehicleEx"]=[&host](std::span<const cell> args)->cell {
         return add_static_vehicle_ex_native(host, args);
-    };
-    // 0047b180 ensures the vehicle is streamed before the targeted RPC 70.
-    vm.native_functions_["PutPlayerInVehicle"]=[&host,player_slot,vehicle_slot](std::span<const cell> args)->cell {
-        auto* p=args.size()<3?nullptr:player_slot(args[0]);auto* v=args.size()<3?nullptr:vehicle_slot(args[1]);
-        if(!p || !v || !p->peer) return 0;
-        host.send_vehicle_stream_in(*p,*v);
-        p->vehicle_id=v->id;p->x=v->x;p->y=v->y;p->z=v->z;
-        if(args[2]==0) v->driver=p->id;
-        samp::proto::BitStream payload;payload.write(&v->id,2);const auto seat=static_cast<std::uint8_t>(args[2]);payload.write(&seat,1);
-        host.send_rpc(*p->peer,70,payload);return 1;
     };
 
 

@@ -49,7 +49,7 @@ void GameLayer::respawn_vehicle(GameVehicle& vehicle,std::uint64_t now) {
     const auto id=vehicle.id;
     vehicle.x=vehicle.spawn_x=vehicle.respawn_x;vehicle.y=vehicle.spawn_y=vehicle.respawn_y;
     vehicle.z=vehicle.spawn_z=vehicle.respawn_z;vehicle.angle=vehicle.spawn_angle=vehicle.respawn_angle;
-    vehicle.health=1000;vehicle.rotation={1,0,0,0};vehicle.velocity={};
+    vehicle.health=1000;vehicle.rotation={1,0,0,0};vehicle.rotation_basis={};vehicle.velocity={};
     vehicle.damage_doors=vehicle.damage_panels=0;vehicle.damage_lights=vehicle.damage_tires=0;
     vehicle.mods={};vehicle.paintjob=0;vehicle.dead=vehicle.death_notified=vehicle.has_been_occupied=false;
     vehicle.respray_colour1 = -1;

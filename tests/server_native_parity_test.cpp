@@ -5,6 +5,7 @@
 
 #include <array>
 #include <bit>
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
@@ -687,6 +688,106 @@ void vehicle_damage_and_repair() {
     };
     synchronize(200, 64);
     synchronize(211, 25);
+}
+
+void vehicle_orientation_and_driver_commands() {
+    using Access = samp::pawn::PawnNativeTestAccess;
+    samp::server::GameLayer game;
+    std::array<samp::server::RakNetPeer, 2> peers;
+    game.players_.resize(peers.size());
+    for (std::uint16_t id = 0; id < peers.size(); ++id) {
+        auto& player = game.players_[id];
+        player.id = id;
+        player.in_use = true;
+        player.peer = &peers[id];
+        player.streamed_to.resize(peers.size());
+    }
+    game.update_player_pool_size();
+    samp::pawn::register_server_natives(game.vm_, game);
+    Access::text(game.vm_, "");
+    const auto bits = [](float x) { return std::bit_cast<cell>(x); };
+    const auto value = [&](std::size_t index) {
+        return std::bit_cast<float>(Access::data_cell(game.vm_, index * sizeof(cell)));
+    };
+    const auto id = call(game.vm_, "CreateVehicle", {411, 0, 0, 0, bits(420.25f), 0, 0, -1, 0});
+    require(id == 1, "orientation fixture vehicle allocation failed");
+    const auto aliased = 65536 + id;
+    const auto read_basis = [&](float angle, std::array<float, 4> quat) {
+        require(call(game.vm_, "GetVehicleZAngle", {aliased, 16}) == 1 && std::fabs(value(4) - angle) < 0.0001f,
+            "reported vehicle heading differs");
+        require(call(game.vm_, "GetVehicleRotationQuat", {aliased, 0, 4, 8, 12}) == 1,
+            "vehicle orientation query failed");
+        for (std::size_t i = 0; i < quat.size(); ++i)
+            require(std::fabs(value(i) - quat[i]) < 0.0001f, "reported vehicle quaternion differs");
+    };
+    read_basis(420.25f, {0.5f, 0.5f, 0.5f, 0.5f});
+    require(call(game.vm_, "GetVehicleZAngle", {2000, 16}) == 0 && value(4) == 420.25f,
+        "invalid vehicle query overwrote an output cell");
+    require(call(game.vm_, "SetVehicleZAngle", {aliased, bits(90)}) == 1 &&
+        call(game.vm_, "SetVehicleVelocity", {aliased, 0, 0, 0}) == 0 &&
+        call(game.vm_, "SetVehicleAngularVelocity", {aliased, 0, 0, 0}) == 0,
+        "vehicle without a recorded driver returned the wrong command result");
+    require(RakNetTransportTestAccess::messages(peers[0]).empty(), "vehicle command reached an unassigned driver");
+
+    require(call(game.vm_, "SetVehicleParamsForPlayer", {aliased, 65537, 257, -1}) == 1 &&
+        call(game.vm_, "SetVehicleParamsForPlayer", {aliased, 1000, 0, 0}) == 0,
+        "targeted vehicle parameter validation differs");
+    const auto params = take_rpc(peers[1], 161);
+    const std::array<std::uint8_t, 4> expected_params{1, 0, 1, 255};
+    require(params.numberOfBitsUsed_ == 32 &&
+        std::memcmp(params.data_.data(), expected_params.data(), expected_params.size()) == 0,
+        "targeted vehicle parameter RPC differs");
+
+    require(call(game.vm_, "PutPlayerInVehicle", {65536, aliased, 65536}) == 1,
+        "put player command rejected a wrapped driver seat");
+    const auto placed = RakNetTransportTestAccess::messages(peers[0]);
+    require(placed.size() == 2, "placing the player failed to stream the vehicle first");
+    static_cast<void>(read_rpc(placed[0], 164));
+    const auto enter = read_rpc(placed[1], 70);
+    require(enter.numberOfBitsUsed_ == 24 && enter.data_[0] == id && enter.data_[2] == 0 &&
+        game.players_[0].position_correction_pending, "put player command differs");
+
+    require(call(game.vm_, "SetVehicleZAngle", {aliased, bits(90)}) == 1, "set vehicle heading failed");
+    auto heading = take_rpc(peers[0], 160);
+    std::uint16_t target = 0;
+    cell angle = 0;
+    require(heading.numberOfBitsUsed_ == 48 && heading.read(&target, 2) && target == id &&
+        heading.read(&angle, 4) && angle == bits(90), "set vehicle heading RPC differs");
+    require(call(game.vm_, "GetVehicleZAngle", {id, 16}) == 1 && value(4) == 420.25f,
+        "set vehicle heading rewrote the sync orientation");
+
+    const std::array velocity{bits(-1.25f), bits(2.0f), bits(-0.0f)};
+    const auto check_motion = [&](const char* native, std::uint8_t type) {
+        require(call(game.vm_, native, {aliased, velocity[0], velocity[1], velocity[2]}) == 1,
+            "set vehicle motion failed");
+        auto motion = take_rpc(peers[0], 91);
+        std::uint8_t mode = 0xff;
+        std::array<cell, 3> actual{};
+        require(motion.numberOfBitsUsed_ == 104 && motion.read(&mode, 1) && mode == type &&
+            motion.read(actual.data(), sizeof(actual)) && actual == velocity, "vehicle motion RPC differs");
+    };
+    check_motion("SetVehicleVelocity", 0);
+    check_motion("SetVehicleAngularVelocity", 1);
+    require(RakNetTransportTestAccess::messages(peers[1]).empty(), "vehicle motion reached a non-driver");
+
+    game.players_[0].spawned = true;
+    const auto synchronize = [&](std::array<float, 4> quaternion) {
+        std::array<std::uint8_t, 64> bytes{};
+        bytes[0] = 200;
+        bytes[1] = static_cast<std::uint8_t>(id);
+        std::memcpy(bytes.data() + 9, quaternion.data(), sizeof(quaternion));
+        BitStream packet;
+        packet.write(bytes.data(), bytes.size());
+        game.on_user_message(peers[0], packet);
+    };
+    synchronize({0.5f, 0.5f, 0.5f, 0.5f});
+    read_basis(270, {0.5f, 0.5f, 0.5f, 0.5f});
+    synchronize({2, 0, 0, 0});
+    read_basis(0, {0.5f * std::sqrt(13.0f), 0, 0, 0});
+    require(call(game.vm_, "SetVehicleToRespawn", {id}) == 1, "orientation fixture respawn failed");
+    static_cast<void>(take_rpc(peers[0], 165));
+    read_basis(420.25f, {0.5f, 0.5f, 0.5f, 0.5f});
+    check_motion("SetVehicleAngularVelocity", 1);
 }
 
 void vehicle_trailers_and_streaming_queries() {
@@ -1613,6 +1714,7 @@ int main(int, char**) {
         vehicle_appearance();
         vehicle_appearance_callbacks();
         vehicle_damage_and_repair();
+        vehicle_orientation_and_driver_commands();
         vehicle_trailers_and_streaming_queries();
         vehicle_parameters_and_siren();
         vehicle_tick_boundaries();

@@ -14118,11 +14118,31 @@
     {
       "address": "0x00473280",
       "assembly_name": "FUN_00473280",
-      "assembly_size": 480,
-      "assembly_sha1": "d713408eeebd49a11f5f12722aafbad9aac84e7d",
+      "assembly_size": 32,
+      "assembly_sha1": "70e865b010836fcc510a6f0e534b04ebb362eb4b",
       "native_registration": {
         "name": "LimitPlayerMarkerRadius",
         "table_entry": "0x004ceef8"
+      }
+    },
+    {
+      "address": "0x004732a0",
+      "assembly_name": "FUN_004732a0",
+      "assembly_size": 240,
+      "assembly_sha1": "ff513b54ad3affdfb1cacab49bf6ba279edb7887",
+      "native_registration": {
+        "name": "GetVehicleZAngle",
+        "table_entry": "0x004cf708"
+      }
+    },
+    {
+      "address": "0x00473390",
+      "assembly_name": "FUN_00473390",
+      "assembly_size": 208,
+      "assembly_sha1": "b3aaa50f0fd9b365c079745e4234b1abc32abc1d",
+      "native_registration": {
+        "name": "GetVehicleRotationQuat",
+        "table_entry": "0x004cf710"
       }
     },
     {
@@ -15340,11 +15360,21 @@
     {
       "address": "0x0047b090",
       "assembly_name": "FUN_0047b090",
-      "assembly_size": 736,
-      "assembly_sha1": "a18e41faa9747ed85705316c1c5d792daf312689",
+      "assembly_size": 240,
+      "assembly_sha1": "684782bdff2eb8dea9c8f53158b156af4b3b9476",
       "native_registration": {
         "name": "SetPlayerHealth",
         "table_entry": "0x004cf268"
+      }
+    },
+    {
+      "address": "0x0047b180",
+      "assembly_name": "FUN_0047b180",
+      "assembly_size": 496,
+      "assembly_sha1": "ae38553b15a71f74ad643e1b07c0e59b1c03b2ae",
+      "native_registration": {
+        "name": "PutPlayerInVehicle",
+        "table_entry": "0x004cf2a0"
       }
     },
     {
@@ -15398,8 +15428,18 @@
     {
       "address": "0x0047bde0",
       "assembly_name": "FUN_0047bde0",
-      "assembly_size": 2352,
-      "assembly_sha1": "7217e4e2b98768d95997b7bf2325463b4b2d349c"
+      "assembly_size": 2032,
+      "assembly_sha1": "16f52bd2a27c163a1bae57f8cc6630614bab9eaf"
+    },
+    {
+      "address": "0x0047c5d0",
+      "assembly_name": "FUN_0047c5d0",
+      "assembly_size": 320,
+      "assembly_sha1": "6cdac26c728cbaff8a92e3eb42a7f33dd1b8c43e",
+      "native_registration": {
+        "name": "SetVehicleParamsForPlayer",
+        "table_entry": "0x004cf728"
+      }
     },
     {
       "address": "0x0047c710",
@@ -15426,11 +15466,21 @@
     {
       "address": "0x0047caf0",
       "assembly_name": "FUN_0047caf0",
-      "assembly_size": 512,
-      "assembly_sha1": "e258f141bf8846b39f974324cc2f90e748fd802d",
+      "assembly_size": 224,
+      "assembly_sha1": "bee28d08eb07a629a5ec979911df8fbc0ed0063c",
       "native_registration": {
         "name": "SetPlayerArmedWeapon",
         "table_entry": "0x004cf428"
+      }
+    },
+    {
+      "address": "0x0047cbd0",
+      "assembly_name": "FUN_0047cbd0",
+      "assembly_size": 288,
+      "assembly_sha1": "8a4df3841aced64e142cf408660329926bc3a7cc",
+      "native_registration": {
+        "name": "SetVehicleZAngle",
+        "table_entry": "0x004cf720"
       }
     },
     {
@@ -15696,11 +15746,31 @@
     {
       "address": "0x0047fac0",
       "assembly_name": "FUN_0047fac0",
-      "assembly_size": 1824,
-      "assembly_sha1": "c011363b5bf8d98f28588ad76cb44f516754f443",
+      "assembly_size": 1152,
+      "assembly_sha1": "49e36fe1abc098e6144b16a7016ba706b3019b05",
       "native_registration": {
         "name": "SetPlayerFightingStyle",
         "table_entry": "0x004cf4d0"
+      }
+    },
+    {
+      "address": "0x0047ff40",
+      "assembly_name": "FUN_0047ff40",
+      "assembly_size": 336,
+      "assembly_sha1": "c81e2d2b76411afb6bebc676d304dfaf34e31bf9",
+      "native_registration": {
+        "name": "SetVehicleVelocity",
+        "table_entry": "0x004cf808"
+      }
+    },
+    {
+      "address": "0x00480090",
+      "assembly_name": "FUN_00480090",
+      "assembly_size": 336,
+      "assembly_sha1": "f7cdb47afaa64b96905c42d64ce64a5135dddba5",
+      "native_registration": {
+        "name": "SetVehicleAngularVelocity",
+        "table_entry": "0x004cf810"
       }
     },
     {
@@ -34817,6 +34887,27 @@
     ],
     "FUN_0047d490": [
       "0x0047d490"
+    ],
+    "FUN_004732a0": [
+      "0x004732a0"
+    ],
+    "FUN_00473390": [
+      "0x00473390"
+    ],
+    "FUN_0047cbd0": [
+      "0x0047cbd0"
+    ],
+    "FUN_0047c5d0": [
+      "0x0047c5d0"
+    ],
+    "FUN_0047ff40": [
+      "0x0047ff40"
+    ],
+    "FUN_00480090": [
+      "0x00480090"
+    ],
+    "FUN_0047b180": [
+      "0x0047b180"
     ]
   },
   "client_rpc_registrations": [],

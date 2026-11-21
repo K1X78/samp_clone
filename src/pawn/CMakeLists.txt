@@ -21,6 +21,7 @@ add_library(samp_pawn STATIC
     actor_pool.cpp
     password_hash.cpp
     player_commands.cpp
+    vehicle_orientation.cpp
     pickup_pool.cpp
     textdraw_pool.cpp
     textdraw_natives.cpp

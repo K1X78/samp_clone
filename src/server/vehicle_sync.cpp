@@ -33,6 +33,8 @@ void GameLayer::handle_driver_packet(GamePlayer& player,const samp::proto::BitSt
     player.left_right=static_cast<std::int16_t>(u16(2));player.up_down=static_cast<std::int16_t>(u16(4));player.keys=u16(6);
     vehicle.x=f32(24);vehicle.y=f32(28);vehicle.z=f32(32);
     for(int i=0;i<4;++i) vehicle.rotation[i]=f32(8+i*4);
+    vehicle.rotation_basis = samp::pawn::vehicle_basis_from_quaternion(vehicle.rotation);
+    vehicle.last_sync_driver = static_cast<std::uint16_t>(player.id);
     for(int i=0;i<3;++i) vehicle.velocity[i]=f32(36+i*4);
     vehicle.health=f32(48);vehicle.driver=player.id;vehicle.has_been_occupied=true;
     const auto trailer = u16(57);

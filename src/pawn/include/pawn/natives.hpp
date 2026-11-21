@@ -226,6 +226,10 @@ struct StaticPickupNativeState {
     std::array<float,3> position{};
 };
 
+using VehicleRotationBasis = std::array<std::array<float, 3>, 3>;
+VehicleRotationBasis vehicle_basis_from_quaternion(const std::array<float, 4>& quaternion);
+std::array<float, 4> vehicle_quaternion_from_basis(const VehicleRotationBasis& basis);
+
 struct VehicleNativeState {
     bool active = false;
     bool destroying = false;
@@ -255,6 +259,7 @@ struct VehicleNativeState {
     const ParameterBlock& parameter_block() const noexcept;
     bool has_parameter_overrides() const noexcept;
     std::uint16_t trailer_id = 0;
+    std::uint16_t last_sync_driver = 0xffff;
     int driver = -1;
     std::array<int, 8> passengers{-1, -1, -1, -1, -1, -1, -1, -1};
     std::uint32_t damage_panels = 0, damage_doors = 0;
@@ -265,6 +270,7 @@ struct VehicleNativeState {
     std::int32_t respray_colour1 = -1, respray_colour2 = -1;
     std::string number_plate;
     std::array<float, 4> rotation{1, 0, 0, 0};
+    VehicleRotationBasis rotation_basis{};
     std::array<float, 3> velocity{};
 };
 
