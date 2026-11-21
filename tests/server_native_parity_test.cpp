@@ -1106,13 +1106,32 @@ void player_wanted_level_and_fighting_style() {
     for (auto& peer : peers)
         require(RakNetTransportTestAccess::messages(peer).empty(), "player state RPC reached an unintended recipient");
 
+    const auto expect_skill = [](BitStream payload, std::uint16_t level) {
+        const std::array<std::uint8_t, 8> expected{0, 0, 4, 0, 0, 0,
+            static_cast<std::uint8_t>(level), static_cast<std::uint8_t>(level >> 8)};
+        require(payload.numberOfBitsUsed_ == 64 &&
+            std::memcmp(payload.data_.data(), expected.data(), expected.size()) == 0, "weapon skill RPC differs");
+    };
+    require(call(game.vm_, "SetPlayerSkillLevel", {65536, 4, 65536 + 420}) == 1,
+        "weapon skill setter rejected a valid skill");
+    expect_skill(take_rpc(peers[0], 34), 420);
+    require(RakNetTransportTestAccess::messages(peers[1]).empty(), "unspawned player sent skill to observers");
+    require(call(game.vm_, "SetPlayerSkillLevel", {0, 11, 21}) == 1 &&
+        call(game.vm_, "SetPlayerSkillLevel", {1000, 4, 21}) == 0 &&
+        RakNetTransportTestAccess::messages(peers[0]).empty(), "invalid skill emitted a packet");
+
     game.players_[0].spawned = true;
     game.players_[0].state = 1;
+    require(call(game.vm_, "SetPlayerSkillLevel", {0, 4, 700}) == 1, "spawned player could not change skill");
+    expect_skill(take_rpc(peers[0], 34), 700);
+    expect_skill(take_rpc(peers[1], 34), 700);
     game.players_[2].joined = game.players_[2].spawned = true;
     game.update_streaming();
     const auto streamed = take_rpc(peers[2], 32);
-    require(streamed.numberOfBitsUsed_ == 54 * 8 && streamed.data_[31] == 16,
-        "late stream-in discarded the current fighting style");
+    require(streamed.numberOfBitsUsed_ == 54 * 8 && streamed.data_[31] == 16 &&
+        streamed.data_[32] == 231 && streamed.data_[33] == 3 &&
+        streamed.data_[40] == 188 && streamed.data_[41] == 2,
+        "late stream-in discarded the current fighting style or weapon skills");
 }
 
 void targeted_player_commands() {

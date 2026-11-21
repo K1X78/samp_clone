@@ -14444,11 +14444,21 @@
     {
       "address": "0x00474c20",
       "assembly_name": "FUN_00474c20",
-      "assembly_size": 384,
-      "assembly_sha1": "f8f35c6fef25e24c618e7dab7a61444b707df741",
+      "assembly_size": 208,
+      "assembly_sha1": "8a72c28cc4fe6fd77e105b764ffeb052d49a694e",
       "native_registration": {
         "name": "AttachObjectToVehicle",
         "table_entry": "0x004cf934"
+      }
+    },
+    {
+      "address": "0x00474cf0",
+      "assembly_name": "FUN_00474cf0",
+      "assembly_size": 176,
+      "assembly_sha1": "2fb8a1b02725c6fc37895c5ccacda5a5a0cb7201",
+      "native_registration": {
+        "name": "AttachPlayerObjectToVehicle",
+        "table_entry": "0x004cf938"
       }
     },
     {
@@ -14972,8 +14982,18 @@
     {
       "address": "0x00478240",
       "assembly_name": "FUN_00478240",
-      "assembly_size": 416,
-      "assembly_sha1": "42b219bf00f8142ab1aa97a9595125f295d667c0"
+      "assembly_size": 336,
+      "assembly_sha1": "c1a9a123eeddcc62be25eea77f48df6915c1bf64"
+    },
+    {
+      "address": "0x00478390",
+      "assembly_name": "FUN_00478390",
+      "assembly_size": 80,
+      "assembly_sha1": "3b48d812bbb32c002e8fbed6cfe3cbfe86820f76",
+      "native_registration": {
+        "name": "SetPlayerSkillLevel",
+        "table_entry": "0x004cf5c8"
+      }
     },
     {
       "address": "0x004783e0",
@@ -15458,8 +15478,28 @@
     {
       "address": "0x0047bde0",
       "assembly_name": "FUN_0047bde0",
-      "assembly_size": 2032,
-      "assembly_sha1": "16f52bd2a27c163a1bae57f8cc6630614bab9eaf"
+      "assembly_size": 320,
+      "assembly_sha1": "fd38cea53f3bb7bf6f792e186300e301d9e518bd"
+    },
+    {
+      "address": "0x0047bf20",
+      "assembly_name": "FUN_0047bf20",
+      "assembly_size": 256,
+      "assembly_sha1": "a9e097f42a2b441cb2f4e023cc3a5e9c02c31867",
+      "native_registration": {
+        "name": "AttachCameraToObject",
+        "table_entry": "0x004cf3a0"
+      }
+    },
+    {
+      "address": "0x0047c020",
+      "assembly_name": "FUN_0047c020",
+      "assembly_size": 1456,
+      "assembly_sha1": "1c88028fc5b2ddf790ccb3e0fc140ab8ace55b62",
+      "native_registration": {
+        "name": "AttachCameraToPlayerObject",
+        "table_entry": "0x004cf3a8"
+      }
     },
     {
       "address": "0x0047c5d0",
@@ -15702,11 +15742,21 @@
     {
       "address": "0x0047e690",
       "assembly_name": "FUN_0047e690",
-      "assembly_size": 752,
-      "assembly_sha1": "d01ef6ca813fef279702deb15f6cf07d93f8609b",
+      "assembly_size": 464,
+      "assembly_sha1": "f68eadd1305a1af27f204f3b00c4a1a1a099c24f",
       "native_registration": {
         "name": "SetPlayerObjectRot",
         "table_entry": "0x004cf9e4"
+      }
+    },
+    {
+      "address": "0x0047e860",
+      "assembly_name": "FUN_0047e860",
+      "assembly_size": 288,
+      "assembly_sha1": "7e6f2827319960a03ed38cf77794c44772827eb5",
+      "native_registration": {
+        "name": "SetPlayerObjectNoCameraCol",
+        "table_entry": "0x004cfa00"
       }
     },
     {
@@ -15760,8 +15810,18 @@
     {
       "address": "0x0047f6d0",
       "assembly_name": "FUN_0047f6d0",
-      "assembly_size": 768,
-      "assembly_sha1": "e55f9ccca3963da27d4892f57183b14807fe5a36"
+      "assembly_size": 272,
+      "assembly_sha1": "fe191c03cb5f7fd00be383d5ac299de290ac837f"
+    },
+    {
+      "address": "0x0047f7e0",
+      "assembly_name": "FUN_0047f7e0",
+      "assembly_size": 496,
+      "assembly_sha1": "c6677202f2f945b6273a133caabd59f3f2844c46",
+      "native_registration": {
+        "name": "AttachObjectToPlayer",
+        "table_entry": "0x004cfa40"
+      }
     },
     {
       "address": "0x0047f9d0",
@@ -34960,6 +35020,24 @@
     ],
     "FUN_00480ed0": [
       "0x00480ed0"
+    ],
+    "FUN_00474cf0": [
+      "0x00474cf0"
+    ],
+    "FUN_0047f7e0": [
+      "0x0047f7e0"
+    ],
+    "FUN_0047bf20": [
+      "0x0047bf20"
+    ],
+    "FUN_0047c020": [
+      "0x0047c020"
+    ],
+    "FUN_0047e860": [
+      "0x0047e860"
+    ],
+    "FUN_00478390": [
+      "0x00478390"
     ]
   },
   "client_rpc_registrations": [],

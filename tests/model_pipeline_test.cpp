@@ -497,6 +497,77 @@ void global_object_attachments() {
     check_object_attachment(decode(packets.at(0)), 0xffff, 0xffff, {}, 0);
 }
 
+void object_control_natives() {
+    using samp::amx::cell;
+    samp::server::GameLayer game;
+    std::array<samp::server::RakNetPeer, 3> peers;
+    game.players_.resize(peers.size());
+    for (std::size_t id = 0; id < peers.size(); ++id) {
+        auto& player = game.players_[id];
+        player.id = static_cast<int>(id);
+        player.in_use = player.joined = true;
+        player.peer = &peers[id];
+        player.streamed_to.resize(peers.size());
+    }
+    game.players_[1].streamed_to[0] = 1;
+    game.update_player_pool_size();
+    samp::pawn::PawnVm vm;
+    Native::prepare(vm);
+    samp::pawn::register_server_natives(vm, game);
+    const auto global = Native::call(vm, "CreateObject", {19379, 0, 0, 0, 0, 0, 0, 0});
+    const auto owned = Native::call(vm, "CreatePlayerObject", {0, 19379, 0, 0, 0, 0, 0, 0, 0});
+    CHECK(global == 1 && owned == 2);
+    for (auto& peer : peers) Peer::drain(peer);
+
+    const auto run = [&](const char* name, std::initializer_list<cell> args) {
+        cell result = 0;
+        CHECK(Native::execute_registered(vm, name, args, result) == 0);
+        return result;
+    };
+    const auto control_rpc = [&](std::uint8_t id, std::uint16_t expected_object) {
+        auto frames = Peer::drain(peers[0]);
+        CHECK(frames.size() == 1);
+        auto rpc = decode(frames.at(0));
+        std::uint16_t object = 0;
+        CHECK(rpc.id == id && rpc.payload.numberOfBitsUsed_ == 16 &&
+            rpc.payload.read(&object, 2) && object == expected_object);
+        CHECK(Peer::drain(peers[1]).empty() && Peer::drain(peers[2]).empty());
+    };
+
+    CHECK(run("AttachCameraToObject", {65536, 65536 + global}) == 1);
+    control_rpc(81, static_cast<std::uint16_t>(global));
+    CHECK(run("AttachCameraToPlayerObject", {1, owned}) == 0);
+    CHECK(run("AttachCameraToPlayerObject", {65536, 65536 + owned}) == 1);
+    control_rpc(81, static_cast<std::uint16_t>(owned));
+    CHECK(run("SetPlayerObjectNoCameraCol", {0, owned}) == 1);
+    control_rpc(169, static_cast<std::uint16_t>(owned));
+
+    const auto bits = [](float value) { return std::bit_cast<cell>(value); };
+    CHECK(run("AttachPlayerObjectToVehicle", {65536, 65536 + owned, 65591,
+        bits(1), bits(2), bits(3), bits(-4), bits(-5), bits(-6)}) == 1);
+    auto frames = Peer::drain(peers[0]);
+    CHECK(frames.size() == 1);
+    auto recreated = decode(frames.at(0));
+    CHECK(recreated.payload.data_[34] == 1);
+    check_object_attachment(std::move(recreated), 55, 0xffff, {1, 2, 3, -4, -5, -6}, 0);
+    CHECK(Peer::drain(peers[1]).empty() && Peer::drain(peers[2]).empty());
+
+    CHECK(run("AttachObjectToPlayer", {65536 + global, 65536,
+        bits(1), bits(2), bits(3), bits(-4), bits(-5), bits(-6)}) == 0);
+    for (const auto id : {0, 1}) {
+        frames = Peer::drain(peers[id]);
+        CHECK(frames.size() == 1);
+        auto attached = decode(frames.at(0));
+        std::uint16_t object = 0, player = 0xffff;
+        std::array<float, 6> transform{};
+        CHECK(attached.id == 75 && attached.payload.numberOfBitsUsed_ == 224 &&
+            attached.payload.read(&object, 2) && object == global && attached.payload.read(&player, 2) &&
+            player == 0 && attached.payload.read(transform.data(), sizeof(transform)));
+        CHECK((transform == std::array<float, 6>{1, 2, 3, -4, -5, -6}));
+    }
+    CHECK(Peer::drain(peers[2]).empty() && game.find_global_object(static_cast<std::uint16_t>(global))->attached_vehicle == 0xffff);
+}
+
 void player_object_lifecycle() {
     using samp::amx::cell;
     samp::server::GameLayer game;
@@ -1203,7 +1274,7 @@ int main(int argc,char** argv) {
         pipeline(root,argv[2],argv[3]);std::filesystem::remove_all(root);
         std::printf("real asset transfer/cache: %d failures\n",failures);return failures!=0;
     }
-    registry_and_transfer(root);native_activation_messages(root);global_object_motion();global_object_attachments();player_object_lifecycle();player_object_motion();object_selection_and_editing();vehicle_commands_from_pawn();attached_object_lifecycle();connect_callback_order(root);world_selection_and_failures(root);pipeline(root);
+    registry_and_transfer(root);native_activation_messages(root);global_object_motion();global_object_attachments();object_control_natives();player_object_lifecycle();player_object_motion();object_selection_and_editing();vehicle_commands_from_pawn();attached_object_lifecycle();connect_callback_order(root);world_selection_and_failures(root);pipeline(root);
 #ifdef _WIN32
     WSADATA winsock{};CHECK(WSAStartup(MAKEWORD(2,2),&winsock)==0);http_pipeline(root);WSACleanup();
 #endif

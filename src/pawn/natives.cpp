@@ -1838,6 +1838,38 @@ cell attach_global_object_to_object(NativeHost& host, std::span<const cell> args
     return 1;
 }
 
+// Official: FUN_00474cf0 @ 0x00474cf0 (samp-server.exe)
+cell attach_player_object_to_vehicle(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 9) return 0;
+    const auto player_id = static_cast<std::uint16_t>(args[0]);
+    const auto object_id = static_cast<std::uint16_t>(args[1]);
+    auto* object = host.find_player_object(player_id, object_id);
+    if (!object) return 0;
+
+    const std::array offset{std::bit_cast<float>(args[3]), std::bit_cast<float>(args[4]), std::bit_cast<float>(args[5])};
+    const std::array rotation{std::bit_cast<float>(args[6]), std::bit_cast<float>(args[7]), std::bit_cast<float>(args[8])};
+    set_object_vehicle_attachment(*object, static_cast<std::uint16_t>(args[2]), offset, rotation);
+    if (auto* player = find_player(host, args)) host.send_object(*player, *object);
+    return 1;
+}
+
+// Official: FUN_0047f7e0 @ 0x0047f7e0 (samp-server.exe)
+cell attach_global_object_to_player(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 8 || !find_object(host, args[0])) return 0;
+    const auto* player = find_player(host, args.subspan(1));
+    if (player) {
+        const auto object = static_cast<std::uint16_t>(args[0]);
+        const auto target = static_cast<std::uint16_t>(args[1]);
+        samp::proto::BitStream payload;
+        payload.write(&object, sizeof(object));
+        payload.write(&target, sizeof(target));
+        payload.write(args.data() + 2, 6 * sizeof(cell));
+        host.send_streamed_player_rpc(target, 75, payload);
+        if (player->peer) host.send_rpc(*player->peer, 75, payload);
+    }
+    return 0;
+}
+
 // Official: FUN_00475460 @ 0x00475460 (samp-server.exe)
 cell is_valid_global_object(NativeHost& host, std::span<const cell> args) {
     return !args.empty() && find_object(host, args[0]);
@@ -2188,6 +2220,47 @@ cell edit_player_attached_object(NativeHost& host, std::span<const cell> args) {
         }
         player->object_edit_enabled = true;
     }
+    return 1;
+}
+
+constexpr auto send_object_reference = [](NativeHost& host, const PlayerNativeState& player,
+                                          std::uint8_t rpc, std::uint16_t object) {
+    if (!player.peer) return;
+    samp::proto::BitStream payload;
+    payload.write(&object, sizeof(object));
+    host.send_rpc(*player.peer, rpc, payload);
+};
+
+// Official: FUN_0047bf20 @ 0x0047bf20 (samp-server.exe)
+cell attach_camera_to_global_object(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2 || !find_object(host, args[1])) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    send_object_reference(host, *player, static_cast<std::uint8_t>(samp::proto::RpcId::AttachCameraToObject),
+        static_cast<std::uint16_t>(args[1]));
+    return 1;
+}
+
+// Official: FUN_0047c020 @ 0x0047c020 (samp-server.exe)
+cell attach_camera_to_player_object(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    const auto object = static_cast<std::uint16_t>(args[1]);
+    if (!player || !host.find_player_object(static_cast<std::uint16_t>(args[0]), object)) return 0;
+    send_object_reference(host, *player, static_cast<std::uint8_t>(samp::proto::RpcId::AttachCameraToObject), object);
+    return 1;
+}
+
+// Official: FUN_0047e860 @ 0x0047e860 (samp-server.exe)
+cell set_player_object_no_camera_collision(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    if (!player) return 0;
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    auto* object = host.find_player_object(static_cast<std::uint16_t>(args[0]), id);
+    if (!object) return 0;
+    object->no_camera_collision = true;
+    send_object_reference(host, *player, 169, id);
     return 1;
 }
 
@@ -3440,6 +3513,28 @@ cell get_player_wanted_level(NativeHost& host, std::span<const cell> args) {
     return player ? player->wanted_level : 0;
 }
 
+// Official: FUN_00486010 @ 0x00486010 (samp-server.exe)
+void apply_player_weapon_skill(NativeHost& host, PlayerNativeState& player, cell skill, std::uint16_t level) {
+    if (static_cast<std::uint32_t>(skill) >= player.weapon_skills.size()) return;
+    player.weapon_skills[skill] = level;
+    const auto id = static_cast<std::uint16_t>(player.id);
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    payload.write(&skill, sizeof(skill));
+    payload.write(&level, sizeof(level));
+    if (player.peer) host.send_rpc(*player.peer, 34, payload);
+    if (player.state != 0 && player.state != 9) host.send_streamed_player_rpc(id, 34, payload);
+}
+
+// Official: FUN_00478390 @ 0x00478390 (samp-server.exe)
+cell set_player_skill_level(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 3) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    apply_player_weapon_skill(host, *player, args[1], static_cast<std::uint16_t>(args[2]));
+    return 1;
+}
+
 // Official: FUN_0047f9d0 @ 0x0047f9d0 (samp-server.exe)
 cell set_player_wanted_level(NativeHost& host, std::span<const cell> args) {
     if (args.size() < 2) return 0;
@@ -3877,6 +3972,10 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"Ban", ban_player},
     {"AttachObjectToObject", attach_global_object_to_object},
     {"AttachObjectToVehicle", attach_global_object_to_vehicle},
+    {"AttachObjectToPlayer", attach_global_object_to_player},
+    {"AttachPlayerObjectToVehicle", attach_player_object_to_vehicle},
+    {"AttachCameraToObject", attach_camera_to_global_object},
+    {"AttachCameraToPlayerObject", attach_camera_to_player_object},
     {"CreateObject", create_global_object},
     {"CreatePlayerObject", create_player_object},
     {"CancelEdit", cancel_object_edit},
@@ -4015,6 +4114,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetGravity", set_gravity},
     {"SetNameTagDrawDistance", set_name_tag_draw_distance},
     {"SetObjectNoCameraCol", set_global_object_no_camera_collision},
+    {"SetPlayerObjectNoCameraCol", set_player_object_no_camera_collision},
     {"SetObjectPos", set_global_object_position},
     {"SetObjectRot", set_global_object_rotation},
     {"SetPlayerObjectPos", set_player_object_position},
@@ -4032,6 +4132,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetPlayerMarkerForPlayer", set_player_marker_for_player},
     {"SetPlayerRaceCheckpoint", set_player_race_checkpoint},
     {"SetPlayerScore", set_player_score},
+    {"SetPlayerSkillLevel", set_player_skill_level},
     {"SetPlayerTeam", set_player_team},
     {"SetPlayerWantedLevel", set_player_wanted_level},
     {"SetPlayerVirtualWorld", set_player_virtual_world},

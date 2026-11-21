@@ -96,7 +96,7 @@ void GameLayer::send_player_stream_record(GamePlayer& receiver, const GamePlayer
     payload.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<float>(other.angle)).data(),4);
     payload.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<std::uint32_t>(other.colour)).data(),4);
     payload.write(&other.fighting_style, sizeof(other.fighting_style));
-    for (int i = 0; i < 11; ++i) payload.write(std::bit_cast<std::array<std::uint8_t,2>>(static_cast<std::uint16_t>(999)).data(),2);
+    payload.write(other.weapon_skills.data(), sizeof(other.weapon_skills));
     send_rpc(*receiver.peer, kRpcPlayerStreamIn, payload);
     for (std::size_t i = 0; i < other.attached_objects.size(); ++i)
         samp::pawn::send_player_attachment(*this, other, receiver, static_cast<cell>(i));
