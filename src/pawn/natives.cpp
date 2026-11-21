@@ -1562,6 +1562,34 @@ constexpr auto find_vehicle = [](NativeHost& host, cell id) -> VehicleNativeStat
     return &host.vehicles_[index];
 };
 
+// Official: FUN_00471650 @ 0x00471650 (samp-server.exe)
+cell is_player_streamed_in(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2 || !find_player(host, args)) return 0;
+    const auto target = static_cast<std::uint16_t>(args[0]);
+    const auto* viewer = find_player(host, args.subspan(1));
+    return viewer && target < viewer->streamed_to.size() && viewer->streamed_to[target] != 0;
+}
+
+// Official: FUN_004716c0 @ 0x004716c0 (samp-server.exe)
+cell is_vehicle_streamed_in(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2 || !find_vehicle(host, args[0])) return 0;
+    const auto target = static_cast<std::uint16_t>(args[0]);
+    const auto* viewer = find_player(host, args.subspan(1));
+    return viewer && target < viewer->streamed_vehicles.size() && viewer->streamed_vehicles[target] != 0;
+}
+
+// Official: FUN_00474360 @ 0x00474360 (samp-server.exe)
+cell is_trailer_attached_to_vehicle(NativeHost& host, std::span<const cell> args) {
+    const auto* vehicle = args.empty() ? nullptr : find_vehicle(host, args[0]);
+    return vehicle && vehicle->trailer_id != 0 && vehicle->trailer_id != 0xffff;
+}
+
+// Official: FUN_004743c0 @ 0x004743c0 (samp-server.exe)
+cell get_vehicle_trailer(NativeHost& host, std::span<const cell> args) {
+    const auto* vehicle = args.empty() ? nullptr : find_vehicle(host, args[0]);
+    return vehicle && vehicle->trailer_id != 0xffff ? vehicle->trailer_id : 0;
+}
+
 // Official: FUN_004706e0 @ 0x004706e0 (samp-server.exe)
 cell get_vehicle_siren_state(NativeHost& host, std::span<const cell> args) {
     const auto* vehicle = args.empty() ? nullptr : find_vehicle(host, args[0]);
@@ -2275,6 +2303,34 @@ void broadcast_vehicle_rpc(NativeHost& host, std::uint8_t rpc, const samp::proto
             host.send_rpc(*player.peer, rpc, payload);
         }
     }
+}
+
+// Official: FUN_0047d8a0 @ 0x0047d8a0 (samp-server.exe)
+cell attach_trailer_to_vehicle(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2 || host.vehicles_.empty()) return 0;
+    if (find_vehicle(host, args[0]) && find_vehicle(host, args[1])) {
+        const auto trailer = static_cast<std::uint16_t>(args[0]);
+        const auto vehicle = static_cast<std::uint16_t>(args[1]);
+        samp::proto::BitStream payload;
+        payload.write(&trailer, sizeof(trailer));
+        payload.write(&vehicle, sizeof(vehicle));
+        broadcast_vehicle_rpc(host, static_cast<std::uint8_t>(samp::proto::RpcId::AttachTrailer), payload,
+            trailer, 0xffff);
+    }
+    return 1;
+}
+
+// Official: FUN_0047d9d0 @ 0x0047d9d0 (samp-server.exe)
+cell detach_trailer_from_vehicle(NativeHost& host, std::span<const cell> args) {
+    if (args.empty() || host.vehicles_.empty()) return 0;
+    if (find_vehicle(host, args[0])) {
+        const auto vehicle = static_cast<std::uint16_t>(args[0]);
+        samp::proto::BitStream payload;
+        payload.write(&vehicle, sizeof(vehicle));
+        broadcast_vehicle_rpc(host, static_cast<std::uint8_t>(samp::proto::RpcId::DetachTrailer), payload,
+            vehicle, 0xffff);
+    }
+    return 1;
 }
 
 // The official slot tables at 0x004be3c0 and 0x004befa0 agree for IDs 1000–1193.
@@ -3571,6 +3627,8 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"DeletePlayer3DTextLabel", delete_player_3d_text_label},
     {"Attach3DTextLabelToPlayer", attach_3d_text_label_to_player},
     {"Attach3DTextLabelToVehicle", attach_3d_text_label_to_vehicle},
+    {"AttachTrailerToVehicle", attach_trailer_to_vehicle},
+    {"DetachTrailerFromVehicle", detach_trailer_from_vehicle},
     {"DisableInteriorEnterExits", disable_interior_enter_exits},
     {"DisableNameTagLOS", disable_name_tag_los},
     {"DisablePlayerCheckpoint", disable_player_checkpoint},
@@ -3643,6 +3701,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetVehicleToRespawn", set_vehicle_to_respawn},
     {"GetVehicleParamsSirenState", get_vehicle_siren_state},
     {"GetVehiclePoolSize", get_vehicle_pool_size},
+    {"GetVehicleTrailer", get_vehicle_trailer},
     {"GetVehicleVirtualWorld", get_vehicle_virtual_world},
     {"GivePlayerMoney", give_player_money},
     {"GivePlayerWeapon", give_player_weapon},
@@ -3654,11 +3713,14 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"IsPlayerInRangeOfPoint", is_player_in_range_of_point},
     {"IsPlayerInVehicle", is_player_in_vehicle},
     {"IsPlayerNPC", is_player_npc},
+    {"IsPlayerStreamedIn", is_player_streamed_in},
+    {"IsTrailerAttachedToVehicle", is_trailer_attached_to_vehicle},
     {"IsObjectMoving", is_global_object_moving},
     {"IsValidObject", is_valid_global_object},
     {"IsValidPlayerObject", is_valid_player_object},
     {"IsPlayerObjectMoving", is_player_object_moving},
     {"IsValidVehicle", is_valid_vehicle},
+    {"IsVehicleStreamedIn", is_vehicle_streamed_in},
     {"KillTimer", kill_timer},
     {"LinkVehicleToInterior", link_vehicle_to_interior},
     {"ManualVehicleEngineAndLights", manual_vehicle_engine_and_lights},

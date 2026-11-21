@@ -689,6 +689,91 @@ void vehicle_damage_and_repair() {
     synchronize(211, 25);
 }
 
+void vehicle_trailers_and_streaming_queries() {
+    samp::server::GameLayer game;
+    std::array<samp::server::RakNetPeer, 3> peers;
+    game.players_.resize(4);
+    for (std::uint16_t id = 0; id < peers.size(); ++id) {
+        auto& player = game.players_[id];
+        player.id = id;
+        player.in_use = true;
+        player.peer = &peers[id];
+        player.streamed_to.resize(game.players_.size());
+        player.streamed_vehicles.resize(4);
+    }
+    game.update_player_pool_size();
+    samp::pawn::register_server_natives(game.vm_, game);
+    const auto tractor = call(game.vm_, "CreateVehicle", {403, 0, 0, 0, 0, 0, 0, -1, 0});
+    const auto trailer = call(game.vm_, "CreateVehicle", {435, 0, 0, 0, 0, 0, 0, -1, 0});
+    require(tractor == 1 && trailer == 2, "trailer fixture vehicle allocation failed");
+
+    auto& driver = game.players_[0];
+    driver.spawned = true;
+    driver.streamed_vehicles[tractor] = 1;
+    game.players_[1].streamed_to[2] = 1;
+    game.players_[1].streamed_to[3] = 1;
+    game.players_[1].streamed_vehicles[trailer] = 1;
+    game.players_[1].streamed_vehicles[3] = 1;
+    game.players_[2].streamed_vehicles[tractor] = 1;
+    require(call(game.vm_, "IsPlayerStreamedIn", {65538, 65537}) == 1 &&
+        call(game.vm_, "IsPlayerStreamedIn", {1, 2}) == 0 &&
+        call(game.vm_, "IsPlayerStreamedIn", {3, 1}) == 0 &&
+        call(game.vm_, "IsPlayerStreamedIn", {2, 1000}) == 0, "player visibility query differs");
+    require(call(game.vm_, "IsVehicleStreamedIn", {65536 + trailer, 65537}) == 1 &&
+        call(game.vm_, "IsVehicleStreamedIn", {trailer, 2}) == 0 &&
+        call(game.vm_, "IsVehicleStreamedIn", {3, 1}) == 0 &&
+        call(game.vm_, "IsVehicleStreamedIn", {2000, 1}) == 0 &&
+        call(game.vm_, "IsVehicleStreamedIn", {trailer, 3}) == 0, "vehicle visibility query differs");
+
+    const auto check_attachment = [&](cell expected) {
+        require(call(game.vm_, "IsTrailerAttachedToVehicle", {65536 + tractor}) == (expected != 0) &&
+            call(game.vm_, "GetVehicleTrailer", {tractor}) == expected, "synced trailer state differs");
+    };
+    check_attachment(0);
+    require(call(game.vm_, "AttachTrailerToVehicle", {65536 + trailer, 65536 + tractor}) == 1,
+        "attached trailer command failed");
+    const auto attach = take_rpc(peers[1], 148);
+    require(attach.numberOfBitsUsed_ == 32 && attach.data_[0] == trailer && attach.data_[1] == 0 &&
+        attach.data_[2] == tractor && attach.data_[3] == 0, "attached trailer RPC differs");
+    require(RakNetTransportTestAccess::messages(peers[0]).empty() &&
+        RakNetTransportTestAccess::messages(peers[2]).empty(), "attach reached tractor-only observers");
+    check_attachment(0);
+
+    const auto send_driver_sync = [&](std::uint16_t trailer_id, bool complete = true) {
+        std::array<std::uint8_t, 64> bytes{};
+        bytes[0] = 200;
+        bytes[1] = static_cast<std::uint8_t>(tractor);
+        bytes[58] = static_cast<std::uint8_t>(trailer_id);
+        bytes[59] = static_cast<std::uint8_t>(trailer_id >> 8);
+        BitStream packet;
+        packet.write(bytes.data(), complete ? bytes.size() : bytes.size() - 1);
+        game.on_user_message(peers[0], packet);
+    };
+    send_driver_sync(static_cast<std::uint16_t>(trailer), false);
+    check_attachment(0);
+    send_driver_sync(static_cast<std::uint16_t>(trailer));
+    check_attachment(trailer);
+    require(call(game.vm_, "DetachTrailerFromVehicle", {65536 + tractor}) == 1,
+        "detach trailer command failed");
+    for (const auto id : {0, 2}) {
+        const auto detach = take_rpc(peers[id], 149);
+        require(detach.numberOfBitsUsed_ == 16 && detach.data_[0] == tractor && detach.data_[1] == 0,
+            "detach trailer RPC differs");
+    }
+    check_attachment(trailer);
+
+    for (const auto id : {1999, 2000, 0xffff, 0}) {
+        send_driver_sync(static_cast<std::uint16_t>(id));
+        check_attachment(id == 1999 ? id : 0);
+    }
+    require(call(game.vm_, "AttachTrailerToVehicle", {3, tractor}) == 1 &&
+        call(game.vm_, "AttachTrailerToVehicle", {trailer, 2000}) == 1 &&
+        call(game.vm_, "DetachTrailerFromVehicle", {2000}) == 1 &&
+        call(game.vm_, "GetVehicleTrailer", {-1}) == 0, "invalid trailer command contract differs");
+    for (auto& peer : peers)
+        require(RakNetTransportTestAccess::messages(peer).empty(), "invalid trailer command sent an RPC");
+}
+
 void vehicle_parameters_and_siren() {
     samp::server::GameLayer game;
     samp::pawn::register_server_natives(game.vm_, game);
@@ -1400,6 +1485,7 @@ int main(int, char**) {
         vehicle_appearance();
         vehicle_appearance_callbacks();
         vehicle_damage_and_repair();
+        vehicle_trailers_and_streaming_queries();
         vehicle_parameters_and_siren();
         vehicle_tick_boundaries();
         cached_world_broadcasts();

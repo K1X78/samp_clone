@@ -35,6 +35,8 @@ void GameLayer::handle_driver_packet(GamePlayer& player,const samp::proto::BitSt
     for(int i=0;i<4;++i) vehicle.rotation[i]=f32(8+i*4);
     for(int i=0;i<3;++i) vehicle.velocity[i]=f32(36+i*4);
     vehicle.health=f32(48);vehicle.driver=player.id;vehicle.has_been_occupied=true;
+    const auto trailer = u16(57);
+    vehicle.trailer_id = trailer < 2000 ? trailer : 0;
     update_vehicle_siren(vehicle, static_cast<std::uint16_t>(player.id), raw[55]);
     if (!player.in_use || !vehicle.active) return;
     vehicle.reset_door_parameters();
@@ -74,7 +76,6 @@ void GameLayer::handle_driver_packet(GamePlayer& player,const samp::proto::BitSt
     if(raw[56]) relay.write1();else relay.write0();
     std::uint32_t train=0;std::memcpy(&train,raw+59,4);
     if(train) {relay.write1();relay.write(&train,4);}else relay.write0();
-    const auto trailer=u16(57);
     if(trailer) {relay.write1();relay.write(&trailer,2);}else relay.write0();
     relay_sync(player,relay);
 }

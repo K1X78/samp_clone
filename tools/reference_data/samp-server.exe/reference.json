@@ -13522,8 +13522,28 @@
     {
       "address": "0x004715d0",
       "assembly_name": "FUN_004715d0",
-      "assembly_size": 352,
-      "assembly_sha1": "a0090ca38f76bfce4940068769beedf4a6ace0af"
+      "assembly_size": 128,
+      "assembly_sha1": "a284bde793b5331ee2790de786f924c4618d10e5"
+    },
+    {
+      "address": "0x00471650",
+      "assembly_name": "FUN_00471650",
+      "assembly_size": 112,
+      "assembly_sha1": "2bb77c10ce75ee2cc9e1b77d0ddbff3fd0d3d881",
+      "native_registration": {
+        "name": "IsPlayerStreamedIn",
+        "table_entry": "0x004cf4f8"
+      }
+    },
+    {
+      "address": "0x004716c0",
+      "assembly_name": "FUN_004716c0",
+      "assembly_size": 112,
+      "assembly_sha1": "9f4ae8f21249e9fbdc053275e44d72dbd0f3dbc8",
+      "native_registration": {
+        "name": "IsVehicleStreamedIn",
+        "table_entry": "0x004cf500"
+      }
     },
     {
       "address": "0x00471730",
@@ -14326,8 +14346,28 @@
     {
       "address": "0x00474240",
       "assembly_name": "FUN_00474240",
-      "assembly_size": 480,
-      "assembly_sha1": "4c85f3f3b5b23026dec39d31dda382d01a954685"
+      "assembly_size": 288,
+      "assembly_sha1": "c4c7760b423785b1522f3bffeaac777cd1c3fff4"
+    },
+    {
+      "address": "0x00474360",
+      "assembly_name": "FUN_00474360",
+      "assembly_size": 96,
+      "assembly_sha1": "045b62e782420784d617c279e4cc828bbe2713c0",
+      "native_registration": {
+        "name": "IsTrailerAttachedToVehicle",
+        "table_entry": "0x004cf7c8"
+      }
+    },
+    {
+      "address": "0x004743c0",
+      "assembly_name": "FUN_004743c0",
+      "assembly_size": 96,
+      "assembly_sha1": "c6f2475390c040be1d5a58b88b6c9d4e7852742c",
+      "native_registration": {
+        "name": "GetVehicleTrailer",
+        "table_entry": "0x004cf7d0"
+      }
     },
     {
       "address": "0x00474420",
@@ -15422,8 +15462,28 @@
     {
       "address": "0x0047d7a0",
       "assembly_name": "FUN_0047d7a0",
-      "assembly_size": 784,
-      "assembly_sha1": "b5b60030dcc5e3585ce9ed8d12184e50ab60ed3e"
+      "assembly_size": 256,
+      "assembly_sha1": "8406707e7425d016c006b51cf70d6646b3b4050f"
+    },
+    {
+      "address": "0x0047d8a0",
+      "assembly_name": "FUN_0047d8a0",
+      "assembly_size": 304,
+      "assembly_sha1": "25e962ec27c380636964fdaf4c6d3f28a80bbcc7",
+      "native_registration": {
+        "name": "AttachTrailerToVehicle",
+        "table_entry": "0x004cf7b8"
+      }
+    },
+    {
+      "address": "0x0047d9d0",
+      "assembly_name": "FUN_0047d9d0",
+      "assembly_size": 224,
+      "assembly_sha1": "a9448f1c393bc51023c50e5b773ce792df3081c6",
+      "native_registration": {
+        "name": "DetachTrailerFromVehicle",
+        "table_entry": "0x004cf7c0"
+      }
     },
     {
       "address": "0x0047dab0",
@@ -34670,6 +34730,24 @@
     ],
     "FUN_0047fac0": [
       "0x0047fac0"
+    ],
+    "FUN_00471650": [
+      "0x00471650"
+    ],
+    "FUN_004716c0": [
+      "0x004716c0"
+    ],
+    "FUN_00474360": [
+      "0x00474360"
+    ],
+    "FUN_004743c0": [
+      "0x004743c0"
+    ],
+    "FUN_0047d8a0": [
+      "0x0047d8a0"
+    ],
+    "FUN_0047d9d0": [
+      "0x0047d9d0"
     ]
   },
   "client_rpc_registrations": [],

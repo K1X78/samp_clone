@@ -254,6 +254,7 @@ struct VehicleNativeState {
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     const ParameterBlock& parameter_block() const noexcept;
     bool has_parameter_overrides() const noexcept;
+    std::uint16_t trailer_id = 0;
     int driver = -1;
     std::array<int, 8> passengers{-1, -1, -1, -1, -1, -1, -1, -1};
     std::uint32_t damage_panels = 0, damage_doors = 0;
