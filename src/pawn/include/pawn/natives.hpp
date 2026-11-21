@@ -27,6 +27,7 @@
 #include <memory>
 #include <new>
 #include <optional>
+#include <variant>
 
 #include "pawn/actors.hpp"
 #include "pawn/pawn_vm.hpp"
@@ -191,6 +192,29 @@ struct PlayerNativeState {
     [[nodiscard]] bool is_actor_streamed(std::uint16_t actor_id) const;
 };
 
+struct ObjectTextureMaterial {
+    std::uint8_t index;
+    std::uint16_t model;
+    std::string dictionary;
+    std::string texture;
+    std::uint32_t color;
+};
+
+struct ObjectTextMaterial {
+    std::uint8_t index;
+    std::uint8_t size;
+    std::string font;
+    std::uint8_t font_size;
+    std::uint8_t bold;
+    std::uint32_t font_color;
+    std::uint32_t background_color;
+    std::uint8_t alignment;
+    std::string text;
+};
+
+using ObjectMaterial = std::variant<ObjectTextureMaterial, ObjectTextMaterial>;
+void write_object_material(samp::proto::BitStream& payload, const ObjectMaterial& material);
+
 struct ObjectNativeState {
     bool active=false;
     std::uint16_t id=0;
@@ -205,7 +229,10 @@ struct ObjectNativeState {
     std::uint16_t attached_object = 0xffff;
     std::array<float, 3> attachment_offset{}, attachment_rotation{};
     std::uint8_t attachment_sync_rotation = 0;
+    std::vector<ObjectMaterial> materials;
 
+    void append_texture_material(ObjectTextureMaterial material);
+    void append_text_material(ObjectTextMaterial material);
     [[nodiscard]] double remaining_move_distance() const;
     [[nodiscard]] float start_move(const std::array<float, 3>& target, float speed,
                                    const std::array<float, 3>& target_rotation);

@@ -183,7 +183,6 @@ void GameLayer::send_object(GamePlayer& player,const samp::pawn::ObjectNativeSta
     payload.write(object.position.data(),12);payload.write(object.rotation.data(),12);
     payload.write(&object.draw_distance,4);
     const std::uint8_t no_camera_collision=object.no_camera_collision;
-    const std::uint8_t no_materials=0;
     payload.write(&no_camera_collision, 1);
     payload.write(&object.attached_vehicle, 2);
     payload.write(&object.attached_object, 2);
@@ -192,7 +191,9 @@ void GameLayer::send_object(GamePlayer& player,const samp::pawn::ObjectNativeSta
         payload.write(object.attachment_rotation.data(), 12);
         payload.write(&object.attachment_sync_rotation, 1);
     }
-    payload.write(&no_materials, 1);
+    const auto material_count = static_cast<std::uint8_t>(object.materials.size());
+    payload.write(&material_count, sizeof(material_count));
+    for (const auto& material : object.materials) samp::pawn::write_object_material(payload, material);
     send_rpc(*player.peer,44,payload);
 }
 

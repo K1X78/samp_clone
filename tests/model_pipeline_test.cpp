@@ -8,6 +8,10 @@
 #include "samp/client/network_client.hpp"
 #include "LzmaLib.h"
 #include "zlib.h"
+#if __has_include("StringCompressor.h")
+#include "BitStream.h"
+#include "StringCompressor.h"
+#endif
 #include <chrono>
 #include <algorithm>
 #include <bit>
@@ -38,12 +42,12 @@ struct PawnNativeTestAccess {
     static void text(PawnVm& vm,int at,std::string_view value) {
         for(std::size_t i=0;i<=value.size();++i) {
             const samp::amx::cell c=i<value.size()?static_cast<unsigned char>(value[i]):0;
-            std::memcpy(vm.image_.data()+at+i*4,&c,4);
+            std::memcpy(vm.image_.data()+vm.header_.dat+at+i*4,&c,4);
         }
     }
     static std::string text(const PawnVm& vm,int at) {
         std::string value;
-        for(;;at+=4) {samp::amx::cell c;std::memcpy(&c,vm.image_.data()+at,4);if(!c) return value;value+=static_cast<char>(c);}
+        for(;;at+=4) {samp::amx::cell c;std::memcpy(&c,vm.image_.data()+vm.header_.dat+at,4);if(!c) return value;value+=static_cast<char>(c);}
     }
     static void redirect(PawnVm& vm,std::function<samp::amx::cell()> action,const char* public_name="OnPlayerRequestDownload") {
         redirect_args(vm, 0, [action](auto) { return action(); }, public_name);
@@ -55,12 +59,17 @@ struct PawnNativeTestAccess {
         vm.native_functions_["redirect-fixture"] = std::move(action);
     }
     static int execute_registered(PawnVm& vm, const char* name, std::initializer_list<samp::amx::cell> args,
-                                  samp::amx::cell& result) {
-        forwarding_public(vm, static_cast<samp::amx::cell>(args.size()), "CallNative", name);
+                                  samp::amx::cell& result,
+                                  std::initializer_list<std::pair<int, std::string_view>> strings = {}) {
+        int data_size = 128;
+        for (const auto& [address, value] : strings)
+            data_size = std::max(data_size, address + (static_cast<int>(value.size()) + 1) * 4);
+        forwarding_public(vm, static_cast<samp::amx::cell>(args.size()), "CallNative", name, data_size);
+        for (const auto& [address, value] : strings) text(vm, address, value);
         return vm.execute("CallNative", {args.begin(), args.size()}, result);
     }
     static void forwarding_public(PawnVm& vm, samp::amx::cell argument_count, const char* public_name,
-                                  const char* native_name) {
+                                  const char* native_name, int data_size = 128) {
         using samp::amx::cell;
         std::vector<cell> code{0x78, 0, 0x2e};
         for (cell index = argument_count; index > 0; --index)
@@ -68,12 +77,12 @@ struct PawnNativeTestAccess {
         code.insert(code.end(), {0x27, argument_count * 4, 0x7b, 0, 0x2c, (argument_count + 1) * 4, 0x30});
         const auto code_bytes = static_cast<cell>(code.size() * sizeof(cell));
         vm.header_.cod=sizeof(samp::amx::AmxHeader);vm.header_.dat=vm.header_.cod+code_bytes;
-        vm.header_.hea=vm.header_.dat+128;vm.header_.stp=vm.header_.dat+4096;
+        vm.header_.hea=vm.header_.dat+data_size;vm.header_.stp=vm.header_.dat+std::max(4096, data_size+1024);
         vm.image_.assign(vm.header_.stp,0);std::memcpy(vm.image_.data(),&vm.header_,sizeof(vm.header_));
         std::memcpy(vm.image_.data()+vm.header_.cod,code.data(),code_bytes);
         vm.publics_={{public_name,8}};vm.natives_={{native_name}};
-        vm.amx_.base=vm.image_.data();vm.amx_.stk=vm.amx_.stp=4092;
-        vm.amx_.hea=vm.amx_.hlw=128;vm.amx_.flags=0x8000;vm.ok_=true;
+        vm.amx_.base=vm.image_.data();vm.amx_.stk=vm.amx_.stp=vm.header_.stp-vm.header_.dat-4;
+        vm.amx_.hea=vm.amx_.hlw=data_size;vm.amx_.flags=0x8000;vm.ok_=true;
     }
     static samp::amx::cell call(PawnVm& vm,const char* name,std::initializer_list<samp::amx::cell> args) {
         return vm.native_functions_.at(name)({args.begin(),args.size()});
@@ -680,6 +689,129 @@ void player_object_lifecycle() {
     expect_create(0, 2, 19379);
 }
 
+#if __has_include("StringCompressor.h")
+void object_material_natives() {
+    using samp::amx::cell;
+    samp::server::GameLayer game;
+    std::array<samp::server::RakNetPeer, 3> peers;
+    game.players_.resize(peers.size());
+    for (int id = 0; id < 2; ++id) {
+        auto& player = game.players_[id];
+        player.id = id;
+        player.in_use = player.joined = true;
+        player.peer = &peers[id];
+        player.streamed_to.resize(peers.size());
+    }
+    game.update_player_pool_size();
+    samp::pawn::PawnVm vm;
+    Native::prepare(vm);
+    samp::pawn::register_server_natives(vm, game);
+    const auto global = Native::call(vm, "CreateObject", {19379, 0, 0, 0, 0, 0, 0, 0});
+    const auto owned = Native::call(vm, "CreatePlayerObject", {0, 19379, 0, 0, 0, 0, 0, 0, 0});
+    CHECK(global == 1 && owned == 2);
+    for (auto& peer : peers) Peer::drain(peer);
+
+    const auto run = [&](const char* name, std::initializer_list<cell> args,
+                         std::initializer_list<std::pair<int, std::string_view>> strings = {}) {
+        cell result = 0;
+        CHECK(Native::execute_registered(vm, name, args, result, strings) == 0);
+        return result;
+    };
+    const auto take = [&](std::size_t peer, std::uint8_t id) {
+        const auto packets = Peer::drain(peers[peer]);
+        CHECK(packets.size() == 1);
+        auto rpc = decode(packets.at(0));
+        CHECK(rpc.id == id);
+        return std::move(rpc.payload);
+    };
+    const auto read_name = [](RakNet::BitStream& input) {
+        std::uint8_t length = 0;
+        CHECK(input.Read(length));
+        std::string name(length, '\0');
+        CHECK(input.Read(name.data(), length));
+        return name;
+    };
+    const auto check_texture = [&](RakNet::BitStream& input, std::string_view dictionary) {
+        std::uint8_t type = 0, slot = 0;
+        std::uint16_t model = 0;
+        std::uint32_t color = 0;
+        CHECK(input.Read(type) && type == 1 && input.Read(slot) && slot == 2 &&
+            input.Read(model) && model == 0xffff);
+        CHECK(read_name(input) == dictionary && read_name(input) == "surface");
+        CHECK(input.Read(color) && color == 0x11443322);
+    };
+    const auto check_text = [&](RakNet::BitStream& input) {
+        std::uint8_t type = 0, slot = 0, size = 0, font_size = 0, bold = 0, alignment = 0;
+        std::uint32_t foreground = 0, background = 0;
+        CHECK(input.Read(type) && type == 2 && input.Read(slot) && slot == 2 && input.Read(size) && size == 90);
+        CHECK(read_name(input) == "Arial");
+        CHECK(input.Read(font_size) && font_size == 13 && input.Read(bold) && bold == 1 &&
+            input.Read(foreground) && foreground == 0x12345678 && input.Read(background) &&
+            background == 0x11223322 && input.Read(alignment) && alignment == 2);
+        std::array<char, 64> decoded{};
+        CHECK(StringCompressor::Instance()->DecodeString(decoded.data(), static_cast<int>(decoded.size()), &input, 0));
+        CHECK(std::string_view(decoded.data()) == "Line of text");
+    };
+    const auto check_global = [&](BitStream payload, std::uint8_t expected_count) {
+        RakNet::BitStream input(payload.data_.data(), static_cast<unsigned>(payload.data_.size()), false);
+        input.SetWriteOffset(static_cast<int>(payload.numberOfBitsUsed_));
+        std::uint16_t object = 0;
+        std::uint8_t count = 0;
+        CHECK(input.Read(object) && object == global);
+        input.IgnoreBits(37 * 8);
+        CHECK(input.Read(count) && count == expected_count);
+        check_texture(input, std::string(32, 'd'));
+        if (count >= 2) check_text(input);
+        for (unsigned entry = 2; entry < count; ++entry) check_texture(input, "duplicate");
+        CHECK(input.GetNumberOfUnreadBits() == 0);
+    };
+
+    const std::string dictionary(32, 'd');
+    const std::string oversized(33, 'd');
+    const auto texture_color = 0x11223344;
+    CHECK(run("SetObjectMaterial", {global, 258, -1, 0, 160, texture_color}, {{0, oversized}, {160, "surface"}}) == 0);
+    CHECK(run("SetObjectMaterialText", {global, 0, 2, 90, 160, 13, 1, 0, 0, 2}, {{160, "Arial"}}) == 0);
+    CHECK(run("SetPlayerObjectMaterial", {1, owned, 258, -1, 0, 160, texture_color}, {{0, dictionary}, {160, "surface"}}) == 0);
+    CHECK(Peer::drain(peers[0]).empty() && Peer::drain(peers[1]).empty());
+
+    CHECK(run("SetObjectMaterial", {65536 + global, 258, -1, 0, 160, texture_color}, {{0, dictionary}, {160, "surface"}}) == 1);
+    for (const auto id : {0, 1}) check_global(take(id, 44), 1);
+    CHECK(run("SetObjectMaterialText", {global, 0, 2, 90, 160, 13, 1, 0x12345678, 0x11223322, 2},
+        {{0, "Line of text"}, {160, "Arial"}}) == 1);
+    for (const auto id : {0, 1}) check_global(take(id, 44), 2);
+    for (unsigned count = 3; count <= 17; ++count) {
+        CHECK(run("SetObjectMaterial", {global, 2, -1, 0, 160, texture_color}, {{0, "duplicate"}, {160, "surface"}}) == 1);
+        for (const auto id : {0, 1}) check_global(take(id, 44), static_cast<std::uint8_t>(std::min(count, 16u)));
+    }
+
+    const auto check_private = [&](BitStream payload, const auto& check_material) {
+        RakNet::BitStream input(payload.data_.data(), static_cast<unsigned>(payload.data_.size()), false);
+        input.SetWriteOffset(static_cast<int>(payload.numberOfBitsUsed_));
+        std::uint16_t object = 0;
+        CHECK(input.Read(object) && object == owned);
+        check_material(input);
+        CHECK(input.GetNumberOfUnreadBits() == 0 && Peer::drain(peers[1]).empty());
+    };
+    CHECK(run("SetPlayerObjectMaterial", {0, owned, 2, -1, 0, 160, texture_color}, {{0, "private"}, {160, "surface"}}) == 1);
+    check_private(take(0, 84), [&](auto& input) { check_texture(input, "private"); });
+    CHECK(run("SetPlayerObjectMaterialText", {0, owned, 0, 2, 90, 160, 13, 1, 0x12345678, 0x11223322, 2},
+        {{0, "Line of text"}, {160, "Arial"}}) == 1);
+    check_private(take(0, 84), check_text);
+    CHECK(run("AttachPlayerObjectToVehicle", {0, owned, 3, 0, 0, 0, 0, 0, 0}) == 1);
+    const auto recreated = take(0, 44);
+    CHECK(recreated.numberOfBitsUsed_ == 65 * 8 && recreated.data_.back() == 0);
+
+    auto& late = game.players_[2];
+    late.id = 2;
+    late.peer = &peers[2];
+    late.in_use = late.joined = true;
+    late.streamed_to.resize(peers.size());
+    game.update_player_pool_size();
+    game.update_streaming();
+    check_global(take(2, 44), 16);
+}
+#endif
+
 void player_object_motion() {
     using samp::amx::cell;
     samp::server::GameLayer game;
@@ -1275,6 +1407,9 @@ int main(int argc,char** argv) {
         std::printf("real asset transfer/cache: %d failures\n",failures);return failures!=0;
     }
     registry_and_transfer(root);native_activation_messages(root);global_object_motion();global_object_attachments();object_control_natives();player_object_lifecycle();player_object_motion();object_selection_and_editing();vehicle_commands_from_pawn();attached_object_lifecycle();connect_callback_order(root);world_selection_and_failures(root);pipeline(root);
+#if __has_include("StringCompressor.h")
+    object_material_natives();
+#endif
 #ifdef _WIN32
     WSADATA winsock{};CHECK(WSAStartup(MAKEWORD(2,2),&winsock)==0);http_pipeline(root);WSACleanup();
 #endif

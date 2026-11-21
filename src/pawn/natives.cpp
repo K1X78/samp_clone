@@ -1716,6 +1716,102 @@ constexpr auto find_object = [](NativeHost& host, cell id) -> ObjectNativeState*
     return host.find_global_object(static_cast<std::uint16_t>(id));
 };
 
+constexpr auto read_material_texture = [](std::span<const cell> args, const StringReader& read)
+    -> std::optional<ObjectTextureMaterial> {
+    if (args.size() < 5) return std::nullopt;
+    const char* name = read(args[2]);
+    if (!name || !*name || std::strlen(name) > 32) return std::nullopt;
+    std::string dictionary(name);
+    const char* texture = read(args[3]);
+    if (!texture || !*texture || std::strlen(texture) > 32) return std::nullopt;
+    const auto color = static_cast<std::uint32_t>(args[4]);
+    return ObjectTextureMaterial{static_cast<std::uint8_t>(args[0]), static_cast<std::uint16_t>(args[1]),
+        std::move(dictionary), texture, (color & 0xff00ff00u) | ((color & 0xff) << 16) | ((color >> 16) & 0xff)};
+};
+
+constexpr auto read_material_text = [](std::span<const cell> args, const StringReader& read)
+    -> std::optional<ObjectTextMaterial> {
+#if defined(SAMP_HAS_RAKNET_STRING_COMPRESSOR)
+    if (args.size() < 9) return std::nullopt;
+    const char* value = read(args[0]);
+    if (!value || !*value || std::strlen(value) > 2048) return std::nullopt;
+    std::string text(value);
+    const char* font = read(args[3]);
+    if (!font || !*font || std::strlen(font) > 32) return std::nullopt;
+    return ObjectTextMaterial{static_cast<std::uint8_t>(args[1]), static_cast<std::uint8_t>(args[2]),
+        font, static_cast<std::uint8_t>(args[4]), static_cast<std::uint8_t>(args[5]),
+        static_cast<std::uint32_t>(args[6]), static_cast<std::uint32_t>(args[7]),
+        static_cast<std::uint8_t>(args[8]), std::move(text)};
+#else
+    (void)args;
+    (void)read;
+    return std::nullopt;
+#endif
+};
+
+constexpr auto refresh_global_object_materials = [](NativeHost& host, const ObjectNativeState& object) {
+    for (auto& player : live_player_slots(host)) {
+        if (player.in_use && player.peer) host.send_global_object(player, object);
+    }
+};
+
+// Official: FUN_00474e80 @ 0x00474e80 (samp-server.exe)
+cell set_global_object_material(NativeHost& host, std::span<const cell> args, const StringReader& read) {
+    if (args.empty()) return 0;
+    auto* object = find_object(host, args[0]);
+    if (!object) return 0;
+    auto material = read_material_texture(args.subspan(1), read);
+    if (!material) return 0;
+    object->append_texture_material(std::move(*material));
+    refresh_global_object_materials(host, *object);
+    return 1;
+}
+
+// Official: FUN_00475080 @ 0x00475080 (samp-server.exe)
+cell set_global_object_material_text(NativeHost& host, std::span<const cell> args, const StringReader& read) {
+    if (args.empty()) return 0;
+    auto* object = find_object(host, args[0]);
+    if (!object) return 0;
+    auto material = read_material_text(args.subspan(1), read);
+    if (!material) return 0;
+    object->append_text_material(std::move(*material));
+    refresh_global_object_materials(host, *object);
+    return 1;
+}
+
+constexpr auto send_player_object_material = [](NativeHost& host, const PlayerNativeState& player,
+                                                std::uint16_t id, const ObjectMaterial& material) {
+    if (!player.peer) return;
+    samp::proto::BitStream payload;
+    payload.write(&id, sizeof(id));
+    write_object_material(payload, material);
+    host.send_rpc(*player.peer, static_cast<std::uint8_t>(samp::proto::RpcId::SetPlayerObjectMaterial), payload);
+};
+
+// Official: FUN_0047ef20 @ 0x0047ef20 (samp-server.exe)
+cell set_player_object_material(NativeHost& host, std::span<const cell> args, const StringReader& read) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    if (!player || !host.find_player_object(static_cast<std::uint16_t>(player->id), id)) return 0;
+    auto material = read_material_texture(args.subspan(2), read);
+    if (!material) return 0;
+    send_player_object_material(host, *player, id, std::move(*material));
+    return 1;
+}
+
+// Official: FUN_0047f270 @ 0x0047f270 (samp-server.exe)
+cell set_player_object_material_text(NativeHost& host, std::span<const cell> args, const StringReader& read) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    const auto id = static_cast<std::uint16_t>(args[1]);
+    if (!player || !host.find_player_object(static_cast<std::uint16_t>(player->id), id)) return 0;
+    auto material = read_material_text(args.subspan(2), read);
+    if (!material) return 0;
+    send_player_object_material(host, *player, id, std::move(*material));
+    return 1;
+}
+
 // Official: FUN_0049d770 @ 0x0049d770 (samp-server.exe)
 ObjectNativeState initialize_object(const NativeHost& host, cell model, const std::array<float, 3>& position,
                                     const std::array<float, 3>& rotation, float draw_distance) {
@@ -4163,6 +4259,53 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
 
 }  // namespace
 
+// Official: FUN_0049db00 @ 0x0049db00 (samp-server.exe)
+void ObjectNativeState::append_texture_material(ObjectTextureMaterial material) {
+    if (materials.size() < 16) materials.emplace_back(std::move(material));
+}
+
+// Official: FUN_0049dbb0 @ 0x0049dbb0 (samp-server.exe)
+void ObjectNativeState::append_text_material(ObjectTextMaterial material) {
+    if (materials.size() < 16) materials.emplace_back(std::move(material));
+}
+
+// Official: FUN_0049dd70 @ 0x0049dd70 (samp-server.exe)
+void write_object_material(samp::proto::BitStream& payload, const ObjectMaterial& material) {
+    const auto write_name = [&payload](const std::string& name) {
+        const auto length = static_cast<std::uint8_t>(name.size());
+        payload.write(&length, sizeof(length));
+        payload.write(name.data(), length);
+    };
+    if (const auto* texture = std::get_if<ObjectTextureMaterial>(&material)) {
+        const std::uint8_t type = 1;
+        payload.write(&type, sizeof(type));
+        payload.write(&texture->index, sizeof(texture->index));
+        payload.write(&texture->model, sizeof(texture->model));
+        write_name(texture->dictionary);
+        write_name(texture->texture);
+        payload.write(&texture->color, sizeof(texture->color));
+        return;
+    }
+
+    const auto& text = std::get<ObjectTextMaterial>(material);
+    const std::uint8_t type = 2;
+    payload.write(&type, sizeof(type));
+    payload.write(&text.index, sizeof(text.index));
+    payload.write(&text.size, sizeof(text.size));
+    write_name(text.font);
+    payload.write(&text.font_size, sizeof(text.font_size));
+    payload.write(&text.bold, sizeof(text.bold));
+    payload.write(&text.font_color, sizeof(text.font_color));
+    payload.write(&text.background_color, sizeof(text.background_color));
+    payload.write(&text.alignment, sizeof(text.alignment));
+#if defined(SAMP_HAS_RAKNET_STRING_COMPRESSOR)
+    if (StringCompressor::Instance() == nullptr) StringCompressor::AddReference();
+    RakNet::BitStream compressed;
+    StringCompressor::Instance()->EncodeString(text.text.c_str(), static_cast<int>(text.text.size() + 1), &compressed, 0);
+    payload.writeBits(compressed.GetData(), compressed.GetNumberOfBitsUsed(), false);
+#endif
+}
+
 // Official: FUN_004652e0 @ 0x004652e0 (samp-server.exe)
 ObjectNativeState* NativeHost::find_global_object(std::uint16_t object_id) {
     if (object_id >= kObjectPoolSize || object_id >= objects_.size() || !objects_[object_id].active) return nullptr;
@@ -4417,6 +4560,18 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
     };
     vm.native_functions_["SetVehicleNumberPlate"] = [&host, read_script_string](std::span<const cell> args) {
         return set_vehicle_number_plate(host, args, read_script_string);
+    };
+    vm.native_functions_["SetObjectMaterial"] = [&host, read_script_string](std::span<const cell> args) {
+        return set_global_object_material(host, args, read_script_string);
+    };
+    vm.native_functions_["SetObjectMaterialText"] = [&host, read_script_string](std::span<const cell> args) {
+        return set_global_object_material_text(host, args, read_script_string);
+    };
+    vm.native_functions_["SetPlayerObjectMaterial"] = [&host, read_script_string](std::span<const cell> args) {
+        return set_player_object_material(host, args, read_script_string);
+    };
+    vm.native_functions_["SetPlayerObjectMaterialText"] = [&host, read_script_string](std::span<const cell> args) {
+        return set_player_object_material_text(host, args, read_script_string);
     };
     const auto data_pointer = [&vm](std::int32_t address) -> const std::uint8_t* {
         if (!vm.ok_ || address < 0 || static_cast<std::int64_t>(address) >= vm.amx_.stp ||
