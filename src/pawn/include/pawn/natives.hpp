@@ -97,6 +97,8 @@ struct TextLabelNativeState {
 // Shared host records let Pawn natives and the networking/game layer refer to
 // the same slots. Observed health/weapons/keys are updated by synchronization;
 // sending a command does not fabricate a client acknowledgement.
+using PlayerAttachedObject = std::array<samp::amx::cell, 13>;
+
 struct PlayerNativeState {
     bool in_use = false;
     int id = 0;
@@ -108,6 +110,8 @@ struct PlayerNativeState {
     bool is_admin = false;
     bool camera_targeting=false;
     bool object_edit_enabled = false;
+    std::array<std::optional<PlayerAttachedObject>, 10> attached_objects{};
+    bool has_attached_object(samp::amx::cell index) const;
     std::uint16_t dialog_id = 0;
     PlayerTextDrawPool textdraw_pool;
     std::shared_ptr<PlayerVariablePool> variables;
@@ -507,5 +511,11 @@ inline constexpr auto live_player_slots = [](NativeHost& host) {
 
 // Registers the natives on the virtual machine.
 void register_server_natives(PawnVm& vm, NativeHost& host);
+
+void set_player_attachment(NativeHost& host, PlayerNativeState& player, samp::amx::cell index,
+                           const PlayerAttachedObject& attachment);
+void remove_player_attachment(NativeHost& host, PlayerNativeState& player, samp::amx::cell index);
+void send_player_attachment(NativeHost& host, const PlayerNativeState& player,
+                            const PlayerNativeState& recipient, samp::amx::cell index);
 
 }  // namespace samp::pawn

@@ -15100,11 +15100,41 @@
     {
       "address": "0x004791c0",
       "assembly_name": "FUN_004791c0",
-      "assembly_size": 560,
-      "assembly_sha1": "ed74d6a39fe5491035de3e57890878816af78dc5",
+      "assembly_size": 112,
+      "assembly_sha1": "4b74c987a3cac956c487e42fbd6c4eb977971acb",
       "native_registration": {
         "name": "UpdateVehicleDamageStatus",
         "table_entry": "0x004cf820"
+      }
+    },
+    {
+      "address": "0x00479230",
+      "assembly_name": "FUN_00479230",
+      "assembly_size": 256,
+      "assembly_sha1": "08ad914969eae8edc2e11734f2adadfdc8bfcc56",
+      "native_registration": {
+        "name": "SetPlayerAttachedObject",
+        "table_entry": "0x004cf308"
+      }
+    },
+    {
+      "address": "0x00479330",
+      "assembly_name": "FUN_00479330",
+      "assembly_size": 96,
+      "assembly_sha1": "e0226af5ff1ff06d16218edd33a3c91886b383c6",
+      "native_registration": {
+        "name": "RemovePlayerAttachedObject",
+        "table_entry": "0x004cf310"
+      }
+    },
+    {
+      "address": "0x00479390",
+      "assembly_name": "FUN_00479390",
+      "assembly_size": 96,
+      "assembly_sha1": "bb6ad66540421c33993a3d95f18b2c044a7b0a01",
+      "native_registration": {
+        "name": "IsPlayerAttachedObjectSlotUsed",
+        "table_entry": "0x004cf320"
       }
     },
     {
@@ -15808,11 +15838,21 @@
     {
       "address": "0x004809f0",
       "assembly_name": "FUN_004809f0",
-      "assembly_size": 1536,
-      "assembly_sha1": "25c0e609a7176d020800e62cc19fd1342c73823b",
+      "assembly_size": 1248,
+      "assembly_sha1": "400e8bcb8efc97fdcd86528b77d6abbef465ae1b",
       "native_registration": {
         "name": "ShowPlayerDialog",
         "table_entry": "0x004cf0d8"
+      }
+    },
+    {
+      "address": "0x00480ed0",
+      "assembly_name": "FUN_00480ed0",
+      "assembly_size": 288,
+      "assembly_sha1": "16fba98304dcc509f4c7aeb92a5d5f5d685a5cb9",
+      "native_registration": {
+        "name": "EditAttachedObject",
+        "table_entry": "0x004cf328"
       }
     },
     {
@@ -34908,6 +34948,18 @@
     ],
     "FUN_0047b180": [
       "0x0047b180"
+    ],
+    "FUN_00479230": [
+      "0x00479230"
+    ],
+    "FUN_00479330": [
+      "0x00479330"
+    ],
+    "FUN_00479390": [
+      "0x00479390"
+    ],
+    "FUN_00480ed0": [
+      "0x00480ed0"
     ]
   },
   "client_rpc_registrations": [],

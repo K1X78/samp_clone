@@ -2143,6 +2143,54 @@ cell edit_player_object(NativeHost& host, std::span<const cell> args) {
     return 1;
 }
 
+// Official: FUN_00479230 @ 0x00479230 (samp-server.exe)
+cell set_player_attached_object(NativeHost& host, std::span<const cell> args) {
+    PlayerAttachedObject attachment{};
+    if (args.size() < attachment.size() + 2) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+
+    std::copy_n(args.begin() + 2, attachment.size(), attachment.begin());
+    for (auto& field : std::span(attachment).last(2)) {
+        const auto color = static_cast<std::uint32_t>(field);
+        field = std::bit_cast<cell>((color & 0xff00ff00u) | ((color & 0xffu) << 16) | ((color >> 16) & 0xffu));
+    }
+    set_player_attachment(host, *player, args[1], attachment);
+    return 1;
+}
+
+// Official: FUN_00479330 @ 0x00479330 (samp-server.exe)
+cell remove_player_attached_object(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    remove_player_attachment(host, *player, args[1]);
+    return 1;
+}
+
+// Official: FUN_00479390 @ 0x00479390 (samp-server.exe)
+cell is_player_attached_object_slot_used(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto* player = find_player(host, args);
+    return player && player->has_attached_object(args[1]);
+}
+
+// Official: FUN_00480ed0 @ 0x00480ed0 (samp-server.exe)
+cell edit_player_attached_object(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    if (player->has_attached_object(args[1])) {
+        if (player->peer) {
+            samp::proto::BitStream payload;
+            payload.write(&args[1], sizeof(cell));
+            host.send_rpc(*player->peer, 116, payload);
+        }
+        player->object_edit_enabled = true;
+    }
+    return 1;
+}
+
 // Official: FUN_0047dab0 @ 0x0047dab0 (samp-server.exe)
 cell set_global_object_position(NativeHost& host, std::span<const cell> args) {
     if (args.size() < 4 || host.objects_.empty()) return 0;
@@ -3834,6 +3882,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"CancelEdit", cancel_object_edit},
     {"EditObject", edit_global_object},
     {"EditPlayerObject", edit_player_object},
+    {"EditAttachedObject", edit_player_attached_object},
     {"SelectObject", select_object},
     {"CreateExplosion", create_explosion},
     {"CreateExplosionForPlayer", create_explosion_for_player},
@@ -3938,6 +3987,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"IsPlayerInRangeOfPoint", is_player_in_range_of_point},
     {"IsPlayerInVehicle", is_player_in_vehicle},
     {"IsPlayerNPC", is_player_npc},
+    {"IsPlayerAttachedObjectSlotUsed", is_player_attached_object_slot_used},
     {"IsPlayerStreamedIn", is_player_streamed_in},
     {"IsTrailerAttachedToVehicle", is_trailer_attached_to_vehicle},
     {"IsObjectMoving", is_global_object_moving},
@@ -3955,6 +4005,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"PlayerSpectateVehicle", player_spectate_vehicle},
     {"PutPlayerInVehicle", put_player_in_vehicle},
     {"RemovePlayerMapIcon", remove_player_map_icon},
+    {"RemovePlayerAttachedObject", remove_player_attached_object},
     {"RemovePlayerFromVehicle", remove_player_from_vehicle},
     {"ResetPlayerMoney", reset_player_money},
     {"ResetPlayerWeapons", reset_player_weapons},
@@ -3971,6 +4022,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetObjectsDefaultCameraCol", set_default_object_camera_collision},
     {"SetPlayerArmour", set_player_armour},
     {"SetPlayerArmedWeapon", set_player_armed_weapon},
+    {"SetPlayerAttachedObject", set_player_attached_object},
     {"SetPlayerCheckpoint", set_player_checkpoint},
     {"SetPlayerColor", set_player_color},
     {"SetPlayerDrunkLevel", set_player_drunk_level},

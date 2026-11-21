@@ -51,6 +51,16 @@ struct PawnNativeTestAccess {
     static void redirect_args(PawnVm& vm, samp::amx::cell argument_count,
                               std::function<samp::amx::cell(std::span<const samp::amx::cell>)> action,
                               const char* public_name) {
+        forwarding_public(vm, argument_count, public_name, "redirect-fixture");
+        vm.native_functions_["redirect-fixture"] = std::move(action);
+    }
+    static int execute_registered(PawnVm& vm, const char* name, std::initializer_list<samp::amx::cell> args,
+                                  samp::amx::cell& result) {
+        forwarding_public(vm, static_cast<samp::amx::cell>(args.size()), "CallNative", name);
+        return vm.execute("CallNative", {args.begin(), args.size()}, result);
+    }
+    static void forwarding_public(PawnVm& vm, samp::amx::cell argument_count, const char* public_name,
+                                  const char* native_name) {
         using samp::amx::cell;
         std::vector<cell> code{0x78, 0, 0x2e};
         for (cell index = argument_count; index > 0; --index)
@@ -61,8 +71,7 @@ struct PawnNativeTestAccess {
         vm.header_.hea=vm.header_.dat+128;vm.header_.stp=vm.header_.dat+4096;
         vm.image_.assign(vm.header_.stp,0);std::memcpy(vm.image_.data(),&vm.header_,sizeof(vm.header_));
         std::memcpy(vm.image_.data()+vm.header_.cod,code.data(),code_bytes);
-        vm.publics_={{public_name,8}};vm.natives_={{"redirect-fixture"}};
-        vm.native_functions_["redirect-fixture"]=std::move(action);
+        vm.publics_={{public_name,8}};vm.natives_={{native_name}};
         vm.amx_.base=vm.image_.data();vm.amx_.stk=vm.amx_.stp=4092;
         vm.amx_.hea=vm.amx_.hlw=128;vm.amx_.flags=0x8000;vm.ok_=true;
     }
@@ -125,6 +134,149 @@ void route(samp::server::GameLayer& game,samp::server::RakNetPeer& peer,std::uin
     if(bits) frame.writeBits(payload.data_.data(),bits,false);
     game.on_user_message(peer,frame);
 }
+
+void vehicle_commands_from_pawn() {
+    using samp::amx::cell;
+    samp::server::GameLayer game;
+    samp::server::RakNetPeer peer;
+    game.players_.resize(1);
+    game.players_[0].in_use = true;
+    game.players_[0].peer = &peer;
+    game.update_player_pool_size();
+    auto& vm = game.vm_;
+    samp::pawn::register_server_natives(vm, game);
+
+    cell result = 0;
+    constexpr auto angle = std::bit_cast<cell>(37.5f);
+    CHECK(Native::execute_registered(vm, "CreateVehicle", {411, 0, 0, 0, angle, 1, 2, -1, 0}, result) == 0);
+    CHECK(result == 1);
+    CHECK(Native::execute_registered(vm, "PutPlayerInVehicle", {0, 1, 0}, result) == 0 && result == 1);
+    auto frames = Peer::drain(peer);
+    CHECK(frames.size() == 2 && decode(frames.at(0)).id == 164 && decode(frames.at(1)).id == 70);
+    CHECK(Native::execute_registered(vm, "SetVehicleZAngle", {1, std::bit_cast<cell>(90.0f)}, result) == 0 && result == 1);
+    frames = Peer::drain(peer);
+    CHECK(frames.size() == 1 && decode(frames.at(0)).id == 160);
+    CHECK(Native::execute_registered(vm, "GetVehicleZAngle", {1, 0}, result) == 0 && result == 1 &&
+        Native::read_float(vm, 0) == 37.5f);
+}
+
+void attached_object_lifecycle() {
+    using samp::amx::cell;
+    samp::server::GameLayer game;
+    std::array<samp::server::RakNetPeer, 3> peers;
+    game.players_.resize(peers.size());
+    for (std::size_t id = 0; id < peers.size(); ++id) {
+        Peer::authenticate(peers[id]);
+        auto& player = game.players_[id];
+        player.id = static_cast<int>(id);
+        player.in_use = true;
+        player.peer = &peers[id];
+        player.streamed_to.resize(peers.size());
+    }
+    game.players_[1].streamed_to[0] = 1;
+    game.update_player_pool_size();
+    samp::pawn::PawnVm vm;
+    samp::pawn::register_server_natives(vm, game);
+    const auto bits = [](float value) { return std::bit_cast<cell>(value); };
+    const std::array<cell, 13> attachment{19006, 2, bits(1), bits(-2), bits(3),
+        bits(4), bits(5), bits(6), bits(1), bits(2), bits(3), std::bit_cast<cell>(0xa1d4c3b2u), 0x11443322};
+    const auto set_attachment = [&](cell slot) {
+        cell result = 0;
+        const auto error = Native::execute_registered(vm, "SetPlayerAttachedObject", {65536, slot, 19006, 2,
+            bits(1), bits(-2), bits(3), bits(4), bits(5), bits(6), bits(1), bits(2), bits(3),
+            std::bit_cast<cell>(0xa1b2c3d4u), 0x11223344}, result);
+        CHECK(error == 0 && result == 1);
+    };
+    const auto check_attachment_rpc = [&](BitStream frame, bool create) {
+        auto rpc = decode(std::move(frame));
+        std::uint16_t player = 0xffff;
+        cell slot = -1;
+        CHECK(rpc.id == 113 && rpc.payload.numberOfBitsUsed_ == (create ? 465u : 49u));
+        CHECK(rpc.payload.read(&player, 2) && player == 0 && rpc.payload.read(&slot, 4) && slot == 9);
+        CHECK(rpc.payload.readBit() == create);
+        if (create) {
+            std::array<cell, 13> actual{};
+            CHECK(rpc.payload.read(actual.data(), sizeof(actual)) && actual == attachment);
+        }
+    };
+
+    set_attachment(10);
+    CHECK(Native::call(vm, "EditAttachedObject", {0, 9}) == 1 && !game.players_[0].object_edit_enabled);
+    CHECK(Native::call(vm, "IsPlayerAttachedObjectSlotUsed", {0, 10}) == 0);
+    for (auto& peer : peers) CHECK(Peer::drain(peer).empty());
+    set_attachment(9);
+    CHECK(Native::call(vm, "IsPlayerAttachedObjectSlotUsed", {65536, 9}) == 1);
+    for (const auto id : {0, 1}) {
+        auto frames = Peer::drain(peers[id]);
+        CHECK(frames.size() == 1);
+        check_attachment_rpc(frames.at(0), true);
+    }
+    CHECK(Peer::drain(peers[2]).empty());
+
+    game.players_[0].spawned = true;
+    game.players_[0].state = 1;
+    game.players_[2].joined = game.players_[2].spawned = true;
+    game.update_streaming();
+    auto frames = Peer::drain(peers[2]);
+    CHECK(frames.size() == 2 && decode(frames.at(0)).id == 32);
+    check_attachment_rpc(frames.at(1), true);
+
+    bool handled = false;
+    std::vector<int> callbacks;
+    std::vector<cell> expected{0, 1, 9};
+    expected.insert(expected.end(), attachment.begin(), attachment.begin() + 11);
+    const auto check_args = [&](std::span<const cell> args) {
+        CHECK(std::equal(expected.begin(), expected.end(), args.begin(), args.end()));
+    };
+    auto filter = std::make_unique<samp::pawn::PawnVm>();
+    Native::redirect_args(*filter, 14, [&](auto args) -> cell {
+        check_args(args);
+        callbacks.push_back(1);
+        return handled;
+    }, "OnPlayerEditAttachedObject");
+    game.filterscripts_.push_back(std::move(filter));
+    Native::redirect_args(game.vm_, 14, [&](auto args) -> cell {
+        check_args(args);
+        callbacks.push_back(2);
+        return 0;
+    }, "OnPlayerEditAttachedObject");
+
+    const std::array<cell, 2> result{1, 9};
+    BitStream edit;
+    edit.write(result.data(), sizeof(result));
+    edit.write(attachment.data(), sizeof(attachment));
+    route(game, peers[0], 116, edit);
+    CHECK(callbacks.empty());
+    CHECK(Native::call(vm, "EditAttachedObject", {65536, 9}) == 1 && game.players_[0].object_edit_enabled);
+    frames = Peer::drain(peers[0]);
+    auto request = decode(frames.at(0));
+    cell slot = -1;
+    CHECK(frames.size() == 1 && request.id == 116 && request.payload.numberOfBitsUsed_ == 32 &&
+        request.payload.read(&slot, 4) && slot == 9);
+    BitStream truncated;
+    truncated.write(result.data(), sizeof(result));
+    truncated.write(attachment.data(), sizeof(attachment) - 1);
+    route(game, peers[0], 116, truncated);
+    CHECK(callbacks.empty());
+    route(game, peers[0], 116, edit);
+    CHECK((callbacks == std::vector<int>{1, 2}));
+    callbacks.clear();
+    handled = true;
+    route(game, peers[0], 116, edit);
+    CHECK((callbacks == std::vector<int>{1}));
+
+    CHECK(Native::call(vm, "RemovePlayerAttachedObject", {65536, 9}) == 1 &&
+        Native::call(vm, "IsPlayerAttachedObjectSlotUsed", {0, 9}) == 0);
+    for (auto& peer : peers) {
+        frames = Peer::drain(peer);
+        CHECK(frames.size() == 1);
+        check_attachment_rpc(frames.at(0), false);
+    }
+    CHECK(Native::call(vm, "RemovePlayerAttachedObject", {0, -1}) == 1 &&
+        Native::call(vm, "EditAttachedObject", {1000, 9}) == 0);
+    for (auto& peer : peers) CHECK(Peer::drain(peer).empty());
+}
+
 void native_activation_messages(const std::filesystem::path& root) {
     samp::server::Config config;samp::server::GameLayer game;game.config_=&config;
     samp::server::RakNetPeer peer;game.players_.resize(1);
@@ -1051,7 +1203,7 @@ int main(int argc,char** argv) {
         pipeline(root,argv[2],argv[3]);std::filesystem::remove_all(root);
         std::printf("real asset transfer/cache: %d failures\n",failures);return failures!=0;
     }
-    registry_and_transfer(root);native_activation_messages(root);global_object_motion();global_object_attachments();player_object_lifecycle();player_object_motion();object_selection_and_editing();connect_callback_order(root);world_selection_and_failures(root);pipeline(root);
+    registry_and_transfer(root);native_activation_messages(root);global_object_motion();global_object_attachments();player_object_lifecycle();player_object_motion();object_selection_and_editing();vehicle_commands_from_pawn();attached_object_lifecycle();connect_callback_order(root);world_selection_and_failures(root);pipeline(root);
 #ifdef _WIN32
     WSADATA winsock{};CHECK(WSAStartup(MAKEWORD(2,2),&winsock)==0);http_pipeline(root);WSACleanup();
 #endif

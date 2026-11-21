@@ -83,9 +83,8 @@ bool invalid_player_name(const char* name) {
     return false;
 }
 
-// Official: FUN_00483b80 @ 0x00483b80 (samp-server.exe)
-void GameLayer::send_stream_in(GamePlayer& receiver, const GamePlayer& other) {
-    // 0.3.DL samp-server.exe 0x4877e0; defaults from 0x484600.
+// Official: FUN_004877e0 @ 0x004877e0 (samp-server.exe)
+void GameLayer::send_player_stream_record(GamePlayer& receiver, const GamePlayer& other) {
     BitStream payload;
     payload.write(std::bit_cast<std::array<std::uint8_t,2>>(static_cast<std::uint16_t>(static_cast<std::uint16_t>(other.id))).data(),2);
     payload.write(std::array<std::uint8_t,1>{static_cast<std::uint8_t>(other.team)}.data(),1);
@@ -99,6 +98,13 @@ void GameLayer::send_stream_in(GamePlayer& receiver, const GamePlayer& other) {
     payload.write(&other.fighting_style, sizeof(other.fighting_style));
     for (int i = 0; i < 11; ++i) payload.write(std::bit_cast<std::array<std::uint8_t,2>>(static_cast<std::uint16_t>(999)).data(),2);
     send_rpc(*receiver.peer, kRpcPlayerStreamIn, payload);
+    for (std::size_t i = 0; i < other.attached_objects.size(); ++i)
+        samp::pawn::send_player_attachment(*this, other, receiver, static_cast<cell>(i));
+}
+
+// Official: FUN_00483b80 @ 0x00483b80 (samp-server.exe)
+void GameLayer::send_stream_in(GamePlayer& receiver, const GamePlayer& other) {
+    send_player_stream_record(receiver, other);
     receiver.streamed_to[other.id] = 1;
     ++receiver.streamed_count;
     filterscript_player_stream_in(other.id, receiver.id);
@@ -497,6 +503,7 @@ void GameLayer::handle_rpc_packet(RakNetPeer& peer, const BitStream& message) {
         case 184: handle_model_finish(peer, payload); break;
         case 155: handle_score_request(peer); break;
         case 27: handle_object_selection(peer, payload); break;
+        case 116: handle_attached_object_edit(peer, payload); break;
         case 117: handle_object_edit(peer, payload); break;
         case 83: handle_textdraw_click(peer,payload); break;
         case 62: handle_dialog_response(peer, payload); break;

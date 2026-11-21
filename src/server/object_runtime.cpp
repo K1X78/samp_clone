@@ -91,6 +91,11 @@ bool GameLayer::filterscript_object_edit(std::span<const samp::amx::cell> args) 
     return run_object_interaction_filterscripts("OnPlayerEditObject", args);
 }
 
+// Official: FUN_0046c8a0 @ 0x0046c8a0 (samp-server.exe)
+bool GameLayer::filterscript_attached_object_edit(std::span<const samp::amx::cell> args) {
+    return run_object_interaction_filterscripts("OnPlayerEditAttachedObject", args);
+}
+
 // Official: FUN_0046cb30 @ 0x0046cb30 (samp-server.exe)
 bool GameLayer::filterscript_object_selection(std::span<const samp::amx::cell> args) {
     return run_object_interaction_filterscripts("OnPlayerSelectObject", args);
@@ -103,11 +108,32 @@ samp::amx::cell GameLayer::gamemode_object_edit(std::span<const samp::amx::cell>
     return result;
 }
 
+// Official: FUN_0046f310 @ 0x0046f310 (samp-server.exe)
+samp::amx::cell GameLayer::gamemode_attached_object_edit(std::span<const samp::amx::cell> args) {
+    samp::amx::cell result = 0;
+    run_script_callback(vm_, "OnPlayerEditAttachedObject", args, result);
+    return result;
+}
+
 // Official: FUN_0046f4f0 @ 0x0046f4f0 (samp-server.exe)
 samp::amx::cell GameLayer::gamemode_object_selection(std::span<const samp::amx::cell> args) {
     samp::amx::cell result = 0;
     run_script_callback(vm_, "OnPlayerSelectObject", args, result);
     return result;
+}
+
+// RPC 116 is registered at 0x0049d6b5.
+// Official: FUN_0049a400 @ 0x0049a400 (samp-server.exe)
+void GameLayer::handle_attached_object_edit(RakNetPeer& peer, const samp::proto::BitStream& payload) {
+    const auto* player = find_interacting_player(*this, peer);
+    if (gamemode_restarting_ || !player || !player->object_edit_enabled) return;
+
+    auto input = payload;
+    std::array<samp::amx::cell, 15> fields{};
+    if (!input.read(fields.data(), sizeof(fields))) return;
+    std::array<samp::amx::cell, 14> args{player->id};
+    std::copy_n(fields.begin(), args.size() - 1, args.begin() + 1);
+    if (!filterscript_attached_object_edit(args)) gamemode_attached_object_edit(args);
 }
 
 // RPC 117 registration at 0x0049d6c6 and complete 0x0049a570..0x0049a7b4 instructions.

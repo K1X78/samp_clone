@@ -17,6 +17,7 @@ add_library(samp_pawn STATIC
     pawn_vm_sdk.cpp
     natives.cpp
     object_movement.cpp
+    attached_objects.cpp
     actor_natives.cpp
     actor_pool.cpp
     password_hash.cpp

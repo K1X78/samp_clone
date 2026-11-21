@@ -207,11 +207,14 @@ public:
 private:
     void handle_rpc_packet(RakNetPeer& peer, const samp::proto::BitStream& message);
     void handle_object_edit(RakNetPeer& peer, const samp::proto::BitStream& payload);
+    void handle_attached_object_edit(RakNetPeer& peer, const samp::proto::BitStream& payload);
     void handle_object_selection(RakNetPeer& peer, const samp::proto::BitStream& payload);
     bool run_object_interaction_filterscripts(std::string_view name, std::span<const samp::amx::cell> args);
     bool filterscript_object_edit(std::span<const samp::amx::cell> args);
+    bool filterscript_attached_object_edit(std::span<const samp::amx::cell> args);
     bool filterscript_object_selection(std::span<const samp::amx::cell> args);
     samp::amx::cell gamemode_object_edit(std::span<const samp::amx::cell> args);
+    samp::amx::cell gamemode_attached_object_edit(std::span<const samp::amx::cell> args);
     samp::amx::cell gamemode_object_selection(std::span<const samp::amx::cell> args);
     void handle_textdraw_click(RakNetPeer& peer,const samp::proto::BitStream& payload);
     void handle_menu_row(RakNetPeer& peer,const samp::proto::BitStream& payload);
@@ -344,6 +347,7 @@ private:
     // the 200.0 radius and the RPC 163 of those that left it.  The main loop
     // calls it once per tick.
     void send_stream_in(GamePlayer& receiver, const GamePlayer& other);
+    void send_player_stream_record(GamePlayer& receiver, const GamePlayer& other);
     void send_stream_out(GamePlayer& receiver, const GamePlayer& other);
     // The chat broadcast of the official server (samp-server.exe 0x484eb0).
     void broadcast_player_chat(const GamePlayer& sender, std::string_view text);
