@@ -742,6 +742,7 @@ cell gang_zone_stop_flash_for_all(NativeHost& host, std::span<const cell> args) 
 
 using CellWriter = std::function<bool(cell, cell)>;
 using StringReader = std::function<const char*(cell)>;
+using StringWriter = std::function<cell(cell, const char*, cell)>;
 
 // Official: FUN_004802d0 @ 0x004802d0 (samp-server.exe)
 cell set_player_chat_bubble(NativeHost& host, std::span<const cell> args, const StringReader& read_string) {
@@ -2533,6 +2534,79 @@ cell get_network_stats(NativeHost& host, std::span<const cell> args, const CellW
     return 1;
 }
 
+// Official: FUN_004713c0 @ 0x004713c0 (samp-server.exe)
+cell get_player_version(NativeHost& host, std::span<const cell> args, const StringWriter& write) {
+    if (args.size() < 3) return 0;
+    const auto* player = find_player(host, args);
+    return player ? write(args[1], player->client_version.c_str(), args[2]) : 0;
+}
+
+// Official: FUN_00471410 @ 0x00471410 (samp-server.exe)
+cell get_player_serial(NativeHost& host, std::span<const cell> args, const StringWriter& write) {
+    if (args.size() < 3) return 0;
+    const auto* player = find_player(host, args);
+    return player ? write(args[1], player->client_serial.c_str(), args[2]) : 0;
+}
+
+// Official: FUN_0044ef80 @ 0x0044ef80 (samp-server.exe)
+std::string format_player_endpoint(std::uint32_t address, std::optional<std::uint16_t> port) {
+    const auto octets = std::bit_cast<std::array<std::uint8_t, 4>>(address);
+    auto text = std::to_string(octets[0]) + "." + std::to_string(octets[1]) + "." +
+                std::to_string(octets[2]) + "." + std::to_string(octets[3]);
+    if (port) text += ":" + std::to_string(*port);
+    return text;
+}
+
+// Official: FUN_004734d0 @ 0x004734d0 (samp-server.exe)
+cell get_player_ip(NativeHost& host, std::span<const cell> args, const StringWriter& write) {
+    if (args.size() < 3 || !find_player(host, args)) return -1;
+    const auto info = host.player_connection_info(args[0]);
+    const auto ip = format_player_endpoint(info ? info->address : 0xffffffffu, std::nullopt);
+    return write(args[1], ip.c_str(), args[2]);
+}
+
+// Official: FUN_00473540 @ 0x00473540 (samp-server.exe)
+cell get_player_ping(NativeHost& host, std::span<const cell> args) {
+    if (!find_player(host, args)) return -1;
+    const auto info = host.player_connection_info(args[0]);
+    return info ? info->ping : -1;
+}
+
+// Official: FUN_004736d0 @ 0x004736d0 (samp-server.exe)
+cell get_server_tick_rate(NativeHost& host, std::span<const cell>) {
+    return std::bit_cast<cell>(host.server_tick_rate_);
+}
+
+// Official: FUN_004736e0 @ 0x004736e0 (samp-server.exe)
+cell get_connection_duration(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    const auto info = host.player_connection_info(args[0]);
+    return info ? std::bit_cast<cell>(info->elapsed_ms) : 0;
+}
+
+// Official: FUN_004738d0 @ 0x004738d0 (samp-server.exe)
+cell get_connection_bytes_sent(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return 0;
+    const auto info = host.player_connection_info(args[0]);
+    return info ? std::bit_cast<cell>(static_cast<std::uint32_t>((info->bits_sent + 7u) / 8u)) : 0;
+}
+
+// Official: FUN_00473a90 @ 0x00473a90 (samp-server.exe)
+cell get_connection_status(NativeHost& host, std::span<const cell> args) {
+    if (args.empty()) return -1;
+    const auto info = host.player_connection_info(args[0]);
+    return info ? info->status : -1;
+}
+
+// Official: FUN_00473af0 @ 0x00473af0 (samp-server.exe)
+cell get_connection_endpoint(NativeHost& host, std::span<const cell> args, const StringWriter& write) {
+    if (args.size() < 3) return 0;
+    const auto info = host.player_connection_info(args[0]);
+    if (!info) return 0;
+    const auto endpoint = format_player_endpoint(info->address, info->port);
+    return write(args[1], endpoint.c_str(), args[2]);
+}
+
 // Official: FUN_004735b0 @ 0x004735b0 (samp-server.exe)
 cell get_player_network_stats(NativeHost& host, std::span<const cell> args, const CellWriter& write) {
     if (args.size() < 3) return 0;
@@ -4134,6 +4208,11 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GetPlayerMoney", get_player_money},
     {"GetPlayerPoolSize", get_player_pool_size},
     {"GetPlayerScore", get_player_score},
+    {"GetPlayerPing", get_player_ping},
+    {"GetServerTickRate", get_server_tick_rate},
+    {"NetStats_GetConnectedTime", get_connection_duration},
+    {"NetStats_BytesSent", get_connection_bytes_sent},
+    {"NetStats_ConnectionStatus", get_connection_status},
     {"GetPlayerSkin", get_player_skin},
     {"GetPlayerState", get_player_state},
     {"GetPlayerTargetActor", get_player_target_actor},
@@ -4597,6 +4676,26 @@ void register_server_natives(PawnVm& vm, NativeHost& host) {
         auto* destination = const_cast<std::uint8_t*>(data_pointer(address));
         if (!destination || std::uint64_t(vm.header_.dat) + address + 4 > vm.image_.size()) return false;
         std::memcpy(destination, &value, 4); return true;
+    };
+    const StringWriter store_string = [&vm, data_pointer](cell address, const char* text, cell limit) -> cell {
+        if (!data_pointer(address) || vm.amx_.base != vm.image_.data()) return 0;
+        const auto length = std::min<std::size_t>(std::strlen(text), static_cast<std::uint32_t>(limit));
+        const auto end = std::uint64_t(address) + (length + 1) * sizeof(cell);
+        const auto boundary = address < vm.amx_.hea ? vm.amx_.hea : vm.amx_.stp;
+        if (end > static_cast<std::uint64_t>(boundary) || vm.header_.dat + end > vm.image_.size()) return 0;
+        return variable_natives::write_string(&vm.amx_, address, text, limit);
+    };
+    vm.native_functions_["GetPlayerVersion"] = [&host, store_string](std::span<const cell> args) {
+        return get_player_version(host, args, store_string);
+    };
+    vm.native_functions_["gpci"] = [&host, store_string](std::span<const cell> args) {
+        return get_player_serial(host, args, store_string);
+    };
+    vm.native_functions_["GetPlayerIp"] = [&host, store_string](std::span<const cell> args) {
+        return get_player_ip(host, args, store_string);
+    };
+    vm.native_functions_["NetStats_GetIpPort"] = [&host, store_string](std::span<const cell> args) {
+        return get_connection_endpoint(host, args, store_string);
     };
     for (const auto& [name, function] : output_natives) {
         vm.native_functions_[name] = [&host, function, store_cell](std::span<const cell> args) {

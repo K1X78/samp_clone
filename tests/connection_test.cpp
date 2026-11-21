@@ -9,6 +9,36 @@
 #include "samp/proto/sha1.hpp"
 #include "samp/proto/samp_key.hpp"
 
+namespace samp::pawn {
+struct PawnNativeTestAccess {
+    static void prepare(PawnVm& vm) {
+        vm.header_.dat = sizeof(samp::amx::AmxHeader);
+        vm.image_.assign(vm.header_.dat + 2048, 0);
+        std::memcpy(vm.image_.data(), &vm.header_, sizeof(vm.header_));
+        vm.amx_.base = vm.image_.data();
+        vm.amx_.hea = 512;
+        vm.amx_.stk = 1500;
+        vm.amx_.stp = 2048;
+        vm.ok_ = true;
+    }
+    static samp::amx::cell call(PawnVm& vm, const char* name, std::initializer_list<samp::amx::cell> args) {
+        return vm.native_functions_.at(name)({args.begin(), args.size()});
+    }
+    static std::string read_string(const PawnVm& vm, std::size_t address) {
+        std::string value;
+        address += vm.header_.dat;
+        while (address + 4 <= vm.image_.size()) {
+            samp::amx::cell output = 0;
+            std::memcpy(&output, vm.image_.data() + address, sizeof(output));
+            if (!output) break;
+            value.push_back(static_cast<char>(output));
+            address += sizeof(output);
+        }
+        return value;
+    }
+};
+}
+
 namespace samp::server {
 struct RakNetTransportTestAccess {
     static RakNetPeer& peer(RakNetServer& server, std::uint32_t address, std::uint16_t port) {
@@ -39,6 +69,7 @@ struct Fixture {
     samp::server::Config config;
     samp::server::GameLayer game;
     samp::server::RakNetServer server;
+    std::size_t flushed_bytes = 0;
     Fixture() {
         config.values_["password"] = "secret"; config.values_["maxplayers"] = "8";
         game.config_ = &config; game.players_.resize(8); game.challenge_token_ = 0x12345678;
@@ -66,6 +97,7 @@ struct Fixture {
         const auto stamp = now(); Access::advance_send_clocks(server, stamp); server.tick(stamp);
         std::vector<BitStream> result;
         for (const auto& wire : server.outbox_) {
+            flushed_bytes += wire.data.size();
             ConnectedDatagram datagram;
             CHECK(decode_connected_datagram(wire.data, datagram));
             for (const auto& frame : datagram.frames) result.push_back(frame.data);
@@ -86,9 +118,10 @@ struct Fixture {
         CHECK(Access::authenticated(Access::peer(server, address, port)) == correct);
         CHECK(std::any_of(messages.begin(), messages.end(), [](const auto& message) { return message.data_[0] == 34; }) == correct);
     }
-    BitStream join(std::string_view name, std::uint32_t version = 0xfde, std::uint8_t mod=1, bool valid_challenge=true, std::string_view serial={}) {
+    BitStream join(std::string_view name, std::uint32_t version = 0xfde, std::uint8_t mod=1,
+                   bool valid_challenge=true, std::string_view serial={}, std::string_view version_text="0.3.DL-R1") {
         BitStream payload; u32(payload, version); u8(payload, mod); string8(payload, name);
-        u32(payload, (game.challenge_token_ ^ version) + (valid_challenge?0:1)); string8(payload, serial.empty()?key::generate("connection-test"):std::string(serial)); string8(payload, "0.3.DL-R1");
+        u32(payload, (game.challenge_token_ ^ version) + (valid_challenge?0:1)); string8(payload, serial.empty()?key::generate("connection-test"):std::string(serial)); string8(payload, version_text);
         u32(payload, game.challenge_token_ ^ version);
         BitStream rpc; u8(rpc, 20); u8(rpc, 25);
         const auto bits = static_cast<std::uint32_t>(payload.numberOfBitsUsed_);
@@ -184,5 +217,66 @@ void validation() {
     }
 }
 
+void connection_natives() {
+    using Native = samp::pawn::PawnNativeTestAccess;
+    using samp::amx::cell;
+    Fixture f;
+    constexpr std::uint16_t port = 13000;
+    auto& vm = f.game.vm_;
+    Native::prepare(vm);
+    samp::pawn::register_server_natives(vm, f.game);
+    const auto call = [&](const char* name, std::initializer_list<cell> args) { return Native::call(vm, name, args); };
+    const auto text = [&] { return Native::read_string(vm, 0); };
+
+    CHECK(call("GetPlayerPing", {0}) == -1 && call("NetStats_ConnectionStatus", {0}) == -1);
+    CHECK(call("GetPlayerIp", {0, 0, 16}) == -1 && call("NetStats_GetIpPort", {0, 0, 22}) == 0);
+    f.authenticate(port);
+    f.send(port, 2, f.join("Client", 0xfde, 1, true, "29fc495", "0.3.DL-R1"));
+    f.flush();
+    CHECK(f.game.players_[0].joined);
+    CHECK(call("GetPlayerVersion", {0, 0, 24}) == 9 && text() == "0.3.DL-R1");
+    CHECK(call("GetPlayerVersion", {65536, 0, 3}) == 3 && text() == "0.3");
+    CHECK(call("GetPlayerVersion", {0, 508, 3}) == 0);
+    CHECK(call("gpci", {0, 0, 40}) == 4 && text() == "ABCD");
+    CHECK(call("GetPlayerIp", {0, 0, 16}) == 9 && text() == "127.0.0.1");
+    CHECK(call("NetStats_GetIpPort", {0, 0, 22}) == 15 && text() == "127.0.0.1:13000");
+    CHECK(call("NetStats_ConnectionStatus", {0}) == 8);
+    CHECK(call("NetStats_GetConnectedTime", {0}) >= 0);
+    CHECK(call("NetStats_BytesSent", {0}) == static_cast<cell>(f.flushed_bytes) && f.flushed_bytes > 0);
+    CHECK(call("GetPlayerPing", {0}) == 65535);
+
+    const auto pong = [&](std::uint16_t sequence, std::uint32_t latency) {
+        const auto stamp = static_cast<std::uint32_t>(now());
+        BitStream message;
+        u8(message, 9);
+        u32(message, stamp - latency);
+        u32(message, stamp);
+        f.send(port, sequence, message);
+    };
+    pong(3, 25);
+    const auto first_ping = call("GetPlayerPing", {0});
+    CHECK(first_ping >= 25 && first_ping < 65535);
+    pong(4, static_cast<std::uint32_t>(first_ping + 50));
+    CHECK(call("GetPlayerPing", {0}) >= first_ping + 50 && call("GetPlayerPing", {65536}) == -1);
+
+    f.game.record_server_tick(0xfffffff0u);
+    f.game.record_server_tick(0xfffffff5u);
+    f.game.record_server_tick(0x3d7);
+    CHECK(call("GetServerTickRate", {}) == 0);
+    f.game.record_server_tick(0x3d8);
+    CHECK(call("GetServerTickRate", {}) == 3);
+    f.game.record_server_tick(0x7c0);
+    CHECK(call("GetServerTickRate", {}) == 1);
+
+    f.game.disconnect_player(0, 1);
+    f.server.tick(now() + 600);
+    CHECK(call("gpci", {0, 0, 40}) == 0 && call("NetStats_BytesSent", {0}) == 0);
+    f.authenticate(port);
+    f.send(port, 2, f.join("NewClient", 0xfde, 1, true, "3e90", ""));
+    f.flush();
+    CHECK(call("GetPlayerVersion", {0, 0, 24}) == 7 && text() == "unknown");
+    CHECK(call("gpci", {0, 0, 40}) == 2 && text() == "10");
 }
-int main(int, char**) { auth_vectors(); lifecycle();validation(); std::printf("connection checks: %d failures\n", failures); return failures != 0; }
+
+}
+int main(int, char**) { auth_vectors(); lifecycle(); validation(); connection_natives(); std::printf("connection checks: %d failures\n", failures); return failures != 0; }

@@ -129,6 +129,7 @@ public:
     GameLayer() = default;
 
     void on_user_message(RakNetPeer& peer, const samp::proto::BitStream& message) override;
+    void record_server_tick(std::uint32_t now);
     void update_player_pool_size();
     void update_streaming();
     void update_vehicles(std::uint64_t now);
@@ -172,6 +173,7 @@ public:
     [[nodiscard]] int max_players() const override;
     [[nodiscard]] bool is_player_connected(int id) const override;
     bool player_send_totals(int id, std::uint64_t& sent, std::uint64_t& resent) const override;
+    std::optional<samp::pawn::PlayerConnectionInfo> player_connection_info(int id) const override;
     [[nodiscard]] bool read_console_variable(std::string_view name, std::string& value) const override;
     bool send_rcon_command(std::string_view command) override;
     [[nodiscard]] bool player_name_in_use(const char* name) const;
@@ -205,6 +207,9 @@ public:
     std::uint32_t challenge_token_ = 0;
 
 private:
+    std::optional<std::uint32_t> tick_window_start_;
+    std::uint32_t ticks_in_window_ = 0;
+
     void handle_rpc_packet(RakNetPeer& peer, const samp::proto::BitStream& message);
     void handle_object_edit(RakNetPeer& peer, const samp::proto::BitStream& payload);
     void handle_attached_object_edit(RakNetPeer& peer, const samp::proto::BitStream& payload);

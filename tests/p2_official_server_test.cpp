@@ -59,7 +59,12 @@ struct RakNetTransportTestAccess {
         std::vector<samp::proto::BitStream> result;for(auto& queue:peer.send_state_.unsent) for(auto& frame:queue) result.push_back(frame.data);return result;
     }
     static void clear(RakNetPeer& peer) {peer.send_state_={};}
-    static void pings(RakNetPeer& peer) {peer.send_state_.lowest_ping=0;peer.send_state_.ping_samples={0,10,0,0,0};peer.send_state_.ping_valid={true,true,false,false,false};}
+    static void pings(RakNetPeer& peer) {
+        peer.send_state_.lowest_ping = 0;
+        peer.send_state_.ping_samples = {0, 10, 0, 0, 0};
+        peer.send_state_.ping_valid = {true, true, false, false, false};
+        peer.send_state_.ping_slot = 2;
+    }
 };
 }
 namespace {
@@ -250,7 +255,13 @@ void server() {
     CHECK((trace==std::vector<std::string>{"gm:OnPlayerPickUpPickup","fs:OnPlayerPickUpPickup"}));
     Wire::clear(one);Wire::pings(one);game.players_[0].score=-123;game.players_[1].score=456;rpc(game,one,155);
     auto scores=payload(Wire::messages(one).back(),155);
-    for(unsigned short i=0;i<2;++i) {unsigned short player=9;int score=0;unsigned ping=0;CHECK(scores.read(&player,2) && scores.read(&score,4) && scores.read(&ping,4));CHECK(player==i && score==(i?456:-123) && ping==(i?0xffffffffu:5));}
+    for (std::uint16_t i = 0; i < 2; ++i) {
+        std::uint16_t player = 9;
+        std::int32_t score = 0;
+        std::uint32_t ping = 0;
+        CHECK(scores.read(&player, 2) && scores.read(&score, 4) && scores.read(&ping, 4));
+        CHECK(player == i && score == (i ? 456 : -123) && ping == (i ? 0xffffu : 10u));
+    }
     unsigned short addresses=0;CHECK(scores.read(&addresses,2) && addresses==1);
     const auto count=Wire::messages(one).size();rpc(game,one,155);CHECK(Wire::messages(one).size()==count);
 

@@ -7,6 +7,18 @@
 #include <set>
 
 namespace samp::server {
+// Official: FUN_00494680 @ 0x00494680 (samp-server.exe)
+void GameLayer::record_server_tick(std::uint32_t now) {
+    if (!tick_window_start_) tick_window_start_ = now;
+    if (std::bit_cast<std::int32_t>(now - *tick_window_start_) >= 1000) {
+        tick_window_start_ = now;
+        server_tick_rate_ = ticks_in_window_;
+        ticks_in_window_ = 0;
+    }
+    ++ticks_in_window_;
+    ++server_tick_count_;
+}
+
 // Official: FUN_00463da0 @ 0x00463da0 (samp-server.exe)
 bool GameLayer::player_slot_is_occupied(std::uint16_t slot) const {
     return slot < 1000 && slot < players_.size() && players_[slot].in_use;
@@ -24,6 +36,19 @@ void GameLayer::update_player_pool_size() {
 std::uint32_t GameLayer::count_human_players() {
     return static_cast<std::uint32_t>(std::ranges::count_if(samp::pawn::live_player_slots(*this),
         [](const auto& player) { return player.in_use && !player.is_npc; }));
+}
+
+// no standalone native entry
+std::optional<samp::pawn::PlayerConnectionInfo> GameLayer::player_connection_info(int id) const {
+    if (id < 0 || id >= 1000 || !player_slot_is_occupied(static_cast<std::uint16_t>(id))) return std::nullopt;
+    const auto* peer = players_[id].peer;
+    if (!peer) return std::nullopt;
+    const auto now = static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now().time_since_epoch()).count());
+    const auto duration = peer->opened_ms_ ? static_cast<std::uint32_t>(now - peer->opened_ms_) : 0u;
+    const auto status = peer->stage_ == RakNetPeer::Stage::Authenticated ? 8 : 3;
+    return samp::pawn::PlayerConnectionInfo{peer->address_, peer->port_, peer->latest_ping(), status,
+        duration, peer->send_state_.total_bits_sent};
 }
 
 // Official: FUN_00493ca0 @ 0x00493ca0 (samp-server.exe)
@@ -79,13 +104,7 @@ void GameLayer::handle_score_request(RakNetPeer& peer) {
     samp::proto::BitStream payload;
     for(const auto& player:players_) if(player.in_use) {
         const auto id=static_cast<std::uint16_t>(player.id);
-        std::uint32_t ping=0xffffffffu;
-        if(player.peer && player.peer->send_state_.lowest_ping!=0xffff) {
-            std::uint32_t total=0,count=0;
-            for(std::size_t slot=0;slot<player.peer->send_state_.ping_samples.size();++slot)
-                if(player.peer->send_state_.ping_valid[slot]) {total+=player.peer->send_state_.ping_samples[slot];++count;}
-            ping=count?total/count:0;
-        }
+        const std::uint32_t ping = player.peer ? player.peer->latest_ping() : 0xffffffffu;
         payload.write(&id,2);payload.write(&player.score,4);payload.write(&ping,4);
     }
     // Native466080 maintains the number of DISTINCT connected IPs at+30d54.

@@ -105,6 +105,8 @@ struct PlayerNativeState {
     int id = 0;
     std::string name;
     std::string shop_name;
+    std::string client_version;
+    std::string client_serial;
     std::uint32_t colour = 0;
     std::uint32_t ipv4_address = 0;
     bool is_npc = false;
@@ -313,6 +315,15 @@ enum class VehicleAppearanceEvent : std::uint32_t {
     ModShop = 4,
 };
 
+struct PlayerConnectionInfo {
+    std::uint32_t address;
+    std::uint16_t port;
+    std::uint16_t ping;
+    std::int32_t status;
+    std::uint32_t elapsed_ms;
+    std::uint64_t bits_sent;
+};
+
 // The services the natives need from the game.
 class NativeHost {
 public:
@@ -320,6 +331,7 @@ public:
     std::vector<PlayerNativeState> players_;
     int player_pool_highest_ = 0;
     std::uint32_t server_tick_count_ = 0;
+    std::uint32_t server_tick_rate_ = 0;
     std::vector<std::string> banned_ips_;
     std::map<std::string, std::uint64_t> blocked_ips_;
     std::map<std::uint32_t,ScriptTimer> script_timers_;
@@ -500,6 +512,8 @@ public:
     // Optional transport statistics for hosts that own live peers.
     // no standalone native entry
     virtual bool player_send_totals(int, std::uint64_t&, std::uint64_t&) const { return false; }
+    // no standalone native entry
+    virtual std::optional<PlayerConnectionInfo> player_connection_info(int) const { return std::nullopt; }
     // Hosts without a console have no console variables or standalone native entry.
     // no standalone native entry
     virtual bool read_console_variable(std::string_view, std::string&) const { return false; }

@@ -90,7 +90,9 @@ private:
     std::uint32_t address_ = 0;
     std::uint16_t port_ = 0;
     std::uint16_t cookie_ = 0;
+    std::uint64_t opened_ms_ = 0;
     std::uint64_t last_receive_ms_ = 0;
+    [[nodiscard]] std::uint16_t latest_ping() const;
 
     std::uint16_t next_message_number_ = 0;
 

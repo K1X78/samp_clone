@@ -611,14 +611,26 @@ void GameLayer::handle_player_connect(RakNetPeer& peer, const BitStream& payload
         reject(peer,kRejectIncorrectVersion);return;
     }
     std::uint8_t version_length=0;
-    if(!in.read(&version_length,sizeof(version_length)) ||
-       static_cast<std::size_t>(version_length)>
-           (((in.numberOfBitsUsed_>in.readOffset_?in.numberOfBitsUsed_-in.readOffset_:0)+7u)>>3)) {
-        reject(peer,kRejectIncorrectVersion);return;
+    in.read(&version_length, sizeof(version_length));
+    if (version_length > 24) {
+        peer.stage_ = RakNetPeer::Stage::Closing;
+        peer.close_after_ms_ = peer.last_receive_ms_ + 500;
+        return;
     }
-    version_string.assign(version_length,'\0');
-    if(version_length!=0 && !in.read(version_string.data(),version_length)) {
-        reject(peer,kRejectIncorrectVersion);return;
+    if (version_length == 0) {
+        version_string = "unknown";
+    } else {
+        version_string.resize(version_length);
+        if (!in.read(version_string.data(), version_length)) {
+            reject(peer, kRejectIncorrectVersion);
+            return;
+        }
+        version_string.resize(std::strlen(version_string.c_str()));
+        if (version_string.size() > 23) {
+            peer.stage_ = RakNetPeer::Stage::Closing;
+            peer.close_after_ms_ = peer.last_receive_ms_ + 500;
+            return;
+        }
     }
     // The native normal-client owner parses the hexadecimal serial, divides
     // by 1001 and requires zero remainder and a 2..40-digit quotient.
@@ -666,6 +678,8 @@ void GameLayer::handle_player_connect(RakNetPeer& peer, const BitStream& payload
     player.in_use = true;
     player.id = slot;
     player.name = name;
+    player.client_version = std::move(version_string);
+    player.client_serial = std::move(serial);
     player.colour = 0xFFFFFFFFu;
     player.is_npc = false;
     player.joined = false;

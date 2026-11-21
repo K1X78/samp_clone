@@ -13472,11 +13472,31 @@
     {
       "address": "0x00471330",
       "assembly_name": "FUN_00471330",
-      "assembly_size": 304,
-      "assembly_sha1": "57d03cdc0d0445c07460e7381fadcc0763112ebc",
+      "assembly_size": 144,
+      "assembly_sha1": "35b7372ade93318331aeb7d2bf96a53dff0489f9",
       "native_registration": {
         "name": "IsPlayerInAnyVehicle",
         "table_entry": "0x004cf2b8"
+      }
+    },
+    {
+      "address": "0x004713c0",
+      "assembly_name": "FUN_004713c0",
+      "assembly_size": 80,
+      "assembly_sha1": "fbd713de3bf9d76f99a6876f3c360f9350fa6ff1",
+      "native_registration": {
+        "name": "GetPlayerVersion",
+        "table_entry": "0x004cf1a0"
+      }
+    },
+    {
+      "address": "0x00471410",
+      "assembly_name": "FUN_00471410",
+      "assembly_size": 80,
+      "assembly_sha1": "a5e3cc2a66c88bd50dbce51d1c283611dbf84fe8",
+      "native_registration": {
+        "name": "gpci",
+        "table_entry": "0x004cee90"
       }
     },
     {
@@ -14178,24 +14198,94 @@
     {
       "address": "0x004734c0",
       "assembly_name": "FUN_004734c0",
-      "assembly_size": 240,
-      "assembly_sha1": "ec4ac326d393f2ae7d122c970aef9435b52eb2fd",
+      "assembly_size": 16,
+      "assembly_sha1": "8aaaa7848680dbff3862118658f7a057c6c2a83d",
       "native_registration": {
         "name": "UsePlayerPedAnims",
         "table_entry": "0x004cf068"
       }
     },
     {
+      "address": "0x004734d0",
+      "assembly_name": "FUN_004734d0",
+      "assembly_size": 112,
+      "assembly_sha1": "ee5a0e926a19aef3ac98b153c6a49fa891f5b476",
+      "native_registration": {
+        "name": "GetPlayerIp",
+        "table_entry": "0x004cf430"
+      }
+    },
+    {
+      "address": "0x00473540",
+      "assembly_name": "FUN_00473540",
+      "assembly_size": 112,
+      "assembly_sha1": "621699f457a0607f0b674c8c8a2378552a39b088",
+      "native_registration": {
+        "name": "GetPlayerPing",
+        "table_entry": "0x004cf438"
+      }
+    },
+    {
       "address": "0x004735b0",
       "assembly_name": "FUN_004735b0",
-      "assembly_size": 1024,
-      "assembly_sha1": "986270de65d15450c4070650326c09bd066cd098"
+      "assembly_size": 288,
+      "assembly_sha1": "e4be94bfb3d95ce1a404080acedf5144815a89ba"
+    },
+    {
+      "address": "0x004736d0",
+      "assembly_name": "FUN_004736d0",
+      "assembly_size": 16,
+      "assembly_sha1": "99e57a599dec5f30e9acaddf145bba6411f05a59",
+      "native_registration": {
+        "name": "GetServerTickRate",
+        "table_entry": "0x004cf1b8"
+      }
+    },
+    {
+      "address": "0x004736e0",
+      "assembly_name": "FUN_004736e0",
+      "assembly_size": 496,
+      "assembly_sha1": "a75a8298625ee3a533b395fce6cfdd0f88f0b958",
+      "native_registration": {
+        "name": "NetStats_GetConnectedTime",
+        "table_entry": "0x004cf1c0"
+      }
+    },
+    {
+      "address": "0x004738d0",
+      "assembly_name": "FUN_004738d0",
+      "assembly_size": 224,
+      "assembly_sha1": "0681bce4f0fc4311b0979f0a57c5b5b5326bb11a",
+      "native_registration": {
+        "name": "NetStats_BytesSent",
+        "table_entry": "0x004cf1e0"
+      }
     },
     {
       "address": "0x004739b0",
       "assembly_name": "FUN_004739b0",
-      "assembly_size": 448,
-      "assembly_sha1": "4ef48afe4e58287ac1699faaa5395a87e8e24bc9"
+      "assembly_size": 224,
+      "assembly_sha1": "4a900bcb53ba2d5088fb19430fb4aee7f4355581"
+    },
+    {
+      "address": "0x00473a90",
+      "assembly_name": "FUN_00473a90",
+      "assembly_size": 96,
+      "assembly_sha1": "6adc1f8234e2996ba8bdcbca78ebf6bcec045996",
+      "native_registration": {
+        "name": "NetStats_ConnectionStatus",
+        "table_entry": "0x004cf1f8"
+      }
+    },
+    {
+      "address": "0x00473af0",
+      "assembly_name": "FUN_00473af0",
+      "assembly_size": 128,
+      "assembly_sha1": "a05f0088ce4ba720cec1966e7a3caacf63174e29",
+      "native_registration": {
+        "name": "NetStats_GetIpPort",
+        "table_entry": "0x004cf200"
+      }
     },
     {
       "address": "0x00473b70",
@@ -35046,6 +35136,33 @@
     ],
     "FUN_0047f270": [
       "0x0047f270"
+    ],
+    "FUN_004713c0": [
+      "0x004713c0"
+    ],
+    "FUN_00471410": [
+      "0x00471410"
+    ],
+    "FUN_004734d0": [
+      "0x004734d0"
+    ],
+    "FUN_00473540": [
+      "0x00473540"
+    ],
+    "FUN_004736d0": [
+      "0x004736d0"
+    ],
+    "FUN_004736e0": [
+      "0x004736e0"
+    ],
+    "FUN_004738d0": [
+      "0x004738d0"
+    ],
+    "FUN_00473a90": [
+      "0x00473a90"
+    ],
+    "FUN_00473af0": [
+      "0x00473af0"
     ]
   },
   "client_rpc_registrations": [],

@@ -31,6 +31,13 @@ constexpr std::uint64_t kPeerTimeoutMs = 10000;
 
 }  // namespace
 
+// Official: FUN_00455500 @ 0x00455500 (samp-server.exe)
+std::uint16_t RakNetPeer::latest_ping() const {
+    const auto& state = send_state_;
+    const auto previous = (state.ping_slot + state.ping_samples.size() - 1) % state.ping_samples.size();
+    return state.ping_valid[previous] ? state.ping_samples[previous] : 0xffff;
+}
+
 // Official: FUN_00455ec0 @ 0x00455ec0 (samp-server.exe)
 void RakNetPeer::send(std::span<const std::uint8_t> message, Reliability reliability,
                       std::uint8_t channel, std::size_t bit_count, std::uint8_t priority) {
@@ -129,6 +136,7 @@ void RakNetServer::handle_datagram(std::uint32_t address, std::uint16_t port,
             peer.last_receive_ms_ = static_cast<std::uint64_t>(
                 std::chrono::duration_cast<std::chrono::milliseconds>(
                     std::chrono::steady_clock::now().time_since_epoch()).count());
+            peer.opened_ms_ = peer.last_receive_ms_;
         }
         // ID_OPEN_CONNECTION_REPLY plus the pad byte.
         std::vector<std::uint8_t> reply{samp::proto::kIdOpenConnectionReply, 0x00};

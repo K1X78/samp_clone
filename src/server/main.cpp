@@ -606,7 +606,9 @@ int main(int argc, char** argv) {
     std::string console_line;
     auto last_timer_tick=std::chrono::steady_clock::now();
     while (server.running_) {
-        ++game_layer.server_tick_count_;
+        const auto tick_start = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::steady_clock::now().time_since_epoch()).count();
+        game_layer.record_server_tick(static_cast<std::uint32_t>(tick_start));
 
         // Poll the socket and the console together.
         fd_set read_set;
