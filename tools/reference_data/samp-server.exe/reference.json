@@ -14574,11 +14574,31 @@
     {
       "address": "0x00475eb0",
       "assembly_name": "FUN_00475eb0",
-      "assembly_size": 192,
-      "assembly_sha1": "685be7bb9896c66216ec726b9a462b8ddfa3b525",
+      "assembly_size": 48,
+      "assembly_sha1": "09ae4c3ac8ec7178a6262421aaa58f0a73469dc1",
       "native_registration": {
         "name": "EnableZoneNames",
         "table_entry": "0x004cf0e0"
+      }
+    },
+    {
+      "address": "0x00475ee0",
+      "assembly_name": "FUN_00475ee0",
+      "assembly_size": 48,
+      "assembly_sha1": "b9b22f3fe20f413ac699435a71e6bf3ad93dd1e0",
+      "native_registration": {
+        "name": "GetPlayerWantedLevel",
+        "table_entry": "0x004cf4c0"
+      }
+    },
+    {
+      "address": "0x00475f10",
+      "assembly_name": "FUN_00475f10",
+      "assembly_size": 96,
+      "assembly_sha1": "ac08198cd2e3a73ff00dc9d67b01db3864ed87f8",
+      "native_registration": {
+        "name": "GetPlayerFightingStyle",
+        "table_entry": "0x004cf4c8"
       }
     },
     {
@@ -15546,8 +15566,28 @@
     {
       "address": "0x0047f6d0",
       "assembly_name": "FUN_0047f6d0",
-      "assembly_size": 2832,
-      "assembly_sha1": "eb8279da472ffe1cd807255c5c3abe3584f7f1cb"
+      "assembly_size": 768,
+      "assembly_sha1": "e55f9ccca3963da27d4892f57183b14807fe5a36"
+    },
+    {
+      "address": "0x0047f9d0",
+      "assembly_name": "FUN_0047f9d0",
+      "assembly_size": 240,
+      "assembly_sha1": "74619b5e30b680b70f832f6e65fcff1d223fb89c",
+      "native_registration": {
+        "name": "SetPlayerWantedLevel",
+        "table_entry": "0x004cf4b8"
+      }
+    },
+    {
+      "address": "0x0047fac0",
+      "assembly_name": "FUN_0047fac0",
+      "assembly_size": 1824,
+      "assembly_sha1": "c011363b5bf8d98f28588ad76cb44f516754f443",
+      "native_registration": {
+        "name": "SetPlayerFightingStyle",
+        "table_entry": "0x004cf4d0"
+      }
     },
     {
       "address": "0x004801e0",
@@ -34618,6 +34658,18 @@
     ],
     "FUN_0047e390": [
       "0x0047e390"
+    ],
+    "FUN_00475ee0": [
+      "0x00475ee0"
+    ],
+    "FUN_00475f10": [
+      "0x00475f10"
+    ],
+    "FUN_0047f9d0": [
+      "0x0047f9d0"
+    ],
+    "FUN_0047fac0": [
+      "0x0047fac0"
     ]
   },
   "client_rpc_registrations": [],

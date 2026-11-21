@@ -877,6 +877,58 @@ void cached_world_broadcasts() {
     }
 }
 
+void player_wanted_level_and_fighting_style() {
+    samp::server::GameLayer game;
+    std::array<samp::server::RakNetPeer, 3> peers;
+    game.players_.resize(4);
+    for (std::uint16_t id = 0; id < peers.size(); ++id) {
+        auto& player = game.players_[id];
+        player.id = id;
+        player.in_use = true;
+        player.peer = &peers[id];
+        player.streamed_to.resize(game.players_.size());
+    }
+    game.players_[1].streamed_to[0] = 1;
+    game.update_player_pool_size();
+    samp::pawn::register_server_natives(game.vm_, game);
+
+    require(call(game.vm_, "GetPlayerWantedLevel", {0}) == 0 &&
+        call(game.vm_, "GetPlayerFightingStyle", {0}) == 4, "player defaults differ");
+    require(call(game.vm_, "SetPlayerWantedLevel", {65536, -1}) == 1 &&
+        call(game.vm_, "GetPlayerWantedLevel", {0}) == 255, "wanted level must use the low byte");
+    const auto wanted = take_rpc(peers[0], 133);
+    require(wanted.numberOfBitsUsed_ == 8 && wanted.data_[0] == 255, "wanted level RPC differs");
+    require(RakNetTransportTestAccess::messages(peers[1]).empty(), "wanted level reached a viewer");
+
+    for (const cell style : {4, 5, 6, 7, 15, 272}) {
+        require(call(game.vm_, "SetPlayerFightingStyle", {65536, style}) == 1 &&
+            call(game.vm_, "GetPlayerFightingStyle", {0}) == (style & 255), "valid fighting style rejected");
+        for (const auto id : {0, 1}) {
+            const auto payload = take_rpc(peers[id], 89);
+            require(payload.numberOfBitsUsed_ == 24 && payload.data_[0] == 0 && payload.data_[1] == 0 &&
+                payload.data_[2] == (style & 255), "fighting style RPC differs");
+        }
+    }
+    for (const cell id : {3, 1000, -1}) {
+        require(call(game.vm_, "SetPlayerWantedLevel", {id, 5}) == 0 &&
+            call(game.vm_, "GetPlayerWantedLevel", {id}) == 0 &&
+            call(game.vm_, "SetPlayerFightingStyle", {id, 5}) == 1 &&
+            call(game.vm_, "GetPlayerFightingStyle", {id}) == 4, "missing-player contract differs");
+    }
+    require(call(game.vm_, "SetPlayerFightingStyle", {0, 8}) == 0 &&
+        call(game.vm_, "GetPlayerFightingStyle", {0}) == 16, "invalid style changed the player");
+    for (auto& peer : peers)
+        require(RakNetTransportTestAccess::messages(peer).empty(), "player state RPC reached an unintended recipient");
+
+    game.players_[0].spawned = true;
+    game.players_[0].state = 1;
+    game.players_[2].joined = game.players_[2].spawned = true;
+    game.update_streaming();
+    const auto streamed = take_rpc(peers[2], 32);
+    require(streamed.numberOfBitsUsed_ == 54 * 8 && streamed.data_[31] == 16,
+        "late stream-in discarded the current fighting style");
+}
+
 void player_commands() {
     using Access=samp::pawn::PawnNativeTestAccess;
     samp::server::GameLayer game;
@@ -1351,6 +1403,7 @@ int main(int, char**) {
         vehicle_parameters_and_siren();
         vehicle_tick_boundaries();
         cached_world_broadcasts();
+        player_wanted_level_and_fighting_style();
         player_commands();
         audio_stream_commands();
         actor_pool_lifecycle();

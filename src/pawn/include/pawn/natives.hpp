@@ -152,6 +152,8 @@ struct PlayerNativeState {
     std::int32_t money = 0;
     std::int32_t score = 0;
     std::uint32_t last_score_request_ms = 0;
+    std::uint8_t wanted_level = 0;
+    std::uint8_t fighting_style = 4;
     std::uint8_t weapon = 0;
     std::uint8_t special_action = 0;
     std::uint16_t surfing_id = 0;

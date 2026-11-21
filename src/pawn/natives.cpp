@@ -3110,6 +3110,52 @@ cell set_player_drunk_level(NativeHost& host, std::span<const cell> args) {
     return 1;
 }
 
+// Official: FUN_00475ee0 @ 0x00475ee0 (samp-server.exe)
+cell get_player_wanted_level(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->wanted_level : 0;
+}
+
+// Official: FUN_0047f9d0 @ 0x0047f9d0 (samp-server.exe)
+cell set_player_wanted_level(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    auto* player = find_player(host, args);
+    if (!player) return 0;
+    player->wanted_level = static_cast<std::uint8_t>(args[1]);
+    if (player->peer) {
+        samp::proto::BitStream payload;
+        payload.write(&player->wanted_level, sizeof(player->wanted_level));
+        host.send_rpc(*player->peer, static_cast<std::uint8_t>(samp::proto::RpcId::SetPlayerWantedLevel), payload);
+    }
+    return 1;
+}
+
+// Official: FUN_00475f10 @ 0x00475f10 (samp-server.exe)
+cell get_player_fighting_style(NativeHost& host, std::span<const cell> args) {
+    const auto* player = find_player(host, args);
+    return player ? player->fighting_style : 4;
+}
+
+// Official: FUN_0047fac0 @ 0x0047fac0 (samp-server.exe)
+cell set_player_fighting_style(NativeHost& host, std::span<const cell> args) {
+    if (args.size() < 2) return 0;
+    const auto style = static_cast<std::uint8_t>(args[1]);
+    if ((style < 4 || style > 7) && style != 15 && style != 16) return 0;
+
+    auto* player = find_player(host, args);
+    if (player) {
+        const auto id = static_cast<std::uint16_t>(args[0]);
+        player->fighting_style = style;
+        samp::proto::BitStream payload;
+        payload.write(&id, sizeof(id));
+        payload.write(&style, sizeof(style));
+        constexpr auto rpc = static_cast<std::uint8_t>(samp::proto::RpcId::SetPlayerFightingStyle);
+        host.send_streamed_player_rpc(id, rpc, payload);
+        if (player->peer) host.send_rpc(*player->peer, rpc, payload);
+    }
+    return 1;
+}
+
 // Official: FUN_00471550 @ 0x00471550 (samp-server.exe)
 cell get_player_distance_from_point(NativeHost& host, std::span<const cell> args) {
     if (args.size() < 4) return 0;
@@ -3557,6 +3603,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GetPlayerCustomSkin", get_player_custom_skin},
     {"GetPlayerDistanceFromPoint", get_player_distance_from_point},
     {"GetPlayerDrunkLevel", get_player_drunk_level},
+    {"GetPlayerFightingStyle", get_player_fighting_style},
     {"GetPlayerInterior", get_player_interior},
     {"GetPlayerMoney", get_player_money},
     {"GetPlayerPoolSize", get_player_pool_size},
@@ -3569,6 +3616,7 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"GetPlayerVehicleID", get_player_vehicle_id},
     {"GetPlayerVehicleSeat", get_player_vehicle_seat},
     {"GetPlayerVirtualWorld", get_player_virtual_world},
+    {"GetPlayerWantedLevel", get_player_wanted_level},
     {"GetPlayerSurfingVehicleID", get_player_surfing_vehicle},
     {"GetPlayerSurfingObjectID", get_player_surfing_object},
     {"GetPlayerWeaponState", get_player_weapon_state},
@@ -3638,11 +3686,13 @@ constexpr std::pair<const char*, ServerNative> server_natives[] = {
     {"SetPlayerCheckpoint", set_player_checkpoint},
     {"SetPlayerColor", set_player_color},
     {"SetPlayerDrunkLevel", set_player_drunk_level},
+    {"SetPlayerFightingStyle", set_player_fighting_style},
     {"SetPlayerHealth", set_player_health},
     {"SetPlayerMapIcon", set_player_map_icon},
     {"SetPlayerRaceCheckpoint", set_player_race_checkpoint},
     {"SetPlayerScore", set_player_score},
     {"SetPlayerTeam", set_player_team},
+    {"SetPlayerWantedLevel", set_player_wanted_level},
     {"SetPlayerVirtualWorld", set_player_virtual_world},
     {"SetPlayerWeather", set_player_weather},
     {"SetPlayerWorldBounds", set_player_world_bounds},

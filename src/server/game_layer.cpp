@@ -96,7 +96,7 @@ void GameLayer::send_stream_in(GamePlayer& receiver, const GamePlayer& other) {
     payload.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<float>(other.z)).data(),4);
     payload.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<float>(other.angle)).data(),4);
     payload.write(std::bit_cast<std::array<std::uint8_t,4>>(static_cast<std::uint32_t>(other.colour)).data(),4);
-    payload.write(std::array<std::uint8_t,1>{static_cast<std::uint8_t>(4)}.data(),1); // default fighting style
+    payload.write(&other.fighting_style, sizeof(other.fighting_style));
     for (int i = 0; i < 11; ++i) payload.write(std::bit_cast<std::array<std::uint8_t,2>>(static_cast<std::uint16_t>(999)).data(),2);
     send_rpc(*receiver.peer, kRpcPlayerStreamIn, payload);
     receiver.streamed_to[other.id] = 1;
